@@ -1,0 +1,9 @@
+export declare const TENANT_ID_HEADER = "x-tenant-id";
+export declare const AUTH_HEADER = "authorization";
+export declare const BEARER_PREFIX = "Bearer ";
+export declare const ACCESS_TOKEN_EXPIRY = "15m";
+export declare const REFRESH_TOKEN_EXPIRY = "7d";
+export declare const TOKEN_BLACKLIST_PREFIX = "token:blacklist:";
+export declare const USER_TOKENS_PREFIX = "user:tokens:";
+export declare const MAX_LOGIN_ATTEMPTS = 5;
+export declare const ACCOUNT_LOCKOUT_MINUTES = 15;

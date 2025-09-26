@@ -1,0 +1,30 @@
+import { OPDService } from './opd.service';
+export declare class OPDController {
+    private readonly opdService;
+    constructor(opdService: OPDService);
+    createVisit(createVisitDto: any): Promise<any>;
+    getVisitById(id: string): Promise<any>;
+    updateVisit(id: string, updateVisitDto: any): Promise<any>;
+    deleteVisit(id: string): Promise<any>;
+    createEncounter(createEncounterDto: any): Promise<any>;
+    getEncounterById(id: string): Promise<any>;
+    updateEncounter(id: string, updateEncounterDto: any): Promise<any>;
+    completeEncounter(id: string): Promise<any>;
+    createPrescription(createPrescriptionDto: any): Promise<any>;
+    getPatientPrescriptions(patientId: string): Promise<any>;
+    getActivePrescriptions(patientId: string): Promise<any>;
+    generateToken(generateTokenDto: any): Promise<any>;
+    getCurrentToken(doctorId?: string): Promise<any>;
+    callNextToken(doctorId: string): Promise<any>;
+    createOrder(createOrderDto: any): Promise<any>;
+    getEncounterOrders(encounterId: string): Promise<any>;
+    uploadDocument(file: Express.Multer.File, uploadDocumentDto: any): Promise<any>;
+    getPatientDocuments(patientId: string): Promise<any>;
+    generateBill(encounterId: string): Promise<any>;
+    processPayment(billId: string, paymentDetails: any): Promise<any>;
+    searchIcd10Codes(query: string): Promise<PaginatedResult<import("./entities/icd10-code.entity").Icd10Code>>;
+    createDiagnosis(createDiagnosisDto: any): Promise<any>;
+    getPatientDiagnoses(patientId: string): Promise<any>;
+    recordVitals(recordVitalsDto: any): Promise<any>;
+    getPatientVitals(patientId: string): Promise<any>;
+}

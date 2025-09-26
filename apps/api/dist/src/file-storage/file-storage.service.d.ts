@@ -1,0 +1,87 @@
+import { OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { FileStorageOptions } from './interfaces';
+import { UploadPatientDocumentOptions, UploadPatientPhotoFromUrlOptions, FileUpload } from './interfaces/file-upload.interface';
+type UploadOptions = {
+    path?: string;
+    filename?: string;
+    generateThumbnail?: boolean;
+    metadata?: Record<string, any>;
+    acl?: string;
+    contentType?: string;
+    contentDisposition?: string;
+    contentEncoding?: string;
+    cacheControl?: string;
+    expires?: Date;
+    tags?: Record<string, string>;
+};
+type UploadResult = {
+    filename: string;
+    path: string;
+    url: string;
+    size: number;
+    mimetype: string;
+    metadata?: Record<string, any>;
+    thumbnail?: {
+        filename: string;
+        path: string;
+        url: string;
+        size: number;
+        width: number;
+        height: number;
+    };
+};
+export declare class FileStorageService implements OnModuleInit {
+    private readonly fileStorageOptions;
+    private readonly configService;
+    private readonly logger;
+    private options;
+    private encryptionKey;
+    private encryptionIV;
+    private readonly algorithm;
+    constructor(fileStorageOptions: FileStorageOptions, configService: ConfigService);
+    onModuleInit(): Promise<void>;
+    private getDefaultOptions;
+    private initializeEncryption;
+    private getPatientUploadPath;
+    private ensureUploadDirectoryExists;
+    saveFile(file: FileUpload, destinationPath: string, options?: UploadOptions): Promise<UploadResult>;
+    uploadPatientPhotoFromUrl({ photoUrl, patientId, }: UploadPatientPhotoFromUrlOptions): Promise<UploadResult>;
+    uploadPatientDocument({ file, patientId, documentType, }: UploadPatientDocumentOptions): Promise<UploadResult>;
+    deleteFile(filePath: string): Promise<boolean>;
+    getFileStream(filePath: string): Promise<NodeJS.ReadableStream>;
+    private processFileInput;
+    private generateFilename;
+    private writeFileToDisk;
+    private ensureDirectoryExists;
+    private generatePublicUrl;
+    private generateThumbnail;
+    private getThumbnailPath;
+    private fileExists;
+    private isAllowedMimeType;
+    private isImage;
+    private encryptFile;
+    private decryptStream;
+    calculateFileHash(filePath: string): Promise<string>;
+    getFileMetadata(filePath: string): Promise<{
+        size: number;
+        mtime: Date;
+        ctime: Date;
+        mimetype: string;
+        extension: string;
+    }>;
+    deleteDirectory(directoryPath: string): Promise<void>;
+    generateFileHash(buffer: Buffer): string;
+    private validateFileSize;
+    private validateMimeType;
+    private getMimeType;
+    private sanitizeFilename;
+    private getFileExtension;
+    getFileSize(filePath: string): Promise<number>;
+    createTempFile(content: Buffer | string, options?: {
+        prefix?: string;
+        postfix?: string;
+    }): Promise<string>;
+    cleanupTempFiles(maxAge?: number): Promise<void>;
+}
+export {};

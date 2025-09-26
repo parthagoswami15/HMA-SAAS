@@ -1,0 +1,83 @@
+/**
+ * Enum representing different types of surgical procedures
+ */
+export enum SurgeryType {
+  // General Surgery
+  GENERAL_SURGERY = 'GENERAL_SURGERY',
+  LAPAROSCOPIC = 'LAPAROSCOPIC',
+  ROBOTIC = 'ROBOTIC',
+  MINIMALLY_INVASIVE = 'MINIMALLY_INVASIVE',
+  
+  // Cardiovascular Surgery
+  CARDIAC = 'CARDIAC',
+  VASCULAR = 'VASCULAR',
+  THORACIC = 'THORACIC',
+  
+  // Neurosurgery
+  NEUROSURGERY = 'NEUROSURGERY',
+  SPINE = 'SPINE',
+  BRAIN = 'BRAIN',
+  
+  // Orthopedic Surgery
+  ORTHOPEDIC = 'ORTHOPEDIC',
+  JOINT_REPLACEMENT = 'JOINT_REPLACEMENT',
+  SPORTS_MEDICINE = 'SPORTS_MEDICINE',
+  TRAUMA = 'TRAUMA',
+  
+  // Plastic Surgery
+  PLASTIC = 'PLASTIC',
+  RECONSTRUCTIVE = 'RECONSTRUCTIVE',
+  COSMETIC = 'COSMETIC',
+  BURN = 'BURN',
+  
+  // Urology
+  UROLOGY = 'UROLOGY',
+  KIDNEY = 'KIDNEY',
+  PROSTATE = 'PROSTATE',
+  
+  // Gynecology
+  GYNECOLOGICAL = 'GYNECOLOGICAL',
+  HYSTERECTOMY = 'HYSTERECTOMY',
+  CESAREAN = 'CESAREAN',
+  
+  // ENT (Ear, Nose, and Throat)
+  OTOLARYNGOLOGY = 'OTOLARYNGOLOGY',
+  SINUS = 'SINUS',
+  TONSILLECTOMY = 'TONSILLECTOMY',
+  
+  // Ophthalmic
+  OPHTHALMIC = 'OPHTHALMIC',
+  CATARACT = 'CATARACT',
+  LASIK = 'LASIK',
+  
+  // Oral and Maxillofacial
+  ORAL_SURGERY = 'ORAL_SURGERY',
+  DENTAL_IMPLANT = 'DENTAL_IMPLANT',
+  JAW = 'JAW',
+  
+  // Pediatric Surgery
+  PEDIATRIC = 'PEDIATRIC',
+  NEONATAL = 'NEONATAL',
+  
+  // Oncology
+  ONCOLOGY = 'ONCOLOGY',
+  TUMOR_RESECTION = 'TUMOR_RESECTION',
+  BIOPSY = 'BIOPSY',
+  
+  // Transplant
+  TRANSPLANT = 'TRANSPLANT',
+  KIDNEY_TRANSPLANT = 'KIDNEY_TRANSPLANT',
+  LIVER_TRANSPLANT = 'LIVER_TRANSPLANT',
+  
+  // Emergency
+  EMERGENCY = 'EMERGENCY',
+  TRAUMA_SURGERY = 'TRAUMA_SURGERY',
+  APPENDECTOMY = 'APPENDECTOMY',
+  
+  // Other
+  DIAGNOSTIC = 'DIAGNOSTIC',
+  EXPLORATORY = 'EXPLORATORY',
+  
+  // Custom
+  OTHER = 'OTHER'
+}

@@ -1,0 +1,9 @@
+export declare enum VisitStatus {
+    SCHEDULED = "SCHEDULED",
+    CHECKED_IN = "CHECKED_IN",
+    IN_PROGRESS = "IN_PROGRESS",
+    COMPLETED = "COMPLETED",
+    CANCELLED = "CANCELLED",
+    NO_SHOW = "NO_SHOW",
+    RESCHEDULED = "RESCHEDULED"
+}

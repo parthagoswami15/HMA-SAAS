@@ -1,0 +1,46 @@
+import { AppointmentsService } from './appointments.service';
+import { CreateScheduleDto, UpdateScheduleDto, CreateBookingDto, UpdateBookingDto, CreateTokenDto, UpdateTokenDto, CreateCounterDto, UpdateCounterDto, CreateReminderDto, UpdateReminderDto, CheckInDto, KioskCheckInDto, SearchSlotsDto, BulkRescheduleDto, BookAppointmentDto, RescheduleBookingDto, ScheduleQueryDto, BookingQueryDto, TokenQueryDto } from './appointments.dto';
+export declare class AppointmentsController {
+    private readonly svc;
+    constructor(svc: AppointmentsService);
+    createSchedule(tenantId: string, dto: CreateScheduleDto): Promise<any>;
+    getSchedules(tenantId: string, query: ScheduleQueryDto): Promise<any>;
+    getScheduleById(tenantId: string, id: string): Promise<any>;
+    updateSchedule(tenantId: string, id: string, dto: UpdateScheduleDto): Promise<any>;
+    deleteSchedule(tenantId: string, id: string): Promise<any>;
+    getAvailableSlots(tenantId: string, query: SearchSlotsDto): Promise<any[]>;
+    createBooking(tenantId: string, dto: CreateBookingDto): Promise<any>;
+    bookAppointment(tenantId: string, dto: BookAppointmentDto): Promise<any>;
+    getBookings(tenantId: string, query: BookingQueryDto): Promise<any>;
+    getBookingById(tenantId: string, id: string): Promise<any>;
+    updateBooking(tenantId: string, id: string, dto: UpdateBookingDto): Promise<any>;
+    rescheduleBooking(tenantId: string, id: string, dto: RescheduleBookingDto): Promise<any>;
+    cancelBooking(tenantId: string, id: string, reason?: string): Promise<any>;
+    createToken(tenantId: string, dto: CreateTokenDto): Promise<any>;
+    getTokens(tenantId: string, query: TokenQueryDto): Promise<any>;
+    updateToken(tenantId: string, id: string, dto: UpdateTokenDto): Promise<any>;
+    callNextToken(tenantId: string, counterId: string): Promise<any>;
+    createCounter(tenantId: string, dto: CreateCounterDto): Promise<any>;
+    getCounters(tenantId: string, isActive?: boolean): Promise<any>;
+    updateCounter(tenantId: string, id: string, dto: UpdateCounterDto): Promise<any>;
+    createReminder(tenantId: string, dto: CreateReminderDto): Promise<any>;
+    getReminders(tenantId: string, bookingId?: string, status?: string): Promise<any>;
+    updateReminder(tenantId: string, id: string, dto: UpdateReminderDto): Promise<any>;
+    checkIn(tenantId: string, dto: CheckInDto): Promise<any>;
+    kioskCheckIn(tenantId: string, dto: KioskCheckInDto): Promise<any>;
+    bulkReschedule(tenantId: string, dto: BulkRescheduleDto): Promise<any>;
+    createConfig(tenantId: string, dto: any): Promise<any>;
+    getConfigs(tenantId: string): Promise<any>;
+    updateConfig(tenantId: string, id: string, dto: any): Promise<any>;
+    processNoShows(tenantId: string): Promise<any>;
+    setPriorityRules(tenantId: string, rules: any): Promise<any>;
+    getPriorityRules(tenantId: string): Promise<any>;
+    getNoShowHistory(tenantId: string, fromDate?: string, toDate?: string): Promise<{
+        totalNoShows: any;
+        noShows: any;
+    }>;
+    processPayment(tenantId: string, bookingId: string, paymentData: any): Promise<any>;
+    refundPayment(tenantId: string, bookingId: string, reason: string): Promise<any>;
+    createWalkInAppointment(tenantId: string, dto: any): Promise<any>;
+    scanQrCode(tenantId: string, dto: any): Promise<any>;
+}

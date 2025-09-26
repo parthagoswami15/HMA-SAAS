@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hms_saas
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/hms_saas?schema=public
+      JWT_SECRET: 8120deef11fbef8f6384944fb3905dfe8b13057c4cae1f8df9a7f9430c7596825977de954394c0e6a36ab1f4b79ffd102631ab14a6170c4e15beb6549e60b27b
+      JWT_EXPIRES_IN: 1d
+      JWT_ACCESS_SECRET: BIK4aj0AYOmpCKy8rznpuDjlfgGusao92o+QTuD3oJw7zNN/+4l0KWzGMopHikWpZrIfm7pnBnfLU30y9lMCFg==
+      JWT_REFRESH_SECRET: 9f8e7c6b5a4d3e2f1g0h9i8j7k6l5m4n3o2p1q0r9s8t7u6v5w4x3y2z1a0b9c8d7e6f5
+      SUPABASE_URL: https://agiobftqnnujmkdegpee.supabase.co
+      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFnaW9iZnRxbm51am1rZGVncGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc4MzU5MzQsImV4cCI6MjA3MzQxMTkzNH0.V7e1VEHoiglwxHhjVNKUbKhXDRTFzSs_IF7Kohwy85s
+      PORT: 4000
+      NODE_ENV: development
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      PORT: 3001
+    depends_on:
+      - api
+    ports:
+      - "3001:3001"
+
+volumes:
+  db_data:
+
+

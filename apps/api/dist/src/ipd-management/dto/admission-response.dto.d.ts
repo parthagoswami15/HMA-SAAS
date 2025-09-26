@@ -1,0 +1,32 @@
+import { Admission } from '../entities/admission.entity';
+import { PatientResponseDto } from '../../patients/dto/patient-response.dto';
+import { StaffResponseDto } from '../../staff/dto/staff-response.dto';
+import { BedResponseDto } from './bed-response.dto';
+import { WardResponseDto } from './ward-response.dto';
+export declare class AdmissionResponseDto {
+    id: string;
+    admissionNumber: string;
+    admissionType: string;
+    status: string;
+    admissionDate: Date;
+    dischargeDate?: Date;
+    diagnosis: string;
+    icdCode?: string;
+    isEmergency: boolean;
+    estimatedStayDays?: number;
+    actualStayDays?: number;
+    notes?: string;
+    patient: PatientResponseDto;
+    doctor: StaffResponseDto;
+    bed: BedResponseDto;
+    ward: WardResponseDto;
+    createdAt: Date;
+    updatedAt: Date;
+    details?: Record<string, any>;
+    insuranceInfo?: Record<string, any>;
+    followUpDetails?: Record<string, any>;
+    transferDetails?: Record<string, any>;
+    customFields?: Record<string, any>;
+    constructor(admission: Admission);
+    static fromAdmissions(admissions: Admission[]): AdmissionResponseDto[];
+}

@@ -1,0 +1,68 @@
+export declare enum StaffType {
+    DOCTOR = "DOCTOR",
+    NURSE = "NURSE",
+    ADMINISTRATOR = "ADMINISTRATOR",
+    RECEPTIONIST = "RECEPTIONIST",
+    LAB_TECHNICIAN = "LAB_TECHNICIAN",
+    PHARMACIST = "PHARMACIST",
+    SUPPORT_STAFF = "SUPPORT_STAFF"
+}
+export declare enum StaffStatus {
+    ACTIVE = "ACTIVE",
+    ON_LEAVE = "ON_LEAVE",
+    SUSPENDED = "SUSPENDED",
+    TERMINATED = "TERMINATED",
+    RETIRED = "RETIRED"
+}
+export declare enum ShiftType {
+    MORNING = "MORNING",
+    EVENING = "EVENING",
+    NIGHT = "NIGHT",
+    ROTATIONAL = "ROTATIONAL",
+    CUSTOM = "CUSTOM"
+}
+export declare enum AttendanceStatus {
+    PRESENT = "PRESENT",
+    ABSENT = "ABSENT",
+    HALF_DAY = "HALF_DAY",
+    ON_LEAVE = "ON_LEAVE",
+    HOLIDAY = "HOLIDAY"
+}
+export declare enum CredentialStatus {
+    PENDING_VERIFICATION = "PENDING_VERIFICATION",
+    VERIFIED = "VERIFIED",
+    EXPIRED = "EXPIRED",
+    REJECTED = "REJECTED",
+    SUSPENDED = "SUSPENDED"
+}
+export declare enum LeaveRequestStatus {
+    PENDING = "PENDING",
+    APPROVED = "APPROVED",
+    REJECTED = "REJECTED",
+    CANCELLED = "CANCELLED"
+}
+export declare enum LeaveType {
+    ANNUAL = "ANNUAL",
+    SICK = "SICK",
+    MATERNITY = "MATERNITY",
+    PATERNITY = "PATERNITY",
+    STUDY = "STUDY",
+    UNPAID = "UNPAID",
+    OTHER = "OTHER"
+}
+export declare enum CredentialType {
+    MEDICAL_LICENSE = "MEDICAL_LICENSE",
+    DEGREE = "DEGREE",
+    CERTIFICATION = "CERTIFICATION",
+    ID_PROOF = "ID_PROOF",
+    ADDRESS_PROOF = "ADDRESS_PROOF",
+    OTHER = "OTHER"
+}
+export declare enum LocationType {
+    HOSPITAL = "HOSPITAL",
+    CLINIC = "CLINIC",
+    LAB = "LAB",
+    PHARMACY = "PHARMACY",
+    ADMIN_OFFICE = "ADMIN_OFFICE",
+    OTHER = "OTHER"
+}

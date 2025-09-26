@@ -1,0 +1,31 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CarePlanType = void 0;
+var CarePlanType;
+(function (CarePlanType) {
+    CarePlanType["MEDICAL"] = "MEDICAL";
+    CarePlanType["SURGICAL"] = "SURGICAL";
+    CarePlanType["NURSING"] = "NURSING";
+    CarePlanType["REHABILITATION"] = "REHABILITATION";
+    CarePlanType["PALLIATIVE"] = "PALLIATIVE";
+    CarePlanType["PRE_OPERATIVE"] = "PRE_OPERATIVE";
+    CarePlanType["POST_OPERATIVE"] = "POST_OPERATIVE";
+    CarePlanType["MATERNITY"] = "MATERNITY";
+    CarePlanType["PEDIATRIC"] = "PEDIATRIC";
+    CarePlanType["GERIATRIC"] = "GERIATRIC";
+    CarePlanType["CHRONIC_DISEASE"] = "CHRONIC_DISEASE";
+    CarePlanType["DIABETES"] = "DIABETES";
+    CarePlanType["CARDIAC"] = "CARDIAC";
+    CarePlanType["RESPIRATORY"] = "RESPIRATORY";
+    CarePlanType["NEUROLOGICAL"] = "NEUROLOGICAL";
+    CarePlanType["ONCOLOGY"] = "ONCOLOGY";
+    CarePlanType["PSYCHIATRIC"] = "PSYCHIATRIC";
+    CarePlanType["NUTRITION"] = "NUTRITION";
+    CarePlanType["PAIN_MANAGEMENT"] = "PAIN_MANAGEMENT";
+    CarePlanType["INFECTION_CONTROL"] = "INFECTION_CONTROL";
+    CarePlanType["FALL_PREVENTION"] = "FALL_PREVENTION";
+    CarePlanType["PRESSURE_ULCER_PREVENTION"] = "PRESSURE_ULCER_PREVENTION";
+    CarePlanType["DISCHARGE_PLANNING"] = "DISCHARGE_PLANNING";
+    CarePlanType["CUSTOM"] = "CUSTOM";
+})(CarePlanType || (exports.CarePlanType = CarePlanType = {}));
+//# sourceMappingURL=care-plan-type.enum.js.map

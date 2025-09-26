@@ -1,0 +1,40 @@
+import { Repository } from 'typeorm';
+import { FactBilling, FactVisits, FactLabs, DimDate, DimFacility, DimProvider, DimService, DimPayer } from '../entities/facts.entity';
+import { ReportConfig } from '../entities/reports.entity';
+import { ReportBuilderDto } from '../dto/reports.dto';
+export declare class ReportBuilderService {
+    private readonly factBillingRepo;
+    private readonly factVisitsRepo;
+    private readonly factLabsRepo;
+    private readonly dimDateRepo;
+    private readonly dimFacilityRepo;
+    private readonly dimProviderRepo;
+    private readonly dimServiceRepo;
+    private readonly dimPayerRepo;
+    private readonly reportConfigRepo;
+    private readonly logger;
+    constructor(factBillingRepo: Repository<FactBilling>, factVisitsRepo: Repository<FactVisits>, factLabsRepo: Repository<FactLabs>, dimDateRepo: Repository<DimDate>, dimFacilityRepo: Repository<DimFacility>, dimProviderRepo: Repository<DimProvider>, dimServiceRepo: Repository<DimService>, dimPayerRepo: Repository<DimPayer>, reportConfigRepo: Repository<ReportConfig>);
+    buildReport(tenantId: string, userId: string, reportBuilderDto: ReportBuilderDto): Promise<any>;
+    saveReportConfig(tenantId: string, userId: string, reportBuilderDto: ReportBuilderDto, name: string, description?: string): Promise<ReportConfig>;
+    getReportTemplates(tenantId: string): Promise<any[]>;
+    validateReportConfig(reportBuilderDto: ReportBuilderDto): Promise<void>;
+    private isValidDimension;
+    private isValidMetric;
+    private isValidFilter;
+    private generateSQLQuery;
+    private getDimensionField;
+    private getMetricField;
+    private getDimensionJoin;
+    private buildFilterCondition;
+    private getFieldAlias;
+    private executeQuery;
+    private generateMockData;
+    private processResults;
+    private getNestedValue;
+    private generateSummary;
+    getReportPreview(tenantId: string, reportBuilderDto: ReportBuilderDto, previewLimit?: number): Promise<any>;
+    validateQuery(tenantId: string, reportBuilderDto: ReportBuilderDto): Promise<{
+        isValid: boolean;
+        errors: string[];
+    }>;
+}
