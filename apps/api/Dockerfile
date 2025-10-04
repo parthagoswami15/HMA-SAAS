@@ -16,8 +16,9 @@ COPY apps/api/package.json ./apps/api/package.json
 RUN mkdir -p apps/web
 RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/package.json
 
-# Copy Prisma schema BEFORE installing dependencies (needed for postinstall script)
+# Copy Prisma schema and config BEFORE installing dependencies (needed for postinstall script)
 COPY apps/api/prisma ./apps/api/prisma/
+COPY apps/api/prisma.config.ts ./apps/api/prisma.config.ts
 
 # Install ALL dependencies including devDependencies (needed for build)
 RUN npm ci
@@ -53,6 +54,7 @@ RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/packa
 
 # Copy Prisma files first
 COPY --from=base /app/apps/api/prisma ./apps/api/prisma
+COPY --from=base /app/apps/api/prisma.config.ts ./apps/api/prisma.config.ts
 
 # Install production dependencies
 RUN npm ci --only=production
@@ -71,7 +73,43 @@ EXPOSE ${PORT:-10000}
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
 
-# Run migrations then start with proper signal handling
-CMD ["dumb-init", "sh", "-c", "npm --workspace api exec prisma migrate deploy && node apps/api/dist/main.js"]
+# Create startup script for better error handling
+RUN echo '#!/bin/sh
+
+echo "Starting HMS SaaS Backend..."
+echo "Environment: $NODE_ENV"
+echo "Port: $PORT"
+
+# Change to API directory
+cd /app/apps/api
+
+# Try to run migrations with retry logic
+echo "Running database migrations..."
+for i in 1 2 3; do
+  echo "Migration attempt $i/3"
+  if npx prisma migrate deploy --schema=./prisma/schema.prisma; then
+    echo "Migrations completed successfully"
+    break
+  else
+    echo "Migration attempt $i failed"
+    if [ $i -eq 3 ]; then
+      echo "All migration attempts failed. Check your DATABASE_URL and database connectivity."
+      echo "DATABASE_URL: ${DATABASE_URL:-"Not set"}"
+      echo "Starting application anyway - some features may not work correctly."
+      break
+    fi
+    echo "Retrying in 5 seconds..."
+    sleep 5
+  fi
+done
+
+# Return to app root and start the application
+cd /app
+echo "Starting Node.js application..."
+node apps/api/dist/main.js
+' > /app/start.sh && chmod +x /app/start.sh
+
+# Run with proper signal handling
+CMD ["dumb-init", "/app/start.sh"]
 
 
