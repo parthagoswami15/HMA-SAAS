@@ -25,7 +25,7 @@ enum TenantType {
   MULTI_SPECIALTY
 }
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
