@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "workspaces": [
-    "apps/*"
+    "apps/web"
   ],
   "scripts": {
     "dev": "npm-run-all -p dev:web dev:api",

@@ -8,7 +8,11 @@ tests/
 __tests__/
 
 # Development scripts and tools
+apps/api
 apps/api/
+apps/api/**
+apps/api/**/*
+backend-temp/
 scripts/
 *.sql
 *.dev.js
