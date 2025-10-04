@@ -8,10 +8,8 @@ tests/
 __tests__/
 
 # Development scripts and tools
-apps/api
+# Completely exclude API from frontend deployment
 apps/api/
-apps/api/**
-apps/api/**/*
 backend-temp/
 scripts/
 *.sql
