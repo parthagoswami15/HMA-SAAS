@@ -80,9 +80,6 @@
     "typeorm": "^0.3.26",
     "uuid": "^11.1.0"
   },
-  "prisma": {
-    "seed": "ts-node -r tsconfig-paths/register prisma/seed.ts"
-  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",

@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+// Deployment trigger - DB URL updated
 import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
