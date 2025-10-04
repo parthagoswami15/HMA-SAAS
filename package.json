@@ -3,7 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "workspaces": [
-    "apps/web"
+    "apps/web",
+    "apps/api"
   ],
   "scripts": {
     "dev": "npm-run-all -p dev:web dev:api",
@@ -11,7 +12,7 @@
     "dev:api": "npm --workspace api run start:dev",
     "build": "npm-run-all -p build:web build:api",
     "build:web": "npm --workspace web run build",
-    "build:web-only": "cd apps/web && npm install && npm run build",
+    "build:web-only": "npm install && npm --workspace web run build",
     "build:api": "npm --workspace api run build",
     "start": "npm-run-all -p start:web start:api",
     "start:web": "npm --workspace web run start",
