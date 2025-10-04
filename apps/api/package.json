@@ -13,7 +13,7 @@
     "postinstall": "prisma generate",
     "db:setup": "npm run prisma:generate && npm run prisma:migrate && npm run prisma:seed",
     "test:supabase-auth": "ts-node -r tsconfig-paths/register scripts/test-supabase-auth.ts",
-    "build": "npx nest build",
+    "build": "node ../../node_modules/@nestjs/cli/bin/nest.js build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
