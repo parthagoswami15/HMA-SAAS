@@ -2,7 +2,7 @@ import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { AppModule } from '../src/app.module';
-import * as request from 'supertest';
+import request from 'supertest';
 import { JwtService } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerStorage } from '@nestjs/throttler';
 import { Reflector } from '@nestjs/core';

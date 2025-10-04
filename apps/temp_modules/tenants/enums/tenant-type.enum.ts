@@ -1,0 +1,8 @@
+export enum TenantType {
+  HOSPITAL = 'HOSPITAL',
+  CLINIC = 'CLINIC',
+  LAB = 'LAB',
+  PHARMACY = 'PHARMACY',
+  CHAMBER = 'CHAMBER',
+  MULTI_SPECIALTY = 'MULTI_SPECIALTY',
+}

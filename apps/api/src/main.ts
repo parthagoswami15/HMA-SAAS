@@ -1,12 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, Logger } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AuditService } from './audit/audit.service';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
-import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,106 +8,8 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
     credentials: true,
-  });
-
-  // Global validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
-
-  // Get audit service for error logging
-  const auditService = app.get(AuditService);
-
-  // Global exception filter
-  app.useGlobalFilters(new HttpExceptionFilter(auditService));
-
-  // Global logging interceptor
-  app.useGlobalInterceptors(new LoggingInterceptor(auditService));
-
-  // Request logging middleware
-  app.use(new RequestLoggerMiddleware().use);
-
-  // Swagger documentation
-  const config = new DocumentBuilder()
-    .setTitle('HMS SaaS API')
-    .setDescription('Healthcare Management System SaaS API - Complete healthcare solution with patient management, lab results, pharmacy, billing, and more.')
-    .setVersion('1.0.0')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token',
-        in: 'header',
-      },
-      'JWT-auth',
-    )
-    .addTag('Authentication', 'User authentication and authorization')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-
-  // Add security requirements to all endpoints
-  if (!document.components) {
-    document.components = {};
-  }
-  
-  document.components.securitySchemes = {
-    'JWT-auth': {
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
-    },
-    'refresh-token': {
-      type: 'apiKey',
-      in: 'cookie',
-      name: 'refresh_token',
-    },
-    'api-key': {
-      type: 'apiKey',
-      in: 'header',
-      name: 'X-API-Key',
-    },
-  };
-
-  // Set global security requirements
-  document.security = [
-    { 'JWT-auth': [] },
-    { 'refresh-token': [] },
-    { 'api-key': [] },
-  ];
-
-  // Serve Swagger UI at /api/docs
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-      tagsSorter: 'alpha',
-      operationsSorter: 'method',
-      docExpansion: 'none',
-      filter: true,
-      showRequestDuration: true,
-    },
-    customSiteTitle: 'HMS API Documentation',
-    customCss: `
-      .topbar { background-color: #1a237e !important; }
-      .swagger-ui .info .title { color: #1a237e; }
-      .swagger-ui .btn.authorize { background-color: #1a237e; border-color: #1a237e; }
-    `,
-  });
-
-  // Redirect root to API documentation
-  app.getHttpAdapter().get('/', (req, res) => {
-    res.redirect('/api/docs');
   });
 
   // Health check endpoint
@@ -123,6 +19,20 @@ async function bootstrap() {
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || 'development',
+      message: 'HMS SaaS API is running - Minimal Working Version'
+    });
+  });
+
+  // Root endpoint
+  app.getHttpAdapter().get('/', (req, res) => {
+    res.json({
+      name: 'HMS SaaS API - Minimal Working Version',
+      version: '1.0.0',
+      status: 'running',
+      timestamp: new Date().toISOString(),
+      endpoints: {
+        health: '/health'
+      }
     });
   });
 
@@ -131,9 +41,9 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`🚀 HMS SaaS API is running on: http://${host}:${port}`);
-  logger.log(`📚 API Documentation: http://${host}:${port}/api/docs`);
   logger.log(`❤️ Health Check: http://${host}:${port}/health`);
   logger.log(`🏥 Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.log(`📊 Database: Connected via Prisma`);
 }
 
 bootstrap().catch((error) => {

@@ -30,18 +30,16 @@ export class CustomPrismaService
     token: string;
     expiresAt: Date;
     revoked: boolean;
-    reason?: string;
   }) {
-    const { jti, userId, token, expiresAt, revoked, reason } = params;
+    const { jti, userId, token, expiresAt, revoked } = params;
     
     return this.$executeRaw`
-      INSERT INTO "RefreshToken" (jti, "userId", token, "expiresAt", revoked, reason, "createdAt", "updatedAt")
-      VALUES (${jti}, ${userId}, ${token}, ${expiresAt}, ${revoked}, ${reason || null}, NOW(), NOW())
+      INSERT INTO "RefreshToken" (jti, "userId", token, "expiresAt", revoked, "createdAt", "updatedAt")
+      VALUES (${jti}, ${userId}, ${token}, ${expiresAt}, ${revoked}, NOW(), NOW())
       ON CONFLICT (jti) 
       DO UPDATE SET 
         revoked = EXCLUDED.revoked,
-        reason = EXCLUDED.reason,
-        updated_at = NOW()
+        "updatedAt" = NOW()
       RETURNING *
     `;
   }
@@ -56,8 +54,7 @@ export class CustomPrismaService
         revoked: false 
       },
       data: { 
-        revoked: true, 
-        reason: 'User logged out from all devices' 
+        revoked: true
       },
     });
   }
