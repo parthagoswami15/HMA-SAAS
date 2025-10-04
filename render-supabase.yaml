@@ -15,7 +15,7 @@ services:
         value: 10000
       # Supabase Configuration
       - key: DATABASE_URL
-        value: postgresql://postgres:9800975588pG@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?schema=public
+        value: postgresql://postgres.uoxyyqbwuzjraxhaypko:9800975588pG@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?schema=public
       - key: SUPABASE_URL
         value: https://uoxyyqbwuzjraxhaypko.supabase.co
       - key: SUPABASE_ANON_KEY
