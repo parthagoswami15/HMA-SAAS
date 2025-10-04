@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
@@ -16,18 +16,22 @@ COPY apps/api/package.json ./apps/api/package.json
 RUN mkdir -p apps/web
 RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/package.json
 
-# Install dependencies
+# Copy Prisma schema BEFORE installing dependencies (needed for postinstall script)
+COPY apps/api/prisma ./apps/api/prisma/
+
+# Install dependencies (this will run prisma generate as postinstall)
 RUN npm ci --only=production
 
-# Copy API source code
-COPY apps/api ./apps/api/
+# Copy remaining API source code
+COPY apps/api/src ./apps/api/src/
+COPY apps/api/nest-cli.json ./apps/api/nest-cli.json
+COPY apps/api/tsconfig*.json ./apps/api/
 
-# Generate Prisma client and build API
+# Build API
 WORKDIR /app/apps/api
-RUN npx prisma generate
 RUN npm run build
 
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 # Install dumb-init
 RUN apk add --no-cache dumb-init
