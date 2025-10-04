@@ -30,7 +30,8 @@ COPY apps/api/tsconfig*.json ./apps/api/
 
 # Build API
 WORKDIR /app/apps/api
-RUN npm run build
+# Use npx to ensure nest CLI is found
+RUN npx nest build
 
 FROM node:20-alpine AS runner
 
