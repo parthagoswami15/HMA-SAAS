@@ -1,0 +1,25 @@
+{
+  "scripts": {
+    "deploy:check": "node scripts/deploy.js check",
+    "deploy:validate": "node scripts/deploy.js validate",
+    "deploy:staging": "node scripts/deploy.js deploy staging",
+    "deploy:production": "node scripts/deploy.js deploy production",
+    "deploy:backend": "git push origin main",
+    "deploy:frontend": "cd apps/web && vercel --prod",
+    "deploy:frontend:preview": "cd apps/web && vercel",
+    "health:backend": "curl -f $BACKEND_URL/health || echo 'Set BACKEND_URL environment variable'",
+    "health:frontend": "curl -f -I $FRONTEND_URL || echo 'Set FRONTEND_URL environment variable'",
+    "db:migrate": "cd apps/api && npm run prisma:migrate",
+    "db:generate": "cd apps/api && npm run prisma:generate",
+    "db:push": "cd apps/api && npx prisma db push",
+    "db:studio": "cd apps/api && npm run prisma:studio",
+    "logs:render": "echo 'Go to https://dashboard.render.com and select your service to view logs'",
+    "logs:vercel": "cd apps/web && vercel logs",
+    "setup:local": "npm install && cd apps/api && cp .env.example .env && npm install && cd ../web && npm install && cd ../..",
+    "setup:staging": "cp apps/api/.env.example apps/api/.env.staging",
+    "test:endpoints": "node scripts/test-deployment.js",
+    "clean:deploy": "rm -rf apps/web/.next apps/web/.vercel apps/api/dist node_modules/.cache",
+    "env:generate-secrets": "node -e \"console.log('JWT_SECRET=' + require('crypto').randomBytes(64).toString('base64')); console.log('JWT_ACCESS_SECRET=' + require('crypto').randomBytes(32).toString('base64')); console.log('JWT_REFRESH_SECRET=' + require('crypto').randomBytes(32).toString('base64'));\"",
+    "info:deployment": "echo 'Deployment URLs:' && echo 'Backend: https://your-service.onrender.com' && echo 'Frontend: https://your-app.vercel.app' && echo 'API Docs: https://your-service.onrender.com/api-docs'"
+  }
+}
