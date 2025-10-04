@@ -6,16 +6,26 @@ RUN apk add --no-cache dumb-init
 
 WORKDIR /app
 
-# Install deps using root workspace
-COPY package*.json ./
-COPY apps/api/package.json apps/api/package.json
-COPY apps/web/package.json apps/web/package.json
+# Copy root package.json for workspace setup
+COPY package.json package-lock.json* ./
+
+# Copy API package.json
+COPY apps/api/package.json ./apps/api/package.json
+
+# Create apps/web directory and a minimal package.json to satisfy workspace
+RUN mkdir -p apps/web
+RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/package.json
+
+# Install dependencies
 RUN npm ci --only=production
 
-# Build API
-COPY . .
-RUN npm --workspace api exec prisma generate \
- && npm --workspace api run build
+# Copy API source code
+COPY apps/api ./apps/api/
+
+# Generate Prisma client and build API
+WORKDIR /app/apps/api
+RUN npx prisma generate
+RUN npm run build
 
 FROM node:18-alpine AS runner
 
