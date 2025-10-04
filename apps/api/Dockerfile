@@ -19,8 +19,8 @@ RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/packa
 # Copy Prisma schema BEFORE installing dependencies (needed for postinstall script)
 COPY apps/api/prisma ./apps/api/prisma/
 
-# Install dependencies (this will run prisma generate as postinstall)
-RUN npm ci --only=production
+# Install ALL dependencies including devDependencies (needed for build)
+RUN npm ci
 
 # Copy remaining API source code
 COPY apps/api/src ./apps/api/src/
@@ -43,11 +43,21 @@ RUN adduser -S nestjs -u 1001
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Copy built application
+# Copy package files and install production dependencies only
 COPY --from=base /app/package*.json ./
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/apps/api/dist ./apps/api/dist
+COPY --from=base /app/apps/api/package.json ./apps/api/package.json
+
+# Create minimal web package.json for workspace
+RUN mkdir -p apps/web
+RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/package.json
+
+# Copy Prisma files first
 COPY --from=base /app/apps/api/prisma ./apps/api/prisma
+
+# Install production dependencies
+RUN npm ci --only=production
+# Copy built application
+COPY --from=base /app/apps/api/dist ./apps/api/dist
 
 # Change ownership to nodejs user
 RUN chown -R nestjs:nodejs /app
