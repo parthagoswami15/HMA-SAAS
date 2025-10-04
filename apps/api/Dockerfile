@@ -73,43 +73,7 @@ EXPOSE ${PORT:-10000}
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
 
-# Create startup script for better error handling
-RUN echo '#!/bin/sh
-
-echo "Starting HMS SaaS Backend..."
-echo "Environment: $NODE_ENV"
-echo "Port: $PORT"
-
-# Change to API directory
-cd /app/apps/api
-
-# Try to run migrations with retry logic
-echo "Running database migrations..."
-for i in 1 2 3; do
-  echo "Migration attempt $i/3"
-  if npx prisma migrate deploy --schema=./prisma/schema.prisma; then
-    echo "Migrations completed successfully"
-    break
-  else
-    echo "Migration attempt $i failed"
-    if [ $i -eq 3 ]; then
-      echo "All migration attempts failed. Check your DATABASE_URL and database connectivity."
-      echo "DATABASE_URL: ${DATABASE_URL:-"Not set"}"
-      echo "Starting application anyway - some features may not work correctly."
-      break
-    fi
-    echo "Retrying in 5 seconds..."
-    sleep 5
-  fi
-done
-
-# Return to app root and start the application
-cd /app
-echo "Starting Node.js application..."
-node apps/api/dist/main.js
-' > /app/start.sh && chmod +x /app/start.sh
-
-# Run with proper signal handling
-CMD ["dumb-init", "/app/start.sh"]
+# Run migrations and start application with proper signal handling
+CMD ["dumb-init", "sh", "-c", "echo 'Starting HMS SaaS Backend...' && echo 'Environment:' $NODE_ENV && echo 'Port:' $PORT && cd /app/apps/api && echo 'Running database migrations...' && (npx prisma migrate deploy --schema=./prisma/schema.prisma || echo 'Migration failed, starting anyway...') && cd /app && echo 'Starting Node.js application...' && node apps/api/dist/main.js"]
 
 
