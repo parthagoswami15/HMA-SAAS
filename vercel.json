@@ -1,8 +1,13 @@
 {
-  "buildCommand": "npm run build:web-only",
+  "buildCommand": "cd apps/web && npm run build",
   "installCommand": "npm install",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
+  "functions": {
+    "apps/web/app/api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "env": {
     "NEXT_PUBLIC_API_URL": "https://hms-saas-staging.onrender.com",
     "NEXT_PUBLIC_SUPABASE_URL": "https://uoxyyqbwuzjraxhaypko.supabase.co",
