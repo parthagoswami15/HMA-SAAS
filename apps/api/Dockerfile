@@ -30,8 +30,7 @@ COPY apps/api/tsconfig*.json ./apps/api/
 
 # Build API
 WORKDIR /app/apps/api
-# Use the nest binary from node_modules
-RUN node ../../node_modules/@nestjs/cli/bin/nest.js build
+RUN npm run build
 
 FROM node:20-alpine AS runner
 
