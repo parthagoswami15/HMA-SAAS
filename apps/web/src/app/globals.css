@@ -1,15 +1,6 @@
-@import "tailwindcss";
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +13,326 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Basic utility classes for the Next.js default page */
+.font-sans {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-rows-\[20px_1fr_20px\] {
+  grid-template-rows: 20px 1fr 20px;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-items-center {
+  justify-items: center;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.p-8 {
+  padding: 2rem;
+}
+
+.pb-20 {
+  padding-bottom: 5rem;
+}
+
+.gap-16 {
+  gap: 4rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.gap-\[32px\] {
+  gap: 32px;
+}
+
+.row-start-2 {
+  grid-row-start: 2;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.dark\:invert {
+  filter: invert(0);
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark\:invert {
+    filter: invert(1);
+  }
+}
+
+.list-inside {
+  list-style-position: inside;
+}
+
+.list-decimal {
+  list-style-type: decimal;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.tracking-\[-\.01em\] {
+  letter-spacing: -0.01em;
+}
+
+.bg-black\/\[\.05\] {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark\:bg-white\/\[\.06\] {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark\:bg-white\/\[\.06\] {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.py-0\.5 {
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.border {
+  border-width: 1px;
+}
+
+.border-solid {
+  border-style: solid;
+}
+
+.border-transparent {
+  border-color: transparent;
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.bg-foreground {
+  background-color: var(--foreground);
+}
+
+.text-background {
+  color: var(--background);
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.hover\:bg-\[\#383838\]:hover {
+  background-color: #383838;
+}
+
+.dark\:hover\:bg-\[\#ccc\]:hover {
+  background-color: #ccc;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark\:hover\:bg-\[\#ccc\]:hover {
+    background-color: #ccc;
+  }
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.h-10 {
+  height: 2.5rem;
+}
+
+.h-12 {
+  height: 3rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.w-auto {
+  width: auto;
+}
+
+.border-black\/\[\.08\] {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.dark\:border-white\/\[\.145\] {
+  border-color: rgba(255, 255, 255, 0.145);
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark\:border-white\/\[\.145\] {
+    border-color: rgba(255, 255, 255, 0.145);
+  }
+}
+
+.hover\:bg-\[\#f2f2f2\]:hover {
+  background-color: #f2f2f2;
+}
+
+.dark\:hover\:bg-\[\#1a1a1a\]:hover {
+  background-color: #1a1a1a;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark\:hover\:bg-\[\#1a1a1a\]:hover {
+    background-color: #1a1a1a;
+  }
+}
+
+.hover\:border-transparent:hover {
+  border-color: transparent;
+}
+
+.row-start-3 {
+  grid-row-start: 3;
+}
+
+.gap-\[24px\] {
+  gap: 24px;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.hover\:underline:hover {
+  text-decoration-line: underline;
+}
+
+.hover\:underline-offset-4:hover {
+  text-underline-offset: 4px;
+}
+
+/* Responsive classes */
+@media (min-width: 640px) {
+  .sm\:p-20 {
+    padding: 5rem;
+  }
+  
+  .sm\:items-start {
+    align-items: flex-start;
+  }
+  
+  .sm\:text-left {
+    text-align: left;
+  }
+  
+  .sm\:flex-row {
+    flex-direction: row;
+  }
+  
+  .sm\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+  
+  .sm\:h-12 {
+    height: 3rem;
+  }
+  
+  .sm\:px-5 {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  
+  .sm\:w-auto {
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:w-\[158px\] {
+    width: 158px;
+  }
 }
