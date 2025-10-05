@@ -43,28 +43,46 @@ const Layout = ({ children }: LayoutProps) => {
       roles: ['ADMIN', 'DOCTOR', 'NURSE']
     },
     {
-      title: 'Prescriptions',
-      href: '/prescriptions',
-      icon: '💊',
-      roles: ['ADMIN', 'DOCTOR', 'PHARMACIST']
-    },
-    {
       title: 'Lab Tests',
       href: '/lab-tests',
       icon: '🧪',
       roles: ['ADMIN', 'DOCTOR', 'LAB_TECHNICIAN']
     },
     {
-      title: 'Radiology',
+      title: 'Radiology & Imaging',
       href: '/radiology',
       icon: '🩻',
       roles: ['ADMIN', 'DOCTOR', 'RADIOLOGIST']
     },
     {
+      title: 'Prescriptions & Pharmacy',
+      href: '/prescriptions',
+      icon: '💊',
+      roles: ['ADMIN', 'DOCTOR', 'PHARMACIST']
+    },
+    {
       title: 'Telemedicine',
       href: '/telemedicine',
-      icon: '💻',
+      icon: '🎥',
       roles: ['ADMIN', 'DOCTOR']
+    },
+    {
+      title: 'Notifications',
+      href: '/notifications',
+      icon: '🔔',
+      roles: ['ADMIN', 'DOCTOR', 'NURSE', 'RECEPTIONIST']
+    },
+    {
+      title: 'Inventory',
+      href: '/inventory',
+      icon: '📦',
+      roles: ['ADMIN', 'INVENTORY_MANAGER', 'PHARMACIST']
+    },
+    {
+      title: 'Emergency Management',
+      href: '/emergency',
+      icon: '🚨',
+      roles: ['ADMIN', 'DOCTOR', 'NURSE', 'SECURITY']
     },
     {
       title: 'Billing',
@@ -79,7 +97,7 @@ const Layout = ({ children }: LayoutProps) => {
       roles: ['ADMIN', 'HOSPITAL_ADMIN']
     },
     {
-      title: 'Reports',
+      title: 'Reports & Analytics',
       href: '/reports',
       icon: '📈',
       roles: ['ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR']
@@ -249,14 +267,18 @@ const Layout = ({ children }: LayoutProps) => {
               </h1>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{
+              <Link href="/notifications" style={{
                 padding: '0.5rem',
                 borderRadius: '8px',
                 background: '#f3f4f6',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}>
                 🔔
-              </div>
+              </Link>
               <Link href="/profile" style={{
                 display: 'flex',
                 alignItems: 'center',

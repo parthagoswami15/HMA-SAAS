@@ -1,386 +1,552 @@
 'use client';
-import Layout from '../components/Layout';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import { useState, useEffect } from 'react';
 
-interface DashboardStats {
-  totalPatients: number;
-  todaysAppointments: number;
-  activeStaff: number;
-  totalRevenue: number;
-  emergencyCases: number;
-  pendingLabOrders: number;
-  occupiedBeds: number;
-  totalBeds: number;
-}
+import React, { useEffect, useState } from 'react';
+import {
+  Container,
+  Grid,
+  Paper,
+  Text,
+  Group,
+  Badge,
+  Card,
+  SimpleGrid,
+  Progress,
+  RingProgress,
+  Center,
+  Stack,
+  Flex,
+  ActionIcon,
+  Menu,
+  Tabs,
+  Alert,
+  Button
+} from '@mantine/core';
+import {
+  IconUsers,
+  IconStethoscope,
+  IconBed,
+  IconTestPipe,
+  IconPill,
+  IconCurrencyDollar,
+  IconCalendar,
+  IconChartBar,
+  IconBell,
+  IconTrendingUp,
+  IconTrendingDown,
+  IconAlertCircle,
+  IconRefresh,
+  IconMoreVertical,
+  IconAmbulance,
+  IconVideo,
+  IconMessage,
+  IconRobot,
+  IconDatabase,
+  IconScan
+} from '@tabler/icons-react';
+import Layout from '../../components/shared/Layout';
+import { useAppStore } from '../../stores/appStore';
+import { UserRole, MetricCard, ChartDataPoint } from '../../types/common';
+import { formatCurrency, getRelativeTime } from '../../lib/utils';
 
-const Dashboard = () => {
-  const [stats, setStats] = useState<DashboardStats>({
-    totalPatients: 1247,
-    todaysAppointments: 42,
-    activeStaff: 78,
-    totalRevenue: 284750,
-    emergencyCases: 6,
-    pendingLabOrders: 23,
-    occupiedBeds: 156,
-    totalBeds: 200
-  });
+// Mock data for demonstration
+const mockUser = {
+  id: '1',
+  name: 'Dr. Sarah Johnson',
+  email: 'sarah.johnson@hospital.com',
+  role: UserRole.DOCTOR,
+  avatar: ''
+};
 
-  const [recentActivities] = useState([
-    { id: 1, type: 'appointment', patient: 'John Doe', doctor: 'Dr. Smith', time: '10:30 AM', status: 'completed' },
-    { id: 2, type: 'admission', patient: 'Sarah Johnson', room: '204', time: '09:15 AM', status: 'active' },
-    { id: 3, type: 'lab_result', patient: 'Mike Wilson', test: 'Blood Test', time: '08:45 AM', status: 'ready' },
-    { id: 4, type: 'prescription', patient: 'Emily Davis', doctor: 'Dr. Chen', time: '08:20 AM', status: 'dispensed' },
-    { id: 5, type: 'emergency', patient: 'Robert Brown', severity: 'High', time: '07:55 AM', status: 'treating' }
-  ]);
+const dashboardMetrics: MetricCard[] = [
+  {
+    title: 'Total Patients',
+    value: '2,847',
+    change: { value: 12.5, type: 'increase', period: 'vs last month' },
+    icon: <IconUsers size="2rem" />,
+    color: 'blue'
+  },
+  {
+    title: 'Daily Revenue',
+    value: '₹8,45,230',
+    change: { value: 8.2, type: 'increase', period: 'vs yesterday' },
+    icon: <IconCurrencyDollar size="2rem" />,
+    color: 'green'
+  },
+  {
+    title: 'Bed Occupancy',
+    value: '87%',
+    change: { value: 3.1, type: 'decrease', period: 'vs last week' },
+    icon: <IconBed size="2rem" />,
+    color: 'orange'
+  },
+  {
+    title: 'Active Staff',
+    value: '145',
+    change: { value: 5.7, type: 'increase', period: 'vs last month' },
+    icon: <IconStethoscope size="2rem" />,
+    color: 'cyan'
+  }
+];
 
-  const [quickActions] = useState([
-    { title: 'New Patient Registration', icon: '👥', href: '/patients/new', color: '#10b981' },
-    { title: 'Schedule Appointment', icon: '📅', href: '/appointments/new', color: '#3b82f6' },
-    { title: 'Lab Order', icon: '🧪', href: '/lab-tests/new', color: '#8b5cf6' },
-    { title: 'Emergency Alert', icon: '🚨', href: '/emergency', color: '#ef4444' },
-    { title: 'View Reports', icon: '📊', href: '/reports', color: '#f59e0b' },
-    { title: 'Staff Management', icon: '👨‍⚕️', href: '/staff', color: '#06b6d4' }
-  ]);
+const moduleCards = [
+  {
+    title: 'Patient Management',
+    description: 'Complete patient lifecycle management',
+    icon: <IconUsers size="2rem" />,
+    color: 'blue',
+    stats: '2,847 Active Patients',
+    href: '/patients',
+    urgent: false
+  },
+  {
+    title: 'Staff Management',
+    description: 'Doctor & staff scheduling system',
+    icon: <IconStethoscope size="2rem" />,
+    color: 'teal',
+    stats: '145 Active Staff',
+    href: '/staff',
+    urgent: false
+  },
+  {
+    title: 'OPD Management',
+    description: 'Outpatient consultation system',
+    icon: <IconStethoscope size="2rem" />,
+    color: 'indigo',
+    stats: '45 Consultations Today',
+    href: '/opd',
+    urgent: false
+  },
+  {
+    title: 'IPD Management',
+    description: 'Inpatient care & bed management',
+    icon: <IconBed size="2rem" />,
+    color: 'orange',
+    stats: '87% Bed Occupancy',
+    href: '/ipd',
+    urgent: false
+  },
+  {
+    title: 'Laboratory',
+    description: 'Lab tests & sample management',
+    icon: <IconTestPipe size="2rem" />,
+    color: 'purple',
+    stats: '234 Tests Pending',
+    href: '/laboratory',
+    urgent: true
+  },
+  {
+    title: 'Radiology & PACS',
+    description: 'Imaging & diagnostic reports',
+    icon: <IconScan size="2rem" />,
+    color: 'gray',
+    stats: '18 Scans Scheduled',
+    href: '/radiology',
+    urgent: false
+  },
+  {
+    title: 'Pharmacy',
+    description: 'Drug inventory & dispensing',
+    icon: <IconPill size="2rem" />,
+    color: 'green',
+    stats: '89% Stock Available',
+    href: '/pharmacy',
+    urgent: false
+  },
+  {
+    title: 'Billing & Revenue',
+    description: 'Financial management system',
+    icon: <IconCurrencyDollar size="2rem" />,
+    color: 'yellow',
+    stats: '₹8.45L Today',
+    href: '/billing',
+    urgent: false
+  },
+  {
+    title: 'Insurance/TPA',
+    description: 'Cashless claim management',
+    icon: <IconDatabase size="2rem" />,
+    color: 'lime',
+    stats: '12 Claims Pending',
+    href: '/insurance',
+    urgent: false
+  },
+  {
+    title: 'Appointments',
+    description: 'Scheduling & queue management',
+    icon: <IconCalendar size="2rem" />,
+    color: 'red',
+    stats: '67 Appointments Today',
+    href: '/appointments',
+    urgent: false
+  },
+  {
+    title: 'Telemedicine',
+    description: 'Virtual consultation platform',
+    icon: <IconVideo size="2rem" />,
+    color: 'pink',
+    stats: '8 Video Calls Active',
+    href: '/telemedicine',
+    urgent: false
+  },
+  {
+    title: 'Emergency',
+    description: 'Critical care & triage system',
+    icon: <IconAmbulance size="2rem" />,
+    color: 'red',
+    stats: '3 Critical Patients',
+    href: '/emergency',
+    urgent: true
+  },
+  {
+    title: 'Reports & Analytics',
+    description: 'Data insights & reporting',
+    icon: <IconChartBar size="2rem" />,
+    color: 'violet',
+    stats: '24 Reports Generated',
+    href: '/reports',
+    urgent: false
+  },
+  {
+    title: 'Communications',
+    description: 'SMS, WhatsApp & notifications',
+    icon: <IconMessage size="2rem" />,
+    color: 'cyan',
+    stats: '156 Messages Sent',
+    href: '/communications',
+    urgent: false
+  },
+  {
+    title: 'AI Assistant',
+    description: 'Clinical decision support',
+    icon: <IconRobot size="2rem" />,
+    color: 'grape',
+    stats: '23 Recommendations',
+    href: '/ai-assistant',
+    urgent: false,
+    beta: true
+  }
+];
 
-  const StatCard = ({ title, value, icon, color, trend, subtitle }: any) => (
-    <Card variant="elevated" style={{ border: `3px solid ${color}15` }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.875rem', color: '#6b7280', fontWeight: '500' }}>
-            {title}
-          </p>
-          <p style={{ margin: '0 0 0.25rem 0', fontSize: '2rem', fontWeight: 'bold', color: '#1f2937' }}>
-            {value}
-          </p>
-          {subtitle && (
-            <p style={{ margin: '0', fontSize: '0.75rem', color: '#9ca3af' }}>
-              {subtitle}
-            </p>
-          )}
-          {trend && (
-            <p style={{ 
-              margin: '0.5rem 0 0 0', 
-              fontSize: '0.75rem', 
-              color: trend.type === 'up' ? '#10b981' : '#ef4444',
-              fontWeight: '500'
-            }}>
-              {trend.type === 'up' ? '↗' : '↘'} {trend.value}
-            </p>
-          )}
+const recentActivities = [
+  {
+    id: '1',
+    title: 'New Patient Registration',
+    description: 'John Doe registered for OPD consultation',
+    timestamp: new Date(Date.now() - 5 * 60 * 1000),
+    type: 'patient',
+    urgent: false
+  },
+  {
+    id: '2',
+    title: 'Emergency Alert',
+    description: 'Critical patient admitted to ICU',
+    timestamp: new Date(Date.now() - 15 * 60 * 1000),
+    type: 'emergency',
+    urgent: true
+  },
+  {
+    id: '3',
+    title: 'Lab Results Ready',
+    description: 'Blood test results for Patient ID: P12345',
+    timestamp: new Date(Date.now() - 30 * 60 * 1000),
+    type: 'lab',
+    urgent: false
+  },
+  {
+    id: '4',
+    title: 'Insurance Claim Approved',
+    description: 'Claim ID: C98765 approved for ₹25,000',
+    timestamp: new Date(Date.now() - 45 * 60 * 1000),
+    type: 'billing',
+    urgent: false
+  },
+  {
+    id: '5',
+    title: 'Staff Check-in',
+    description: 'Dr. Michael Smith checked in for morning shift',
+    timestamp: new Date(Date.now() - 60 * 60 * 1000),
+    type: 'staff',
+    urgent: false
+  }
+];
+
+export default function DashboardPage() {
+  const { user, setUser, notifications } = useAppStore();
+  const [activeTab, setActiveTab] = useState('overview');
+
+  useEffect(() => {
+    // Set mock user if not already set
+    if (!user) {
+      setUser(mockUser);
+    }
+  }, [user, setUser]);
+
+  const MetricCard = ({ metric }: { metric: MetricCard }) => (
+    <Card shadow="sm" padding="lg" radius="md" withBorder>
+      <Flex justify="space-between" align="flex-start" mb="md">
+        <div style={{ color: `var(--mantine-color-${metric.color}-6)` }}>
+          {metric.icon}
         </div>
-        <div style={{
-          backgroundColor: `${color}15`,
-          borderRadius: '12px',
-          padding: '0.75rem',
-          fontSize: '1.5rem'
-        }}>
-          {icon}
+        <ActionIcon variant="subtle" color="gray">
+          <IconMoreVertical size="1rem" />
+        </ActionIcon>
+      </Flex>
+      
+      <Text size="xl" fw={700} mb="xs">
+        {metric.value}
+      </Text>
+      
+      <Text size="sm" c="dimmed" mb="sm">
+        {metric.title}
+      </Text>
+      
+      {metric.change && (
+        <Group gap="xs">
+          {metric.change.type === 'increase' ? (
+            <IconTrendingUp size="1rem" color="green" />
+          ) : (
+            <IconTrendingDown size="1rem" color="red" />
+          )}
+          <Text 
+            size="sm" 
+            c={metric.change.type === 'increase' ? 'green' : 'red'}
+            fw={500}
+          >
+            {metric.change.value}% {metric.change.period}
+          </Text>
+        </Group>
+      )}
+    </Card>
+  );
+
+  const ModuleCard = ({ module }: { module: typeof moduleCards[0] }) => (
+    <Card 
+      shadow="sm" 
+      padding="lg" 
+      radius="md" 
+      withBorder 
+      style={{ 
+        cursor: 'pointer',
+        transition: 'transform 0.2s',
+        ':hover': { transform: 'translateY(-2px)' }
+      }}
+    >
+      <Flex justify="space-between" align="flex-start" mb="md">
+        <div style={{ color: `var(--mantine-color-${module.color}-6)` }}>
+          {module.icon}
         </div>
-      </div>
+        <Group gap="xs">
+          {module.beta && (
+            <Badge size="xs" variant="filled" color="grape">
+              BETA
+            </Badge>
+          )}
+          {module.urgent && (
+            <Badge size="xs" variant="filled" color="red">
+              URGENT
+            </Badge>
+          )}
+        </Group>
+      </Flex>
+      
+      <Text fw={600} size="lg" mb="xs">
+        {module.title}
+      </Text>
+      
+      <Text size="sm" c="dimmed" mb="md" lineClamp={2}>
+        {module.description}
+      </Text>
+      
+      <Text size="sm" fw={500} c={module.color}>
+        {module.stats}
+      </Text>
     </Card>
   );
 
   return (
-    <Layout>
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        {/* Header Section */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '0.5rem' }}>
-            Dashboard Overview
-          </h1>
-          <p style={{ color: '#6b7280', fontSize: '1rem' }}>
-            Welcome back! Here's what's happening at your hospital today.
-          </p>
-        </div>
-
-        {/* Key Stats */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-          gap: '1.5rem',
-          marginBottom: '2rem'
-        }}>
-          <StatCard
-            title="Total Patients"
-            value={stats.totalPatients.toLocaleString()}
-            icon="👥"
-            color="#3b82f6"
-            trend={{ type: 'up', value: '+12% this month' }}
-          />
-          <StatCard
-            title="Today's Appointments"
-            value={stats.todaysAppointments}
-            icon="📅"
-            color="#10b981"
-            subtitle="8 completed, 34 remaining"
-          />
-          <StatCard
-            title="Active Staff"
-            value={stats.activeStaff}
-            icon="👨‍⚕️"
-            color="#8b5cf6"
-            subtitle="On duty today"
-          />
-          <StatCard
-            title="Monthly Revenue"
-            value={`₹${stats.totalRevenue.toLocaleString()}`}
-            icon="💰"
-            color="#f59e0b"
-            trend={{ type: 'up', value: '+8.2%' }}
-          />
-        </div>
-
-        {/* Secondary Stats */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '1rem',
-          marginBottom: '2rem'
-        }}>
-          <StatCard
-            title="Emergency Cases"
-            value={stats.emergencyCases}
-            icon="🚨"
-            color="#ef4444"
-            subtitle="Active now"
-          />
-          <StatCard
-            title="Pending Lab Orders"
-            value={stats.pendingLabOrders}
-            icon="🧪"
-            color="#06b6d4"
-            subtitle="Awaiting results"
-          />
-          <StatCard
-            title="Bed Occupancy"
-            value={`${Math.round((stats.occupiedBeds / stats.totalBeds) * 100)}%`}
-            icon="🏥"
-            color="#8b5cf6"
-            subtitle={`${stats.occupiedBeds}/${stats.totalBeds} beds`}
-          />
-        </div>
-
-        {/* Quick Actions & Recent Activities */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
-          {/* Quick Actions */}
-          <Card title="Quick Actions" variant="elevated">
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(2, 1fr)', 
-              gap: '1rem'
-            }}>
-              {quickActions.map((action, index) => (
-                <div
-                  key={index}
-                  style={{
-                    padding: '1rem',
-                    borderRadius: '8px',
-                    background: `${action.color}08`,
-                    border: `1px solid ${action.color}20`,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    textAlign: 'center'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = `0 4px 12px ${action.color}30`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                  onClick={() => window.location.href = action.href}
-                >
-                  <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
-                    {action.icon}
-                  </div>
-                  <div style={{ 
-                    fontSize: '0.875rem', 
-                    fontWeight: '600', 
-                    color: '#374151'
-                  }}>
-                    {action.title}
-                  </div>
-                </div>
-              ))}
+    <Layout user={user} notifications={notifications.length} onLogout={() => setUser(null)}>
+      <Container fluid>
+        <Stack gap="lg">
+          {/* Header */}
+          <Group justify="space-between">
+            <div>
+              <Text size="xl" fw={700}>
+                Hospital Management Dashboard
+              </Text>
+              <Text size="sm" c="dimmed">
+                Welcome back, {user?.name || 'User'}! Here's what's happening at your hospital today.
+              </Text>
             </div>
-          </Card>
+            <Button leftSection={<IconRefresh size="1rem" />} variant="light">
+              Refresh
+            </Button>
+          </Group>
 
-          {/* Recent Activities */}
-          <Card title="Recent Activities" variant="elevated">
-            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-              {recentActivities.map((activity) => (
-                <div 
-                  key={activity.id}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '0.75rem 0',
-                    borderBottom: '1px solid #f1f5f9'
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>
-                      {activity.patient}
-                    </div>
-                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                      {activity.type === 'appointment' && `Appointment with ${activity.doctor}`}
-                      {activity.type === 'admission' && `Admitted to Room ${activity.room}`}
-                      {activity.type === 'lab_result' && `${activity.test} completed`}
-                      {activity.type === 'prescription' && `Prescription by ${activity.doctor}`}
-                      {activity.type === 'emergency' && `Emergency case - ${activity.severity} priority`}
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '0.25rem' }}>
-                      {activity.time}
-                    </div>
-                    <span style={{
-                      padding: '0.25rem 0.5rem',
-                      borderRadius: '12px',
-                      fontSize: '0.75rem',
-                      fontWeight: '500',
-                      backgroundColor: 
-                        activity.status === 'completed' ? '#dcfce7' :
-                        activity.status === 'active' ? '#dbeafe' :
-                        activity.status === 'ready' ? '#fef3c7' :
-                        activity.status === 'dispensed' ? '#e0e7ff' :
-                        '#fecaca',
-                      color:
-                        activity.status === 'completed' ? '#166534' :
-                        activity.status === 'active' ? '#1e40af' :
-                        activity.status === 'ready' ? '#92400e' :
-                        activity.status === 'dispensed' ? '#3730a3' :
-                        '#991b1b'
-                    }}>
-                      {activity.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
+          {/* Metrics Cards */}
+          <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
+            {dashboardMetrics.map((metric, index) => (
+              <MetricCard key={index} metric={metric} />
+            ))}
+          </SimpleGrid>
 
-        {/* Performance Charts */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
-          {/* Patient Flow Chart */}
-          <Card title="Patient Flow (Last 7 Days)" variant="elevated">
-            <div style={{ height: '200px', display: 'flex', alignItems: 'end', justifyContent: 'space-around', padding: '1rem 0' }}>
-              {[45, 52, 38, 61, 47, 55, 42].map((value, index) => (
-                <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{
-                    width: '30px',
-                    height: `${(value / 70) * 150}px`,
-                    backgroundColor: '#667eea',
-                    borderRadius: '4px 4px 0 0',
-                    marginBottom: '0.5rem'
-                  }} />
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index]}
-                  </div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>
-                    {value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+          {/* Tabs for different views */}
+          <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'overview')}>
+            <Tabs.List>
+              <Tabs.Tab value="overview">Overview</Tabs.Tab>
+              <Tabs.Tab value="modules">All Modules</Tabs.Tab>
+              <Tabs.Tab value="activities">Recent Activities</Tabs.Tab>
+              <Tabs.Tab value="alerts">Alerts</Tabs.Tab>
+            </Tabs.List>
 
-          {/* Department Utilization */}
-          <Card title="Department Utilization" variant="elevated">
-            <div style={{ space: '1rem' }}>
-              {[
-                { name: 'Cardiology', utilization: 85, color: '#ef4444' },
-                { name: 'Orthopedics', utilization: 72, color: '#10b981' },
-                { name: 'Neurology', utilization: 68, color: '#3b82f6' },
-                { name: 'Pediatrics', utilization: 91, color: '#f59e0b' },
-                { name: 'Emergency', utilization: 94, color: '#8b5cf6' }
-              ].map((dept, index) => (
-                <div key={index} style={{ marginBottom: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#374151' }}>
-                      {dept.name}
-                    </span>
-                    <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                      {dept.utilization}%
-                    </span>
-                  </div>
-                  <div style={{
-                    width: '100%',
-                    height: '6px',
-                    backgroundColor: '#f1f5f9',
-                    borderRadius: '3px',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{
-                      width: `${dept.utilization}%`,
-                      height: '100%',
-                      backgroundColor: dept.color,
-                      borderRadius: '3px'
-                    }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
+            <Tabs.Panel value="overview" pt="md">
+              <Grid>
+                <Grid.Col span={{ base: 12, md: 8 }}>
+                  <Paper p="lg" shadow="sm" radius="md" withBorder>
+                    <Text fw={600} size="lg" mb="md">
+                      Quick Access Modules
+                    </Text>
+                    <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+                      {moduleCards.slice(0, 9).map((module, index) => (
+                        <ModuleCard key={index} module={module} />
+                      ))}
+                    </SimpleGrid>
+                  </Paper>
+                </Grid.Col>
 
-        {/* Alerts and Notifications */}
-        <Card title="Alerts & Notifications" variant="elevated" style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
-            <div style={{
-              padding: '1rem',
-              borderRadius: '8px',
-              backgroundColor: '#fef3c7',
-              border: '1px solid #fbbf24'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>⚠️</span>
-                <span style={{ fontWeight: '600', color: '#92400e' }}>Equipment Maintenance</span>
-              </div>
-              <p style={{ margin: '0', fontSize: '0.875rem', color: '#78350f' }}>
-                MRI Machine #2 scheduled for maintenance tomorrow at 2:00 PM
-              </p>
-            </div>
+                <Grid.Col span={{ base: 12, md: 4 }}>
+                  <Stack gap="md">
+                    {/* Bed Occupancy */}
+                    <Paper p="lg" shadow="sm" radius="md" withBorder>
+                      <Text fw={600} size="md" mb="md">
+                        Bed Occupancy
+                      </Text>
+                      <Center>
+                        <RingProgress
+                          size={120}
+                          thickness={16}
+                          sections={[
+                            { value: 87, color: 'orange', tooltip: 'Occupied: 87%' },
+                            { value: 13, color: 'gray', tooltip: 'Available: 13%' }
+                          ]}
+                          label={
+                            <Center>
+                              <Text fw={700} size="lg">87%</Text>
+                            </Center>
+                          }
+                        />
+                      </Center>
+                      <Text ta="center" size="sm" c="dimmed" mt="md">
+                        174 of 200 beds occupied
+                      </Text>
+                    </Paper>
 
-            <div style={{
-              padding: '1rem',
-              borderRadius: '8px',
-              backgroundColor: '#fee2e2',
-              border: '1px solid #f87171'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>🏥</span>
-                <span style={{ fontWeight: '600', color: '#991b1b' }}>Bed Capacity Alert</span>
-              </div>
-              <p style={{ margin: '0', fontSize: '0.875rem', color: '#7f1d1d' }}>
-                ICU at 92% capacity. Consider patient transfers if needed.
-              </p>
-            </div>
+                    {/* Recent Activities */}
+                    <Paper p="lg" shadow="sm" radius="md" withBorder>
+                      <Text fw={600} size="md" mb="md">
+                        Recent Activities
+                      </Text>
+                      <Stack gap="sm">
+                        {recentActivities.slice(0, 5).map((activity) => (
+                          <div key={activity.id}>
+                            <Group justify="space-between" align="flex-start">
+                              <div style={{ flex: 1 }}>
+                                <Text size="sm" fw={500} lineClamp={1}>
+                                  {activity.title}
+                                </Text>
+                                <Text size="xs" c="dimmed" lineClamp={2}>
+                                  {activity.description}
+                                </Text>
+                                <Text size="xs" c="dimmed">
+                                  {getRelativeTime(activity.timestamp)}
+                                </Text>
+                              </div>
+                              {activity.urgent && (
+                                <Badge size="xs" color="red">
+                                  Urgent
+                                </Badge>
+                              )}
+                            </Group>
+                            {recentActivities.indexOf(activity) < recentActivities.length - 1 && (
+                              <div style={{ height: 1, backgroundColor: '#e9ecef', margin: '8px 0' }} />
+                            )}
+                          </div>
+                        ))}
+                      </Stack>
+                    </Paper>
+                  </Stack>
+                </Grid.Col>
+              </Grid>
+            </Tabs.Panel>
 
-            <div style={{
-              padding: '1rem',
-              borderRadius: '8px',
-              backgroundColor: '#d1fae5',
-              border: '1px solid #34d399'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>✅</span>
-                <span style={{ fontWeight: '600', color: '#065f46' }}>System Update</span>
-              </div>
-              <p style={{ margin: '0', fontSize: '0.875rem', color: '#047857' }}>
-                All systems updated successfully. New features available in Reports module.
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
+            <Tabs.Panel value="modules" pt="md">
+              <Paper p="lg" shadow="sm" radius="md" withBorder>
+                <Text fw={600} size="lg" mb="md">
+                  All Hospital Management Modules (20 Modules)
+                </Text>
+                <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="md">
+                  {moduleCards.map((module, index) => (
+                    <ModuleCard key={index} module={module} />
+                  ))}
+                </SimpleGrid>
+              </Paper>
+            </Tabs.Panel>
+
+            <Tabs.Panel value="activities" pt="md">
+              <Paper p="lg" shadow="sm" radius="md" withBorder>
+                <Text fw={600} size="lg" mb="md">
+                  Recent Activities & Events
+                </Text>
+                <Stack gap="md">
+                  {recentActivities.map((activity) => (
+                    <Card key={activity.id} padding="md" withBorder>
+                      <Group justify="space-between" align="flex-start">
+                        <div style={{ flex: 1 }}>
+                          <Group gap="xs" mb="xs">
+                            <Text fw={500}>{activity.title}</Text>
+                            {activity.urgent && (
+                              <Badge size="xs" color="red">
+                                Urgent
+                              </Badge>
+                            )}
+                          </Group>
+                          <Text size="sm" c="dimmed" mb="xs">
+                            {activity.description}
+                          </Text>
+                          <Text size="xs" c="dimmed">
+                            {getRelativeTime(activity.timestamp)}
+                          </Text>
+                        </div>
+                      </Group>
+                    </Card>
+                  ))}
+                </Stack>
+              </Paper>
+            </Tabs.Panel>
+
+            <Tabs.Panel value="alerts" pt="md">
+              <Paper p="lg" shadow="sm" radius="md" withBorder>
+                <Text fw={600} size="lg" mb="md">
+                  System Alerts & Notifications
+                </Text>
+                <Stack gap="md">
+                  <Alert icon={<IconAlertCircle size="1rem" />} color="red">
+                    <strong>Critical:</strong> 3 patients in emergency requiring immediate attention
+                  </Alert>
+                  <Alert icon={<IconAlertCircle size="1rem" />} color="orange">
+                    <strong>Warning:</strong> Laboratory has 234 pending test results
+                  </Alert>
+                  <Alert icon={<IconBell size="1rem" />} color="blue">
+                    <strong>Info:</strong> Staff shift change at 2:00 PM today
+                  </Alert>
+                  <Alert icon={<IconDatabase size="1rem" />} color="yellow">
+                    <strong>Maintenance:</strong> Scheduled system backup at 11:00 PM
+                  </Alert>
+                </Stack>
+              </Paper>
+            </Tabs.Panel>
+          </Tabs>
+        </Stack>
+      </Container>
     </Layout>
   );
-};
-
-export default Dashboard;
+}

@@ -1,497 +1,636 @@
 'use client';
-import Layout from '../components/Layout';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import Input from '../components/ui/Input';
-import { useState, useEffect } from 'react';
 
-interface Patient {
-  id: string;
-  medicalRecordNumber: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  gender: 'MALE' | 'FEMALE' | 'OTHER';
-  bloodType: string;
-  address: string;
-  city: string;
-  state: string;
-  isActive: boolean;
-  lastVisit: string;
-  upcomingAppointment?: string;
-  status: 'active' | 'inactive' | 'critical' | 'follow_up';
-}
+import React, { useState, useEffect } from 'react';
+import {
+  Container,
+  Grid,
+  Paper,
+  Text,
+  Group,
+  Badge,
+  SimpleGrid,
+  Stack,
+  Flex,
+  ActionIcon,
+  Button,
+  Tabs,
+  Card,
+  Progress,
+  Avatar,
+  Menu,
+  Modal,
+  Title,
+  Divider,
+  Alert,
+  Select,
+  TextInput,
+  NumberInput
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import {
+  IconUsers,
+  IconPlus,
+  IconSearch,
+  IconFilter,
+  IconDownload,
+  IconEye,
+  IconEdit,
+  IconTrash,
+  IconPhone,
+  IconMail,
+  IconCalendar,
+  IconStethoscope,
+  IconHeart,
+  IconAlertCircle,
+  IconUser,
+  IconId,
+  IconShield,
+  IconFileText,
+  IconTrendingUp,
+  IconUserPlus
+} from '@tabler/icons-react';
+import Layout from '../../components/shared/Layout';
+import DataTable from '../../components/shared/DataTable';
+import { useAppStore } from '../../stores/appStore';
+import { UserRole, TableColumn, FilterOption } from '../../types/common';
+import { Patient, PatientStats, PatientListItem } from '../../types/patient';
+import { mockPatients, mockPatientStats } from '../../lib/mockData/patients';
+import { formatDate, formatPhoneNumber, calculateAge } from '../../lib/utils';
 
-const PatientsPage = () => {
-  const [patients, setPatients] = useState<Patient[]>([
+// Mock user
+const mockUser = {
+  id: '1',
+  name: 'Dr. Sarah Johnson',
+  email: 'sarah.johnson@hospital.com',
+  role: UserRole.DOCTOR,
+  avatar: ''
+};
+
+export default function PatientsPage() {
+  const { user, setUser, notifications } = useAppStore();
+  const [activeTab, setActiveTab] = useState('list');
+  const [patients, setPatients] = useState<Patient[]>(mockPatients);
+  const [patientStats, setPatientStats] = useState<PatientStats>(mockPatientStats);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<Record<string, unknown>>({});
+  const [opened, { open, close }] = useDisclosure(false);
+  const [viewModalOpened, { open: openView, close: closeView }] = useDisclosure(false);
+
+  useEffect(() => {
+    if (!user) {
+      setUser(mockUser);
+    }
+  }, [user, setUser]);
+
+  // Convert patients to list items for table
+  const patientListItems: PatientListItem[] = patients.map(patient => ({
+    id: patient.id,
+    patientId: patient.patientId,
+    fullName: `${patient.firstName} ${patient.lastName}`,
+    age: patient.age,
+    gender: patient.gender,
+    phoneNumber: patient.contactInfo.phone,
+    lastVisitDate: patient.lastVisitDate,
+    totalVisits: patient.totalVisits,
+    status: patient.status,
+    hasInsurance: !!patient.insuranceInfo?.isActive,
+    emergencyFlag: patient.chronicDiseases.length > 0
+  }));
+
+  // Table columns configuration
+  const columns: TableColumn[] = [
     {
-      id: '1',
-      medicalRecordNumber: 'MR001',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@email.com',
-      phone: '+91-9876543210',
-      dateOfBirth: '1985-06-15',
-      gender: 'MALE',
-      bloodType: 'O_POSITIVE',
-      address: '123 Main Street',
-      city: 'Mumbai',
-      state: 'Maharashtra',
-      isActive: true,
-      lastVisit: '2024-12-01',
-      upcomingAppointment: '2024-12-10',
-      status: 'active'
+      key: 'patientId',
+      title: 'Patient ID',
+      sortable: true,
+      width: '120px',
+      render: (value) => (
+        <Text fw={500} c="blue">
+          {value}
+        </Text>
+      )
     },
     {
-      id: '2',
-      medicalRecordNumber: 'MR002',
-      firstName: 'Sarah',
-      lastName: 'Johnson',
-      email: 'sarah.johnson@email.com',
-      phone: '+91-9876543211',
-      dateOfBirth: '1990-03-22',
-      gender: 'FEMALE',
-      bloodType: 'A_POSITIVE',
-      address: '456 Oak Avenue',
-      city: 'Delhi',
-      state: 'Delhi',
-      isActive: true,
-      lastVisit: '2024-11-28',
-      status: 'follow_up'
-    },
-    {
-      id: '3',
-      medicalRecordNumber: 'MR003',
-      firstName: 'Mike',
-      lastName: 'Wilson',
-      email: 'mike.wilson@email.com',
-      phone: '+91-9876543212',
-      dateOfBirth: '1978-11-08',
-      gender: 'MALE',
-      bloodType: 'B_NEGATIVE',
-      address: '789 Pine Street',
-      city: 'Bangalore',
-      state: 'Karnataka',
-      isActive: true,
-      lastVisit: '2024-12-03',
-      status: 'critical'
-    },
-    {
-      id: '4',
-      medicalRecordNumber: 'MR004',
-      firstName: 'Emily',
-      lastName: 'Davis',
-      email: 'emily.davis@email.com',
-      phone: '+91-9876543213',
-      dateOfBirth: '1995-09-14',
-      gender: 'FEMALE',
-      bloodType: 'AB_POSITIVE',
-      address: '321 Elm Street',
-      city: 'Chennai',
-      state: 'Tamil Nadu',
-      isActive: false,
-      lastVisit: '2024-10-15',
-      status: 'inactive'
-    }
-  ]);
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterGender, setFilterGender] = useState('all');
-  const [sortBy, setSortBy] = useState('name');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-
-  const filteredPatients = patients
-    .filter(patient => {
-      const matchesSearch = 
-        patient.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.medicalRecordNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.phone.includes(searchTerm);
-      
-      const matchesStatus = filterStatus === 'all' || patient.status === filterStatus;
-      const matchesGender = filterGender === 'all' || patient.gender === filterGender;
-      
-      return matchesSearch && matchesStatus && matchesGender;
-    })
-    .sort((a, b) => {
-      let valueA, valueB;
-      switch (sortBy) {
-        case 'name':
-          valueA = `${a.firstName} ${a.lastName}`.toLowerCase();
-          valueB = `${b.firstName} ${b.lastName}`.toLowerCase();
-          break;
-        case 'mrn':
-          valueA = a.medicalRecordNumber;
-          valueB = b.medicalRecordNumber;
-          break;
-        case 'lastVisit':
-          valueA = new Date(a.lastVisit).getTime();
-          valueB = new Date(b.lastVisit).getTime();
-          break;
-        case 'age':
-          valueA = new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear();
-          valueB = new Date().getFullYear() - new Date(b.dateOfBirth).getFullYear();
-          break;
-        default:
-          valueA = a.firstName;
-          valueB = b.firstName;
-      }
-      
-      if (sortOrder === 'asc') {
-        return valueA > valueB ? 1 : -1;
-      } else {
-        return valueA < valueB ? 1 : -1;
-      }
-    });
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return '#10b981';
-      case 'critical': return '#ef4444';
-      case 'follow_up': return '#f59e0b';
-      case 'inactive': return '#6b7280';
-      default: return '#6b7280';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active': return 'Active';
-      case 'critical': return 'Critical';
-      case 'follow_up': return 'Follow-up';
-      case 'inactive': return 'Inactive';
-      default: return 'Unknown';
-    }
-  };
-
-  const calculateAge = (dateOfBirth: string) => {
-    const birth = new Date(dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    return age;
-  };
-
-  const PatientCard = ({ patient }: { patient: Patient }) => (
-    <Card variant="elevated" style={{ marginBottom: '1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <h3 style={{ 
-              margin: '0 1rem 0 0', 
-              fontSize: '1.25rem', 
-              fontWeight: '600', 
-              color: '#1f2937' 
-            }}>
-              {patient.firstName} {patient.lastName}
-            </h3>
-            <span style={{
-              padding: '0.25rem 0.75rem',
-              borderRadius: '12px',
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              backgroundColor: `${getStatusColor(patient.status)}15`,
-              color: getStatusColor(patient.status)
-            }}>
-              {getStatusText(patient.status)}
-            </span>
+      key: 'fullName',
+      title: 'Patient Name',
+      sortable: true,
+      render: (value, record) => (
+        <Group gap="sm">
+          <Avatar size="sm" name={value} color="blue" />
+          <div>
+            <Text fw={500}>{value}</Text>
+            <Text size="xs" c="dimmed">
+              {record.age} years • {record.gender}
+            </Text>
           </div>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <div>
-              <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-                <strong>MRN:</strong> {patient.medicalRecordNumber}
-              </p>
-              <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-                <strong>Age:</strong> {calculateAge(patient.dateOfBirth)} years
-              </p>
-              <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-                <strong>Gender:</strong> {patient.gender.toLowerCase().replace('_', ' ')}
-              </p>
-            </div>
-            
-            <div>
-              <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-                <strong>Phone:</strong> {patient.phone}
-              </p>
-              <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-                <strong>Blood Type:</strong> {patient.bloodType.replace('_', ' ')}
-              </p>
-              <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-                <strong>Last Visit:</strong> {new Date(patient.lastVisit).toLocaleDateString()}
-              </p>
-            </div>
-            
-            <div>
-              <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-                <strong>Location:</strong> {patient.city}, {patient.state}
-              </p>
-              {patient.upcomingAppointment && (
-                <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#10b981' }}>
-                  <strong>Next Appointment:</strong> {new Date(patient.upcomingAppointment).toLocaleDateString()}
-                </p>
-              )}
-            </div>
-          </div>
+        </Group>
+      )
+    },
+    {
+      key: 'phoneNumber',
+      title: 'Contact',
+      render: (value, record) => (
+        <div>
+          <Group gap="xs">
+            <IconPhone size="1rem" />
+            <Text size="sm">{formatPhoneNumber(value)}</Text>
+          </Group>
         </div>
-        
-        <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
-          <Button size="sm" variant="outline" onClick={() => window.location.href = `/patients/${patient.id}`}>
-            View
-          </Button>
-          <Button size="sm" variant="primary" onClick={() => window.location.href = `/patients/${patient.id}/edit`}>
-            Edit
-          </Button>
-          <Button size="sm" variant="secondary" onClick={() => window.location.href = `/appointments/new?patientId=${patient.id}`}>
-            Schedule
-          </Button>
+      )
+    },
+    {
+      key: 'lastVisitDate',
+      title: 'Last Visit',
+      sortable: true,
+      render: (value) => value ? formatDate(value) : 'Never'
+    },
+    {
+      key: 'totalVisits',
+      title: 'Visits',
+      sortable: true,
+      width: '80px',
+      render: (value) => (
+        <Badge variant="light" color="blue">
+          {value}
+        </Badge>
+      )
+    },
+    {
+      key: 'status',
+      title: 'Status',
+      render: (value) => (
+        <Badge 
+          color={value === 'active' ? 'green' : 'red'}
+          variant="light"
+        >
+          {value}
+        </Badge>
+      )
+    },
+    {
+      key: 'hasInsurance',
+      title: 'Insurance',
+      render: (value, record) => (
+        <Group gap="xs">
+          {value ? (
+            <Badge color="green" variant="light" leftSection={<IconShield size="0.8rem" />}>
+              Insured
+            </Badge>
+          ) : (
+            <Badge color="gray" variant="light">
+              Self Pay
+            </Badge>
+          )}
+          {record.emergencyFlag && (
+            <IconAlertCircle size="1rem" color="red" />
+          )}
+        </Group>
+      )
+    }
+  ];
+
+  // Filter options
+  const filterOptions: FilterOption[] = [
+    {
+      key: 'status',
+      label: 'Status',
+      type: 'select',
+      options: [
+        { value: 'active', label: 'Active' },
+        { value: 'inactive', label: 'Inactive' }
+      ]
+    },
+    {
+      key: 'gender',
+      label: 'Gender',
+      type: 'select',
+      options: [
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+        { value: 'other', label: 'Other' }
+      ]
+    },
+    {
+      key: 'hasInsurance',
+      label: 'Insurance',
+      type: 'select',
+      options: [
+        { value: 'true', label: 'Insured' },
+        { value: 'false', label: 'Self Pay' }
+      ]
+    }
+  ];
+
+  // Handle patient actions
+  const handleViewPatient = (patient: PatientListItem) => {
+    const fullPatient = patients.find(p => p.id === patient.id);
+    if (fullPatient) {
+      setSelectedPatient(fullPatient);
+      openView();
+    }
+  };
+
+  const handleEditPatient = (patient: PatientListItem) => {
+    const fullPatient = patients.find(p => p.id === patient.id);
+    if (fullPatient) {
+      setSelectedPatient(fullPatient);
+      open();
+    }
+  };
+
+  const handleDeletePatient = (patient: PatientListItem) => {
+    // In real implementation, show confirmation modal
+    console.log('Delete patient:', patient.patientId);
+  };
+
+  // Statistics cards
+  const StatCard = ({ title, value, icon, color, subtitle }: { title: string; value: string; icon: React.ReactNode; color: string; subtitle?: string }) => (
+    <Card shadow="sm" padding="lg" radius="md" withBorder>
+      <Group justify="space-between" mb="md">
+        <div style={{ color: `var(--mantine-color-${color}-6)` }}>
+          {icon}
         </div>
-      </div>
+      </Group>
+      
+      <Text size="xl" fw={700} mb="xs">
+        {value}
+      </Text>
+      
+      <Text size="sm" c="dimmed" mb="sm">
+        {title}
+      </Text>
+      
+      {subtitle && (
+        <Text size="xs" c="dimmed">
+          {subtitle}
+        </Text>
+      )}
     </Card>
   );
 
   return (
-    <Layout>
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        {/* Header */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '2rem' 
-        }}>
-          <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '0.5rem' }}>
-              Patient Management
-            </h1>
-            <p style={{ color: '#6b7280', fontSize: '1rem' }}>
-              Manage patient records, appointments, and medical history
-            </p>
-          </div>
-          <Button onClick={() => window.location.href = '/patients/new'}>
-            + Add New Patient
-          </Button>
-        </div>
-
-        {/* Filters and Search */}
-        <Card style={{ marginBottom: '2rem' }}>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-            gap: '1rem',
-            alignItems: 'end'
-          }}>
-            <Input
-              placeholder="Search patients..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              icon="🔍"
-              label="Search"
-            />
-            
+    <Layout user={user} notifications={notifications.length} onLogout={() => setUser(null)}>
+      <Container fluid>
+        <Stack gap="lg">
+          {/* Header */}
+          <Group justify="space-between">
             <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                fontSize: '0.875rem', 
-                fontWeight: '600', 
-                color: '#374151' 
-              }}>
-                Status Filter
-              </label>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  backgroundColor: 'white',
-                  color: '#374151'
-                }}
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="critical">Critical</option>
-                <option value="follow_up">Follow-up</option>
-                <option value="inactive">Inactive</option>
-              </select>
+              <Title order={2}>Patient Management</Title>
+              <Text c="dimmed">
+                Manage patient registration, medical records, and healthcare information
+              </Text>
             </div>
-            
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                fontSize: '0.875rem', 
-                fontWeight: '600', 
-                color: '#374151' 
-              }}>
-                Gender Filter
-              </label>
-              <select
-                value={filterGender}
-                onChange={(e) => setFilterGender(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  backgroundColor: 'white',
-                  color: '#374151'
-                }}
+            <Group>
+              <Button
+                leftSection={<IconUserPlus size="1rem" />}
+                onClick={open}
               >
-                <option value="all">All Genders</option>
-                <option value="MALE">Male</option>
-                <option value="FEMALE">Female</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </div>
-            
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                fontSize: '0.875rem', 
-                fontWeight: '600', 
-                color: '#374151' 
-              }}>
-                Sort By
-              </label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  backgroundColor: 'white',
-                  color: '#374151'
-                }}
-              >
-                <option value="name">Name</option>
-                <option value="mrn">MRN</option>
-                <option value="age">Age</option>
-                <option value="lastVisit">Last Visit</option>
-              </select>
-            </div>
-            
-            <div>
-              <Button 
-                variant="secondary" 
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                style={{ width: '100%' }}
-              >
-                {sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
+                New Patient
               </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Stats */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '1rem',
-          marginBottom: '2rem'
-        }}>
-          <Card variant="bordered">
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6' }}>
-                {patients.length}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Patients</div>
-            </div>
-          </Card>
-          
-          <Card variant="bordered">
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>
-                {patients.filter(p => p.status === 'active').length}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Active</div>
-            </div>
-          </Card>
-          
-          <Card variant="bordered">
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ef4444' }}>
-                {patients.filter(p => p.status === 'critical').length}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Critical</div>
-            </div>
-          </Card>
-          
-          <Card variant="bordered">
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>
-                {patients.filter(p => p.status === 'follow_up').length}
-              </div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Follow-up</div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Patient List */}
-        <div>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            marginBottom: '1rem' 
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937' }}>
-              Patients ({filteredPatients.length})
-            </h2>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <Button variant="secondary" size="sm">
+              <Button
+                variant="outline"
+                leftSection={<IconDownload size="1rem" />}
+              >
                 Export
               </Button>
-              <Button variant="secondary" size="sm">
-                Print
-              </Button>
-            </div>
-          </div>
-          
-          {filteredPatients.length > 0 ? (
-            filteredPatients.map(patient => (
-              <PatientCard key={patient.id} patient={patient} />
-            ))
-          ) : (
-            <Card>
-              <div style={{ textAlign: 'center', padding: '2rem' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👥</div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
-                  No patients found
-                </h3>
-                <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
-                  No patients match your current search criteria.
-                </p>
-                <Button onClick={() => {
-                  setSearchTerm('');
-                  setFilterStatus('all');
-                  setFilterGender('all');
-                }}>
-                  Clear Filters
-                </Button>
-              </div>
-            </Card>
-          )}
-        </div>
-      </div>
+            </Group>
+          </Group>
+
+          {/* Statistics Cards */}
+          <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
+            <StatCard
+              title="Total Patients"
+              value={patientStats.totalPatients.toLocaleString()}
+              icon={<IconUsers size="2rem" />}
+              color="blue"
+              subtitle={`+${patientStats.newPatientsThisMonth} this month`}
+            />
+            <StatCard
+              title="New Today"
+              value={patientStats.newPatientsToday}
+              icon={<IconUserPlus size="2rem" />}
+              color="green"
+              subtitle="New registrations today"
+            />
+            <StatCard
+              title="Active Patients"
+              value={patientStats.activePatients.toLocaleString()}
+              icon={<IconHeart size="2rem" />}
+              color="red"
+              subtitle="Currently under care"
+            />
+            <StatCard
+              title="Average Age"
+              value={`${patientStats.averageAge} years`}
+              icon={<IconCalendar size="2rem" />}
+              color="purple"
+              subtitle="Patient demographics"
+            />
+          </SimpleGrid>
+
+          {/* Tabs */}
+          <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'list')}>
+            <Tabs.List>
+              <Tabs.Tab value="list">Patient List</Tabs.Tab>
+              <Tabs.Tab value="analytics">Analytics</Tabs.Tab>
+              <Tabs.Tab value="demographics">Demographics</Tabs.Tab>
+              <Tabs.Tab value="insurance">Insurance</Tabs.Tab>
+            </Tabs.List>
+
+            <Tabs.Panel value="list" pt="md">
+              <DataTable
+                data={patientListItems}
+                columns={columns}
+                loading={loading}
+                searchable={true}
+                filterable={true}
+                sortable={true}
+                filters={filterOptions}
+                onSearch={(query) => setSearchQuery(query)}
+                onFilter={(filters) => setFilters(filters)}
+                pagination={{
+                  page: 1,
+                  limit: 10,
+                  total: patientListItems.length,
+                  onPageChange: (page) => console.log('Page:', page),
+                  onLimitChange: (limit) => console.log('Limit:', limit)
+                }}
+                actions={{
+                  view: handleViewPatient,
+                  edit: handleEditPatient,
+                  delete: handleDeletePatient
+                }}
+                emptyMessage="No patients found"
+              />
+            </Tabs.Panel>
+
+            <Tabs.Panel value="analytics" pt="md">
+              <Grid>
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                  <Paper p="lg" shadow="sm" radius="md" withBorder>
+                    <Text fw={600} size="lg" mb="md">
+                      Visit Trends (Last 7 Days)
+                    </Text>
+                    <Stack gap="sm">
+                      {patientStats.visitTrends.map((trend, index) => (
+                        <Group key={index} justify="space-between">
+                          <Text size="sm">{formatDate(new Date(trend.date))}</Text>
+                          <Group gap="sm">
+                            <Progress 
+                              value={(trend.count / 200) * 100} 
+                              size="sm" 
+                              w={100}
+                              color="blue"
+                            />
+                            <Text size="sm" fw={500}>{trend.count}</Text>
+                          </Group>
+                        </Group>
+                      ))}
+                    </Stack>
+                  </Paper>
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                  <Paper p="lg" shadow="sm" radius="md" withBorder>
+                    <Text fw={600} size="lg" mb="md">
+                      Quick Stats
+                    </Text>
+                    <Stack gap="md">
+                      <Group justify="space-between">
+                        <Text size="sm">Male Patients</Text>
+                        <Text size="sm" fw={500}>
+                          {patientStats.genderDistribution.male} ({Math.round((patientStats.genderDistribution.male / patientStats.totalPatients) * 100)}%)
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm">Female Patients</Text>
+                        <Text size="sm" fw={500}>
+                          {patientStats.genderDistribution.female} ({Math.round((patientStats.genderDistribution.female / patientStats.totalPatients) * 100)}%)
+                        </Text>
+                      </Group>
+                      <Divider />
+                      <Group justify="space-between">
+                        <Text size="sm">Insured Patients</Text>
+                        <Text size="sm" fw={500} c="green">
+                          {patientStats.insuranceDistribution.insured} ({Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%)
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm">Self-Pay Patients</Text>
+                        <Text size="sm" fw={500} c="orange">
+                          {patientStats.insuranceDistribution.uninsured} ({Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%)
+                        </Text>
+                      </Group>
+                    </Stack>
+                  </Paper>
+                </Grid.Col>
+              </Grid>
+            </Tabs.Panel>
+
+            <Tabs.Panel value="demographics" pt="md">
+              <Grid>
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                  <Paper p="lg" shadow="sm" radius="md" withBorder>
+                    <Text fw={600} size="lg" mb="md">
+                      Blood Group Distribution
+                    </Text>
+                    <Stack gap="sm">
+                      {Object.entries(patientStats.bloodGroupDistribution).map(([bloodGroup, count]) => (
+                        <Group key={bloodGroup} justify="space-between">
+                          <Text size="sm">{bloodGroup}</Text>
+                          <Group gap="sm">
+                            <Progress 
+                              value={(count / patientStats.totalPatients) * 100} 
+                              size="sm" 
+                              w={100}
+                              color="red"
+                            />
+                            <Text size="sm" fw={500}>{count}</Text>
+                          </Group>
+                        </Group>
+                      ))}
+                    </Stack>
+                  </Paper>
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                  <Paper p="lg" shadow="sm" radius="md" withBorder>
+                    <Text fw={600} size="lg" mb="md">
+                      Age Distribution
+                    </Text>
+                    <Alert icon={<IconAlertCircle size="1rem" />} color="blue">
+                      Age analytics feature will show detailed age group breakdowns, 
+                      pediatric vs adult ratios, and senior citizen statistics.
+                    </Alert>
+                  </Paper>
+                </Grid.Col>
+              </Grid>
+            </Tabs.Panel>
+
+            <Tabs.Panel value="insurance" pt="md">
+              <Paper p="lg" shadow="sm" radius="md" withBorder>
+                <Text fw={600} size="lg" mb="md">
+                  Insurance Coverage Analysis
+                </Text>
+                <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+                  <div>
+                    <Text size="sm" c="dimmed" mb="sm">Coverage Distribution</Text>
+                    <Group gap="lg">
+                      <div>
+                        <Text size="xl" fw={700} c="green">
+                          {Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%
+                        </Text>
+                        <Text size="sm" c="dimmed">Insured</Text>
+                      </div>
+                      <div>
+                        <Text size="xl" fw={700} c="orange">
+                          {Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%
+                        </Text>
+                        <Text size="sm" c="dimmed">Self-Pay</Text>
+                      </div>
+                    </Group>
+                  </div>
+                  <div>
+                    <Text size="sm" c="dimmed" mb="sm">Insurance Types</Text>
+                    <Alert icon={<IconShield size="1rem" />} color="blue">
+                      Government: 45% • Private: 35% • Corporate: 20%
+                    </Alert>
+                  </div>
+                </SimpleGrid>
+              </Paper>
+            </Tabs.Panel>
+          </Tabs>
+
+          {/* Patient Details Modal */}
+          <Modal
+            opened={viewModalOpened}
+            onClose={closeView}
+            title="Patient Details"
+            size="xl"
+          >
+            {selectedPatient && (
+              <Stack gap="md">
+                <Group>
+                  <Avatar size="lg" name={`${selectedPatient.firstName} ${selectedPatient.lastName}`} color="blue" />
+                  <div>
+                    <Text size="lg" fw={600}>
+                      {selectedPatient.firstName} {selectedPatient.lastName}
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                      {selectedPatient.patientId} • {selectedPatient.age} years • {selectedPatient.gender}
+                    </Text>
+                  </div>
+                </Group>
+
+                <Divider />
+
+                <SimpleGrid cols={2} spacing="md">
+                  <div>
+                    <Text size="sm" fw={500} mb="xs">Contact Information</Text>
+                    <Stack gap="xs">
+                      <Group gap="xs">
+                        <IconPhone size="1rem" />
+                        <Text size="sm">{formatPhoneNumber(selectedPatient.contactInfo.phone)}</Text>
+                      </Group>
+                      {selectedPatient.contactInfo.email && (
+                        <Group gap="xs">
+                          <IconMail size="1rem" />
+                          <Text size="sm">{selectedPatient.contactInfo.email}</Text>
+                        </Group>
+                      )}
+                    </Stack>
+                  </div>
+
+                  <div>
+                    <Text size="sm" fw={500} mb="xs">Medical Information</Text>
+                    <Stack gap="xs">
+                      <Text size="sm">
+                        <strong>Blood Group:</strong> {selectedPatient.bloodGroup || 'Not specified'}
+                      </Text>
+                      <Text size="sm">
+                        <strong>Total Visits:</strong> {selectedPatient.totalVisits}
+                      </Text>
+                      {selectedPatient.lastVisitDate && (
+                        <Text size="sm">
+                          <strong>Last Visit:</strong> {formatDate(selectedPatient.lastVisitDate)}
+                        </Text>
+                      )}
+                    </Stack>
+                  </div>
+                </SimpleGrid>
+
+                {selectedPatient.allergies.length > 0 && (
+                  <>
+                    <Divider />
+                    <div>
+                      <Text size="sm" fw={500} mb="xs" c="red">Allergies</Text>
+                      <Group gap="xs">
+                        {selectedPatient.allergies.map((allergy, index) => (
+                          <Badge key={index} color="red" variant="light">
+                            {allergy}
+                          </Badge>
+                        ))}
+                      </Group>
+                    </div>
+                  </>
+                )}
+
+                {selectedPatient.chronicDiseases.length > 0 && (
+                  <>
+                    <Divider />
+                    <div>
+                      <Text size="sm" fw={500} mb="xs" c="orange">Chronic Diseases</Text>
+                      <Group gap="xs">
+                        {selectedPatient.chronicDiseases.map((disease, index) => (
+                          <Badge key={index} color="orange" variant="light">
+                            {disease}
+                          </Badge>
+                        ))}
+                      </Group>
+                    </div>
+                  </>
+                )}
+
+                {selectedPatient.insuranceInfo && (
+                  <>
+                    <Divider />
+                    <div>
+                      <Text size="sm" fw={500} mb="xs" c="green">Insurance Information</Text>
+                      <Stack gap="xs">
+                        <Text size="sm">
+                          <strong>Provider:</strong> {selectedPatient.insuranceInfo.insuranceProvider}
+                        </Text>
+                        <Text size="sm">
+                          <strong>Policy Number:</strong> {selectedPatient.insuranceInfo.policyNumber}
+                        </Text>
+                        <Text size="sm">
+                          <strong>Coverage:</strong> ₹{selectedPatient.insuranceInfo.coverageAmount.toLocaleString()}
+                        </Text>
+                      </Stack>
+                    </div>
+                  </>
+                )}
+              </Stack>
+            )}
+          </Modal>
+
+          {/* Add/Edit Patient Modal */}
+          <Modal
+            opened={opened}
+            onClose={close}
+            title={selectedPatient ? "Edit Patient" : "Add New Patient"}
+            size="xl"
+          >
+            <Alert icon={<IconAlertCircle size="1rem" />} color="blue" mb="md">
+              Patient registration form will be implemented with all required fields including 
+              demographics, contact info, medical history, insurance details, and document uploads.
+            </Alert>
+          </Modal>
+        </Stack>
+      </Container>
     </Layout>
   );
-};
+}
 
-export default PatientsPage;

@@ -1,0 +1,71 @@
+// Mock data for Surgery Management
+
+export const mockSurgeries = [
+  {
+    id: '1',
+    surgeryId: 'SUR-2024-001',
+    patientName: 'John Doe',
+    surgeon: 'Dr. Sarah Johnson',
+    procedure: 'Appendectomy',
+    date: '2024-01-18',
+    time: '10:00 AM',
+    status: 'scheduled',
+    duration: 120, // minutes
+    operatingRoom: 'OR-1',
+    assistants: ['Dr. Michael Chen', 'Nurse Mary Wilson'],
+    anesthesiologist: 'Dr. Robert Martinez'
+  },
+  {
+    id: '2',
+    surgeryId: 'SUR-2024-002',
+    patientName: 'Jane Smith',
+    surgeon: 'Dr. Emily Rodriguez',
+    procedure: 'Cholecystectomy',
+    date: '2024-01-17',
+    time: '2:00 PM',
+    status: 'completed',
+    duration: 180, // minutes
+    operatingRoom: 'OR-2',
+    assistants: ['Dr. David Wilson', 'Nurse Jennifer Adams'],
+    anesthesiologist: 'Dr. Lisa Wang'
+  }
+];
+
+export const mockOperatingRooms = [
+  {
+    id: '1',
+    roomNumber: 'OR-1',
+    status: 'available',
+    equipment: ['Laparoscope', 'Electrocautery', 'Ventilator'],
+    capacity: 8,
+    lastCleaning: '2024-01-17T06:00:00',
+    nextMaintenance: '2024-01-20'
+  },
+  {
+    id: '2',
+    roomNumber: 'OR-2',
+    status: 'occupied',
+    equipment: ['Microscope', 'C-arm', 'Anesthesia Machine'],
+    capacity: 6,
+    lastCleaning: '2024-01-17T07:00:00',
+    nextMaintenance: '2024-01-22'
+  }
+];
+
+export const mockSurgeryStats = {
+  totalSurgeries: 145,
+  completedSurgeries: 132,
+  scheduledSurgeries: 10,
+  cancelledSurgeries: 3,
+  averageDuration: 165, // minutes
+  successRate: 98.5,
+  operatingRoomsAvailable: 3,
+  totalOperatingRooms: 5,
+  surgeryTypes: [
+    { type: 'General Surgery', count: 45, percentage: 31.0 },
+    { type: 'Orthopedic', count: 35, percentage: 24.1 },
+    { type: 'Cardiac', count: 25, percentage: 17.2 },
+    { type: 'Neurosurgery', count: 20, percentage: 13.8 },
+    { type: 'Others', count: 20, percentage: 13.8 }
+  ]
+};

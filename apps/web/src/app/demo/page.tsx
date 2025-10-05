@@ -80,7 +80,7 @@ export default function Demo() {
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
                   <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#f59e0b" }}>89</div>
-                  <div style={{ color: "#64748b" }}>Today's Appointments</div>
+                  <div style={{ color: "#64748b" }}>Today&apos;s Appointments</div>
                 </div>
                 <div>
                   <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#ef4444" }}>12</div>
@@ -191,7 +191,7 @@ export default function Demo() {
               border: "1px solid #e2e8f0"
             }}>
               <div style={{ marginBottom: "1rem" }}>
-                <div style={{ fontWeight: "600", color: "#374151", marginBottom: "0.5rem" }}>Today's Schedule</div>
+                <div style={{ fontWeight: "600", color: "#374151", marginBottom: "0.5rem" }}>Today&apos;s Schedule</div>
                 <div style={{ fontSize: "0.9rem", color: "#64748b" }}>December 5, 2024</div>
               </div>
               <div style={{ space: "0.75rem" }}>

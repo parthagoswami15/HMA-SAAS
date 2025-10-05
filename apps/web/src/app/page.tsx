@@ -122,7 +122,7 @@ export default function Home() {
             boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
           }}>Get Started</Link>
           
-          <Link href="/demo" style={{ 
+          <Link href="/dashboard" style={{ 
             background: "transparent",
             color: "white",
             padding: "1rem 2rem",
@@ -132,7 +132,7 @@ export default function Home() {
             fontSize: "1.1rem",
             border: "2px solid rgba(255, 255, 255, 0.3)",
             transition: "all 0.3s ease"
-          }}>View Demo</Link>
+          }}>View Dashboard</Link>
         </div>
       </div>
       
