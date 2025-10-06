@@ -27,10 +27,8 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  DatePicker,
   Timeline,
   List,
-  Spotlight,
   Tooltip,
   Image,
   Checkbox
@@ -94,7 +92,7 @@ import {
   IconTag,
   IconAlarm,
   IconInfoCircle
-} from '@tabler/icons-react';
+} from '@/shims/tabler-icons';
 
 // Import types and mock data
 import {

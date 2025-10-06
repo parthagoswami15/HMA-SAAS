@@ -24,7 +24,6 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  DatePickerInput,
   Switch,
   Divider,
   Alert,
@@ -41,7 +40,6 @@ import {
   Loader,
   Anchor,
   Accordion,
-  Spotlight,
   Tooltip,
   Rating,
   Spoiler
@@ -170,7 +168,7 @@ import {
   IconCpu,
   IconChip,
   IconNetwork
-} from '@tabler/icons-react';
+} from '@/shims/tabler-icons';
 
 // Types
 interface AIInsight {

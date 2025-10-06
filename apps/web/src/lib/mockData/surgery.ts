@@ -39,7 +39,10 @@ export const mockOperatingRooms = [
     equipment: ['Laparoscope', 'Electrocautery', 'Ventilator'],
     capacity: 8,
     lastCleaning: '2024-01-17T06:00:00',
-    nextMaintenance: '2024-01-20'
+    nextMaintenance: '2024-01-20',
+    roomName: 'Main OR 1',
+    location: 'Block A - Floor 2',
+    specialties: ['General Surgery', 'Orthopedic']
   },
   {
     id: '2',
@@ -48,7 +51,10 @@ export const mockOperatingRooms = [
     equipment: ['Microscope', 'C-arm', 'Anesthesia Machine'],
     capacity: 6,
     lastCleaning: '2024-01-17T07:00:00',
-    nextMaintenance: '2024-01-22'
+    nextMaintenance: '2024-01-22',
+    roomName: 'Main OR 2',
+    location: 'Block A - Floor 2',
+    specialties: ['Neurosurgery']
   }
 ];
 
@@ -67,5 +73,35 @@ export const mockSurgeryStats = {
     { type: 'Cardiac', count: 25, percentage: 17.2 },
     { type: 'Neurosurgery', count: 20, percentage: 13.8 },
     { type: 'Others', count: 20, percentage: 13.8 }
+  ],
+  // Additional fields expected by UI components
+  activeORs: 4,
+  totalORs: 6,
+  averageTurnoverTime: 35,
+  onTimeStartRate: 92,
+  complicationRate: 1.2,
+  surgeryByType: {
+    cardiac: 25,
+    neurological: 20,
+    orthopedic: 35,
+    general: 45,
+    plastic: 10,
+    pediatric: 10
+  },
+  monthlySurgeryVolume: [
+    { month: 'Oct', surgeries: 120 },
+    { month: 'Nov', surgeries: 135 },
+    { month: 'Dec', surgeries: 140 },
+    { month: 'Jan', surgeries: 145 }
+  ],
+  orUtilization: [
+    { or: 'OR-1', utilization: 85 },
+    { or: 'OR-2', utilization: 78 },
+    { or: 'OR-3', utilization: 72 },
+    { or: 'OR-4', utilization: 90 }
   ]
 };
+
+// Minimal placeholders used by UI; kept empty to avoid rendering when not needed
+export const mockSurgicalEquipment: any[] = [];
+export const mockSurgicalTeams: any[] = [];

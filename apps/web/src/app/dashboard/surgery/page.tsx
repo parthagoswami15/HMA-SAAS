@@ -27,7 +27,6 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  DatePicker,
   Timeline,
   Stepper,
   RingProgress,
@@ -104,7 +103,8 @@ import {
   IconZoom,
   IconCut,
   IconTool
-} from '@tabler/icons-react';
+} from '@/shims/tabler-icons';
+import { DatePickerInput } from '@mantine/dates';
 
 // Import types and mock data
 import {
@@ -1150,7 +1150,7 @@ const SurgeryManagement = () => {
           </SimpleGrid>
           
           <SimpleGrid cols={2}>
-            <DatePicker
+            <DatePickerInput
               label="Surgery Date"
               placeholder="Select date"
               required

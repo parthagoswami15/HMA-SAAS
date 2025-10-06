@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import {
   AppShell,
   Text,
-  MediaQuery,
   Burger,
   Group,
   ScrollArea,
@@ -46,7 +45,7 @@ import {
   IconRobot,
   IconDatabase,
   IconShieldCheck
-} from '@tabler/icons-react';
+} from '@/shims/tabler-icons';
 import { UserRole } from '../../types/common';
 
 interface LayoutProps {
@@ -297,9 +296,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Group>
-            <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
-              <Burger opened={opened} onClick={toggle} size="sm" />
-            </MediaQuery>
+            <Burger hiddenFrom="sm" opened={opened} onClick={toggle} size="sm" />
             
             <Group gap="sm">
               <Box

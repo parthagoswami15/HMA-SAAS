@@ -203,4 +203,4 @@ export const mockFinancialStats: FinancialStats = {
 // Aliases expected by pages
 export const mockTransactions = mockFinancialTransactions;
 export const mockAccounts = mockAccountBalances;
-};
+ 

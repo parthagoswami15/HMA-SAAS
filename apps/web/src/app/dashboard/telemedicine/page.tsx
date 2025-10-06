@@ -27,7 +27,6 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  DatePicker,
   Timeline,
   Stepper,
   RingProgress,
@@ -59,7 +58,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { Calendar } from '@mantine/dates';
+import { Calendar, DatePickerInput } from '@mantine/dates';
 import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
 import {
   IconPlus,
@@ -1341,7 +1340,7 @@ const Telemedicine = () => {
           </SimpleGrid>
           
           <SimpleGrid cols={2}>
-            <DatePicker
+            <DatePickerInput
               label="Date"
               placeholder="Select date"
               minDate={new Date()}

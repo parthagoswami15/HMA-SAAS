@@ -26,7 +26,7 @@ import {
   IconEye,
   IconEdit,
   IconTrash
-} from '@tabler/icons-react';
+} from '@/shims/tabler-icons';
 import { TableColumn, SortOption, FilterOption } from '../../types/common';
 
 interface DataTableProps<T = Record<string, unknown>> {

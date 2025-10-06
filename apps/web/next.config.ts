@@ -8,18 +8,17 @@ const nextConfig: NextConfig = {
     // Prevent ESLint warnings from failing production builds
     ignoreDuringBuilds: true,
   },
-  experimental: {
-    // Disable package import optimizer to allow our webpack aliases/shims
-    optimizePackageImports: [],
-  },
+  experimental: ((): any => {
+    (process.env as any).NEXT_DISABLE_PACKAGE_IMPORT_OPTIMIZATION = '1';
+    return { optimizePackageImports: [] } as any;
+  })(),
   webpack: (config) => {
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      // Use trailing $ so only bare imports are aliased, keeping CSS subpaths intact
-      '@tabler/icons-react$': resolveFromCwd('src/shims/tabler-icons'),
-      '@mantine/charts$': resolveFromCwd('src/shims/mantine-charts'),
-      '@mantine/dates$': resolveFromCwd('src/shims/mantine-dates'),
+      // Alias Tabler icons to local shim to avoid optimizer issues
+      '@tabler/icons-react': resolveFromCwd('src/shims/tabler-icons'),
+      // use real mantine packages
     };
     return config;
   },
