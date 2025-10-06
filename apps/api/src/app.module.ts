@@ -37,7 +37,7 @@ import { AppService } from './app.service';
       },
       {
         name: 'medium',
-        ttl: 10000, // 10 seconds  
+        ttl: 10000, // 10 seconds
         limit: 20, // 20 requests per 10 seconds
       },
       {
@@ -46,10 +46,10 @@ import { AppService } from './app.service';
         limit: 100, // 100 requests per minute
       },
     ]),
-    
+
     // Core database module
     PrismaModule,
-    
+
     // Authentication module
     AuthModule,
   ],

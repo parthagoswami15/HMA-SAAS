@@ -509,7 +509,7 @@ const AppointmentsPage = () => {
               <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#3b82f6' }}>
                 {filteredAppointments.length}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Today's Appointments</div>
+              <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Today&apos;s Appointments</div>
             </div>
           </Card>
           

@@ -1,4 +1,9 @@
-import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CustomPrismaService } from '../prisma/custom-prisma.service';
 import * as bcrypt from 'bcryptjs';
@@ -35,11 +40,11 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterUserDto) {
-    const { adminEmail, adminPassword, organizationName, ...orgData } = registerDto;
-    
+    const { adminEmail, adminPassword, organizationName } = registerDto;
+
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: adminEmail }
+      where: { email: adminEmail },
     });
 
     if (existingUser) {
@@ -52,13 +57,13 @@ export class AuthService {
     try {
       // Create transaction to create tenant and admin user
       const result = await this.prisma.$transaction(async (prisma) => {
-        // Create tenant organization  
+        // Create tenant organization
         const tenantTypeMap = {
-          'hospital': 'HOSPITAL',
-          'clinic': 'CLINIC', 
-          'private_practice': 'CLINIC'
+          hospital: 'HOSPITAL',
+          clinic: 'CLINIC',
+          private_practice: 'CLINIC',
         } as const;
-        
+
         const tenant = await prisma.tenant.create({
           data: {
             name: organizationName,
@@ -67,8 +72,8 @@ export class AuthService {
             address: registerDto.address,
             phone: registerDto.phone,
             email: registerDto.email,
-            isActive: true
-          }
+            isActive: true,
+          },
         });
 
         // Create admin user
@@ -80,8 +85,8 @@ export class AuthService {
             lastName: registerDto.adminLastName,
             role: 'ADMIN',
             tenantId: tenant.id,
-            isActive: true
-          }
+            isActive: true,
+          },
         });
 
         return { user, tenant };
@@ -93,8 +98,8 @@ export class AuthService {
         data: {
           userId: result.user.id,
           tenantId: result.tenant.id,
-          email: result.user.email
-        }
+          email: result.user.email,
+        },
       };
     } catch (error) {
       console.error('Registration error:', error);
@@ -109,8 +114,8 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email },
       include: {
-        tenant: true
-      }
+        tenant: true,
+      },
     });
 
     if (!user) {
@@ -133,7 +138,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       tenantId: user.tenantId,
-      role: user.role
+      role: user.role,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -150,9 +155,9 @@ export class AuthService {
         tenant: {
           id: user.tenant.id,
           name: user.tenant.name,
-          type: user.tenant.type
-        }
-      }
+          type: user.tenant.type,
+        },
+      },
     };
   }
 
@@ -160,8 +165,8 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
-        tenant: true
-      }
+        tenant: true,
+      },
     });
 
     if (!user || !user.isActive) {
@@ -174,7 +179,7 @@ export class AuthService {
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role,
-      tenantId: user.tenantId
+      tenantId: user.tenantId,
     };
   }
 }

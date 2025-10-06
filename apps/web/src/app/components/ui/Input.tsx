@@ -108,7 +108,6 @@ const Input: React.FC<InputProps> = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          onBlur={onBlur}
           disabled={disabled}
           required={required}
           className={className}

@@ -30,11 +30,12 @@ import {
   List,
   MultiSelect,
   Center,
-  Divider
+  Divider,
+  Stepper,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { DonutChart, BarChart, AreaChart } from '@mantine/charts';
+import { DonutChart, BarChart, AreaChart, LineChart } from '@mantine/charts';
 import {
   IconPlus,
   IconSearch,

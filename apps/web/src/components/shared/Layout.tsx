@@ -6,7 +6,6 @@ import {
   Navbar,
   Header,
   Text,
-  MediaQuery,
   Burger,
   Group,
   ScrollArea,
@@ -301,9 +300,9 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Group>
-            <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+            <div style={{ display: 'none' }} className="hide-on-sm">
               <Burger opened={opened} onClick={toggle} size="sm" />
-            </MediaQuery>
+            </div>
             
             <Group gap="sm">
               <Box

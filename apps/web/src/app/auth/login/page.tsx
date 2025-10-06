@@ -186,8 +186,7 @@ const LoginPage = () => {
 
             <Button
               type="submit"
-              fullWidth
-              style={{ marginBottom: '1rem' }}
+              style={{ marginBottom: '1rem', width: '100%' }}
               disabled={isLoading}
             >
               {isLoading ? 'Sending...' : 'Send Reset Instructions'}
@@ -369,12 +368,11 @@ const LoginPage = () => {
           )}
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            fullWidth
-            style={{ marginBottom: '1rem' }}
-            disabled={isLoading}
-          >
+            <Button
+              type="submit"
+              style={{ marginBottom: '1rem', width: '100%' }}
+              disabled={isLoading}
+            >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </Button>
 
@@ -385,7 +383,7 @@ const LoginPage = () => {
               fontSize: '0.875rem', 
               color: '#6b7280' 
             }}>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <a 
                 href="/auth/register" 
                 style={{ 

@@ -13,34 +13,40 @@ async function bootstrap() {
   });
 
   // Health check endpoint
-  app.getHttpAdapter().get('/health', (req, res) => {
-    res.json({
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development',
-      message: 'HMS SaaS API - Super Minimal version is running'
+  app
+    .getHttpAdapter()
+    .get('/health', (_req: unknown, res: any) => {
+      res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development',
+        message: 'HMS SaaS API - Super Minimal version is running',
+      });
     });
-  });
 
   // Root endpoint
-  app.getHttpAdapter().get('/', (req, res) => {
-    res.json({
-      name: 'HMS SaaS API - Super Minimal',
-      version: '1.0.0',
-      status: 'running',
-      timestamp: new Date().toISOString(),
-      endpoints: {
-        health: '/health'
-      }
+  app
+    .getHttpAdapter()
+    .get('/', (_req: unknown, res: any) => {
+      res.json({
+        name: 'HMS SaaS API - Super Minimal',
+        version: '1.0.0',
+        status: 'running',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+          health: '/health',
+        },
+      });
     });
-  });
 
   const port = process.env.PORT || 3001;
   const host = process.env.HOST || 'localhost';
   await app.listen(port);
 
-  logger.log(`🚀 HMS SaaS API (Super Minimal) is running on: http://${host}:${port}`);
+  logger.log(
+    `🚀 HMS SaaS API (Super Minimal) is running on: http://${host}:${port}`,
+  );
   logger.log(`❤️ Health Check: http://${host}:${port}/health`);
   logger.log(`🏥 Environment: ${process.env.NODE_ENV || 'development'}`);
 }

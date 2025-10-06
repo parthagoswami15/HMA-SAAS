@@ -1,9 +1,11 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
-import { INestApplication } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
   constructor() {
     super({
       log: ['query', 'info', 'warn', 'error'],
@@ -13,7 +15,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   // Add tokenBlacklist property with proper typing
   tokenBlacklist: {
-    findUnique: (args: { where: { jti: string; tenantId: string } }) => Promise<any>;
+    findUnique: (args: {
+      where: { jti: string; tenantId: string };
+    }) => Promise<any>;
     upsert: (args: {
       where: { jti: string; tenantId: string };
       update: { revoked: boolean; reason: string; updatedAt: Date };
@@ -35,10 +39,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async onModuleInit() {
     await this.$connect();
-    
+
     // Initialize tokenBlacklist with proper typing
     this.tokenBlacklist = {
-      findUnique: async (args: { where: { jti: string; tenantId: string } }) => {
+      findUnique: async (args: {
+        where: { jti: string; tenantId: string };
+      }) => {
         return this.refreshToken.findFirst({
           where: {
             jti: args.where.jti,
@@ -46,7 +52,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           },
         });
       },
-      
+
       upsert: async (args: {
         where: { jti: string; tenantId: string };
         update: {
@@ -72,7 +78,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           create: args.create,
         });
       },
-      
+
       updateMany: async (args: {
         where: { userId: string; tenantId: string };
         data: { revoked: boolean; reason: string; updatedAt: Date };
@@ -92,5 +98,3 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     await this.$disconnect();
   }
 }
-
-

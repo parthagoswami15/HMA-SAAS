@@ -207,6 +207,7 @@ import {
   IconFlag,
   IconFlag2,
   IconFlag3,
+  IconClipboardCheck,
   IconCheckbox,
   IconSquareCheck,
   IconCircleDot,

@@ -73,6 +73,7 @@ import {
   IconClipboardList,
   IconFileText,
   IconDownload,
+  IconSend,
   IconPrinter,
   IconShare,
   IconActivity,

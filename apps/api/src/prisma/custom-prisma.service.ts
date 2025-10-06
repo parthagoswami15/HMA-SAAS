@@ -3,10 +3,10 @@ import { PrismaClient as BasePrismaClient } from '@prisma/client';
 
 // This is a custom Prisma client that includes our custom methods
 @Injectable()
-export class CustomPrismaService 
+export class CustomPrismaService
   extends BasePrismaClient
-  implements OnModuleInit, OnModuleDestroy {
-  
+  implements OnModuleInit, OnModuleDestroy
+{
   async onModuleInit() {
     await this.$connect();
   }
@@ -17,11 +17,13 @@ export class CustomPrismaService
 
   // Add custom methods for tokenBlacklist
   async findTokenByJti(jti: string) {
-    return this.$queryRaw`SELECT * FROM "RefreshToken" WHERE jti = ${jti} LIMIT 1`
-      .then((result: unknown) => {
+    return this
+      .$queryRaw`SELECT * FROM "RefreshToken" WHERE jti = ${jti} LIMIT 1`.then(
+      (result: unknown) => {
         const tokens = Array.isArray(result) ? result : [];
         return tokens[0] || null;
-      });
+      },
+    );
   }
 
   async upsertTokenBlacklist(params: {
@@ -32,7 +34,7 @@ export class CustomPrismaService
     revoked: boolean;
   }) {
     const { jti, userId, token, expiresAt, revoked } = params;
-    
+
     return this.$executeRaw`
       INSERT INTO "RefreshToken" (jti, "userId", token, "expiresAt", revoked, "createdAt", "updatedAt")
       VALUES (${jti}, ${userId}, ${token}, ${expiresAt}, ${revoked}, NOW(), NOW())
@@ -49,12 +51,12 @@ export class CustomPrismaService
    */
   async revokeAllUserTokens(userId: string) {
     return this.refreshToken.updateMany({
-      where: { 
+      where: {
         userId,
-        revoked: false 
+        revoked: false,
       },
-      data: { 
-        revoked: true
+      data: {
+        revoked: true,
       },
     });
   }
@@ -64,16 +66,13 @@ export class CustomPrismaService
    */
   async isTokenBlacklisted(jti: string): Promise<boolean> {
     const token = await this.refreshToken.findFirst({
-      where: { 
+      where: {
         jti,
-        OR: [
-          { revoked: true },
-          { expiresAt: { lt: new Date() } }
-        ]
+        OR: [{ revoked: true }, { expiresAt: { lt: new Date() } }],
       },
-      select: { id: true }
+      select: { id: true },
     });
-    
+
     return !!token;
   }
 
@@ -83,10 +82,10 @@ export class CustomPrismaService
   async cleanupExpiredTokens(): Promise<number> {
     const result = await this.refreshToken.deleteMany({
       where: {
-        expiresAt: { lt: new Date() }
-      }
+        expiresAt: { lt: new Date() },
+      },
     });
-    
+
     return result.count;
   }
 }

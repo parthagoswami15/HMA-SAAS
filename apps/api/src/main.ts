@@ -14,28 +14,32 @@ async function bootstrap() {
   });
 
   // Health check endpoint
-  app.getHttpAdapter().get('/health', (req, res) => {
-    res.json({
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development',
-      message: 'HMS SaaS API is running - Minimal Working Version'
+  app
+    .getHttpAdapter()
+    .get('/health', (_req: unknown, res: any) => {
+      res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development',
+        message: 'HMS SaaS API is running - Minimal Working Version',
+      });
     });
-  });
 
   // Root endpoint
-  app.getHttpAdapter().get('/', (req, res) => {
-    res.json({
-      name: 'HMS SaaS API - Minimal Working Version',
-      version: '1.0.0',
-      status: 'running',
-      timestamp: new Date().toISOString(),
-      endpoints: {
-        health: '/health'
-      }
+  app
+    .getHttpAdapter()
+    .get('/', (_req: unknown, res: any) => {
+      res.json({
+        name: 'HMS SaaS API - Minimal Working Version',
+        version: '1.0.0',
+        status: 'running',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+          health: '/health',
+        },
+      });
     });
-  });
 
   const port = process.env.PORT || 3001;
   const host = process.env.HOST || 'localhost';

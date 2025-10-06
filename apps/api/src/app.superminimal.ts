@@ -28,7 +28,7 @@ import { PrismaModule } from './prisma/prisma.module';
         limit: 100,
       },
     ]),
-    
+
     // Core modules
     PrismaModule,
   ],

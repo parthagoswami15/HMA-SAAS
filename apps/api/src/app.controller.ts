@@ -16,7 +16,7 @@ export class AppController {
       status: 'ok',
       timestamp: new Date().toISOString(),
       service: 'HMS SaaS API',
-      database: 'connected'
+      database: 'connected',
     };
   }
 }
