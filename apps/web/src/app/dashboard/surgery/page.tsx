@@ -103,7 +103,7 @@ import {
   IconZoom,
   IconCut,
   IconTool
-} from '@/shims/tabler-icons';
+} from '../../../shims/tabler-icons';
 import { DatePickerInput } from '@mantine/dates';
 
 // Import types and mock data

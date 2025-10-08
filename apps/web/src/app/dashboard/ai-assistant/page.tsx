@@ -168,7 +168,7 @@ import {
   IconCpu,
   IconChip,
   IconNetwork
-} from '@/shims/tabler-icons';
+} from '@tabler/icons-react';
 
 // Types
 interface AIInsight {

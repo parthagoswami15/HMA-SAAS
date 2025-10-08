@@ -599,7 +599,7 @@ const OPDManagement = () => {
                     </Group>
                   </Stack>
 
-                  <div className="mb-md">
+                  <div style={{ marginBottom: 'var(--mantine-spacing-md)' }}>
                     <Text size="sm" c="dimmed" mb="xs">Today's Load</Text>
                     <Progress 
                       value={(doctor.currentPatients / doctor.maxPatientsPerDay) * 100} 

@@ -52,7 +52,7 @@ import {
   IconCheck,
   IconX,
   IconDotsVertical,
-  IconBox,
+  IconX,
   IconTruck,
   IconClipboardList,
   IconFileText,

@@ -45,7 +45,7 @@ import {
   IconRobot,
   IconDatabase,
   IconShieldCheck
-} from '@/shims/tabler-icons';
+} from '@tabler/icons-react';
 import { UserRole } from '../../types/common';
 
 interface LayoutProps {

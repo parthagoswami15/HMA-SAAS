@@ -13,18 +13,17 @@ const nextConfig: NextConfig = {
     // your project has type errors.
     ignoreBuildErrors: true,
   },
-  experimental: ((): any => {
-    // Hard-disable Next package import optimizer
-    (process.env as any).NEXT_DISABLE_PACKAGE_IMPORT_OPTIMIZATION = "1";
-    return { optimizePackageImports: [] } as any;
-  })(),
+  // Disable static optimization globally to prevent prerender issues
+  trailingSlash: false,
+  skipMiddlewareUrlNormalize: false,
+  skipTrailingSlashRedirect: false,
+  experimental: {
+    optimizePackageImports: [],
+  },
   webpack: (config) => {
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      // Alias Tabler icons to local shim to avoid optimizer issues
-      "@tabler/icons-react": resolveFromCwd("src/shims/tabler-icons"),
-
       // Alias Mantine packages and styles to local shims
       "@mantine/charts": resolveFromCwd("src/shims/mantine-charts"),
       "@mantine/dates": resolveFromCwd("src/shims/mantine-dates"),
