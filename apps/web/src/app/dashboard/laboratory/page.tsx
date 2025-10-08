@@ -27,7 +27,7 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  DatePicker,
+  DatePickerInput,
   Timeline,
   Stepper,
   Checkbox

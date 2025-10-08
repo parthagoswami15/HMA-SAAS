@@ -114,12 +114,12 @@ export type InvoiceItemType =
   | 'other';
 
 export type InvoiceStatus = 
-  | 'draft'
-  | 'pending'
-  | 'paid'
-  | 'partially_paid'
-  | 'cancelled'
-  | 'refunded';
+  | 'DRAFT'
+  | 'PENDING'
+  | 'PAID'
+  | 'PARTIALLY_PAID'
+  | 'CANCELLED'
+  | 'REFUNDED';
 
 export type PaymentStatus = 
   | 'unpaid'
@@ -194,15 +194,15 @@ export interface Payment extends BaseEntity {
 }
 
 export type PaymentMethod = 
-  | 'cash'
-  | 'credit_card'
-  | 'debit_card'
-  | 'upi'
-  | 'net_banking'
-  | 'cheque'
-  | 'bank_transfer'
-  | 'wallet'
-  | 'other';
+  | 'CASH'
+  | 'CREDIT_CARD'
+  | 'DEBIT_CARD'
+  | 'UPI'
+  | 'NET_BANKING'
+  | 'CHEQUE'
+  | 'BANK_TRANSFER'
+  | 'WALLET'
+  | 'OTHER';
 
 export type PaymentType = 
   | 'full_payment'
@@ -212,11 +212,11 @@ export type PaymentType =
   | 'adjustment';
 
 export type PaymentTransactionStatus = 
-  | 'pending'
-  | 'completed'
-  | 'failed'
-  | 'refunded'
-  | 'cancelled';
+  | 'PENDING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'REFUNDED'
+  | 'CANCELLED';
 
 export type ProcessingStatus = 
   | 'submitted'

@@ -91,13 +91,13 @@ export type AppointmentType =
   | 'telemedicine';
 
 export type AppointmentStatus = 
-  | 'scheduled'
-  | 'arrived'
-  | 'in_progress'
-  | 'completed'
-  | 'cancelled'
-  | 'no_show'
-  | 'rescheduled';
+  | 'SCHEDULED'
+  | 'ARRIVED'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'CANCELLED'
+  | 'NO_SHOW'
+  | 'RESCHEDULED';
 
 export type AppointmentPriority = 
   | 'low'
