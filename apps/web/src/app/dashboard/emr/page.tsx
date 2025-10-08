@@ -30,7 +30,7 @@ import {
   Anchor,
   NumberInput,
   Textarea,
-  DatePicker,
+  DatePickerInput,
   List
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -64,7 +64,7 @@ import {
   IconTrendingUp,
   IconTrendingDown,
   IconClipboardList,
-  IconMedicineBottle,
+  IconMedicine,
   IconMedicalCross,
   IconVaccine,
   IconReportMedical,

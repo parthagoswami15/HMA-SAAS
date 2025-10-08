@@ -56,17 +56,18 @@ export interface TenantInfo {
 
 // User Roles and Permissions
 export enum UserRole {
-  SUPER_ADMIN = 'super_admin',
-  ADMIN = 'admin',
-  DOCTOR = 'doctor',
-  NURSE = 'nurse',
-  TECHNICIAN = 'technician',
-  PHARMACIST = 'pharmacist',
-  RECEPTIONIST = 'receptionist',
-  LAB_TECHNICIAN = 'lab_technician',
-  RADIOLOGIST = 'radiologist',
-  PATIENT = 'patient',
-  BILLING_STAFF = 'billing_staff'
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  ADMIN = 'ADMIN',
+  DOCTOR = 'DOCTOR',
+  NURSE = 'NURSE',
+  LAB_TECHNICIAN = 'LAB_TECHNICIAN',
+  RADIOLOGIST = 'RADIOLOGIST',
+  PHARMACIST = 'PHARMACIST',
+  RECEPTIONIST = 'RECEPTIONIST',
+  ACCOUNTANT = 'ACCOUNTANT',
+  PATIENT = 'PATIENT',
+  USER = 'USER',
+  HOSPITAL_ADMIN = 'HOSPITAL_ADMIN'
 }
 
 export interface Permission {
@@ -221,27 +222,32 @@ export interface PaginationMeta {
 
 // Healthcare Specific Common Types
 export enum Gender {
-  MALE = 'male',
-  FEMALE = 'female',
-  OTHER = 'other'
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  OTHER = 'OTHER',
+  UNKNOWN = 'UNKNOWN'
 }
 
 export enum BloodGroup {
-  A_POSITIVE = 'A+',
-  A_NEGATIVE = 'A-',
-  B_POSITIVE = 'B+',
-  B_NEGATIVE = 'B-',
-  AB_POSITIVE = 'AB+',
-  AB_NEGATIVE = 'AB-',
-  O_POSITIVE = 'O+',
-  O_NEGATIVE = 'O-'
+  A_POSITIVE = 'A_POSITIVE',
+  A_NEGATIVE = 'A_NEGATIVE',
+  B_POSITIVE = 'B_POSITIVE',
+  B_NEGATIVE = 'B_NEGATIVE',
+  AB_POSITIVE = 'AB_POSITIVE',
+  AB_NEGATIVE = 'AB_NEGATIVE',
+  O_POSITIVE = 'O_POSITIVE',
+  O_NEGATIVE = 'O_NEGATIVE',
+  UNKNOWN = 'UNKNOWN'
 }
 
 export enum MaritalStatus {
-  SINGLE = 'single',
-  MARRIED = 'married',
-  DIVORCED = 'divorced',
-  WIDOWED = 'widowed'
+  SINGLE = 'SINGLE',
+  MARRIED = 'MARRIED',
+  DIVORCED = 'DIVORCED',
+  WIDOWED = 'WIDOWED',
+  SEPARATED = 'SEPARATED',
+  DOMESTIC_PARTNERSHIP = 'DOMESTIC_PARTNERSHIP',
+  UNKNOWN = 'UNKNOWN'
 }
 
 // Insurance and Payment Types

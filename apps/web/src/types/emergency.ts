@@ -122,3 +122,23 @@ export interface VitalSigns {
 export type CaseStatus = EmergencyStatus;
 export type BedStatus = 'available' | 'occupied' | 'maintenance' | 'reserved';
 export type EquipmentStatus = 'available' | 'in_use' | 'maintenance' | 'out_of_service';
+
+export interface EmergencyStats {
+  totalCases: number;
+  criticalCases: number;
+  urgentCases: number;
+  lessUrgentCases: number;
+  nonUrgentCases: number;
+  averageWaitTime: number;
+  bedOccupancyRate: number;
+  averageStayDuration: number;
+  dischargeRate: number;
+  mortalityRate: number;
+  casesByCategory: Array<{ category: string; count: number; percentage: number }>;
+  dailyVolume: Array<{ date: string; cases: number }>;
+  responseTimeMetrics: {
+    averageTriageTime: number;
+    averagePhysicianTime: number;
+    averageDischargeTime: number;
+  };
+}

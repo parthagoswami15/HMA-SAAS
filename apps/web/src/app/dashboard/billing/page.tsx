@@ -163,26 +163,23 @@ const BillingManagement = () => {
   // Helper functions
   const getStatusColor = (status: InvoiceStatus | PaymentStatus | ClaimStatus | PaymentTransactionStatus) => {
     switch (status) {
-      // Common neutrals
-      case 'draft':
-        return 'orange';
-
       // InvoiceStatus
-      case 'pending':
+      case 'DRAFT':
+        return 'orange';
+      case 'PENDING':
         return 'blue';
-      case 'paid':
-      case 'partially_paid':
+      case 'PAID':
         return 'green';
-      case 'cancelled':
-      case 'refunded':
+      case 'PARTIALLY_PAID':
+        return 'yellow';
+      case 'CANCELLED':
+      case 'REFUNDED':
         return 'gray';
 
-      // PaymentStatus
-      case 'pending':
-        return 'orange';
-      case 'completed':
+      // PaymentTransactionStatus
+      case 'COMPLETED':
         return 'green';
-      case 'failed':
+      case 'FAILED':
         return 'red';
 
       // ClaimStatus
@@ -191,6 +188,8 @@ const BillingManagement = () => {
         return 'blue';
       case 'under_review':
         return 'cyan';
+      case 'approved':
+        return 'green';
       case 'partially_approved':
         return 'yellow';
       case 'denied':
@@ -200,14 +199,6 @@ const BillingManagement = () => {
       case 'closed':
         return 'gray';
 
-      // PaymentTransactionStatus
-      case 'pending':
-        return 'orange';
-      case 'completed':
-        return 'green';
-      case 'failed':
-        return 'red';
-
       default:
         return 'gray';
     }
@@ -215,14 +206,14 @@ const BillingManagement = () => {
 
   const getPaymentMethodIcon = (method: PaymentMethod) => {
     switch (method) {
-      case 'cash': return <IconCash size={16} />;
-      case 'credit_card': return <IconCreditCard size={16} />;
-      case 'debit_card': return <IconCreditCard size={16} />;
-      case 'bank_transfer': return <IconBuildingBank size={16} />;
-      case 'upi': return <IconBrandPaypal size={16} />;
-      case 'net_banking': return <IconBuildingBank size={16} />;
-      case 'cheque': return <IconCopyright size={16} />;
-      case 'wallet': return <IconWallet size={16} />;
+      case 'CASH': return <IconCash size={16} />;
+      case 'CREDIT_CARD': return <IconCreditCard size={16} />;
+      case 'DEBIT_CARD': return <IconCreditCard size={16} />;
+      case 'BANK_TRANSFER': return <IconBuildingBank size={16} />;
+      case 'UPI': return <IconBrandPaypal size={16} />;
+      case 'NET_BANKING': return <IconBuildingBank size={16} />;
+      case 'CHEQUE': return <IconCopyright size={16} />;
+      case 'WALLET': return <IconWallet size={16} />;
       default: return <IconWallet size={16} />;
     }
   };
@@ -293,14 +284,14 @@ const BillingManagement = () => {
 
   const getPaymentMethodColor = (method: PaymentMethod) => {
     switch (method) {
-      case 'cash': return 'green.6';
-      case 'credit_card': return 'blue.6';
-      case 'debit_card': return 'cyan.6';
-      case 'bank_transfer': return 'indigo.6';
-      case 'upi': return 'teal.6';
-      case 'net_banking': return 'violet.6';
-      case 'cheque': return 'orange.6';
-      case 'wallet': return 'grape.6';
+      case 'CASH': return 'green.6';
+      case 'CREDIT_CARD': return 'blue.6';
+      case 'DEBIT_CARD': return 'cyan.6';
+      case 'BANK_TRANSFER': return 'indigo.6';
+      case 'UPI': return 'teal.6';
+      case 'NET_BANKING': return 'violet.6';
+      case 'CHEQUE': return 'orange.6';
+      case 'WALLET': return 'grape.6';
       default: return 'gray.6';
     }
   };

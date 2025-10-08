@@ -125,13 +125,13 @@ const AppointmentManagement = () => {
   // Helper functions
   const getStatusColor = (status: AppointmentStatus) => {
     switch (status) {
-      case 'scheduled': return 'blue';
-      case 'arrived': return 'teal';
-      case 'in_progress': return 'yellow';
-      case 'completed': return 'green';
-      case 'cancelled': return 'red';
-      case 'no_show': return 'gray';
-      case 'rescheduled': return 'orange';
+      case 'SCHEDULED': return 'blue';
+      case 'ARRIVED': return 'teal';
+      case 'IN_PROGRESS': return 'yellow';
+      case 'COMPLETED': return 'green';
+      case 'CANCELLED': return 'red';
+      case 'NO_SHOW': return 'gray';
+      case 'RESCHEDULED': return 'orange';
       default: return 'gray';
     }
   };
@@ -466,13 +466,13 @@ const AppointmentManagement = () => {
                             <Menu.Dropdown>
                               <Menu.Item 
                                 leftSection={<IconCheck size={14} />}
-                                onClick={() => handleStatusUpdate(appointment.id, 'arrived')}
+                                onClick={() => handleStatusUpdate(appointment.id, 'ARRIVED')}
                               >
                                 Confirm
                               </Menu.Item>
                               <Menu.Item 
                                 leftSection={<IconUserCheck size={14} />}
-                                onClick={() => handleStatusUpdate(appointment.id, 'arrived')}
+                                onClick={() => handleStatusUpdate(appointment.id, 'ARRIVED')}
                               >
                                 Check In
                               </Menu.Item>
