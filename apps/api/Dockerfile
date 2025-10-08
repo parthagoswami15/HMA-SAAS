@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 FROM node:20-alpine AS base
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init and curl for proper signal handling and health checks
+RUN apk add --no-cache dumb-init curl
 
 WORKDIR /app
 
@@ -16,17 +16,17 @@ COPY apps/api/package.json ./apps/api/package.json
 RUN mkdir -p apps/web
 RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/package.json
 
-# Copy Prisma schema and config BEFORE installing dependencies (needed for postinstall script)
+# Copy Prisma schema BEFORE installing dependencies (needed for postinstall script)
 COPY apps/api/prisma ./apps/api/prisma/
-COPY apps/api/prisma.config.ts ./apps/api/prisma.config.ts
 
 # Install ALL dependencies including devDependencies (needed for build)
 RUN npm ci
 
-# Copy remaining API source code
+# Copy remaining API source code and config files
 COPY apps/api/src ./apps/api/src/
 COPY apps/api/nest-cli.json ./apps/api/nest-cli.json
 COPY apps/api/tsconfig*.json ./apps/api/
+COPY apps/api/ormconfig*.ts ./apps/api/
 
 # Build API
 WORKDIR /app/apps/api
@@ -34,8 +34,8 @@ RUN npm run build
 
 FROM node:20-alpine AS runner
 
-# Install dumb-init
-RUN apk add --no-cache dumb-init
+# Install dumb-init and curl for healthcheck
+RUN apk add --no-cache dumb-init curl
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
@@ -52,9 +52,9 @@ COPY --from=base /app/apps/api/package.json ./apps/api/package.json
 RUN mkdir -p apps/web
 RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/package.json
 
-# Copy Prisma files first
+# Copy Prisma files and configs first
 COPY --from=base /app/apps/api/prisma ./apps/api/prisma
-COPY --from=base /app/apps/api/prisma.config.ts ./apps/api/prisma.config.ts
+COPY --from=base /app/apps/api/ormconfig*.ts ./apps/api/
 
 # Install production dependencies
 RUN npm ci --only=production
@@ -71,7 +71,7 @@ EXPOSE ${PORT:-10000}
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
+  CMD curl -f http://localhost:${PORT}/health || exit 1
 
 # Run migrations and start application with proper signal handling
 CMD ["dumb-init", "sh", "-c", "echo 'Starting HMS SaaS Backend...' && echo 'Environment:' $NODE_ENV && echo 'Port:' $PORT && cd /app/apps/api && echo 'Running database migrations...' && (npx prisma migrate deploy --schema=./prisma/schema.prisma || echo 'Migration failed, starting anyway...') && cd /app && echo 'Starting Node.js application...' && node apps/api/dist/main.js"]
