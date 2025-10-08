@@ -31,7 +31,7 @@ import {
   IconAlertCircle,
   IconShield,
   IconUserPlus
-} from '@/shims/tabler-icons';
+} from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
 import { useAppStore } from '../../stores/appStore';

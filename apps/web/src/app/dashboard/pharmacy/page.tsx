@@ -92,7 +92,7 @@ import {
   IconTag,
   IconAlarm,
   IconInfoCircle
-} from '@/shims/tabler-icons';
+} from '../../../shims/tabler-icons';
 
 // Import types and mock data
 import {
