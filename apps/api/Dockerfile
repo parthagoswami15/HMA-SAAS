@@ -16,17 +16,17 @@ COPY apps/api/package.json ./apps/api/package.json
 RUN mkdir -p apps/web
 RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/package.json
 
-# Copy Prisma schema and config BEFORE installing dependencies (needed for postinstall script)
+# Copy Prisma schema BEFORE installing dependencies (needed for postinstall script)
 COPY apps/api/prisma ./apps/api/prisma/
-COPY apps/api/prisma.config.ts ./apps/api/prisma.config.ts
 
 # Install ALL dependencies including devDependencies (needed for build)
 RUN npm ci
 
-# Copy remaining API source code
+# Copy remaining API source code and config files
 COPY apps/api/src ./apps/api/src/
 COPY apps/api/nest-cli.json ./apps/api/nest-cli.json
 COPY apps/api/tsconfig*.json ./apps/api/
+COPY apps/api/ormconfig*.ts ./apps/api/
 
 # Build API
 WORKDIR /app/apps/api
@@ -52,9 +52,9 @@ COPY --from=base /app/apps/api/package.json ./apps/api/package.json
 RUN mkdir -p apps/web
 RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/package.json
 
-# Copy Prisma files first
+# Copy Prisma files and configs first
 COPY --from=base /app/apps/api/prisma ./apps/api/prisma
-COPY --from=base /app/apps/api/prisma.config.ts ./apps/api/prisma.config.ts
+COPY --from=base /app/apps/api/ormconfig*.ts ./apps/api/
 
 # Install production dependencies
 RUN npm ci --only=production
