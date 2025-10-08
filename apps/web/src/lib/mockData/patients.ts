@@ -408,7 +408,7 @@ export const mockPatientAppointments: PatientAppointment[] = [
     appointmentTime: '14:30',
     duration: 45,
     appointmentType: 'consultation',
-    status: 'confirmed',
+    status: 'arrived',
     chiefComplaint: 'Prenatal check-up',
     notes: 'Regular prenatal examination',
     reminderSent: true,

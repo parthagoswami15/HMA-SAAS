@@ -65,3 +65,60 @@ export interface EmergencyConsultation {
   consultedAt?: Date;
   recommendations: string;
 }
+
+// Additional types for emergency management
+export interface Triage {
+  id: string;
+  patientName: string;
+  triageLevel: TriageLevel;
+  chiefComplaint: string;
+  arrivalTime: Date;
+  waitTime: number;
+}
+
+export interface ICUBed {
+  id: string;
+  bedNumber: string;
+  status: BedStatus;
+  patientName?: string;
+  admissionTime?: Date;
+}
+
+export interface CriticalCareEquipment {
+  id: string;
+  name: string;
+  status: EquipmentStatus;
+  location: string;
+}
+
+export interface EmergencyProtocol {
+  id: string;
+  name: string;
+  category: string;
+  steps: string[];
+}
+
+export interface EmergencyFilters {
+  status?: EmergencyStatus;
+  triageLevel?: TriageLevel;
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
+}
+
+export interface VitalSigns {
+  temperature: number;
+  bloodPressure: string;
+  heartRate: number;
+  respiratoryRate: number;
+  oxygenSaturation: number;
+  painLevel?: number;
+  consciousness?: string;
+  recordedAt: Date;
+  recordedBy: string;
+}
+
+export type CaseStatus = EmergencyStatus;
+export type BedStatus = 'available' | 'occupied' | 'maintenance' | 'reserved';
+export type EquipmentStatus = 'available' | 'in_use' | 'maintenance' | 'out_of_service';

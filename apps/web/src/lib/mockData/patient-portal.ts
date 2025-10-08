@@ -9,7 +9,7 @@ export const mockPatientPortalData = {
       doctor: 'Dr. Sarah Johnson',
       department: 'Cardiology',
       type: 'Follow-up',
-      status: 'confirmed'
+      status: 'arrived'
     },
     {
       id: '2',

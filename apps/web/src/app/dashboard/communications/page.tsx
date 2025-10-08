@@ -24,7 +24,7 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  DatePickerInput,
+
   Switch,
   Divider,
   Alert,
@@ -41,6 +41,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
+import { DatePickerInput } from '@mantine/dates';
 import { LineChart, BarChart, DonutChart, AreaChart, PieChart } from '@mantine/charts';
 import {
   IconPlus,
@@ -63,7 +64,7 @@ import {
   IconNurse,
   IconPill,
   IconDroplet,
-  IconThermometer,
+  IconTemperature as IconThermometer,
   IconLungs,
   IconFileText,
   IconPrinter,
@@ -80,8 +81,8 @@ import {
   IconCash,
   IconCreditCard,
   IconReceipt,
-  IconCheck,
-  IconX,
+  IconCheckbox as IconCheck,
+  IconClose as IconX,
   IconAlertCircle,
   IconArrowUp,
   IconArrowDown,
@@ -786,7 +787,7 @@ const CommunicationsManagement = () => {
                   { value: 'voice', label: 'Voice Call' }
                 ]}
                 value={selectedType}
-                onChange={setSelectedType}
+                onChange={(value) => setSelectedType(value || '')}
                 clearable
               />
               <Select
@@ -800,7 +801,7 @@ const CommunicationsManagement = () => {
                   { value: 'scheduled', label: 'Scheduled' }
                 ]}
                 value={selectedStatus}
-                onChange={setSelectedStatus}
+                onChange={(value) => setSelectedStatus(value || '')}
                 clearable
               />
             </Group>
@@ -1484,6 +1485,7 @@ const CommunicationsManagement = () => {
             <DatePickerInput
               label="Schedule Send Time (Optional)"
               placeholder="Select date and time"
+              onChange={(date: Date | null) => {/* Handle date change */}}
             />
           </SimpleGrid>
 

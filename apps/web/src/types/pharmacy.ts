@@ -103,10 +103,30 @@ export interface DrugInventory extends BaseEntity {
   status: InventoryStatus;
 }
 
+export interface Dispensation extends BaseEntity {
+  dispensationId: string;
+  prescriptionId: string;
+  patientId: string;
+  dispensedBy: string;
+  dispensedDate: Date;
+  medications: DispensedMedication[];
+  totalAmount: number;
+}
+
+export interface PharmacyStats {
+  totalMedications: number;
+  lowStockItems: number;
+  expiringSoon: number;
+  totalPrescriptions: number;
+  dispensedToday: number;
+}
+
 export type DosageForm = 'tablet' | 'capsule' | 'syrup' | 'injection' | 'cream' | 'ointment' | 'drops' | 'inhaler';
 export type AdministrationRoute = 'oral' | 'injection' | 'topical' | 'inhalation' | 'nasal' | 'ophthalmic' | 'otic';
 export type DrugCategory = 'antibiotic' | 'analgesic' | 'antihypertensive' | 'antidiabetic' | 'cardiac' | 'respiratory';
 export type InteractionSeverity = 'minor' | 'moderate' | 'major' | 'contraindicated';
-export type PrescriptionStatus = 'pending' | 'verified' | 'dispensed' | 'completed' | 'cancelled';
-export type PaymentStatus = 'unpaid' | 'paid' | 'insurance_claimed';
+export type PrescriptionStatus = 'active' | 'completed' | 'cancelled';
+export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded' | 'cancelled';
 export type InventoryStatus = 'active' | 'expired' | 'recalled' | 'damaged';
+export type MedicationCategory = DrugCategory;
+export type MedicationStatus = 'available' | 'low_stock' | 'out_of_stock' | 'discontinued';

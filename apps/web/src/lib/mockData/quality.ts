@@ -148,3 +148,8 @@ export const mockRiskAssessments = [
   { id: 'r2', area: 'Radiology', risk: 'Radiation Exposure', level: 'medium', status: 'monitoring' }
 ];
 export const mockQualityIncidents = mockIncidents;
+
+// Missing exports (stubs)
+export const mockCorrectiveActions: any[] = [];
+export const mockAuditFindings: any[] = [];
+export const mockQualityIndicators: any[] = [];

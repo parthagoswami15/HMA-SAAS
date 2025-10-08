@@ -33,7 +33,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { Calendar, DatePicker } from '@mantine/dates';
+import { Calendar, DatePickerInput } from '@mantine/dates';
 import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
 import {
   IconPlus,
@@ -126,8 +126,7 @@ const AppointmentManagement = () => {
   const getStatusColor = (status: AppointmentStatus) => {
     switch (status) {
       case 'scheduled': return 'blue';
-      case 'confirmed': return 'green';
-      case 'checked_in': return 'teal';
+      case 'arrived': return 'teal';
       case 'in_progress': return 'yellow';
       case 'completed': return 'green';
       case 'cancelled': return 'red';
@@ -286,7 +285,7 @@ const AppointmentManagement = () => {
       </SimpleGrid>
 
       {/* Main Content Tabs */}
-      <Tabs value={activeTab} onChange={setActiveTab}>
+      <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'appointments')}>
         <Tabs.List>
           <Tabs.Tab value="appointments" leftSection={<IconCalendarEvent size={16} />}>
             Appointments
@@ -324,19 +323,22 @@ const AppointmentManagement = () => {
                   label: `${doctor.firstName} ${doctor.lastName}` 
                 }))}
                 value={selectedDoctor}
-                onChange={setSelectedDoctor}
+                onChange={(value) => setSelectedDoctor(value || '')}
                 clearable
               />
               <Select
                 placeholder="Status"
                 data={[
                   { value: 'scheduled', label: 'Scheduled' },
-                  { value: 'confirmed', label: 'Confirmed' },
+                  { value: 'arrived', label: 'Arrived' },
+                  { value: 'in_progress', label: 'In Progress' },
                   { value: 'completed', label: 'Completed' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
+                  { value: 'no_show', label: 'No Show' },
+                  { value: 'rescheduled', label: 'Rescheduled' }
                 ]}
                 value={selectedStatus}
-                onChange={setSelectedStatus}
+                onChange={(value) => setSelectedStatus(value || '')}
                 clearable
               />
               <Select
@@ -348,13 +350,13 @@ const AppointmentManagement = () => {
                   { value: 'telemedicine', label: 'Telemedicine' }
                 ]}
                 value={selectedType}
-                onChange={setSelectedType}
+                onChange={(value) => setSelectedType(value || '')}
                 clearable
               />
-              <DatePicker
+              <DatePickerInput
                 placeholder="Select date"
                 value={selectedDate}
-                onChange={setSelectedDate}
+                onChange={setSelectedDate as any}
                 clearable
               />
             </Group>
@@ -464,13 +466,13 @@ const AppointmentManagement = () => {
                             <Menu.Dropdown>
                               <Menu.Item 
                                 leftSection={<IconCheck size={14} />}
-                                onClick={() => handleStatusUpdate(appointment.id, 'confirmed')}
+                                onClick={() => handleStatusUpdate(appointment.id, 'arrived')}
                               >
                                 Confirm
                               </Menu.Item>
                               <Menu.Item 
                                 leftSection={<IconUserCheck size={14} />}
-                                onClick={() => handleStatusUpdate(appointment.id, 'checked_in')}
+                                onClick={() => handleStatusUpdate(appointment.id, 'arrived')}
                               >
                                 Check In
                               </Menu.Item>
@@ -506,7 +508,7 @@ const AppointmentManagement = () => {
                     label: `${doctor.firstName} ${doctor.lastName}` 
                   }))}
                   value={selectedDoctor}
-                  onChange={setSelectedDoctor}
+                  onChange={(value) => setSelectedDoctor(value || '')}
                 />
                 <Button leftSection={<IconPlus size={16} />}>
                   Add Slot
@@ -521,8 +523,9 @@ const AppointmentManagement = () => {
                   size="md"
                   static
                   renderDay={(date) => {
+                    const dateObj = new Date(date as any);
                     const hasAppointments = mockAppointments.some(apt => 
-                      new Date(apt.appointmentDate).toDateString() === date.toDateString()
+                      new Date(apt.appointmentDate).toDateString() === dateObj.toDateString()
                     );
                     return (
                       <div style={{ 
@@ -531,7 +534,7 @@ const AppointmentManagement = () => {
                         backgroundColor: hasAppointments ? '#e3f2fd' : 'transparent',
                         borderRadius: '4px'
                       }}>
-                        {date.getDate()}
+                        {dateObj.getDate()}
                       </div>
                     );
                   }}
@@ -927,10 +930,13 @@ const AppointmentManagement = () => {
           </SimpleGrid>
           
           <SimpleGrid cols={2}>
-            <DatePicker
+            <DatePickerInput
               label="Appointment Date"
               placeholder="Select date"
               required
+              value={selectedDate}
+              onChange={setSelectedDate as any}
+              clearable
             />
             <Select
               label="Time Slot"

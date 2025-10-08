@@ -151,6 +151,7 @@ export const mockInsuranceClaims: InsuranceClaim[] = [
     insurance: mockInsuranceProviders[0],
     claimDate: new Date('2024-01-16'),
     serviceDate: new Date('2024-01-15'),
+    submissionDate: new Date('2024-01-16'),
     services: [
         { id: '1', serviceCode: 'C001', description: 'Consultation Fee', serviceDate: new Date('2024-01-15'), providerId: mockStaff[0].id, providerName: `${mockStaff[0].firstName} ${mockStaff[0].lastName}`, cptCode: '99213', units: 1, chargedAmount: 1500, allowedAmount: 1200, paidAmount: 1200, deductible: 0, copay: 0, coinsurance: 0, status: 'approved' as ServiceClaimStatus },
     ],
@@ -228,18 +229,53 @@ export const mockBillingStats: BillingStats = {
   paidInvoices: 95,
   unpaidInvoices: 5,
   overdueInvoices: 2,
+  averageInvoiceAmount: 25000,
+  daysOutstanding: 15,
   totalPayments: 150,
   averagePaymentAmount: 15833,
-  paymentMethodDistribution: { 'credit_card': 100, 'cash': 50 },
+  paymentMethodDistribution: { 
+    'cash': 50, 
+    'credit_card': 100, 
+    'debit_card': 30, 
+    'bank_transfer': 40, 
+    'upi': 80, 
+    'net_banking': 25, 
+    'cheque': 15, 
+    'wallet': 10, 
+    'other': 5 
+  },
   totalClaims: 50,
   approvedClaims: 45,
   deniedClaims: 5,
   pendingClaims: 0,
   averageClaimAmount: 18500,
-  insuranceCollectionRate: 90,
+  insuranceCoverageRate: 90,
+  claimStatusDistribution: {
+    'pending': 0,
+    'submitted': 0,
+    'under_review': 0,
+    'approved': 45,
+    'partially_approved': 0,
+    'denied': 5,
+    'appealed': 0,
+    'paid': 40,
+    'cancelled': 0
+  },
   topPayingPatients: [],
   topRevenueServices: [],
   topInsuranceProviders: [],
   monthlyRevenueTrends: [],
   dailyCollections: [],
+};
+
+// Mock Billing Reports
+export const mockBillingReports = {
+  monthlyRevenue: [
+    { month: 'Jan', totalRevenue: 200000, collections: 190000 },
+    { month: 'Feb', totalRevenue: 220000, collections: 210000 },
+    { month: 'Mar', totalRevenue: 210000, collections: 200000 },
+    { month: 'Apr', totalRevenue: 230000, collections: 220000 },
+    { month: 'May', totalRevenue: 240000, collections: 230000 },
+    { month: 'Jun', totalRevenue: 250000, collections: 240000 },
+  ]
 };

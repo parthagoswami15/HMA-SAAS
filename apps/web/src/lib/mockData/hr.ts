@@ -8,8 +8,11 @@ import {
   Payroll,
   Performance,
   Training,
-  HRStats
+  HRStats,
+  Shift
 } from '../../types/hr';
+
+
 
 export const mockEmployees: Employee[] = [
   {
@@ -295,33 +298,39 @@ export const mockTraining: Training[] = [
 
 export const mockHRStats: HRStats = {
   totalEmployees: 245,
-  activeEmployees: 238,
-  onLeave: 7,
-  newHires: 12,
-  resignations: 3,
-  averageSalary: 75000,
-  attendanceRate: 94.5,
-  turnoverRate: 8.2,
-  employeesByDepartment: [
-    { department: 'Nursing', count: 85, percentage: 34.7 },
-    { department: 'Medical', count: 65, percentage: 26.5 },
-    { department: 'Administration', count: 35, percentage: 14.3 },
-    { department: 'Support Staff', count: 30, percentage: 12.2 },
-    { department: 'Technical', count: 20, percentage: 8.2 },
-    { department: 'Others', count: 10, percentage: 4.1 }
+  activeEmployees: 235,
+  inactiveEmployees: 10,
+  departmentDistribution: [
+    { department: 'Medical', count: 120, percentage: 49.0 },
+    { department: 'Nursing', count: 65, percentage: 26.5 },
+    { department: 'Administration', count: 25, percentage: 10.2 },
+    { department: 'Support', count: 35, percentage: 14.3 }
   ],
-  leaveStats: {
-    totalRequests: 45,
-    approved: 38,
-    pending: 5,
-    rejected: 2
-  },
-  trainingStats: {
-    totalPrograms: 24,
-    completed: 18,
-    ongoing: 4,
-    scheduled: 2
-  },
+  roleDistribution: [
+    { role: 'Doctor', count: 75, percentage: 30.6 },
+    { role: 'Nurse', count: 65, percentage: 26.5 },
+    { role: 'Admin Staff', count: 25, percentage: 10.2 },
+    { role: 'Technician', count: 45, percentage: 18.4 },
+    { role: 'Support Staff', count: 35, percentage: 14.3 }
+  ],
+  genderDistribution: [
+    { gender: 'Male', count: 120, percentage: 49.0 },
+    { gender: 'Female', count: 125, percentage: 51.0 }
+  ],
+  ageDistribution: [
+    { range: '20-30', count: 65, percentage: 26.5 },
+    { range: '31-40', count: 95, percentage: 38.8 },
+    { range: '41-50', count: 55, percentage: 22.4 },
+    { range: '51-60', count: 25, percentage: 10.2 },
+    { range: '60+', count: 5, percentage: 2.0 }
+  ],
+  tenureDistribution: [
+    { range: '< 1 year', count: 35, percentage: 14.3 },
+    { range: '1-3 years', count: 75, percentage: 30.6 },
+    { range: '3-5 years', count: 65, percentage: 26.5 },
+    { range: '5-10 years', count: 45, percentage: 18.4 },
+    { range: '10+ years', count: 25, percentage: 10.2 }
+  ],
   performanceDistribution: [
     { rating: '5.0', count: 15, percentage: 6.1 },
     { rating: '4.0-4.9', count: 125, percentage: 51.0 },
@@ -333,4 +342,4 @@ export const mockHRStats: HRStats = {
 
 // Aliases expected by pages
 export const mockShifts: any[] = [];
-export const mockPerformanceReviews = mockPerformance;
+export const mockPerformanceReviews = [];

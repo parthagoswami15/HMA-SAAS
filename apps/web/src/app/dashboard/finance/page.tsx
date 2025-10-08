@@ -46,181 +46,36 @@ import {
   Checkbox,
   Radio,
   PasswordInput,
-  MultiSelect,
-  Anchor
 } from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
+import { DatePicker } from '@mantine/dates';
 import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
 import {
   IconPlus,
   IconSearch,
   IconEdit,
   IconEye,
-  IconTrash,
-  IconCalendar,
-  IconUsers,
-  IconChartBar,
-  IconPhone,
-  IconMail,
-  IconAlertCircle,
-  IconCheck,
-  IconX,
-  IconDotsVertical,
-  IconReportMedical,
-  IconClock,
-  IconClipboardList,
-  IconFileText,
   IconDownload,
-  IconPrinter,
-  IconShare,
-  IconActivity,
-  IconExclamationMark,
-  IconClockHour4,
+  IconChartBar,
+  IconReceipt,
+  IconBuildingBank,
+  IconFileInvoice,
+  IconReportAnalytics,
   IconTrendingUp,
   IconTrendingDown,
-  IconCalculator,
-  IconSettings,
-  IconRefresh,
-  IconFilter,
-  IconBarcode,
-  IconTemperature,
-  IconShieldCheck,
-  IconAlertTriangle,
-  IconCircleCheck,
-  IconClipboard,
-  IconVital,
-  IconLungs,
-  IconHeart,
-  IconBrain,
-  IconBone,
-  IconStethoscope,
-  IconMedicalCross,
-  IconPackage,
-  IconTruck,
-  IconCash,
-  IconReceipt,
-  IconNotes,
-  IconTag,
-  IconAlarm,
-  IconInfoCircle,
-  IconBed,
-  IconAmbulance,
-  IconSiren,
-  IconFlask,
-  IconDroplet,
-  IconNurse,
-  IconBandage,
-  IconPill,
-  IconSyringe,
-  IconMask,
-  IconBolt,
-  IconZoom,
-  IconCut,
-  IconTool,
-  IconPhoto,
-  IconScan,
-  IconDeviceDesktop,
-  IconCamera,
-  IconUpload,
-  IconTarget,
-  IconFocus,
-  IconColorPicker,
-  IconRuler,
-  IconRotate,
-  IconContrast,
-  IconBrightness,
-  IconAdjustments,
-  IconMaximize,
-  IconMinimize,
-  IconPlayerPlay,
-  IconPlayerPause,
-  IconVolume,
-  IconFileUpload,
-  IconCloudUpload,
-  IconDna,
-  IconVirus,
-  IconBacteria,
-  IconTestPipe,
-  IconMolecule,
-  IconAtom,
-  IconChemistry,
-  IconDna2,
-  IconCellSignal4,
-  IconCertificate,
-  IconReport,
-  IconCopy,
-  IconFileReport,
-  IconDatabase,
-  IconFlask2,
-  IconMicroscope2,
-  IconScale,
-  IconUser,
-  IconUserPlus,
-  IconUserCheck,
-  IconUserX,
-  IconBriefcase,
-  IconSchool,
-  IconAward,
-  IconStar,
-  IconCalendarEvent,
-  IconCalendarTime,
-  IconCurrencyDollar,
-  IconWallet,
-  IconPigMoney,
-  IconReceiptTax,
-  IconCreditCard,
-  IconBuildingBank,
-  IconHome,
-  IconMapPin,
-  IconIdBadge,
-  IconLicense,
-  IconCertificate2,
-  IconGraduationCap,
-  IconTrophy,
-  IconMedal,
-  IconRocket,
-  IconTarget2,
-  IconChecklist,
-  IconClipboardCheck,
-  IconUserCircle,
-  IconAt,
-  IconBuilding,
-  IconDepartment,
-  IconHierarchy,
-  IconLogin,
-  IconLogout,
-  IconTimelineEvent,
-  IconMoneybag,
-  IconCoins,
-  IconCreditCardPay,
-  IconBankTransfer,
-  IconChartPie,
-  IconChartLine,
-  IconPercentage,
-  IconSum,
-  IconMinus,
   IconArrowUp,
   IconArrowDown,
-  IconBusinessplan,
-  IconReportAnalytics,
-  IconFileInvoice,
-  IconFileSpreadsheet,
-  IconZoomMoney,
+  IconCash,
   IconCashBanknote,
-  IconShoppingCart,
-  IconBuildingStore,
-  IconCurrency,
-  IconTax,
-  IconDiscount2,
-  IconBillboard,
-  IconBooks,
-  IconBookmark,
-  IconFileDescription
+  IconFileSpreadsheet,
+  IconPercentage,
+  IconChartLine,
+  IconChartPie,
+  IconShare,
+  IconWallet,
+  IconBriefcase
 } from '@tabler/icons-react';
-
-// Import types and mock data
 import {
   Transaction,
   TransactionType,
@@ -397,7 +252,7 @@ const FinanceManagement = () => {
     {
       title: 'Net Profit',
       value: formatCurrency(mockFinancialStats.netProfit),
-      icon: IconMoneybag,
+      icon: IconWallet,
       color: 'blue',
       trend: '+18.7%'
     },
@@ -498,7 +353,7 @@ const FinanceManagement = () => {
           <Tabs.Tab value="accounts" leftSection={<IconBuildingBank size={16} />}>
             Accounts
           </Tabs.Tab>
-          <Tabs.Tab value="budgets" leftSection={<IconBusinessplan size={16} />}>
+          <Tabs.Tab value="budgets" leftSection={<IconBriefcase size={16} />}>
             Budgets
           </Tabs.Tab>
           <Tabs.Tab value="invoices" leftSection={<IconFileInvoice size={16} />}>
@@ -1272,6 +1127,7 @@ const FinanceManagement = () => {
                 value: account.id,
                 label: account.name
               }))}
+              onChange={(value) => value || ''}
               required
             />
           </SimpleGrid>
@@ -1280,6 +1136,7 @@ const FinanceManagement = () => {
             <DatePicker
               label="Transaction Date"
               placeholder="Select date"
+              onChange={(date) => {}}
               required
             />
             <Select
@@ -1292,6 +1149,7 @@ const FinanceManagement = () => {
                 { value: 'check', label: 'Check' },
                 { value: 'upi', label: 'UPI' }
               ]}
+              onChange={(value) => value || ''}
               required
             />
           </SimpleGrid>

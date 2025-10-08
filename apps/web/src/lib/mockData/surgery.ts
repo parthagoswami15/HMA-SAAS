@@ -97,7 +97,6 @@ export const mockSurgeryStats = {
   orUtilization: [
     { or: 'OR-1', utilization: 85 },
     { or: 'OR-2', utilization: 78 },
-    { or: 'OR-3', utilization: 72 },
     { or: 'OR-4', utilization: 90 }
   ]
 };
@@ -105,3 +104,8 @@ export const mockSurgeryStats = {
 // Minimal placeholders used by UI; kept empty to avoid rendering when not needed
 export const mockSurgicalEquipment: any[] = [];
 export const mockSurgicalTeams: any[] = [];
+
+// Missing exports (stubs)
+export const mockPreOpAssessments: any[] = [];
+export const mockPostOpAssessments: any[] = [];
+export const mockAnesthesiaRecords: any[] = [];

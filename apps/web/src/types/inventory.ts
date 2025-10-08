@@ -875,3 +875,17 @@ export interface InventoryStats {
   stockTurnoverRate: number;
   averageStockAge: number;
 }
+
+// Additional types for inventory management
+export interface InventoryAlert {
+  id: string;
+  type: AlertType;
+  itemId: string;
+  itemName: string;
+  message: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  createdAt: Date;
+}
+
+export type AlertType = 'low_stock' | 'out_of_stock' | 'expiring_soon' | 'expired' | 'reorder_point';
+export type OrderStatus = PurchaseOrderStatus;

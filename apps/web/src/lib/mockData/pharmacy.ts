@@ -105,9 +105,9 @@ export const mockPharmacyStats = {
   medicationsByCategory: [
     { category: 'Analgesic', count: 120, percentage: 14.1 },
     { category: 'Antibiotic', count: 95, percentage: 11.2 },
-    { category: 'Cardiovascular', count: 85, percentage: 10.0 },
-    { category: 'Antidiabetic', count: 75, percentage: 8.8 },
-    { category: 'Others', count: 475, percentage: 55.9 }
+    { category: 'Antidiabetic', count: 80, percentage: 9.4 },
+    { category: 'Cardiovascular', count: 150, percentage: 17.6 },
+    { category: 'Others', count: 405, percentage: 47.6 }
   ],
   expiringMedications: [
     { name: 'Aspirin 325mg', expiryDate: '2024-02-15', quantity: 150 },
@@ -115,3 +115,6 @@ export const mockPharmacyStats = {
     { name: 'Vitamin C Tablets', expiryDate: '2024-03-20', quantity: 200 }
   ]
 };
+
+// Missing export stub
+export const mockPharmacySuppliers: any[] = [];

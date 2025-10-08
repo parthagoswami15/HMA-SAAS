@@ -34,7 +34,7 @@ import {
   Anchor,
   rem
 } from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
+import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
@@ -67,7 +67,6 @@ import {
   IconTrendingUp,
   IconTrendingDown,
   IconUsers,
-  IconReportMoney,
   IconCalculator,
   IconWallet,
   IconBrandPaypal,
@@ -85,19 +84,17 @@ import {
   Payment,
   PaymentMethod,
   PaymentStatus,
+  PaymentTransactionStatus,
   InsuranceClaim,
   ClaimStatus,
   InsuranceProvider,
-  PatientInsurance,
-  BillingReport,
-  BillingFilters
+  PatientInsurance
 } from '../../../types/billing';
 import {
   mockInvoices,
   mockPayments,
   mockInsuranceClaims,
   mockInsuranceProviders,
-  mockPatientInsurance,
   mockBillingReports,
   mockBillingStats
 } from '../../../lib/mockData/billing';
@@ -140,7 +137,7 @@ const BillingManagement = () => {
     return mockPayments.filter((payment) => {
       const matchesSearch = 
         payment.paymentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        payment.invoiceNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+        payment.invoice?.invoiceNumber?.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesMethod = !selectedPaymentMethod || payment.paymentMethod === selectedPaymentMethod;
       const matchesStatus = !selectedStatus || payment.status === selectedStatus;
@@ -164,22 +161,55 @@ const BillingManagement = () => {
   }, [searchQuery, selectedStatus]);
 
   // Helper functions
-  const getStatusColor = (status: InvoiceStatus | PaymentStatus | ClaimStatus) => {
+  const getStatusColor = (status: InvoiceStatus | PaymentStatus | ClaimStatus | PaymentTransactionStatus) => {
     switch (status) {
+      // Common neutrals
       case 'draft':
-      case 'pending': return 'orange';
-      case 'sent':
-      case 'submitted': return 'blue';
+        return 'orange';
+
+      // InvoiceStatus
+      case 'pending':
+        return 'blue';
       case 'paid':
-      case 'completed':
-      case 'approved': return 'green';
-      case 'overdue':
-      case 'rejected': return 'red';
+      case 'partially_paid':
+        return 'green';
       case 'cancelled':
-      case 'failed': return 'gray';
-      case 'partial_payment': return 'yellow';
-      case 'under_review': return 'cyan';
-      default: return 'gray';
+      case 'refunded':
+        return 'gray';
+
+      // PaymentStatus
+      case 'pending':
+        return 'orange';
+      case 'completed':
+        return 'green';
+      case 'failed':
+        return 'red';
+
+      // ClaimStatus
+      case 'submitted':
+      case 'acknowledged':
+        return 'blue';
+      case 'under_review':
+        return 'cyan';
+      case 'partially_approved':
+        return 'yellow';
+      case 'denied':
+        return 'red';
+      case 'appealed':
+        return 'orange';
+      case 'closed':
+        return 'gray';
+
+      // PaymentTransactionStatus
+      case 'pending':
+        return 'orange';
+      case 'completed':
+        return 'green';
+      case 'failed':
+        return 'red';
+
+      default:
+        return 'gray';
     }
   };
 
@@ -189,8 +219,10 @@ const BillingManagement = () => {
       case 'credit_card': return <IconCreditCard size={16} />;
       case 'debit_card': return <IconCreditCard size={16} />;
       case 'bank_transfer': return <IconBuildingBank size={16} />;
-      case 'insurance': return <IconShield size={16} />;
-      case 'online': return <IconBrandPaypal size={16} />;
+      case 'upi': return <IconBrandPaypal size={16} />;
+      case 'net_banking': return <IconBuildingBank size={16} />;
+      case 'cheque': return <IconCopyright size={16} />;
+      case 'wallet': return <IconWallet size={16} />;
       default: return <IconWallet size={16} />;
     }
   };
@@ -231,7 +263,7 @@ const BillingManagement = () => {
     },
     {
       title: 'Outstanding Amount',
-      value: formatCurrency(mockBillingStats.outstandingAmount),
+      value: formatCurrency(mockBillingStats.totalOutstanding),
       icon: IconAlertCircle,
       color: 'red',
       trend: '-8.2%'
@@ -259,16 +291,35 @@ const BillingManagement = () => {
     collections: item.collections
   }));
 
+  const getPaymentMethodColor = (method: PaymentMethod) => {
+    switch (method) {
+      case 'cash': return 'green.6';
+      case 'credit_card': return 'blue.6';
+      case 'debit_card': return 'cyan.6';
+      case 'bank_transfer': return 'indigo.6';
+      case 'upi': return 'teal.6';
+      case 'net_banking': return 'violet.6';
+      case 'cheque': return 'orange.6';
+      case 'wallet': return 'grape.6';
+      default: return 'gray.6';
+    }
+  };
+
   const paymentMethodData = Object.entries(mockBillingStats.paymentMethodDistribution)
     .map(([method, amount]) => ({
       name: method.replace('_', ' ').toUpperCase(),
-      value: amount,
-      color: getStatusColor(method as PaymentMethod)
+      value: amount as number,
+      color: getPaymentMethodColor(method as PaymentMethod)
     }));
 
-  const claimStatusData = Object.entries(mockBillingStats.claimStatusDistribution).map(
-    ([status, count]) => ({ status: status.replace('_', ' '), count })
-  );
+  const claimStatusCounts: Record<string, number> = {};
+  mockInsuranceClaims.forEach((c) => {
+    claimStatusCounts[c.status] = (claimStatusCounts[c.status] || 0) + 1;
+  });
+  const claimStatusData = Object.entries(claimStatusCounts).map(([status, count]) => ({
+    status: status.replace('_', ' '),
+    count
+  }));
 
   return (
     <Container size="xl" py="md">
@@ -332,7 +383,7 @@ const BillingManagement = () => {
       </SimpleGrid>
 
       {/* Main Content Tabs */}
-      <Tabs value={activeTab} onChange={setActiveTab}>
+      <Tabs value={activeTab} onChange={(v) => setActiveTab(v || 'invoices')}>
         <Tabs.List>
           <Tabs.Tab value="invoices" leftSection={<IconFileInvoice size={16} />}>
             Invoices
@@ -367,20 +418,19 @@ const BillingManagement = () => {
                   label: `${patient.firstName} ${patient.lastName}` 
                 }))}
                 value={selectedPatient}
-                onChange={setSelectedPatient}
+                onChange={(v) => setSelectedPatient(v || '')}
                 clearable
               />
               <Select
                 placeholder="Status"
                 data={[
                   { value: 'draft', label: 'Draft' },
-                  { value: 'sent', label: 'Sent' },
+                  { value: 'pending', label: 'Pending' },
                   { value: 'paid', label: 'Paid' },
-                  { value: 'overdue', label: 'Overdue' },
                   { value: 'cancelled', label: 'Cancelled' }
                 ]}
                 value={selectedStatus}
-                onChange={setSelectedStatus}
+                onChange={(v) => setSelectedStatus(v || '')}
                 clearable
               />
               <Button variant="light" onClick={clearFilters}>
@@ -534,22 +584,27 @@ const BillingManagement = () => {
                   { value: 'credit_card', label: 'Credit Card' },
                   { value: 'debit_card', label: 'Debit Card' },
                   { value: 'bank_transfer', label: 'Bank Transfer' },
-                  { value: 'insurance', label: 'Insurance' },
-                  { value: 'online', label: 'Online Payment' }
+                  { value: 'upi', label: 'UPI' },
+                  { value: 'net_banking', label: 'Net Banking' },
+                  { value: 'cheque', label: 'Cheque' },
+                  { value: 'wallet', label: 'Wallet' },
+                  { value: 'other', label: 'Other' }
                 ]}
                 value={selectedPaymentMethod}
-                onChange={setSelectedPaymentMethod}
+                onChange={(v) => setSelectedPaymentMethod(v || '')}
                 clearable
               />
               <Select
                 placeholder="Status"
                 data={[
-                  { value: 'completed', label: 'Completed' },
                   { value: 'pending', label: 'Pending' },
-                  { value: 'failed', label: 'Failed' }
+                  { value: 'completed', label: 'Completed' },
+                  { value: 'failed', label: 'Failed' },
+                  { value: 'refunded', label: 'Refunded' },
+                  { value: 'cancelled', label: 'Cancelled' }
                 ]}
                 value={selectedStatus}
-                onChange={setSelectedStatus}
+                onChange={(v) => setSelectedStatus(v || '')}
                 clearable
               />
             </Group>
@@ -666,12 +721,14 @@ const BillingManagement = () => {
                       </Table.Td>
                       <Table.Td>
                         <div>
-                          <Text size="sm" fw={500}>{claim.insuranceProvider.name}</Text>
-                          <Text size="xs" c="dimmed">{claim.policyNumber}</Text>
+                          <Text size="sm" fw={500}>{claim.insuranceProvider?.providerName || claim.insurance.providerName}</Text>
+                          {claim.policyNumber && (
+                            <Text size="xs" c="dimmed">{claim.policyNumber}</Text>
+                          )}
                         </div>
                       </Table.Td>
                       <Table.Td>
-                        <Text fw={600}>{formatCurrency(claim.claimAmount)}</Text>
+                        <Text fw={600}>{formatCurrency((claim.claimAmount ?? claim.claimedAmount) as number)}</Text>
                       </Table.Td>
                       <Table.Td>
                         <Text fw={600} c={claim.approvedAmount ? 'green' : 'dimmed'}>
@@ -785,7 +842,7 @@ const BillingManagement = () => {
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Bad Debt Rate</Text>
                     <Text size="sm" fw={600} c="red">
-                      {mockBillingStats.badDebtRate}%
+                      {formatCurrency(mockBillingStats.totalWriteOffs)}
                     </Text>
                   </Group>
                 </Stack>
@@ -848,10 +905,14 @@ const BillingManagement = () => {
                       {selectedInvoice.patient.firstName} {selectedInvoice.patient.lastName}
                     </Text>
                     <Text size="sm" c="dimmed">{selectedInvoice.patient.patientId}</Text>
-                    <Text size="sm" c="dimmed">{selectedInvoice.billingAddress.street}</Text>
-                    <Text size="sm" c="dimmed">
-                      {selectedInvoice.billingAddress.city}, {selectedInvoice.billingAddress.state}
-                    </Text>
+                    {selectedInvoice.billingAddress && (
+                      <Text size="sm" c="dimmed">{selectedInvoice.billingAddress.street}</Text>
+                    )}
+                    {selectedInvoice.billingAddress && (
+                      <Text size="sm" c="dimmed">
+                        {selectedInvoice.billingAddress.city}, {selectedInvoice.billingAddress.state}
+                      </Text>
+                    )}
                   </Stack>
                 </div>
                 <div>
@@ -893,7 +954,7 @@ const BillingManagement = () => {
                         </Table.Td>
                         <Table.Td>{item.quantity}</Table.Td>
                         <Table.Td>{formatCurrency(item.unitPrice)}</Table.Td>
-                        <Table.Td>{formatCurrency(item.totalAmount)}</Table.Td>
+                        <Table.Td>{formatCurrency((item.totalAmount ?? item.totalPrice) as number)}</Table.Td>
                       </Table.Tr>
                     ))}
                   </Table.Tbody>
@@ -910,8 +971,8 @@ const BillingManagement = () => {
                     <Text size="sm" fw={600}>{formatCurrency(selectedInvoice.subtotal)}</Text>
                   </Group>
                   <Group>
-                    <Text size="sm">Tax ({selectedInvoice.taxRate}%):</Text>
-                    <Text size="sm" fw={600}>{formatCurrency(selectedInvoice.taxAmount)}</Text>
+                    <Text size="sm">Tax ({selectedInvoice.taxRate ?? 0}%):</Text>
+                    <Text size="sm" fw={600}>{formatCurrency(selectedInvoice.taxAmount ?? 0)}</Text>
                   </Group>
                   <Group>
                     <Text fw={700}>Total Amount:</Text>
@@ -964,7 +1025,7 @@ const BillingManagement = () => {
               }))}
               required
             />
-            <DatePicker
+            <DatePickerInput
               label="Due Date"
               placeholder="Select due date"
               required
@@ -1091,10 +1152,10 @@ const BillingManagement = () => {
             placeholder="Enter transaction reference"
           />
           
-          <DatePicker
+          <DatePickerInput
             label="Payment Date"
             placeholder="Select date"
-            defaultValue={new Date()}
+            value={new Date()}
           />
           
           <Textarea

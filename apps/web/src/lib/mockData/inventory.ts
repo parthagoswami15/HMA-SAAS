@@ -4,18 +4,55 @@ import {
   InventoryItem,
   Supplier,
   PurchaseOrder,
-  StockMovement,
   InventoryStats,
-  ItemCategory,
-  StockStatus
+  ItemCategory
 } from '../../types/inventory';
 
-export const mockInventoryItems: InventoryItem[] = [
+// Simplified types for mock data compatibility
+interface SimplifiedInventoryItem {
+  id: string;
+  itemCode: string;
+  name: string;
+  category: string;
+  description: string;
+  currentStock: number;
+  minimumStock: number;
+  maximumStock: number;
+  unitPrice: number;
+  unitOfMeasure: string;
+  supplier: {
+    id: string;
+    name: string;
+    contactPerson: string;
+    email: string;
+    phone: string;
+  };
+  location: string;
+  expiryDate: string | null;
+  batchNumber: string;
+  status: string;
+  lastUpdated: string;
+}
+
+interface StockMovement {
+  id: string;
+  itemId: string;
+  item: SimplifiedInventoryItem;
+  movementType: 'in' | 'out' | 'adjustment' | 'transfer';
+  quantity: number;
+  reason: string;
+  date: string;
+  performedBy: string;
+  referenceNumber: string;
+  notes: string;
+}
+
+export const mockInventoryItems: SimplifiedInventoryItem[] = [
   {
     id: '1',
     itemCode: 'MED-001',
     name: 'Paracetamol 500mg Tablets',
-    category: 'medication',
+    category: 'medicines',
     description: 'Pain reliever and fever reducer',
     currentStock: 2500,
     minimumStock: 500,
@@ -63,7 +100,7 @@ export const mockInventoryItems: InventoryItem[] = [
     id: '3',
     itemCode: 'LAB-001',
     name: 'Blood Collection Tubes',
-    category: 'laboratory',
+    category: 'laboratory_reagents',
     description: 'Vacuum blood collection tubes with EDTA',
     currentStock: 0,
     minimumStock: 100,
@@ -87,7 +124,7 @@ export const mockInventoryItems: InventoryItem[] = [
     id: '4',
     itemCode: 'EQP-001',
     name: 'Digital Thermometer',
-    category: 'equipment',
+    category: 'medical_devices',
     description: 'Digital infrared non-contact thermometer',
     currentStock: 25,
     minimumStock: 10,
@@ -118,18 +155,18 @@ export const mockSuppliers: Supplier[] = [
     phone: '+91-9876543210',
     address: '123 Pharma Street, Mumbai, Maharashtra 400001',
     website: 'https://pharmacorp.com',
-    category: 'medication',
+    category: 'medicines',
     paymentTerms: '30 days',
     rating: 4.5,
     isActive: true,
     registrationDate: '2020-03-15',
     taxId: 'GST123456789',
-    bankDetails: {
+    bankDetails: [{
       accountName: 'PharmaCorp Ltd',
       accountNumber: '1234567890',
       bankName: 'HDFC Bank',
       ifscCode: 'HDFC0000123'
-    }
+    }]
   },
   {
     id: '2',
@@ -139,18 +176,18 @@ export const mockSuppliers: Supplier[] = [
     phone: '+91-9876543211',
     address: '456 Medical Avenue, Delhi, Delhi 110001',
     website: 'https://medisupply.com',
-    category: 'surgical',
+    category: 'surgical_supplies',
     paymentTerms: '45 days',
     rating: 4.2,
     isActive: true,
     registrationDate: '2019-08-20',
     taxId: 'GST987654321',
-    bankDetails: {
+    bankDetails: [{
       accountName: 'MediSupply Inc',
       accountNumber: '0987654321',
       bankName: 'ICICI Bank',
       ifscCode: 'ICIC0000456'
-    }
+    }]
   }
 ];
 
@@ -162,19 +199,19 @@ export const mockPurchaseOrders: PurchaseOrder[] = [
     supplier: mockSuppliers[0],
     orderDate: '2024-01-10',
     expectedDelivery: '2024-01-20',
-    status: 'pending',
+    status: 'approved',
     totalAmount: 125000,
     items: [
       {
         itemId: '1',
-        itemName: 'Paracetamol 500mg Tablets',
+        itemCode: 'MED-001',
         quantity: 5000,
         unitPrice: 2.5,
         totalPrice: 12500
       },
       {
         itemId: 'MED-002',
-        itemName: 'Amoxicillin 250mg Capsules',
+        itemCode: 'MED-002',
         quantity: 2500,
         unitPrice: 4.5,
         totalPrice: 11250
@@ -191,19 +228,19 @@ export const mockPurchaseOrders: PurchaseOrder[] = [
     supplier: mockSuppliers[1],
     orderDate: '2024-01-12',
     expectedDelivery: '2024-01-25',
-    status: 'delivered',
+    status: 'received',
     totalAmount: 45000,
     items: [
       {
         itemId: '2',
-        itemName: 'Disposable Syringes 5ml',
+        itemCode: 'SUR-001',
         quantity: 1000,
         unitPrice: 12.5,
         totalPrice: 12500
       },
       {
         itemId: 'SUR-002',
-        itemName: 'Surgical Gloves',
+        itemCode: 'SUR-002',
         quantity: 500,
         unitPrice: 25,
         totalPrice: 12500
@@ -263,14 +300,26 @@ export const mockInventoryStats: InventoryStats = {
   expiringItems: 15,
   totalSuppliers: 45,
   activeOrders: 12,
-  monthlyConsumption: 850000,
-  itemsByCategory: [
-    { category: 'medication', count: 450, value: 1800000, percentage: 36.0 },
-    { category: 'surgical', count: 320, value: 950000, percentage: 25.6 },
-    { category: 'laboratory', count: 280, value: 650000, percentage: 22.4 },
-    { category: 'equipment', count: 150, value: 300000, percentage: 12.0 },
-    { category: 'consumables', count: 50, value: 50000, percentage: 4.0 }
+  monthlyConsumption: [
+    { month: 'Oct', consumption: 145000, value: 120000 },
+    { month: 'Nov', consumption: 160000, value: 135000 },
+    { month: 'Dec', consumption: 180000, value: 155000 },
+    { month: 'Jan', consumption: 195000, value: 170000 }
   ],
+  itemsByCategory: {
+    medicines: 450,
+    surgical_supplies: 320,
+    laboratory_reagents: 280,
+    medical_devices: 150,
+    diagnostic_supplies: 100,
+    patient_care_supplies: 80,
+    office_stationery: 50,
+    cleaning_supplies: 40,
+    kitchen_supplies: 30,
+    linen: 20,
+    furniture: 10,
+    equipment_parts: 5
+  },
   stockStatus: [
     { status: 'in_stock', count: 1050, percentage: 84.0 },
     { status: 'low_stock', count: 150, percentage: 12.0 },
@@ -298,3 +347,28 @@ export const mockInventoryStats: InventoryStats = {
     averageDeliveryTime: 8 // days
   }
 };
+
+// Mock Equipment
+export const mockEquipment = [
+  { id: '1', name: 'X-Ray Machine', status: 'operational', location: 'Radiology' },
+  { id: '2', name: 'MRI Scanner', status: 'operational', location: 'Imaging' },
+  { id: '3', name: 'Ultrasound', status: 'maintenance', location: 'OB/GYN' },
+  { id: '4', name: 'ECG Machine', status: 'operational', location: 'Cardiology' },
+];
+
+// Mock Inventory Alerts
+export const mockInventoryAlerts = [
+  { id: '1', type: 'low_stock', itemName: 'Paracetamol 500mg', currentStock: 50, threshold: 100, severity: 'warning' },
+  { id: '2', type: 'expiring_soon', itemName: 'Insulin Vials', expiryDate: '2024-02-15', daysUntilExpiry: 15, severity: 'critical' },
+  { id: '3', type: 'out_of_stock', itemName: 'Surgical Masks', currentStock: 0, severity: 'critical' },
+  { id: '4', type: 'low_stock', itemName: 'Disposable Syringes', currentStock: 75, threshold: 200, severity: 'warning' },
+];
+
+// Mock Stock Transactions (stub for missing export)
+export const mockStockTransactions = mockStockMovements;
+
+// Mock Requisitions (stub for missing export)
+export const mockRequisitions: any[] = [];
+
+// Mock Maintenance Records (stub for missing export)
+export const mockMaintenanceRecords: any[] = [];

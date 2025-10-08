@@ -77,7 +77,7 @@ export const mockAppointments: Appointment[] = [
     appointmentType: 'emergency' as AppointmentType,
     department: 'Emergency Medicine',
     reason: 'Severe headache and fever',
-    status: 'confirmed' as AppointmentStatus,
+    status: 'arrived' as AppointmentStatus,
     priority: 'urgent' as AppointmentPriority,
     
     scheduledBy: 'Emergency Nurse',
@@ -379,8 +379,7 @@ export const mockAppointmentStats: AppointmentStats = {
   
   appointmentsByStatus: {
     scheduled: 234,
-    confirmed: 156,
-    checked_in: 23,
+    arrived: 179,
     in_progress: 12,
     completed: 2456,
     cancelled: 287,

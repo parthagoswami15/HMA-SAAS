@@ -17,14 +17,12 @@ import {
   Card,
   Avatar,
   ActionIcon,
-  Stack,
   SimpleGrid,
   ScrollArea,
   ThemeIcon,
   Progress,
   NumberInput,
   Textarea,
-  DatePickerInput,
   Switch,
   Divider,
   Alert,
@@ -34,6 +32,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
+import { DatePickerInput } from '@mantine/dates';
 import { LineChart, BarChart, DonutChart, AreaChart } from '@mantine/charts';
 import {
   IconPlus,

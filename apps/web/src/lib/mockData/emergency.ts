@@ -2,15 +2,118 @@
 
 import {
   EmergencyCase,
-  TriageCategory,
-  EmergencyAlert,
-  BedAvailability,
-  EmergencyContact,
-  EmergencyStats,
-  EmergencyProtocol
+  TriageLevel,
+  EmergencyStatus
 } from '../../types/emergency';
 
-export const mockEmergencyCases: EmergencyCase[] = [
+// Note: EmergencyAlert, BedAvailability, EmergencyContact, EmergencyStats, EmergencyProtocol
+// are not defined in the types file. These mock exports are kept for backward compatibility
+// but should be migrated to proper types.
+
+interface EmergencyAlert {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  severity: string;
+  location: string;
+  reportedTime: string;
+  estimatedPatients: number;
+  status: string;
+  assignedTeam: string[];
+  notes: string;
+}
+
+interface BedAvailability {
+  id: string;
+  bedNumber: string;
+  ward: string;
+  bedType: string;
+  status: string;
+  patientName: string | null;
+  admissionTime: string | null;
+  estimatedDischarge: string | null;
+}
+
+interface EmergencyContact {
+  id: string;
+  name: string;
+  department: string;
+  phone: string;
+  email: string;
+  role: string;
+  available24x7: boolean;
+  responseTime: string;
+}
+
+interface EmergencyStats {
+  totalCases: number;
+  criticalCases: number;
+  urgentCases: number;
+  lessUrgentCases: number;
+  nonUrgentCases: number;
+  averageWaitTime: number;
+  bedOccupancyRate: number;
+  averageStayDuration: number;
+  dischargeRate: number;
+  mortalityRate: number;
+  casesByCategory: Array<{ category: string; count: number; percentage: number }>;
+  dailyVolume: Array<{ date: string; cases: number }>;
+  responseTimeMetrics: {
+    averageTriageTime: number;
+    averagePhysicianTime: number;
+    averageDischargeTime: number;
+  };
+}
+
+interface EmergencyProtocol {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  steps: string[];
+  medications: string[];
+  equipment: string[];
+  responseTime: string;
+  lastUpdated: string;
+  version: string;
+}
+
+// Simplified emergency case type for mock data
+interface SimplifiedEmergencyCase {
+  id: string;
+  caseNumber: string;
+  patientId: string;
+  patient: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    dateOfBirth: string;
+    phone: string;
+    email?: string;
+  };
+  triageLevel: TriageLevel;
+  chiefComplaint: string;
+  vitalSigns: {
+    temperature: number;
+    bloodPressure: string;
+    heartRate: number;
+    respiratoryRate: number;
+    oxygenSaturation: number;
+    painLevel: number;
+    consciousness: 'alert' | 'drowsy' | 'stuporous' | 'unconscious';
+    recordedAt: Date;
+    recordedBy: string;
+  };
+  arrivalTime: Date;
+  assignedTo?: string;
+  bedNumber?: string;
+  status: EmergencyStatus;
+  priority?: number;
+  notes?: string;
+}
+
+export const mockEmergencyCases: SimplifiedEmergencyCase[] = [
   {
     id: '1',
     caseNumber: 'EMR-2024-001',
@@ -23,16 +126,20 @@ export const mockEmergencyCases: EmergencyCase[] = [
       phone: '+91-9876543210',
       email: 'john.smith@email.com'
     },
-    triageCategory: 'critical',
+    triageLevel: 'immediate',
     chiefComplaint: 'Chest pain and shortness of breath',
     vitalSigns: {
+      temperature: 98.6,
       bloodPressure: '180/110',
       heartRate: 120,
-      temperature: 98.6,
       respiratoryRate: 24,
-      oxygenSaturation: 88
+      oxygenSaturation: 88,
+      painLevel: 8,
+      consciousness: 'alert',
+      recordedAt: new Date('2024-01-15T14:30:00'),
+      recordedBy: 'Triage Nurse'
     },
-    arrivalTime: '2024-01-15T14:30:00',
+    arrivalTime: new Date('2024-01-15T14:30:00'),
     assignedTo: 'Dr. Sarah Johnson',
     bedNumber: 'ER-01',
     status: 'in_treatment',
@@ -51,16 +158,20 @@ export const mockEmergencyCases: EmergencyCase[] = [
       phone: '+91-9876543211',
       email: 'maria.garcia@email.com'
     },
-    triageCategory: 'urgent',
+    triageLevel: 'urgent',
     chiefComplaint: 'Severe abdominal pain',
     vitalSigns: {
+      temperature: 101.2,
       bloodPressure: '140/90',
       heartRate: 95,
-      temperature: 101.2,
       respiratoryRate: 18,
-      oxygenSaturation: 96
+      oxygenSaturation: 96,
+      painLevel: 7,
+      consciousness: 'alert',
+      recordedAt: new Date('2024-01-15T15:15:00'),
+      recordedBy: 'Triage Nurse'
     },
-    arrivalTime: '2024-01-15T15:15:00',
+    arrivalTime: new Date('2024-01-15T15:15:00'),
     assignedTo: 'Dr. Michael Chen',
     bedNumber: 'ER-03',
     status: 'waiting',
@@ -79,19 +190,23 @@ export const mockEmergencyCases: EmergencyCase[] = [
       phone: '+91-9876543212',
       email: 'david.wilson@email.com'
     },
-    triageCategory: 'less_urgent',
+    triageLevel: 'less_urgent',
     chiefComplaint: 'Minor laceration on forearm',
     vitalSigns: {
+      temperature: 98.4,
       bloodPressure: '120/80',
       heartRate: 72,
-      temperature: 98.4,
       respiratoryRate: 16,
-      oxygenSaturation: 98
+      oxygenSaturation: 98,
+      painLevel: 3,
+      consciousness: 'alert',
+      recordedAt: new Date('2024-01-15T16:00:00'),
+      recordedBy: 'Triage Nurse'
     },
-    arrivalTime: '2024-01-15T16:00:00',
+    arrivalTime: new Date('2024-01-15T16:00:00'),
     assignedTo: 'Nurse Jennifer Adams',
     bedNumber: 'ER-08',
-    status: 'completed',
+    status: 'discharged',
     priority: 4,
     notes: 'Clean laceration, sutured and dressed. Tetanus shot given.'
   }
@@ -310,5 +425,28 @@ export const mockEmergencyProtocols: EmergencyProtocol[] = [
     lastUpdated: '2024-01-01',
     version: '3.0'
   }
+];
+
+// Mock ICU Beds
+export const mockICUBeds = [
+  { id: '1', bedNumber: 'ICU-01', status: 'occupied', patientName: 'John Doe' },
+  { id: '2', bedNumber: 'ICU-02', status: 'available', patientName: null },
+  { id: '3', bedNumber: 'ICU-03', status: 'occupied', patientName: 'Jane Smith' },
+  { id: '4', bedNumber: 'ICU-04', status: 'maintenance', patientName: null },
+];
+
+// Mock Triage Queue
+export const mockTriageQueue = [
+  { id: '1', patientName: 'Alice Johnson', priority: 'critical', waitTime: 5 },
+  { id: '2', patientName: 'Bob Williams', priority: 'urgent', waitTime: 15 },
+  { id: '3', patientName: 'Carol Brown', priority: 'standard', waitTime: 30 },
+];
+
+// Mock Critical Care Equipment
+export const mockCriticalCareEquipment = [
+  { id: '1', name: 'Ventilator', status: 'available', location: 'ICU-01' },
+  { id: '2', name: 'Defibrillator', status: 'in_use', location: 'ER-03' },
+  { id: '3', name: 'ECG Machine', status: 'available', location: 'ER-05' },
+  { id: '4', name: 'Infusion Pump', status: 'maintenance', location: 'Storage' },
 ];
 

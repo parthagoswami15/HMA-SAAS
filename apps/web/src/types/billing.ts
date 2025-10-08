@@ -19,11 +19,13 @@ export interface Invoice extends BaseEntity {
   
   // Billing Information
   billToAddress: BillingAddress;
+  billingAddress?: BillingAddress;
   items: InvoiceItem[];
   
   // Financial Details
   subtotal: number;
   taxAmount: number;
+  taxRate?: number;
   discountAmount: number;
   totalAmount: number;
   paidAmount: number;
@@ -69,6 +71,7 @@ export interface InvoiceItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
+  totalAmount?: number;
   
   // Tax and Discounts
   taxRate: number;
@@ -112,12 +115,9 @@ export type InvoiceItemType =
 
 export type InvoiceStatus = 
   | 'draft'
-  | 'pending_approval'
-  | 'approved'
-  | 'sent'
+  | 'pending'
   | 'paid'
   | 'partially_paid'
-  | 'overdue'
   | 'cancelled'
   | 'refunded';
 
@@ -141,6 +141,7 @@ export interface Payment extends BaseEntity {
   paymentNumber: string;
   invoiceId: string;
   invoice: Invoice;
+  invoiceNumber?: string;
   patientId: string;
   patient: Patient;
   
@@ -196,12 +197,11 @@ export type PaymentMethod =
   | 'cash'
   | 'credit_card'
   | 'debit_card'
-  | 'check'
+  | 'upi'
+  | 'net_banking'
+  | 'cheque'
   | 'bank_transfer'
-  | 'online_payment'
-  | 'mobile_payment'
-  | 'insurance'
-  | 'voucher'
+  | 'wallet'
   | 'other';
 
 export type PaymentType = 
@@ -213,12 +213,10 @@ export type PaymentType =
 
 export type PaymentTransactionStatus = 
   | 'pending'
-  | 'processing'
   | 'completed'
   | 'failed'
-  | 'cancelled'
   | 'refunded'
-  | 'disputed';
+  | 'cancelled';
 
 export type ProcessingStatus = 
   | 'submitted'
@@ -236,11 +234,13 @@ export interface InsuranceClaim extends BaseEntity {
   patient: Patient;
   insuranceId: string;
   insurance: InsuranceProvider;
+  insuranceProvider?: InsuranceProvider;
+  policyNumber?: string;
   
   // Claim Details
   claimDate: Date;
   serviceDate: Date;
-  submissionDate?: Date;
+  submissionDate: Date;
   
   // Service Information
   services: ClaimedService[];
@@ -249,6 +249,7 @@ export interface InsuranceClaim extends BaseEntity {
   // Financial Information
   totalAmount: number;
   claimedAmount: number;
+  claimAmount?: number;
   approvedAmount: number;
   deniedAmount: number;
   patientResponsibility: number;
@@ -611,6 +612,8 @@ export interface BillingStats {
   paidInvoices: number;
   unpaidInvoices: number;
   overdueInvoices: number;
+  averageInvoiceAmount: number;
+  daysOutstanding: number;
   
   // Payment Metrics
   totalPayments: number;
@@ -623,8 +626,9 @@ export interface BillingStats {
   deniedClaims: number;
   pendingClaims: number;
   averageClaimAmount: number;
-  insuranceCollectionRate: number;
+  insuranceCoverageRate: number;
   
+  claimStatusDistribution: Record<ClaimStatus, number>;
   // Top Performers
   topPayingPatients: Array<{
     patientId: string;

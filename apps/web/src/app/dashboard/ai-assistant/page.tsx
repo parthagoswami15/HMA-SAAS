@@ -840,7 +840,7 @@ const AIAssistant = () => {
       </SimpleGrid>
 
       {/* Main Content Tabs */}
-      <Tabs value={activeTab} onChange={setActiveTab}>
+      <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'insights')}>
         <Tabs.List>
           <Tabs.Tab value="insights" leftSection={<IconBulb size={16} />}>
             AI Insights
@@ -878,10 +878,11 @@ const AIAssistant = () => {
                   { value: 'medication', label: 'Medication' },
                   { value: 'diagnostic', label: 'Diagnostic' },
                   { value: 'preventive', label: 'Preventive' },
-                  { value: 'emergency', label: 'Emergency' }
+                  { value: 'emergency', label: 'Emergency' },
+                  { value: 'all', label: 'All' }
                 ]}
                 value={selectedCategory}
-                onChange={setSelectedCategory}
+                onChange={(value) => setSelectedCategory(value || 'all')}
                 clearable
               />
               <Select
@@ -893,7 +894,7 @@ const AIAssistant = () => {
                   { value: 'low', label: 'Low' }
                 ]}
                 value={selectedSeverity}
-                onChange={setSelectedSeverity}
+                onChange={(value) => setSelectedSeverity(value || '')}
                 clearable
               />
             </Group>

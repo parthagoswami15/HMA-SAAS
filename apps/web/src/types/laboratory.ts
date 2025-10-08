@@ -203,16 +203,15 @@ export type TestType =
   | 'research';
 
 export type TestStatus = 
-  | 'active' 
   | 'pending' 
   | 'in_progress' 
   | 'completed' 
   | 'cancelled' 
-  | 'draft';
+  | 'rejected';
 
 export type OrderStatus = 
+  | 'draft'
   | 'pending' 
-  | 'ordered'
   | 'in_progress' 
   | 'completed' 
   | 'cancelled' 
@@ -258,3 +257,14 @@ export type ResultFlag =
   | 'critical_high' 
   | 'critical_low' 
   | 'abnormal';
+
+// Additional types for laboratory management
+export interface LabFilters {
+  status?: TestStatus;
+  category?: TestCategory;
+  priority?: TestType;
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
+}

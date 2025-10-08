@@ -169,7 +169,7 @@ export interface PatientAppointment extends BaseEntity {
   appointmentTime: string;
   duration: number; // in minutes
   appointmentType: 'consultation' | 'follow_up' | 'procedure' | 'emergency';
-  status: 'scheduled' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'rescheduled';
+  status: 'scheduled' | 'arrived' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'rescheduled';
   chiefComplaint?: string;
   notes?: string;
   

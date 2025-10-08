@@ -72,3 +72,6 @@ export const mockDigitalPrescriptions = [
   { id: 'dp1', patientName: 'Jane Smith', medications: 2, date: '2024-01-12' }
 ];
 export const mockVirtualConsultations = mockTelemedicineConsultations;
+
+// Missing exports (stubs)
+export const mockRemoteMonitoringData: any[] = [];

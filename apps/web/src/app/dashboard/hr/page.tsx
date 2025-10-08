@@ -20,14 +20,12 @@ import {
   Menu,
   Stack,
   Divider,
-  SimpleGrid,
   ScrollArea,
   ThemeIcon,
   Alert,
   Progress,
   NumberInput,
   Textarea,
-  DatePicker,
   Timeline,
   Stepper,
   RingProgress,
@@ -52,7 +50,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
-import { Calendar } from '@mantine/dates';
+import { Calendar, DatePickerInput } from '@mantine/dates';
 import {
   IconPlus,
   IconSearch,
