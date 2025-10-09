@@ -8,14 +8,30 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   // Enable CORS
-  const corsOriginsEnv = process.env.CORS_ORIGINS || process.env.CORS_ORIGIN || 'http://localhost:3000';
+  const corsOriginsEnv = process.env.CORS_ORIGINS || process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:3001';
   const parsedOrigins = corsOriginsEnv
     .split(',')
     .map((o) => o.trim())
     .filter((o) => o.length > 0);
 
   app.enableCors({
-    origin: parsedOrigins.length <= 1 ? parsedOrigins[0] : parsedOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, etc.)
+      if (!origin) return callback(null, true);
+      
+      // Check if origin is in allowed list
+      if (parsedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      // Allow all Vercel domains
+      if (origin.endsWith('.vercel.app') || origin.endsWith('.vercel.com')) {
+        return callback(null, true);
+      }
+      
+      // Reject other origins
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   });
 
