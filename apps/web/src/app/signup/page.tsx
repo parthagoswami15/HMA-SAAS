@@ -19,7 +19,7 @@ interface SignupFormData {
   agreeToTerms: boolean;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://hms-saas-staging.onrender.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:10000';
 
 export default function Signup() {
   const router = useRouter();

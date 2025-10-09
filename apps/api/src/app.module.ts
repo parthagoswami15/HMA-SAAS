@@ -7,6 +7,8 @@ import Joi from 'joi';
 // Core modules that exist and work
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { PatientsModule } from './patients/patients.module';
+import { AppointmentsModule } from './appointments/appointments.module';
 
 // Basic controllers and services
 import { AppController } from './app.controller';
@@ -52,6 +54,10 @@ import { AppService } from './app.service';
     
     // Authentication module
     AuthModule,
+    
+    // HMS modules
+    PatientsModule,
+    AppointmentsModule,
   ],
   controllers: [AppController],
   providers: [
