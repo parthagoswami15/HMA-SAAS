@@ -44,8 +44,8 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 3001;
-  const host = process.env.HOST || 'localhost';
-  await app.listen(port);
+  const host = process.env.HOST || '0.0.0.0';
+  await app.listen(port, host);
 
   logger.log(`🚀 HMS SaaS API is running on: http://${host}:${port}`);
   logger.log(`❤️ Health Check: http://${host}:${port}/health`);
