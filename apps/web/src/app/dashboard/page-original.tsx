@@ -35,7 +35,7 @@ import {
   IconTrendingDown,
   IconAlertCircle,
   IconRefresh,
-  IconMoreVertical,
+  IconDotsVertical,
   IconAmbulance,
   IconVideo,
   IconMessage,
@@ -288,7 +288,7 @@ export default function DashboardPage() {
           {metric.icon}
         </div>
         <ActionIcon variant="subtle" color="gray">
-          <IconMoreVertical size="1rem" />
+          <IconDotsVertical size="1rem" />
         </ActionIcon>
       </Flex>
       
@@ -550,3 +550,4 @@ export default function DashboardPage() {
     </Layout>
   );
 }
+

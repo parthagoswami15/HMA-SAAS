@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { PrismaClient as BasePrismaClient } from '@prisma/client';
 
 // This is a custom Prisma client that includes our custom methods
@@ -7,8 +7,43 @@ export class CustomPrismaService
   extends BasePrismaClient
   implements OnModuleInit, OnModuleDestroy {
   
+  private readonly logger = new Logger(CustomPrismaService.name);
+  
+  constructor() {
+    super({
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      },
+      log: ['warn', 'error'],
+    });
+  }
+  
   async onModuleInit() {
-    await this.$connect();
+    const maxRetries = 3;
+    let retries = 0;
+    
+    while (retries < maxRetries) {
+      try {
+        this.logger.log(`Attempting to connect to database... (attempt ${retries + 1}/${maxRetries})`);
+        await this.$connect();
+        this.logger.log('✅ Database connected successfully');
+        return;
+      } catch (error) {
+        retries++;
+        this.logger.error(`Failed to connect to database (attempt ${retries}/${maxRetries}): ${error.message}`);
+        
+        if (retries < maxRetries) {
+          const delay = retries * 2000; // Exponential backoff: 2s, 4s, 6s
+          this.logger.log(`Retrying in ${delay / 1000} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        } else {
+          this.logger.error('❌ Failed to connect to database after all retries');
+          throw error;
+        }
+      }
+    }
   }
 
   async onModuleDestroy() {

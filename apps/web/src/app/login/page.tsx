@@ -10,7 +10,7 @@ interface LoginFormData {
   rememberMe: boolean;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:10000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export default function Login() {
   const router = useRouter();
@@ -258,7 +258,7 @@ export default function Login() {
 
         <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
           <Link href="/" style={{ color: "#9CA3AF", textDecoration: "none", fontSize: "0.9rem" }}>
-            ← Back to Home
+            ΓåÉ Back to Home
           </Link>
         </div>
       </div>

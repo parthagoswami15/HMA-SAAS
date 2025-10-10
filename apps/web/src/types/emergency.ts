@@ -134,6 +134,14 @@ export interface EmergencyStats {
   averageStayDuration: number;
   dischargeRate: number;
   mortalityRate: number;
+  // Additional properties needed by emergency page
+  activeCases: number;
+  occupiedICUBeds: number;
+  totalICUBeds: number;
+  codeBlueToday: number;
+  triageDistribution: { [key: number]: number };
+  hourlyAdmissions: Array<{ hour: string; admissions: number }>;
+  bedOccupancyTrend: Array<{ date: string; occupied: number; available: number }>;
   casesByCategory: Array<{ category: string; count: number; percentage: number }>;
   dailyVolume: Array<{ date: string; cases: number }>;
   responseTimeMetrics: {

@@ -11,18 +11,29 @@ export class PatientsService {
       // Generate medical record number
       const mrn = await this.generateMedicalRecordNumber(tenantId);
       
+      // Prepare data with proper type conversions
+      const data: any = {
+        ...createPatientDto,
+        medicalRecordNumber: mrn,
+        tenantId,
+        gender: createPatientDto.gender as any, // Cast to enum
+        bloodType: createPatientDto.bloodType as any,
+        maritalStatus: createPatientDto.maritalStatus as any,
+        country: createPatientDto.country || 'India',
+      };
+      
+      // Convert dateOfBirth string to Date object if provided
+      if (createPatientDto.dateOfBirth) {
+        data.dateOfBirth = new Date(createPatientDto.dateOfBirth);
+      }
+      
+      // Remove fields that don't exist in Prisma schema
+      delete data.emergencyContactName;
+      delete data.emergencyContactPhone;
+      delete data.emergencyContactRelation;
+      
       // Create patient with proper enum values
-      const patient = await this.prisma.patient.create({
-        data: {
-          ...createPatientDto,
-          medicalRecordNumber: mrn,
-          tenantId,
-          gender: createPatientDto.gender as any, // Cast to enum
-          bloodType: createPatientDto.bloodType as any,
-          maritalStatus: createPatientDto.maritalStatus as any,
-          country: createPatientDto.country || 'India',
-        },
-      });
+      const patient = await this.prisma.patient.create({ data });
 
       return {
         success: true,
@@ -169,14 +180,27 @@ export class PatientsService {
 
   async update(id: string, updatePatientDto: UpdatePatientDto, tenantId: string) {
     try {
+      // Prepare data with proper type conversions
+      const data: any = {
+        ...updatePatientDto,
+        gender: updatePatientDto.gender as any,
+        bloodType: updatePatientDto.bloodType as any,
+        maritalStatus: updatePatientDto.maritalStatus as any,
+      };
+      
+      // Convert dateOfBirth string to Date object if provided
+      if (updatePatientDto.dateOfBirth) {
+        data.dateOfBirth = new Date(updatePatientDto.dateOfBirth);
+      }
+      
+      // Remove fields that don't exist in Prisma schema
+      delete data.emergencyContactName;
+      delete data.emergencyContactPhone;
+      delete data.emergencyContactRelation;
+      
       const patient = await this.prisma.patient.update({
         where: { id, tenantId },
-        data: {
-          ...updatePatientDto,
-          gender: updatePatientDto.gender as any,
-          bloodType: updatePatientDto.bloodType as any,
-          maritalStatus: updatePatientDto.maritalStatus as any,
-        },
+        data,
       });
 
       return {

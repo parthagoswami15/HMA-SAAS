@@ -12,6 +12,7 @@ export interface CreatePatientDto {
   maritalStatus?: string;
   email?: string;
   phone?: string;
+  aadharNumber?: string;
   address?: string;
   city?: string;
   state?: string;
@@ -22,9 +23,8 @@ export interface CreatePatientDto {
   currentMedications?: any;
   insuranceProvider?: string;
   insuranceId?: string;
-  emergencyContactName?: string;
-  emergencyContactPhone?: string;
-  emergencyContactRelation?: string;
+  // Note: Emergency contact fields removed - not in database schema
+  // If needed, create a separate EmergencyContact model
 }
 
 export interface UpdatePatientDto extends Partial<CreatePatientDto> {}

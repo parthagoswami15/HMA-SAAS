@@ -348,6 +348,44 @@ export const mockEmergencyStats: EmergencyStats = {
   averageStayDuration: 4.5, // hours
   dischargeRate: 92,
   mortalityRate: 2.1,
+  lwbsRate: 3.2,
+  doorToDocTime: 18,
+  returnRate72h: 4.8,
+  // Additional properties needed by the emergency page
+  activeCases: 24,
+  occupiedICUBeds: 17,
+  totalICUBeds: 20,
+  codeBlueToday: 2,
+  triageDistribution: {
+    1: 3,
+    2: 8,
+    3: 15,
+    4: 22,
+    5: 12
+  },
+  hourlyAdmissions: [
+    { hour: '00:00', admissions: 2 },
+    { hour: '01:00', admissions: 1 },
+    { hour: '02:00', admissions: 0 },
+    { hour: '03:00', admissions: 1 },
+    { hour: '04:00', admissions: 3 },
+    { hour: '05:00', admissions: 2 },
+    { hour: '06:00', admissions: 5 },
+    { hour: '07:00', admissions: 8 },
+    { hour: '08:00', admissions: 12 },
+    { hour: '09:00', admissions: 15 },
+    { hour: '10:00', admissions: 18 },
+    { hour: '11:00', admissions: 14 }
+  ],
+  bedOccupancyTrend: [
+    { date: 'Mon', occupied: 15, available: 5 },
+    { date: 'Tue', occupied: 17, available: 3 },
+    { date: 'Wed', occupied: 16, available: 4 },
+    { date: 'Thu', occupied: 18, available: 2 },
+    { date: 'Fri', occupied: 19, available: 1 },
+    { date: 'Sat', occupied: 14, available: 6 },
+    { date: 'Sun', occupied: 13, available: 7 }
+  ],
   casesByCategory: [
     { category: 'critical', count: 12, percentage: 7.7 },
     { category: 'urgent', count: 34, percentage: 21.8 },
@@ -437,9 +475,9 @@ export const mockICUBeds = [
 
 // Mock Triage Queue
 export const mockTriageQueue = [
-  { id: '1', patientName: 'Alice Johnson', priority: 'critical', waitTime: 5 },
-  { id: '2', patientName: 'Bob Williams', priority: 'urgent', waitTime: 15 },
-  { id: '3', patientName: 'Carol Brown', priority: 'standard', waitTime: 30 },
+  { id: '1', patientName: 'Alice Johnson', triageLevel: 'immediate', waitTime: 5, complaint: 'Chest pain', assignedNurse: 'Nurse Smith' },
+  { id: '2', patientName: 'Bob Williams', triageLevel: 'urgent', waitTime: 15, complaint: 'Severe headache', assignedNurse: 'Nurse Jones' },
+  { id: '3', patientName: 'Carol Brown', triageLevel: 'less_urgent', waitTime: 30, complaint: 'Minor laceration', assignedNurse: 'Nurse Davis' },
 ];
 
 // Mock Critical Care Equipment

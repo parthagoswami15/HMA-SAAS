@@ -126,6 +126,15 @@ model Tenant {
   videoRecordings    VideoRecording[]
   videoMessages      VideoMessage[]
   radiologyOrders    RadiologyOrder[]
+  wards              Ward[]
+  beds               Bed[]
+  emergencyCases     EmergencyCase[]
+  surgeries          Surgery[]
+  operationTheaters  OperationTheater[]
+  inventoryItems     InventoryItem[]
+  insuranceClaims    InsuranceClaim[]
+  messages           Message[]
+  notifications      Notification[]
 
   @@index([slug])
 }
@@ -199,6 +208,7 @@ model Patient {
   maritalStatus       MaritalStatus?
   email               String?            @unique
   phone               String?
+  aadharNumber        String?            @unique
   address             String?
   city                String?
   state               String?
@@ -235,6 +245,9 @@ model Patient {
   studies             Study[]
   telemedicineConsultations TelemedicineConsultation[]
   radiologyOrders     RadiologyOrder[]
+  emergencyCases      EmergencyCase[]
+  surgeries           Surgery[]
+  insuranceClaims     InsuranceClaim[]
   tenant              Tenant             @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
@@ -1089,4 +1102,267 @@ enum RadiologyOrderStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+// ============================================
+// IPD (INPATIENT) MODELS
+// ============================================
+
+model Ward {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  capacity    Int
+  isActive    Boolean  @default(true)
+  tenantId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  beds        Bed[]
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([name])
+  @@index([isActive])
+}
+
+model Bed {
+  id         String    @id @default(cuid())
+  bedNumber  String
+  wardId     String
+  status     BedStatus @default(AVAILABLE)
+  isActive   Boolean   @default(true)
+  tenantId   String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  ward       Ward      @relation(fields: [wardId], references: [id])
+  tenant     Tenant    @relation(fields: [tenantId], references: [id])
+
+  @@index([bedNumber])
+  @@index([wardId])
+  @@index([status])
+}
+
+enum BedStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+  RESERVED
+  BLOCKED
+}
+
+// ============================================
+// EMERGENCY MODELS
+// ============================================
+
+model EmergencyCase {
+  id              String              @id @default(cuid())
+  patientId       String
+  triageLevel     TriageLevel
+  chiefComplaint  String
+  vitalSigns      Json?
+  status          EmergencyCaseStatus @default(WAITING)
+  arrivalTime     DateTime            @default(now())
+  dischargeTime   DateTime?
+  notes           String?
+  isActive        Boolean             @default(true)
+  tenantId        String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  patient         Patient             @relation(fields: [patientId], references: [id])
+  tenant          Tenant              @relation(fields: [tenantId], references: [id])
+
+  @@index([patientId])
+  @@index([triageLevel])
+  @@index([status])
+}
+
+enum TriageLevel {
+  CRITICAL
+  URGENT
+  SEMI_URGENT
+  NON_URGENT
+}
+
+enum EmergencyCaseStatus {
+  WAITING
+  IN_TREATMENT
+  ADMITTED
+  DISCHARGED
+  TRANSFERRED
+}
+
+// ============================================
+// SURGERY MODELS
+// ============================================
+
+model Surgery {
+  id                 String             @id @default(cuid())
+  patientId          String
+  surgeryType        String
+  surgeon            String?
+  scheduledDate      DateTime
+  actualStartTime    DateTime?
+  actualEndTime      DateTime?
+  status             SurgeryStatus      @default(SCHEDULED)
+  operationTheaterId String?
+  notes              String?
+  complications      String?
+  isActive           Boolean            @default(true)
+  tenantId           String
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  patient            Patient            @relation(fields: [patientId], references: [id])
+  operationTheater   OperationTheater?  @relation(fields: [operationTheaterId], references: [id])
+  tenant             Tenant             @relation(fields: [tenantId], references: [id])
+
+  @@index([patientId])
+  @@index([status])
+  @@index([scheduledDate])
+}
+
+model OperationTheater {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  status      OTStatus       @default(AVAILABLE)
+  isActive    Boolean        @default(true)
+  tenantId    String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  surgeries   Surgery[]
+  tenant      Tenant         @relation(fields: [tenantId], references: [id])
+
+  @@index([name])
+  @@index([status])
+}
+
+enum SurgeryStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  POSTPONED
+}
+
+enum OTStatus {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  BLOCKED
+}
+
+// ============================================
+// INVENTORY MODELS
+// ============================================
+
+model InventoryItem {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  description String?
+  quantity    Int      @default(0)
+  minQuantity Int      @default(0)
+  unit        String?
+  price       Float?   @default(0)
+  isActive    Boolean  @default(true)
+  tenantId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([name])
+  @@index([category])
+  @@index([isActive])
+}
+
+// ============================================
+// INSURANCE MODELS
+// ============================================
+
+model InsuranceClaim {
+  id          String      @id @default(cuid())
+  patientId   String
+  claimNumber String      @unique
+  provider    String
+  policyNumber String?
+  amount      Float
+  claimedAmount Float?
+  status      ClaimStatus @default(SUBMITTED)
+  submittedAt DateTime    @default(now())
+  approvedAt  DateTime?
+  paidAt      DateTime?
+  notes       String?
+  isActive    Boolean     @default(true)
+  tenantId    String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  patient     Patient     @relation(fields: [patientId], references: [id])
+  tenant      Tenant      @relation(fields: [tenantId], references: [id])
+
+  @@index([patientId])
+  @@index([claimNumber])
+  @@index([status])
+}
+
+enum ClaimStatus {
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  PAID
+  APPEALED
+}
+
+// ============================================
+// COMMUNICATION MODELS
+// ============================================
+
+model Message {
+  id          String   @id @default(cuid())
+  senderId    String
+  recipientId String
+  subject     String?
+  body        String
+  read        Boolean  @default(false)
+  priority    MessagePriority @default(NORMAL)
+  tenantId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([read])
+}
+
+model Notification {
+  id          String              @id @default(cuid())
+  userId      String
+  title       String
+  message     String
+  type        NotificationType    @default(INFO)
+  read        Boolean             @default(false)
+  actionUrl   String?
+  tenantId    String
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  tenant      Tenant              @relation(fields: [tenantId], references: [id])
+
+  @@index([userId])
+  @@index([read])
+  @@index([type])
+}
+
+enum MessagePriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  ERROR
+  SUCCESS
+  REMINDER
 }

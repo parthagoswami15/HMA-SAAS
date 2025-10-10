@@ -6,20 +6,24 @@ import { useRouter } from "next/navigation";
 
 interface Patient {
   id: string;
-  patientId: string;
+  patientId?: string;
+  medicalRecordNumber?: string;
   firstName: string;
   lastName: string;
   dateOfBirth: string;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
-  bloodGroup: string;
+  bloodGroup?: string;
+  bloodType?: string;
   phone: string;
   email?: string;
   address: string;
   emergencyContactName?: string;
   emergencyContactPhone?: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'DECEASED';
+  emergencyContactRelation?: string;
+  status?: 'ACTIVE' | 'INACTIVE' | 'DECEASED';
+  isActive?: boolean;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 interface PatientFormData {
@@ -27,21 +31,23 @@ interface PatientFormData {
   lastName: string;
   dateOfBirth: string;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
-  bloodGroup: string;
+  bloodType: string;
   phone: string;
   email: string;
+  aadharNumber: string;
   address: string;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
 }
 
-const BACKEND_URL = 'http://localhost:3001';
+import { patientsService, handleApiError } from '@/services';
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export default function PatientsPage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -53,45 +59,78 @@ export default function PatientsPage() {
     lastName: '',
     dateOfBirth: '',
     gender: 'MALE',
-    bloodGroup: '',
+    bloodType: '',
     phone: '',
     email: '',
-    address: '',
-    emergencyContactName: '',
-    emergencyContactPhone: ''
+    aadharNumber: '',
+    address: ''
   });
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('accessToken');
+    // Ensure this only runs on client side
+    if (typeof window === 'undefined') return;
+    
+    // Check for both 'token' and 'accessToken' for compatibility
+    const storedToken = localStorage.getItem('token') || localStorage.getItem('accessToken');
     const storedUser = localStorage.getItem('user');
+    
+    // Debug logging
+    console.log('🔐 Auth Check:', {
+      hasToken: !!storedToken,
+      hasUser: !!storedUser,
+      tokenLength: storedToken?.length || 0,
+      tokenType: localStorage.getItem('token') ? 'token' : localStorage.getItem('accessToken') ? 'accessToken' : 'none'
+    });
 
-    if (!storedToken || !storedUser) {
-      router.push('/login');
+    // Check if user is logged in
+    if (!storedToken) {
+      console.warn('⚠️ No token found, redirecting to login');
+      setError('Please login to access this page');
+      setLoading(false);
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
       return;
     }
 
-    setUser(JSON.parse(storedUser));
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error('Error parsing user from localStorage:', e);
+      }
+    }
+    
+    // Fetch patients only if authenticated
     fetchPatients();
-  }, [router]);
+  }, []);
 
   const fetchPatients = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${BACKEND_URL}/patients`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setPatients(data);
+      setLoading(true);
+      setError(null);
+      const response = await patientsService.getPatients({ limit: 100 });
+      
+      // Handle different response structures
+      const patientData = response.data?.patients || response.data || response || [];
+      setPatients(Array.isArray(patientData) ? patientData : []);
+    } catch (err: any) {
+      const errorMessage = handleApiError(err);
+      
+      // If unauthorized, redirect to login
+      if (err?.statusCode === 401 || errorMessage.toLowerCase().includes('unauthorized')) {
+        setError('Session expired. Redirecting to login...');
+        localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
       } else {
-        console.error('Failed to fetch patients');
+        setError(errorMessage);
+        console.error('Error fetching patients:', errorMessage);
       }
-    } catch (error) {
-      console.error('Error fetching patients:', error);
     } finally {
       setLoading(false);
     }
@@ -101,28 +140,43 @@ export default function PatientsPage() {
     e.preventDefault();
     
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${BACKEND_URL}/patients`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
+      // Convert blood type from display format (A+, B+) to enum format (A_POSITIVE, B_POSITIVE)
+      const bloodTypeMap: Record<string, string> = {
+        'A+': 'A_POSITIVE',
+        'A-': 'A_NEGATIVE',
+        'B+': 'B_POSITIVE',
+        'B-': 'B_NEGATIVE',
+        'AB+': 'AB_POSITIVE',
+        'AB-': 'AB_NEGATIVE',
+        'O+': 'O_POSITIVE',
+        'O-': 'O_NEGATIVE'
+      };
 
-      if (response.ok) {
-        await fetchPatients();
-        setShowAddForm(false);
-        resetForm();
-        alert('Patient added successfully!');
+      const dataToSend = {
+        ...formData,
+        bloodType: formData.bloodType ? bloodTypeMap[formData.bloodType] || formData.bloodType : undefined,
+        dateOfBirth: formData.dateOfBirth || undefined
+      };
+
+      await patientsService.createPatient(dataToSend);
+      await fetchPatients();
+      setShowAddForm(false);
+      resetForm();
+      alert('Patient added successfully!');
+    } catch (err: any) {
+      const errorMessage = handleApiError(err);
+      
+      // If unauthorized, redirect to login
+      if (err?.statusCode === 401 || errorMessage.toLowerCase().includes('unauthorized')) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
+        router.push('/login');
       } else {
-        const errorData = await response.json();
-        alert('Error adding patient: ' + (errorData.message || 'Unknown error'));
+        alert('Error adding patient: ' + errorMessage);
+        console.error('Full error:', err);
       }
-    } catch (error) {
-      console.error('Error adding patient:', error);
-      alert('Error adding patient: ' + error.message);
     }
   };
 
@@ -132,28 +186,33 @@ export default function PatientsPage() {
     if (!editingPatient) return;
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${BACKEND_URL}/patients/${editingPatient.id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
+      // Convert blood type from display format to enum format
+      const bloodTypeMap: Record<string, string> = {
+        'A+': 'A_POSITIVE',
+        'A-': 'A_NEGATIVE',
+        'B+': 'B_POSITIVE',
+        'B-': 'B_NEGATIVE',
+        'AB+': 'AB_POSITIVE',
+        'AB-': 'AB_NEGATIVE',
+        'O+': 'O_POSITIVE',
+        'O-': 'O_NEGATIVE'
+      };
 
-      if (response.ok) {
-        await fetchPatients();
-        setEditingPatient(null);
-        resetForm();
-        alert('Patient updated successfully!');
-      } else {
-        const errorData = await response.json();
-        alert('Error updating patient: ' + (errorData.message || 'Unknown error'));
-      }
-    } catch (error) {
-      console.error('Error updating patient:', error);
-      alert('Error updating patient: ' + error.message);
+      const dataToSend = {
+        ...formData,
+        bloodType: formData.bloodType ? bloodTypeMap[formData.bloodType] || formData.bloodType : undefined,
+        dateOfBirth: formData.dateOfBirth || undefined
+      };
+
+      await patientsService.updatePatient(editingPatient.id, dataToSend);
+      await fetchPatients();
+      setEditingPatient(null);
+      resetForm();
+      alert('Patient updated successfully!');
+    } catch (err) {
+      const errorMessage = handleApiError(err);
+      alert('Error updating patient: ' + errorMessage);
+      console.error('Full error:', err);
     }
   };
 
@@ -161,24 +220,12 @@ export default function PatientsPage() {
     if (!confirm('Are you sure you want to delete this patient?')) return;
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${BACKEND_URL}/patients/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        await fetchPatients();
-        alert('Patient deleted successfully!');
-      } else {
-        alert('Error deleting patient');
-      }
-    } catch (error) {
-      console.error('Error deleting patient:', error);
-      alert('Error deleting patient: ' + error.message);
+      await patientsService.deletePatient(id);
+      await fetchPatients();
+      alert('Patient deleted successfully!');
+    } catch (err) {
+      const errorMessage = handleApiError(err);
+      alert('Error deleting patient: ' + errorMessage);
     }
   };
 
@@ -188,12 +235,11 @@ export default function PatientsPage() {
       lastName: '',
       dateOfBirth: '',
       gender: 'MALE',
-      bloodGroup: '',
+      bloodType: '',
       phone: '',
       email: '',
-      address: '',
-      emergencyContactName: '',
-      emergencyContactPhone: ''
+      aadharNumber: '',
+      address: ''
     });
   };
 
@@ -204,25 +250,26 @@ export default function PatientsPage() {
       lastName: patient.lastName,
       dateOfBirth: patient.dateOfBirth.split('T')[0], // Convert to date input format
       gender: patient.gender,
-      bloodGroup: patient.bloodGroup,
+      bloodType: patient.bloodGroup || patient.bloodType || '',
       phone: patient.phone,
       email: patient.email || '',
-      address: patient.address,
-      emergencyContactName: patient.emergencyContactName || '',
-      emergencyContactPhone: patient.emergencyContactPhone || ''
+      aadharNumber: (patient as any).aadharNumber || '',
+      address: patient.address
     });
     setShowAddForm(true);
   };
 
   const filteredPatients = patients.filter(patient => {
+    const patientId = patient.medicalRecordNumber || patient.patientId || '';
     const matchesSearch = 
       patient.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       patient.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.patientId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patientId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       patient.phone.includes(searchTerm);
     
     const matchesGender = !selectedGender || patient.gender === selectedGender;
-    const matchesStatus = !selectedStatus || patient.status === selectedStatus;
+    const patientStatus = patient.status || (patient.isActive ? 'ACTIVE' : 'INACTIVE');
+    const matchesStatus = !selectedStatus || patientStatus === selectedStatus;
     
     return matchesSearch && matchesGender && matchesStatus;
   });
@@ -274,8 +321,26 @@ export default function PatientsPage() {
       </div>
 
       <div style={{ padding: "2rem" }}>
+        {/* Error Banner */}
+        {error && (
+          <div style={{
+            background: "#fef2f2",
+            border: "1px solid #fca5a5",
+            borderRadius: "8px",
+            padding: "1rem",
+            marginBottom: "1rem",
+            color: "#991b1b",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem"
+          }}>
+            <span style={{ fontSize: "1.2rem" }}>⚠️</span>
+            <span>{error}</span>
+          </div>
+        )}
+        
         {/* Stats Cards */}
-        <div style={{ 
+        <div style={{
           display: "grid", 
           gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
           gap: "1rem", 
@@ -452,7 +517,7 @@ export default function PatientsPage() {
                   }}
                 >
                   <td style={{ padding: "1rem", color: "#374151", fontFamily: "monospace" }}>
-                    {patient.patientId}
+                    {patient.medicalRecordNumber || patient.patientId || 'N/A'}
                   </td>
                   <td style={{ padding: "1rem", color: "#374151" }}>
                     {patient.firstName} {patient.lastName}
@@ -464,7 +529,7 @@ export default function PatientsPage() {
                     {patient.phone}
                   </td>
                   <td style={{ padding: "1rem", color: "#6b7280" }}>
-                    {patient.bloodGroup}
+                    {patient.bloodGroup || patient.bloodType || '-'}
                   </td>
                   <td style={{ padding: "1rem" }}>
                     <span style={{
@@ -472,12 +537,12 @@ export default function PatientsPage() {
                       borderRadius: "12px",
                       fontSize: "0.75rem",
                       fontWeight: "500",
-                      background: patient.status === 'ACTIVE' ? '#dcfce7' : 
+                      background: (patient.status === 'ACTIVE' || patient.isActive) ? '#dcfce7' : 
                                  patient.status === 'INACTIVE' ? '#f3f4f6' : '#fef2f2',
-                      color: patient.status === 'ACTIVE' ? '#166534' : 
+                      color: (patient.status === 'ACTIVE' || patient.isActive) ? '#166534' : 
                              patient.status === 'INACTIVE' ? '#374151' : '#991b1b'
                     }}>
-                      {patient.status}
+                      {patient.status || (patient.isActive ? 'ACTIVE' : 'INACTIVE')}
                     </span>
                   </td>
                   <td style={{ padding: "1rem" }}>
@@ -571,11 +636,10 @@ export default function PatientsPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                    First Name *
+                    First Name
                   </label>
                   <input
                     type="text"
-                    required
                     value={formData.firstName}
                     onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                     style={{
@@ -591,11 +655,10 @@ export default function PatientsPage() {
                 
                 <div>
                   <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                    Last Name *
+                    Last Name
                   </label>
                   <input
                     type="text"
-                    required
                     value={formData.lastName}
                     onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                     style={{
@@ -613,11 +676,10 @@ export default function PatientsPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                    Date of Birth *
+                    Date of Birth (Optional)
                   </label>
                   <input
                     type="date"
-                    required
                     value={formData.dateOfBirth}
                     onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
                     style={{
@@ -633,10 +695,9 @@ export default function PatientsPage() {
                 
                 <div>
                   <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                    Gender *
+                    Gender
                   </label>
                   <select
-                    required
                     value={formData.gender}
                     onChange={(e) => setFormData({...formData, gender: e.target.value as 'MALE' | 'FEMALE' | 'OTHER'})}
                     style={{
@@ -658,13 +719,13 @@ export default function PatientsPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                    Phone *
+                    Phone (Optional)
                   </label>
                   <input
                     type="tel"
-                    required
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    placeholder="+91 98765 43210"
                     style={{
                       width: "100%",
                       padding: "0.5rem",
@@ -678,12 +739,13 @@ export default function PatientsPage() {
                 
                 <div>
                   <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                    Email
+                    Email (Optional)
                   </label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    placeholder="patient@email.com"
                     style={{
                       width: "100%",
                       padding: "0.5rem",
@@ -696,44 +758,67 @@ export default function PatientsPage() {
                 </div>
               </div>
 
-              <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                  Blood Group *
-                </label>
-                <select
-                  required
-                  value={formData.bloodGroup}
-                  onChange={(e) => setFormData({...formData, bloodGroup: e.target.value})}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    borderRadius: "4px",
-                    border: "1px solid #d1d5db",
-                    fontSize: "0.9rem",
-                    boxSizing: "border-box"
-                  }}
-                >
-                  <option value="">Select Blood Group</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                </select>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
+                    Aadhar Number (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.aadharNumber}
+                    onChange={(e) => setFormData({...formData, aadharNumber: e.target.value})}
+                    placeholder="1234 5678 9012"
+                    maxLength={12}
+                    style={{
+                      width: "100%",
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      border: "1px solid #d1d5db",
+                      fontSize: "0.9rem",
+                      boxSizing: "border-box"
+                    }}
+                  />
+                </div>
+                
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
+                    Blood Group (Optional)
+                  </label>
+                  <select
+                    value={formData.bloodType}
+                    onChange={(e) => setFormData({...formData, bloodType: e.target.value})}
+                    style={{
+                      width: "100%",
+                      padding: "0.5rem",
+                      borderRadius: "4px",
+                      border: "1px solid #d1d5db",
+                      fontSize: "0.9rem",
+                      boxSizing: "border-box"
+                    }}
+                  >
+                    <option value="">Select Blood Group</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
               </div>
+
 
               <div style={{ marginBottom: "1rem" }}>
                 <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                  Address *
+                  Address (Optional)
                 </label>
                 <textarea
-                  required
                   rows={3}
                   value={formData.address}
                   onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  placeholder="Full address with street, city, state, and pincode"
                   style={{
                     width: "100%",
                     padding: "0.5rem",
@@ -744,46 +829,6 @@ export default function PatientsPage() {
                     resize: "vertical"
                   }}
                 />
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                    Emergency Contact Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.emergencyContactName}
-                    onChange={(e) => setFormData({...formData, emergencyContactName: e.target.value})}
-                    style={{
-                      width: "100%",
-                      padding: "0.5rem",
-                      borderRadius: "4px",
-                      border: "1px solid #d1d5db",
-                      fontSize: "0.9rem",
-                      boxSizing: "border-box"
-                    }}
-                  />
-                </div>
-                
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.9rem", fontWeight: "500" }}>
-                    Emergency Contact Phone
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.emergencyContactPhone}
-                    onChange={(e) => setFormData({...formData, emergencyContactPhone: e.target.value})}
-                    style={{
-                      width: "100%",
-                      padding: "0.5rem",
-                      borderRadius: "4px",
-                      border: "1px solid #d1d5db",
-                      fontSize: "0.9rem",
-                      boxSizing: "border-box"
-                    }}
-                  />
-                </div>
               </div>
 
               <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>

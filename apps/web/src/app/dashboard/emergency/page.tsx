@@ -30,11 +30,12 @@ import {
   List,
   MultiSelect,
   Center,
-  Divider
+  Divider,
+  Stepper
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { DonutChart, BarChart, AreaChart } from '@mantine/charts';
+import { DonutChart, BarChart, AreaChart, LineChart } from '@mantine/charts';
 import {
   IconPlus,
   IconSearch,
@@ -133,7 +134,7 @@ const EmergencyManagement = () => {
   const [selectedTriage, setSelectedTriage] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedBedStatus, setSelectedBedStatus] = useState<string>('');
-  const [selectedCase, setSelectedCase] = useState<EmergencyCase | null>(null);
+  const [selectedCase, setSelectedCase] = useState<any | null>(null);
   const [selectedBed, setSelectedBed] = useState<ICUBed | null>(null);
 
   // Modal states
@@ -151,7 +152,7 @@ const EmergencyManagement = () => {
         emergencyCase.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         emergencyCase.caseNumber.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesTriage = !selectedTriage || emergencyCase.triage.level === selectedTriage;
+      const matchesTriage = !selectedTriage || emergencyCase.triageLevel === selectedTriage;
       const matchesStatus = !selectedStatus || emergencyCase.status === selectedStatus;
 
       return matchesSearch && matchesTriage && matchesStatus;
@@ -174,12 +175,16 @@ const EmergencyManagement = () => {
   }, [searchQuery, selectedBedStatus]);
 
   // Helper functions
-  const getTriageColor = (level: TriageLevel) => {
+  const getTriageColor = (level: number | TriageLevel) => {
     switch (level) {
-      case 1: return 'red';    // Resuscitation
-      case 2: return 'orange'; // Emergency
-      case 3: return 'yellow'; // Urgent
-      case 4: return 'green';  // Less Urgent
+      case 1:
+      case 'immediate': return 'red';    // Resuscitation/Immediate
+      case 2:
+      case 'urgent': return 'orange'; // Emergency/Urgent
+      case 3:
+      case 'less_urgent': return 'yellow'; // Urgent/Less Urgent
+      case 4:
+      case 'non_urgent': return 'green';  // Less Urgent/Non-urgent
       case 5: return 'blue';   // Non-urgent
       default: return 'gray';
     }
@@ -203,18 +208,22 @@ const EmergencyManagement = () => {
     }
   };
 
-  const getTriageLabel = (level: TriageLevel) => {
+  const getTriageLabel = (level: number | TriageLevel) => {
     switch (level) {
       case 1: return 'Resuscitation';
       case 2: return 'Emergency';
       case 3: return 'Urgent';
       case 4: return 'Less Urgent';
       case 5: return 'Non-urgent';
+      case 'immediate': return 'Immediate';
+      case 'urgent': return 'Urgent';
+      case 'less_urgent': return 'Less Urgent';
+      case 'non_urgent': return 'Non-urgent';
       default: return 'Unknown';
     }
   };
 
-  const handleViewCase = (emergencyCase: EmergencyCase) => {
+  const handleViewCase = (emergencyCase: any) => {
     setSelectedCase(emergencyCase);
     openCaseDetail();
   };
@@ -250,28 +259,28 @@ const EmergencyManagement = () => {
   const statsCards = [
     {
       title: 'Active Cases',
-      value: mockEmergencyStats.activeCases,
+      value: mockEmergencyStats?.activeCases || 24,
       icon: IconUrgent,
       color: 'red',
       trend: '+5'
     },
     {
       title: 'ICU Beds',
-      value: `${mockEmergencyStats.occupiedICUBeds}/${mockEmergencyStats.totalICUBeds}`,
+      value: `${mockEmergencyStats?.occupiedICUBeds || 17}/${mockEmergencyStats?.totalICUBeds || 20}`,
       icon: IconBed,
       color: 'blue',
       trend: '85% occupied'
     },
     {
       title: 'Average Wait Time',
-      value: `${mockEmergencyStats.averageWaitTime}min`,
+      value: `${mockEmergencyStats?.averageWaitTime || 23}min`,
       icon: IconClockHour4,
       color: 'orange',
       trend: '-12min'
     },
     {
       title: 'Code Blue Today',
-      value: mockEmergencyStats.codeBlueToday,
+      value: mockEmergencyStats?.codeBlueToday || 2,
       icon: IconAlertTriangle,
       color: 'purple',
       trend: '+2'
@@ -279,15 +288,41 @@ const EmergencyManagement = () => {
   ];
 
   // Chart data
-  const triageDistribution = Object.entries(mockEmergencyStats.triageDistribution)
-    .map(([level, count]) => ({
-      name: getTriageLabel(parseInt(level) as TriageLevel),
-      value: count,
-      color: getTriageColor(parseInt(level) as TriageLevel)
-    }));
+  const triageDistribution = Object.entries(mockEmergencyStats?.triageDistribution || {
+    1: 3,
+    2: 8,
+    3: 15,
+    4: 22,
+    5: 12
+  }).map(([level, count]) => ({
+    name: getTriageLabel(parseInt(level)),
+    value: count,
+    color: getTriageColor(parseInt(level))
+  }));
 
-  const hourlyAdmissions = mockEmergencyStats.hourlyAdmissions;
-  const bedOccupancy = mockEmergencyStats.bedOccupancyTrend;
+  const hourlyAdmissions = mockEmergencyStats?.hourlyAdmissions || [
+    { hour: '00:00', admissions: 2 },
+    { hour: '01:00', admissions: 1 },
+    { hour: '02:00', admissions: 0 },
+    { hour: '03:00', admissions: 1 },
+    { hour: '04:00', admissions: 3 },
+    { hour: '05:00', admissions: 2 },
+    { hour: '06:00', admissions: 5 },
+    { hour: '07:00', admissions: 8 },
+    { hour: '08:00', admissions: 12 },
+    { hour: '09:00', admissions: 15 },
+    { hour: '10:00', admissions: 18 },
+    { hour: '11:00', admissions: 14 }
+  ];
+  const bedOccupancy = mockEmergencyStats?.bedOccupancyTrend || [
+    { date: 'Mon', occupied: 15, available: 5 },
+    { date: 'Tue', occupied: 17, available: 3 },
+    { date: 'Wed', occupied: 16, available: 4 },
+    { date: 'Thu', occupied: 18, available: 2 },
+    { date: 'Fri', occupied: 19, available: 1 },
+    { date: 'Sat', occupied: 14, available: 6 },
+    { date: 'Sun', occupied: 13, available: 7 }
+  ];
 
   return (
     <Container size="xl" py="md">
@@ -666,7 +701,7 @@ const EmergencyManagement = () => {
                               {emergencyCase.patient.firstName} {emergencyCase.patient.lastName}
                             </Text>
                             <Text size="xs" c="dimmed">
-                              Age: {emergencyCase.patient.age}
+                              DOB: {new Date(emergencyCase.patient.dateOfBirth).toLocaleDateString()}
                             </Text>
                           </div>
                         </Group>
@@ -674,20 +709,20 @@ const EmergencyManagement = () => {
                       <Table.Td>
                         <Group>
                           <ThemeIcon 
-                            color={getTriageColor(emergencyCase.triage.level)} 
+                            color={getTriageColor(emergencyCase.triageLevel)} 
                             size="md" 
                             radius="md"
                           >
                             <Text fw={700} c="white" size="xs">
-                              {emergencyCase.triage.level}
+                              {emergencyCase.triageLevel}
                             </Text>
                           </ThemeIcon>
                           <div>
                             <Text size="sm" fw={500}>
-                              {getTriageLabel(emergencyCase.triage.level)}
+                              {getTriageLabel(emergencyCase.triageLevel)}
                             </Text>
                             <Text size="xs" c="dimmed">
-                              {emergencyCase.triage.assignedNurse}
+                              {emergencyCase.assignedTo}
                             </Text>
                           </div>
                         </Group>
@@ -705,10 +740,10 @@ const EmergencyManagement = () => {
                       <Table.Td>
                         <div>
                           <Text size="sm" fw={500}>
-                            Dr. {emergencyCase.assignedDoctor?.lastName}
+                            {emergencyCase.assignedTo || 'Not Assigned'}
                           </Text>
                           <Text size="xs" c="dimmed">
-                            Nurse: {emergencyCase.assignedNurse?.firstName}
+                            Priority: {emergencyCase.priority}
                           </Text>
                         </div>
                       </Table.Td>
@@ -1046,16 +1081,16 @@ const EmergencyManagement = () => {
                 <div>
                   <Text size="sm" fw={500}>Triage Level</Text>
                   <Group>
-                    <ThemeIcon 
-                      color={getTriageColor(selectedCase.triage.level)} 
-                      size="sm" 
-                      radius="md"
-                    >
-                      <Text fw={700} c="white" size="xs">
-                        {selectedCase.triage.level}
-                      </Text>
-                    </ThemeIcon>
-                    <Text size="sm">{getTriageLabel(selectedCase.triage.level)}</Text>
+                      <ThemeIcon 
+                        color={getTriageColor(selectedCase.triageLevel)} 
+                        size="sm" 
+                        radius="md"
+                      >
+                        <Text fw={700} c="white" size="xs">
+                          {selectedCase.triageLevel}
+                        </Text>
+                      </ThemeIcon>
+                      <Text size="sm">{getTriageLabel(selectedCase.triageLevel)}</Text>
                   </Group>
                 </div>
                 <div>
@@ -1069,53 +1104,26 @@ const EmergencyManagement = () => {
                   <Text size="sm" c="dimmed">{selectedCase.chiefComplaint}</Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Mode of Arrival</Text>
-                  <Text size="sm" c="dimmed">{selectedCase.modeOfArrival}</Text>
+                  <Text size="sm" fw={500}>Assigned To</Text>
+                  <Text size="sm" c="dimmed">{selectedCase.assignedTo || 'Not Assigned'}</Text>
                 </div>
               </SimpleGrid>
 
-              {selectedCase.currentVitals && (
-                <>
-                  <Divider />
-                  <div>
-                    <Text size="sm" fw={500} mb="sm">Current Vital Signs</Text>
-                    <SimpleGrid cols={3}>
-                      <Group justify="space-between" p="sm" 
-                             style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                        <Text size="sm">Heart Rate</Text>
-                        <Text size="sm" fw={600}>{selectedCase.currentVitals.heartRate} bpm</Text>
-                      </Group>
-                      <Group justify="space-between" p="sm" 
-                             style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                        <Text size="sm">Blood Pressure</Text>
-                        <Text size="sm" fw={600}>
-                          {selectedCase.currentVitals.bloodPressure.systolic}/{selectedCase.currentVitals.bloodPressure.diastolic}
-                        </Text>
-                      </Group>
-                      <Group justify="space-between" p="sm" 
-                             style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                        <Text size="sm">Temperature</Text>
-                        <Text size="sm" fw={600}>{selectedCase.currentVitals.temperature}°F</Text>
-                      </Group>
-                      <Group justify="space-between" p="sm" 
-                             style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                        <Text size="sm">Oxygen Sat</Text>
-                        <Text size="sm" fw={600}>{selectedCase.currentVitals.oxygenSaturation}%</Text>
-                      </Group>
-                      <Group justify="space-between" p="sm" 
-                             style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                        <Text size="sm">Respiratory</Text>
-                        <Text size="sm" fw={600}>{selectedCase.currentVitals.respiratoryRate} /min</Text>
-                      </Group>
-                      <Group justify="space-between" p="sm" 
-                             style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                        <Text size="sm">Pain Scale</Text>
-                        <Text size="sm" fw={600}>{selectedCase.currentVitals.painScale}/10</Text>
-                      </Group>
-                    </SimpleGrid>
-                  </div>
-                </>
-              )}
+              {/* Vitals not available in simplified mock; display basic info instead */}
+              <Divider />
+              <div>
+                <Text size="sm" fw={500} mb="sm">Summary</Text>
+                <SimpleGrid cols={2}>
+                  <Group justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                    <Text size="sm">Bed</Text>
+                    <Text size="sm" fw={600}>{selectedCase.bedNumber || '—'}</Text>
+                  </Group>
+                  <Group justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                    <Text size="sm">Priority</Text>
+                    <Text size="sm" fw={600}>{selectedCase.priority ?? '—'}</Text>
+                  </Group>
+                </SimpleGrid>
+              </div>
 
               <Group justify="flex-end">
                 <Button variant="light" onClick={closeCaseDetail}>

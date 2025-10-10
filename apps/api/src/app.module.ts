@@ -9,6 +9,29 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { PatientsModule } from './patients/patients.module';
 import { AppointmentsModule } from './appointments/appointments.module';
+import { StaffModule } from './staff/staff.module';
+import { LaboratoryModule } from './laboratory/laboratory.module';
+import { PharmacyModule } from './pharmacy/pharmacy.module';
+import { BillingModule } from './billing/billing.module';
+import { OpdModule } from './opd/opd.module';
+import { EmrModule } from './emr/emr.module';
+import { RadiologyModule } from './radiology/radiology.module';
+import { PathologyModule } from './pathology/pathology.module';
+import { FinanceModule } from './finance/finance.module';
+import { HrModule } from './hr/hr.module';
+import { ReportsModule } from './reports/reports.module';
+import { PatientPortalModule } from './patient-portal/patient-portal.module';
+import { TelemedicineModule } from './telemedicine/telemedicine.module';
+import { PharmacyManagementModule } from './pharmacy-management/pharmacy-management.module';
+import { IpdModule } from './ipd/ipd.module';
+import { EmergencyModule } from './emergency/emergency.module';
+import { SurgeryModule } from './surgery/surgery.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { InsuranceModule } from './insurance/insurance.module';
+import { CommunicationsModule } from './communications/communications.module';
+import { QualityModule } from './quality/quality.module';
+import { ResearchModule } from './research/research.module';
+import { IntegrationModule } from './integration/integration.module';
 
 // Basic controllers and services
 import { AppController } from './app.controller';
@@ -58,6 +81,29 @@ import { AppService } from './app.service';
     // HMS modules
     PatientsModule,
     AppointmentsModule,
+    StaffModule,
+    LaboratoryModule,
+    PharmacyModule,
+    BillingModule,
+    OpdModule,
+    EmrModule,
+    RadiologyModule,
+    PathologyModule,
+    FinanceModule,
+    HrModule,
+    ReportsModule,
+    PatientPortalModule,
+    TelemedicineModule,
+    PharmacyManagementModule,
+    IpdModule,
+    EmergencyModule,
+    SurgeryModule,
+    InventoryModule,
+    InsuranceModule,
+    CommunicationsModule,
+    QualityModule,
+    ResearchModule,
+    IntegrationModule,
   ],
   controllers: [AppController],
   providers: [
