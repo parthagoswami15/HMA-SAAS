@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ColorSchemeScript } from '@mantine/core';
 import "./globals.css";
 import Providers from "./providers";
-
-// Force all pages to be dynamically rendered to prevent prerender issues
-export const dynamic = 'force-dynamic';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+      <head>
+        <ColorSchemeScript />
+      </head>
+      <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>
     </html>

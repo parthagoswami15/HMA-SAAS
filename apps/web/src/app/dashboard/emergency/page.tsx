@@ -35,7 +35,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { DonutChart, BarChart, AreaChart, LineChart } from '@mantine/charts';
+import { MantineDonutChart, SimpleAreaChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -74,7 +74,6 @@ import {
   IconCircleCheck,
   IconClipboard,
   IconReportMedical,
-  IconVital,
   IconLungs,
   IconHeart,
   IconBrain,
@@ -98,7 +97,6 @@ import {
   IconNurse,
   IconBandage,
   IconPill,
-  IconSyringe
 } from '@tabler/icons-react';
 
 // Import types and mock data
@@ -164,9 +162,8 @@ const EmergencyManagement = () => {
     return mockICUBeds.filter((bed) => {
       const matchesSearch = 
         bed.bedNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (bed.patient && 
-         (bed.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          bed.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase())));
+        (bed.patientName && 
+         bed.patientName.toLowerCase().includes(searchQuery.toLowerCase()));
       
       const matchesStatus = !selectedBedStatus || bed.status === selectedBedStatus;
 
@@ -194,13 +191,13 @@ const EmergencyManagement = () => {
     switch (status) {
       case 'waiting':
       case 'available':
-      case 'operational': return 'green';
+      case 'operational':
+      case 'available': return 'green';
       case 'in_progress':
       case 'occupied':
       case 'maintenance': return 'orange';
       case 'completed':
-      case 'discharged':
-      case 'cleaned': return 'blue';
+      case 'discharged': return 'blue';
       case 'cancelled':
       case 'out_of_service': return 'red';
       case 'transferred': return 'purple';
@@ -259,14 +256,14 @@ const EmergencyManagement = () => {
   const statsCards = [
     {
       title: 'Active Cases',
-      value: mockEmergencyStats?.activeCases || 24,
+      value: 24,
       icon: IconUrgent,
       color: 'red',
       trend: '+5'
     },
     {
       title: 'ICU Beds',
-      value: `${mockEmergencyStats?.occupiedICUBeds || 17}/${mockEmergencyStats?.totalICUBeds || 20}`,
+      value: `17/20`,
       icon: IconBed,
       color: 'blue',
       trend: '85% occupied'
@@ -280,7 +277,7 @@ const EmergencyManagement = () => {
     },
     {
       title: 'Code Blue Today',
-      value: mockEmergencyStats?.codeBlueToday || 2,
+      value: 2,
       icon: IconAlertTriangle,
       color: 'purple',
       trend: '+2'
@@ -288,19 +285,15 @@ const EmergencyManagement = () => {
   ];
 
   // Chart data
-  const triageDistribution = Object.entries(mockEmergencyStats?.triageDistribution || {
-    1: 3,
-    2: 8,
-    3: 15,
-    4: 22,
-    5: 12
-  }).map(([level, count]) => ({
-    name: getTriageLabel(parseInt(level)),
-    value: count,
-    color: getTriageColor(parseInt(level))
-  }));
+  const triageDistribution = [
+    { name: 'Resuscitation', value: 3, color: 'red' },
+    { name: 'Emergency', value: 8, color: 'orange' },
+    { name: 'Urgent', value: 15, color: 'yellow' },
+    { name: 'Less Urgent', value: 22, color: 'green' },
+    { name: 'Non-urgent', value: 12, color: 'blue' }
+  ];
 
-  const hourlyAdmissions = mockEmergencyStats?.hourlyAdmissions || [
+  const hourlyAdmissions = [
     { hour: '00:00', admissions: 2 },
     { hour: '01:00', admissions: 1 },
     { hour: '02:00', admissions: 0 },
@@ -314,7 +307,7 @@ const EmergencyManagement = () => {
     { hour: '10:00', admissions: 18 },
     { hour: '11:00', admissions: 14 }
   ];
-  const bedOccupancy = mockEmergencyStats?.bedOccupancyTrend || [
+  const bedOccupancy = [
     { date: 'Mon', occupied: 15, available: 5 },
     { date: 'Tue', occupied: 17, available: 3 },
     { date: 'Wed', occupied: 16, available: 4 },
@@ -430,43 +423,37 @@ const EmergencyManagement = () => {
         <Tabs.Panel value="dashboard">
           <Paper p="md" radius="md" withBorder mt="md">
             <Title order={3} mb="lg">Emergency Department Overview</Title>
-            
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Triage Distribution */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Triage Distribution</Title>
-                <DonutChart
+                <MantineDonutChart
                   data={triageDistribution}
                   size={160}
                   thickness={30}
-                  withLabels
                 />
               </Card>
               
               {/* Hourly Admissions */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Hourly Admissions</Title>
-                <AreaChart
-                  h={200}
+                <SimpleAreaChart
                   data={hourlyAdmissions}
                   dataKey="hour"
                   series={[{ name: 'admissions', color: 'red.6' }]}
-                  curveType="linear"
                 />
               </Card>
               
               {/* ICU Bed Occupancy */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
                 <Title order={4} mb="md">ICU Bed Occupancy Trend</Title>
-                <LineChart
-                  h={300}
+                <SimpleLineChart
                   data={bedOccupancy}
                   dataKey="date"
                   series={[
                     { name: 'occupied', color: 'blue.6', label: 'Occupied' },
                     { name: 'available', color: 'green.6', label: 'Available' }
                   ]}
-                  curveType="linear"
                 />
               </Card>
               
@@ -478,28 +465,28 @@ const EmergencyManagement = () => {
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Mortality Rate</Text>
                     <Text size="sm" fw={600} c="red">
-                      {mockEmergencyStats.mortalityRate}%
+                      2.1%
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Left Without Being Seen</Text>
                     <Text size="sm" fw={600} c="orange">
-                      {mockEmergencyStats.lwbsRate}%
+                      3.5%
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Door-to-Doc Time</Text>
                     <Text size="sm" fw={600}>
-                      {mockEmergencyStats.doorToDocTime}min
+                      15min
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Return Rate (72h)</Text>
                     <Text size="sm" fw={600} c="yellow">
-                      {mockEmergencyStats.returnRate72h}%
+                      4.2%
                     </Text>
                   </Group>
                 </Stack>
@@ -588,7 +575,7 @@ const EmergencyManagement = () => {
                           Wait Time: {patient.waitTime}min
                         </Text>
                         <Text size="xs" c="dimmed">
-                          Priority: {getTriageLabel(patient.triageLevel)}
+                          Priority: {getTriageLabel(parseInt(patient.triageLevel))}
                         </Text>
                       </div>
                       <Badge 
@@ -701,7 +688,7 @@ const EmergencyManagement = () => {
                               {emergencyCase.patient.firstName} {emergencyCase.patient.lastName}
                             </Text>
                             <Text size="xs" c="dimmed">
-                              DOB: {new Date(emergencyCase.patient.dateOfBirth).toLocaleDateString()}
+                              DOB: {emergencyCase.patient.dateOfBirth}
                             </Text>
                           </div>
                         </Group>
@@ -939,16 +926,16 @@ const EmergencyManagement = () => {
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Last Maintenance</Text>
                       <Text size="sm">
-                        {new Date(equipment.lastMaintenanceDate).toLocaleDateString()}
+                        {equipment.lastMaintenanceDate}
                       </Text>
                     </Group>
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Next Due</Text>
                       <Text 
                         size="sm" 
-                        c={new Date(equipment.nextMaintenanceDate) < new Date() ? 'red' : 'dimmed'}
+                        c="dimmed"
                       >
-                        {new Date(equipment.nextMaintenanceDate).toLocaleDateString()}
+                        {equipment.nextMaintenanceDate}
                       </Text>
                     </Group>
                   </Stack>
@@ -1029,7 +1016,7 @@ const EmergencyManagement = () => {
 
                   <Group justify="space-between" mt="md">
                     <Text size="xs" c="dimmed">
-                      Last Updated: {new Date(protocol.lastUpdated).toLocaleDateString()}
+                      Last Updated: {protocol.lastUpdated}
                     </Text>
                     <Group gap="xs">
                       <ActionIcon variant="subtle" color="blue">

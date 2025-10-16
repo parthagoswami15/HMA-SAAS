@@ -82,10 +82,19 @@ export class ReportsService {
     ]);
 
     // Calculate age distribution
-    const ageGroups = { '0-18': 0, '19-35': 0, '36-50': 0, '51-65': 0, '65+': 0 };
+    const ageGroups = {
+      '0-18': 0,
+      '19-35': 0,
+      '36-50': 0,
+      '51-65': 0,
+      '65+': 0,
+    };
     byAge.forEach((p) => {
       if (p.dateOfBirth) {
-        const age = Math.floor((Date.now() - p.dateOfBirth.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+        const age = Math.floor(
+          (Date.now() - p.dateOfBirth.getTime()) /
+            (365.25 * 24 * 60 * 60 * 1000),
+        );
         if (age <= 18) ageGroups['0-18']++;
         else if (age <= 35) ageGroups['19-35']++;
         else if (age <= 50) ageGroups['36-50']++;

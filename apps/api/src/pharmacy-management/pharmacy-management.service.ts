@@ -6,7 +6,9 @@ export class PharmacyManagementService {
   constructor(private prisma: PrismaService) {}
 
   async createMedication(createDto: any, tenantId: string) {
-    const medication = await this.prisma.medication.create({ data: { ...createDto, tenantId } });
+    const medication = await this.prisma.medication.create({
+      data: { ...createDto, tenantId },
+    });
     return { success: true, message: 'Medication created', data: medication };
   }
 
@@ -21,7 +23,18 @@ export class PharmacyManagementService {
       }),
       this.prisma.medication.count({ where: { tenantId, isActive: true } }),
     ]);
-    return { success: true, data: { items: medications, pagination: { total, page: Number(page), limit: Number(limit), pages: Math.ceil(total / limit) } } };
+    return {
+      success: true,
+      data: {
+        items: medications,
+        pagination: {
+          total,
+          page: Number(page),
+          limit: Number(limit),
+          pages: Math.ceil(total / limit),
+        },
+      },
+    };
   }
 
   async findAllOrders(tenantId: string, query: any) {
@@ -36,11 +49,24 @@ export class PharmacyManagementService {
       }),
       this.prisma.pharmacyOrder.count({ where: { tenantId } }),
     ]);
-    return { success: true, data: { items: orders, pagination: { total, page: Number(page), limit: Number(limit), pages: Math.ceil(total / limit) } } };
+    return {
+      success: true,
+      data: {
+        items: orders,
+        pagination: {
+          total,
+          page: Number(page),
+          limit: Number(limit),
+          pages: Math.ceil(total / limit),
+        },
+      },
+    };
   }
 
   async dispenseOrder(id: string, tenantId: string) {
-    const order = await this.prisma.pharmacyOrder.findFirst({ where: { id, tenantId } });
+    const order = await this.prisma.pharmacyOrder.findFirst({
+      where: { id, tenantId },
+    });
     if (!order) throw new NotFoundException('Order not found');
     const updated = await this.prisma.pharmacyOrder.update({
       where: { id },
@@ -53,8 +79,13 @@ export class PharmacyManagementService {
     const [totalMedications, totalOrders, pendingOrders] = await Promise.all([
       this.prisma.medication.count({ where: { tenantId, isActive: true } }),
       this.prisma.pharmacyOrder.count({ where: { tenantId } }),
-      this.prisma.pharmacyOrder.count({ where: { tenantId, status: 'PENDING' } }),
+      this.prisma.pharmacyOrder.count({
+        where: { tenantId, status: 'PENDING' },
+      }),
     ]);
-    return { success: true, data: { totalMedications, totalOrders, pendingOrders } };
+    return {
+      success: true,
+      data: { totalMedications, totalOrders, pendingOrders },
+    };
   }
 }

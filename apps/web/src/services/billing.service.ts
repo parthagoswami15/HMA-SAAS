@@ -1,4 +1,4 @@
-import { apiClient } from './api-client';
+import { enhancedApiClient } from '../lib/api-client';
 
 /**
  * Billing and Invoice API Service
@@ -6,22 +6,32 @@ import { apiClient } from './api-client';
  */
 
 // Types
+export interface InvoiceItem {
+  itemType: string;
+  itemId?: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  discount?: number;
+  taxRate?: number;
+}
+
 export interface CreateInvoiceDto {
   patientId: string;
   date?: string;
   dueDate: string;
-  items: {
-    itemType: string;
-    itemId: string;
-    description: string;
-    quantity: number;
-    unitPrice: number;
-    discount?: number;
-    taxRate?: number;
-  }[];
+  items: InvoiceItem[];
   discountAmount?: number;
-  taxAmount?: number;
   notes?: string;
+  createdBy?: string;
+}
+
+export interface UpdateInvoiceDto {
+  status?: string;
+  dueDate?: string;
+  discountAmount?: number;
+  notes?: string;
+  updatedBy?: string;
 }
 
 export interface CreatePaymentDto {
@@ -30,6 +40,12 @@ export interface CreatePaymentDto {
   paymentMethod: string;
   paymentDate?: string;
   referenceNumber?: string;
+  notes?: string;
+  createdBy?: string;
+}
+
+export interface UpdatePaymentDto {
+  status?: string;
   notes?: string;
 }
 
@@ -53,56 +69,125 @@ export interface PaymentFilters {
   limit?: number;
 }
 
+export interface InvoiceResponse {
+  success: boolean;
+  message?: string;
+  data: any;
+}
+
+export interface InvoicesListResponse {
+  success: boolean;
+  message?: string;
+  data: any[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface PaymentResponse {
+  success: boolean;
+  message?: string;
+  data: any;
+}
+
+export interface PaymentsListResponse {
+  success: boolean;
+  message?: string;
+  data: any[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface BillingStatsResponse {
+  success: boolean;
+  message?: string;
+  data: {
+    totalInvoices: number;
+    pendingInvoices: number;
+    paidInvoices: number;
+    partiallyPaidInvoices: number;
+    todayRevenue: number;
+    monthlyRevenue: number;
+    todayInvoices: number;
+    monthlyInvoices: number;
+    paymentsByMethod: Array<{
+      method: string;
+      amount: number;
+    }>;
+  };
+}
+
+export interface RevenueReportResponse {
+  success: boolean;
+  message?: string;
+  data: {
+    startDate: string;
+    endDate: string;
+    totalInvoices: number;
+    totalRevenue: number;
+    totalTax: number;
+    totalDiscount: number;
+    invoices: any[];
+  };
+}
+
 const billingService = {
   // ==================== INVOICE OPERATIONS ====================
   
   /**
    * Create a new invoice
    */
-  createInvoice: async (data: CreateInvoiceDto) => {
-    return apiClient.post('/billing/invoices', data);
+  createInvoice: async (data: CreateInvoiceDto): Promise<InvoiceResponse> => {
+    return enhancedApiClient.post('/billing/invoices', data);
   },
 
   /**
    * Get all invoices with filters
    */
-  getInvoices: async (filters?: InvoiceFilters) => {
-    return apiClient.get('/billing/invoices', filters);
+  getInvoices: async (filters?: InvoiceFilters): Promise<InvoicesListResponse> => {
+    return enhancedApiClient.get('/billing/invoices', filters);
   },
 
   /**
    * Get invoice by ID
    */
-  getInvoiceById: async (id: string) => {
-    return apiClient.get(`/billing/invoices/${id}`);
+  getInvoiceById: async (id: string): Promise<InvoiceResponse> => {
+    return enhancedApiClient.get(`/billing/invoices/${id}`);
   },
 
   /**
    * Update invoice
    */
-  updateInvoice: async (id: string, data: any) => {
-    return apiClient.patch(`/billing/invoices/${id}`, data);
+  updateInvoice: async (id: string, data: UpdateInvoiceDto): Promise<InvoiceResponse> => {
+    return enhancedApiClient.patch(`/billing/invoices/${id}`, data);
   },
 
   /**
    * Cancel invoice
    */
-  cancelInvoice: async (id: string) => {
-    return apiClient.delete(`/billing/invoices/${id}`);
+  cancelInvoice: async (id: string): Promise<InvoiceResponse> => {
+    return enhancedApiClient.delete(`/billing/invoices/${id}`);
   },
 
   /**
    * Get billing statistics
    */
-  getBillingStats: async () => {
-    return apiClient.get('/billing/invoices/stats');
+  getBillingStats: async (): Promise<BillingStatsResponse> => {
+    return enhancedApiClient.get('/billing/invoices/stats');
   },
 
   /**
    * Get revenue report
    */
-  getRevenueReport: async (startDate: string, endDate: string) => {
-    return apiClient.get('/billing/invoices/reports/revenue', {
+  getRevenueReport: async (startDate: string, endDate: string): Promise<RevenueReportResponse> => {
+    return enhancedApiClient.get('/billing/invoices/reports/revenue', {
       startDate,
       endDate,
     });
@@ -113,29 +198,29 @@ const billingService = {
   /**
    * Create a payment
    */
-  createPayment: async (data: CreatePaymentDto) => {
-    return apiClient.post('/billing/payments', data);
+  createPayment: async (data: CreatePaymentDto): Promise<PaymentResponse> => {
+    return enhancedApiClient.post('/billing/payments', data);
   },
 
   /**
    * Get all payments with filters
    */
-  getPayments: async (filters?: PaymentFilters) => {
-    return apiClient.get('/billing/payments', filters);
+  getPayments: async (filters?: PaymentFilters): Promise<PaymentsListResponse> => {
+    return enhancedApiClient.get('/billing/payments', filters);
   },
 
   /**
    * Get payment by ID
    */
-  getPaymentById: async (id: string) => {
-    return apiClient.get(`/billing/payments/${id}`);
+  getPaymentById: async (id: string): Promise<PaymentResponse> => {
+    return enhancedApiClient.get(`/billing/payments/${id}`);
   },
 
   /**
    * Update payment
    */
-  updatePayment: async (id: string, data: any) => {
-    return apiClient.patch(`/billing/payments/${id}`, data);
+  updatePayment: async (id: string, data: UpdatePaymentDto): Promise<PaymentResponse> => {
+    return enhancedApiClient.patch(`/billing/payments/${id}`, data);
   },
 };
 

@@ -1,4 +1,7 @@
+'use client';
+
 import Link from "next/link";
+import { Container, Title, Text, Button, Group, Card, SimpleGrid } from '@mantine/core';
 
 export default function Home() {
   return (
@@ -14,30 +17,15 @@ export default function Home() {
           <div style={{ fontSize: "1.5rem", fontWeight: "bold", color: "white" }}>
             HMS SAAS
           </div>
-          <div style={{ display: "flex", gap: "1rem" }}>
-            <Link href="/login" style={{ 
-              color: "white", 
-              textDecoration: "none", 
-              padding: "0.5rem 1rem",
-              border: "1px solid rgba(255, 255, 255, 0.3)",
-              borderRadius: "5px",
-              transition: "all 0.3s ease"
-            }}>Login</Link>
-            <Link href="/signup" style={{ 
-              color: "#667eea", 
-              textDecoration: "none", 
-              padding: "0.5rem 1rem",
-              backgroundColor: "white",
-              borderRadius: "5px",
-              fontWeight: "500",
-              transition: "all 0.3s ease"
-            }}>Sign Up</Link>
-          </div>
+          <Group gap="md">
+            <Button component={Link} href="/login" variant="outline" color="white">Login</Button>
+            <Button component={Link} href="/signup" color="white">Sign Up</Button>
+          </Group>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div style={{ 
+      <Container size="lg" style={{ 
         display: "flex", 
         flexDirection: "column", 
         alignItems: "center", 
@@ -47,94 +35,98 @@ export default function Home() {
         textAlign: "center",
         color: "white"
       }}>
-        <h1 style={{ 
-          fontSize: "3.5rem", 
-          fontWeight: "bold", 
-          marginBottom: "1rem",
-          textShadow: "2px 2px 4px rgba(0,0,0,0.3)"
-        }}>
+        <Title 
+          order={1} 
+          size="3.5rem" 
+          fw={700}
+          mb="lg"
+          style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.3)" }}
+        >
           Hospital Management System
-        </h1>
-        <p style={{ 
-          fontSize: "1.2rem", 
-          marginBottom: "2rem", 
-          maxWidth: "600px",
-          lineHeight: "1.6",
-          opacity: "0.9"
-        }}>
+        </Title>
+        <Text 
+          size="xl"
+          mb="xl"
+          maw={600}
+          lh={1.6}
+          style={{ opacity: 0.9 }}
+        >
           Streamline your healthcare operations with our comprehensive Hospital Management System. 
           Manage patients, appointments, staff, and resources efficiently.
-        </p>
+        </Text>
         
         {/* Feature Cards */}
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "2rem",
-          maxWidth: "900px",
-          marginTop: "3rem"
-        }}>
-          <div style={{ 
-            background: "rgba(255, 255, 255, 0.1)",
-            padding: "2rem",
-            borderRadius: "10px",
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(255, 255, 255, 0.1)"
-          }}>
-            <h3 style={{ fontSize: "1.3rem", marginBottom: "1rem", fontWeight: "600" }}>Patient Management</h3>
-            <p style={{ opacity: "0.8", lineHeight: "1.5" }}>Complete patient records, medical history, and appointment scheduling</p>
-          </div>
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="xl" maw={900} mt="xl">
+          <Card 
+            padding="xl" 
+            radius="lg"
+            style={{ 
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              color: "white"
+            }}
+          >
+            <Title order={3} size="1.3rem" mb="md" fw={600}>Patient Management</Title>
+            <Text style={{ opacity: 0.8, lineHeight: 1.5 }}>Complete patient records, medical history, and appointment scheduling</Text>
+          </Card>
           
-          <div style={{ 
-            background: "rgba(255, 255, 255, 0.1)",
-            padding: "2rem",
-            borderRadius: "10px",
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(255, 255, 255, 0.1)"
-          }}>
-            <h3 style={{ fontSize: "1.3rem", marginBottom: "1rem", fontWeight: "600" }}>Staff Management</h3>
-            <p style={{ opacity: "0.8", lineHeight: "1.5" }}>Manage doctors, nurses, and administrative staff efficiently</p>
-          </div>
+          <Card 
+            padding="xl" 
+            radius="lg"
+            style={{ 
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              color: "white"
+            }}
+          >
+            <Title order={3} size="1.3rem" mb="md" fw={600}>Staff Management</Title>
+            <Text style={{ opacity: 0.8, lineHeight: 1.5 }}>Manage doctors, nurses, and administrative staff efficiently</Text>
+          </Card>
           
-          <div style={{ 
-            background: "rgba(255, 255, 255, 0.1)",
-            padding: "2rem",
-            borderRadius: "10px",
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(255, 255, 255, 0.1)"
-          }}>
-            <h3 style={{ fontSize: "1.3rem", marginBottom: "1rem", fontWeight: "600" }}>Analytics & Reports</h3>
-            <p style={{ opacity: "0.8", lineHeight: "1.5" }}>Comprehensive reporting and analytics for better decision making</p>
-          </div>
-        </div>
+          <Card 
+            padding="xl" 
+            radius="lg"
+            style={{ 
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              color: "white"
+            }}
+          >
+            <Title order={3} size="1.3rem" mb="md" fw={600}>Analytics & Reports</Title>
+            <Text style={{ opacity: 0.8, lineHeight: 1.5 }}>Comprehensive reporting and analytics for better decision making</Text>
+          </Card>
+        </SimpleGrid>
         
         {/* CTA Buttons */}
-        <div style={{ display: "flex", gap: "1rem", marginTop: "3rem", flexWrap: "wrap", justifyContent: "center" }}>
-          <Link href="/signup" style={{ 
-            background: "white",
-            color: "#667eea",
-            padding: "1rem 2rem",
-            borderRadius: "8px",
-            textDecoration: "none",
-            fontWeight: "600",
-            fontSize: "1.1rem",
-            transition: "all 0.3s ease",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
-          }}>Get Started</Link>
+        <Group justify="center" mt="xl" gap="md">
+          <Button 
+            component={Link} 
+            href="/signup"
+            size="lg"
+            color="white"
+            fw={600}
+            style={{
+              boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
+            }}
+          >
+            Get Started
+          </Button>
           
-          <Link href="/dashboard" style={{ 
-            background: "transparent",
-            color: "white",
-            padding: "1rem 2rem",
-            borderRadius: "8px",
-            textDecoration: "none",
-            fontWeight: "600",
-            fontSize: "1.1rem",
-            border: "2px solid rgba(255, 255, 255, 0.3)",
-            transition: "all 0.3s ease"
-          }}>View Dashboard</Link>
-        </div>
-      </div>
+          <Button 
+            component={Link} 
+            href="/dashboard"
+            size="lg"
+            variant="outline"
+            color="white"
+            fw={600}
+          >
+            View Dashboard
+          </Button>
+        </Group>
+      </Container>
       
       {/* Footer */}
       <footer style={{ 

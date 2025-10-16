@@ -27,14 +27,13 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  DatePickerInput,
   Timeline,
   Stepper,
   Checkbox
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
+import { MantineDonutChart, SimpleAreaChart, SimpleLineChart, SimpleBarChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -75,7 +74,6 @@ import {
   IconCircleCheck,
   IconClipboard,
   IconReportMedical,
-  IconVial,
   IconAtom,
   IconHeartbeat,
   IconBrain,
@@ -180,7 +178,7 @@ const LaboratoryManagement = () => {
   }, [searchQuery, selectedStatus, selectedType]);
 
   // Helper functions
-  const getStatusColor = (status: TestStatus | OrderStatus | SampleStatus | LabEquipmentStatus | QCStatus) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
       case 'completed':
@@ -324,7 +322,7 @@ const LaboratoryManagement = () => {
           </Button>
           <Button
             variant="light"
-            leftSection={<IconVial size={16} />}
+            leftSection={<IconFlask size={16} />}
             onClick={openAddOrder}
           >
             New Order
@@ -377,7 +375,7 @@ const LaboratoryManagement = () => {
           <Tabs.Tab value="orders" leftSection={<IconClipboardList size={16} />}>
             Lab Orders
           </Tabs.Tab>
-          <Tabs.Tab value="samples" leftSection={<IconVial size={16} />}>
+          <Tabs.Tab value="samples" leftSection={<IconFlask size={16} />}>
             Samples
           </Tabs.Tab>
           <Tabs.Tab value="equipment" leftSection={<IconSettings size={16} />}>
@@ -652,7 +650,7 @@ const LaboratoryManagement = () => {
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm">
-                          {new Date(order.orderDate).toLocaleDateString()}
+                          {typeof order.orderDate === 'string' ? order.orderDate : new Date(order.orderDate).toISOString().split('T')[0]}
                         </Text>
                       </Table.Td>
                       <Table.Td>
@@ -706,7 +704,7 @@ const LaboratoryManagement = () => {
                 <Button leftSection={<IconBarcode size={16} />} variant="light">
                   Scan Sample
                 </Button>
-                <Button leftSection={<IconVial size={16} />}>
+                <Button leftSection={<IconFlask size={16} />}>
                   Register Sample
                 </Button>
               </Group>
@@ -768,7 +766,7 @@ const LaboratoryManagement = () => {
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Sample Type</Text>
                       <Group gap="xs">
-                        <IconVial size={16} />
+                        <IconFlask size={16} />
                         <Text size="sm" fw={500}>
                           {sample.sampleType.replace('_', ' ').toUpperCase()}
                         </Text>
@@ -778,14 +776,14 @@ const LaboratoryManagement = () => {
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Collection Date</Text>
                       <Text size="sm">
-                        {new Date(sample.collectionDate).toLocaleDateString()}
+                        {typeof sample.collectionDate === 'string' ? sample.collectionDate : new Date(sample.collectionDate).toISOString().split('T')[0]}
                       </Text>
                     </Group>
 
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Collection Time</Text>
                       <Text size="sm">
-                        {new Date(sample.collectionDate).toLocaleTimeString()}
+                        {(sample as any).collectionTime || 'N/A'}
                       </Text>
                     </Group>
 
@@ -884,7 +882,7 @@ const LaboratoryManagement = () => {
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Installation Date</Text>
                       <Text size="sm">
-                        {new Date(equipment.installationDate).toLocaleDateString()}
+                        {typeof equipment.installationDate === 'string' ? equipment.installationDate : new Date(equipment.installationDate).toISOString().split('T')[0]}
                       </Text>
                     </Group>
 
@@ -892,7 +890,7 @@ const LaboratoryManagement = () => {
                       <Group justify="space-between">
                         <Text size="sm" c="dimmed">Last Maintenance</Text>
                         <Text size="sm">
-                          {new Date(equipment.lastMaintenanceDate).toLocaleDateString()}
+                          {typeof equipment.lastMaintenanceDate === 'string' ? equipment.lastMaintenanceDate : new Date(equipment.lastMaintenanceDate).toISOString().split('T')[0]}
                         </Text>
                       </Group>
                     )}
@@ -902,9 +900,9 @@ const LaboratoryManagement = () => {
                         <Text size="sm" c="dimmed">Next Maintenance</Text>
                         <Text 
                           size="sm" 
-                          c={new Date(equipment.nextMaintenanceDate) < new Date() ? 'red' : 'dimmed'}
+                          c="dimmed"
                         >
-                          {new Date(equipment.nextMaintenanceDate).toLocaleDateString()}
+                          {typeof equipment.nextMaintenanceDate === 'string' ? equipment.nextMaintenanceDate : new Date(equipment.nextMaintenanceDate).toISOString().split('T')[0]}
                         </Text>
                       </Group>
                     )}
@@ -970,7 +968,7 @@ const LaboratoryManagement = () => {
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Test Date</Text>
                       <Text size="sm">
-                        {new Date(qc.testDate).toLocaleDateString()}
+                        {typeof qc.testDate === 'string' ? qc.testDate : new Date(qc.testDate).toISOString().split('T')[0]}
                       </Text>
                     </Group>
 
@@ -1033,7 +1031,7 @@ const LaboratoryManagement = () => {
               {/* Test Distribution by Category */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Tests by Category</Title>
-                <DonutChart
+                <MantineDonutChart
                   data={testCategoryData}
                   size={160}
                   thickness={30}
@@ -1044,20 +1042,17 @@ const LaboratoryManagement = () => {
               {/* Daily Test Volume */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Daily Test Volume</Title>
-                <AreaChart
-                  h={200}
+                <SimpleAreaChart
                   data={dailyTestsData}
                   dataKey="date"
                   series={[{ name: 'tests', color: 'blue.6' }]}
-                  curveType="linear"
                 />
               </Card>
               
               {/* Turnaround Time Analysis */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
                 <Title order={4} mb="md">Average Turnaround Time by Category</Title>
-                <BarChart
-                  h={300}
+                <SimpleBarChart
                   data={turnaroundTimeData}
                   dataKey="category"
                   series={[{ name: 'hours', color: 'orange.6' }]}

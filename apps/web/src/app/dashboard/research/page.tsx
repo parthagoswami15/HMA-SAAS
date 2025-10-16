@@ -15,1819 +15,588 @@ import {
   Text,
   Tabs,
   Card,
-  Avatar,
+  Stack,
+  SimpleGrid,
+  ThemeIcon,
+  Progress,
   ActionIcon,
   Menu,
-  Stack,
-  Divider,
   ScrollArea,
-  ThemeIcon,
-  Alert,
-  Progress,
-  NumberInput,
-  Textarea,
-  Timeline,
-  Stepper,
-  RingProgress,
-  Tooltip,
-  List,
-  Image,
-  Loader,
-  Highlight,
-  Accordion,
-  FileButton,
-  ColorSwatch,
-  Code,
-  Spoiler,
-  Mark,
-  Rating,
-  Switch,
-  Checkbox,
-  Radio,
-  PasswordInput,
-  MultiSelect,
-  Anchor,
-  Notification,
-  Indicator,
-  UnstyledButton,
-  rem,
-  Slider,
-  Center,
   Box,
-  FileInput,
-  JsonInput,
-  SegmentedControl
+  Divider,
+  NumberInput,
+  Textarea
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { Calendar } from '@mantine/dates';
-import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
 import {
   IconPlus,
   IconSearch,
   IconEdit,
   IconEye,
   IconTrash,
-  IconCalendar,
   IconUsers,
-  IconChartBar,
-  IconPhone,
-  IconMail,
+  IconFlask,
+  IconFileText,
+  IconCalendar,
+  IconTrendingUp,
   IconAlertCircle,
   IconCheck,
   IconX,
   IconDotsVertical,
-  IconReportMedical,
-  IconClock,
   IconClipboardList,
-  IconFileText,
-  IconDownload,
-  IconPrinter,
-  IconShare,
+  IconBooks,
   IconActivity,
-  IconExclamationMark,
-  IconClockHour4,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconCalculator,
-  IconSettings,
-  IconRefresh,
-  IconFilter,
-  IconBarcode,
-  IconTemperature,
-  IconShieldCheck,
-  IconAlertTriangle,
-  IconCircleCheck,
-  IconClipboard,
-  IconVital,
-  IconLungs,
-  IconHeart,
-  IconBrain,
-  IconBone,
-  IconStethoscope,
-  IconMedicalCross,
-  IconPackage,
-  IconTruck,
-  IconCash,
-  IconReceipt,
-  IconNotes,
-  IconTag,
-  IconAlarm,
-  IconInfoCircle,
-  IconBed,
-  IconAmbulance,
-  IconSiren,
-  IconFlask,
-  IconDroplet,
-  IconNurse,
-  IconBandage,
-  IconPill,
-  IconSyringe,
-  IconMask,
-  IconBolt,
-  IconZoom,
-  IconCut,
-  IconTool,
-  IconPhoto,
-  IconScan,
-  IconDeviceDesktop,
-  IconCamera,
-  IconUpload,
-  IconTarget,
-  IconFocus,
-  IconColorPicker,
-  IconRuler,
-  IconRotate,
-  IconContrast,
-  IconBrightness,
-  IconAdjustments,
-  IconMaximize,
-  IconMinimize,
-  IconPlayerPlay,
-  IconPlayerPause,
-  IconVolume,
-  IconFileUpload,
-  IconCloudUpload,
-  IconMessage,
-  IconMessageCircle,
-  IconSend,
-  IconBell,
-  IconBellRinging,
-  IconVideo,
-  IconVideoOff,
-  IconMicrophone,
-  IconMicrophoneOff,
-  IconDatabase,
-  IconDna,
-  IconMolecule,
-  IconTestPipe,
-  IconMicroscope,
-  IconAtom,
-  IconChemistry,
-  IconFlask2,
-  IconMicroscope2,
-  IconScale,
-  IconReportAnalytics,
-  IconChartDots,
-  IconChartLine,
-  IconChartPie,
-  IconFileDescription,
-  IconFileReport,
-  IconFileCheck,
-  IconFileCertificate,
-  IconFileExport,
-  IconFileImport,
-  IconFiles,
-  IconFolder,
-  IconFolderOpen,
-  IconArchive,
-  IconHistory,
-  IconCalendarEvent,
-  IconCalendarTime,
-  IconClockHour9,
-  IconUserCheck,
-  IconUserPlus,
-  IconUserX,
-  IconUsersGroup,
-  IconUser,
-  IconIdBadge,
-  IconBriefcase,
-  IconSchool,
-  IconCertificate,
-  IconAward,
-  IconTrophy,
-  IconMedal,
-  IconStar,
-  IconStarFilled,
-  IconRocket,
-  IconTarget2,
-  IconBullseye,
-  IconFlag,
-  IconFlag2,
-  IconFlag3,
-  IconCheckbox,
-  IconSquareCheck,
-  IconCircleDot,
-  IconPoint,
-  IconDots,
-  IconMenu,
-  IconList,
-  IconListDetails,
-  IconTable,
-  IconCards,
-  IconLayoutGrid,
-  IconLayoutList,
-  IconLayoutColumns,
-  IconFilter2,
-  IconSortAscending,
-  IconSortDescending,
-  IconArrowUp,
-  IconArrowDown,
-  IconArrowLeft,
-  IconArrowRight,
-  IconChevronUp,
-  IconChevronDown,
-  IconChevronLeft,
-  IconChevronRight,
-  IconCaretUp,
-  IconCaretDown,
-  IconCaretLeft,
-  IconCaretRight,
-  IconPlaylistAdd,
-  IconPlaylistX,
-  IconPlayerRecord,
-  IconPlayerStop,
-  IconPause,
-  IconStop,
-  IconRecord,
-  IconVolumeOff,
-  IconVolume2,
-  IconMoodHappy,
-  IconMoodSad,
-  IconMoodSmile,
-  IconMoodCry,
-  IconMoodNeutral,
-  IconThumbUp,
-  IconThumbDown,
-  IconLike,
-  IconDislike,
-  IconHeart as IconHeartFilled,
-  IconHeartBroken,
-  IconHeartbeat,
-  IconPulse,
-  IconActivityHeartbeat,
-  IconCardiogram,
-  IconHealthRecognition,
-  IconVirus,
-  IconBacteria,
-  IconBug,
-  IconMicrobe,
-  IconDna2,
-  IconGene,
-  IconChromosome,
-  IconCellSignal4,
-  IconRadar,
-  IconSatellite,
-  IconWifi,
-  IconSignal4g,
-  IconAntenna,
-  IconNetwork,
-  IconRouter,
-  IconServer,
-  IconCpu,
-  IconMemory,
-  IconHdd,
-  IconDeviceHdd,
-  IconHardDrive,
-  IconUsb,
-  IconSd,
-  IconBluetooth,
-  IconNfc,
-  IconRfid,
-  IconQrcode,
-  IconScanEye,
-  IconEyeCheck,
-  IconEyeClosed,
-  IconEyeOff,
-  IconEyeglass,
-  IconGlobe,
-  IconWorld,
-  IconMap,
-  IconMapPin,
-  IconLocation,
-  IconGps,
-  IconCompass,
-  IconDirection,
-  IconRoute,
-  IconRoad,
-  IconCar,
-  IconTruck as IconTruckDelivery,
-  IconPlane,
-  IconShip,
-  IconTrain,
-  IconBus,
-  IconBike,
-  IconWalk,
-  IconRun,
-  IconSwimming,
-  IconFitness,
-  IconYoga,
-  IconStretching,
-  IconDumbbell,
-  IconBarbell,
-  IconWeight,
-  IconMuscle,
-  IconBone as IconBones,
-  IconSkeleton,
-  IconSkull,
-  IconBrain as IconBrainScan,
-  IconNerve,
-  IconEar,
-  IconNose,
-  IconMouth,
-  IconTooth,
-  IconTeeth,
-  IconLiver,
-  IconKidney,
-  IconStomach,
-  IconIntestine,
-  IconBlood,
-  IconDroplets as IconBloodDrop,
-  IconInjection,
-  IconVaccine,
-  IconPrescription,
-  IconCapsule,
-  IconPills,
-  IconMedicineSyrup,
-  IconAdhesiveBandage,
-  IconBandages,
-  IconCrutch,
-  IconWheelchair,
-  IconAccessible,
-  IconDisabled,
-  IconDeaf,
-  IconBlind,
-  IconSign,
-  IconSignature,
-  IconPencil,
-  IconPen,
-  IconMarker,
-  IconHighlight,
-  IconEraser,
-  IconRuler2,
-  IconRuler3,
-  IconTriangle,
-  IconSquare,
-  IconCircle,
-  IconDiamond,
-  IconHexagon,
-  IconOctagon,
-  IconStar as IconStarOutline,
-  IconStars,
-  IconSparkles,
-  IconFlame,
-  IconFire,
-  IconSun,
-  IconMoon,
-  IconCloud,
-  IconRain,
-  IconSnow,
-  IconWind,
-  IconTornado,
-  IconLightning,
-  IconFlash,
-  IconZap,
-  IconBolt as IconLightningBolt
+  IconDownload
 } from '@tabler/icons-react';
-
-// Import types and mock data
-import {
-  ClinicalTrial,
-  TrialStatus,
-  TrialPhase,
-  TrialType,
-  StudyProtocol,
-  PatientRecruitment,
-  RecruitmentStatus,
-  DataCollection,
-  RegulatoryCompliance,
-  ComplianceStatus,
-  ResearchProject,
-  ProjectStatus,
-  ResearchStats,
-  EthicsApproval,
-  ApprovalStatus,
-  TrialParticipant,
-  ParticipantStatus,
-  AdverseEvent,
-  EventSeverity,
-  StudyVisit,
-  VisitStatus,
-  ConsentForm,
-  ConsentStatus,
-  ProtocolDeviation,
-  DeviationType
-} from '../../../types/research';
 import {
   mockClinicalTrials,
-  mockStudyProtocols,
-  mockPatientRecruitment,
-  mockDataCollection,
-  mockRegulatoryCompliance,
   mockResearchProjects,
   mockResearchStats,
-  mockEthicsApprovals,
   mockTrialParticipants,
-  mockAdverseEvents,
-  mockStudyVisits,
-  mockConsentForms,
-  mockProtocolDeviations
+  mockAdverseEvents
 } from '../../../lib/mockData/research';
-import { mockDoctors } from '../../../lib/mockData/doctors';
-import { mockPatients } from '../../../lib/mockData/patients';
 
-const MedicalResearch = () => {
-  // State management
-  const [activeTab, setActiveTab] = useState<string>('overview');
+export default function ResearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTrialStatus, setSelectedTrialStatus] = useState<string>('');
-  const [selectedTrialPhase, setSelectedTrialPhase] = useState<string>('');
-  const [selectedTrialType, setSelectedTrialType] = useState<string>('');
-  const [selectedProjectStatus, setSelectedProjectStatus] = useState<string>('');
-  const [selectedTrial, setSelectedTrial] = useState<ClinicalTrial | null>(null);
-  const [selectedProtocol, setSelectedProtocol] = useState<StudyProtocol | null>(null);
-  const [selectedProject, setSelectedProject] = useState<ResearchProject | null>(null);
-  const [selectedParticipant, setSelectedParticipant] = useState<TrialParticipant | null>(null);
-  const [selectedAdverseEvent, setSelectedAdverseEvent] = useState<AdverseEvent | null>(null);
-  const [selectedDataCollection, setSelectedDataCollection] = useState<DataCollection | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>('all');
+  const [activeTab, setActiveTab] = useState('trials');
+  const [selectedTrial, setSelectedTrial] = useState<any>(null);
+  
+  const [trialModalOpened, { open: openTrialModal, close: closeTrialModal }] = useDisclosure(false);
+  const [projectModalOpened, { open: openProjectModal, close: closeProjectModal }] = useDisclosure(false);
 
-  // Modal states
-  const [trialDetailOpened, { open: openTrialDetail, close: closeTrialDetail }] = useDisclosure(false);
-  const [createTrialOpened, { open: openCreateTrial, close: closeCreateTrial }] = useDisclosure(false);
-  const [protocolDetailOpened, { open: openProtocolDetail, close: closeProtocolDetail }] = useDisclosure(false);
-  const [projectDetailOpened, { open: openProjectDetail, close: closeProjectDetail }] = useDisclosure(false);
-  const [participantDetailOpened, { open: openParticipantDetail, close: closeParticipantDetail }] = useDisclosure(false);
-  const [adverseEventDetailOpened, { open: openAdverseEventDetail, close: closeAdverseEventDetail }] = useDisclosure(false);
-  const [dataCollectionDetailOpened, { open: openDataCollectionDetail, close: closeDataCollectionDetail }] = useDisclosure(false);
-  const [recruitPatientOpened, { open: openRecruitPatient, close: closeRecruitPatient }] = useDisclosure(false);
-  const [reportAdverseEventOpened, { open: openReportAdverseEvent, close: closeReportAdverseEvent }] = useDisclosure(false);
-
-  // Filter clinical trials
+  // Filter trials
   const filteredTrials = useMemo(() => {
-    return mockClinicalTrials.filter((trial) => {
-      const matchesSearch = 
-        trial.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        trial.trialId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        trial.investigator.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedTrialStatus || trial.status === selectedTrialStatus;
-      const matchesPhase = !selectedTrialPhase || trial.phase === selectedTrialPhase;
-      const matchesType = !selectedTrialType || trial.type === selectedTrialType;
-
-      return matchesSearch && matchesStatus && matchesPhase && matchesType;
-    });
-  }, [searchQuery, selectedTrialStatus, selectedTrialPhase, selectedTrialType]);
-
-  // Filter research projects
-  const filteredProjects = useMemo(() => {
-    return mockResearchProjects.filter((project) => {
-      const matchesSearch = 
-        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.projectId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.principalInvestigator.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedProjectStatus || project.status === selectedProjectStatus;
-
+    return mockClinicalTrials.filter(trial => {
+      const matchesSearch = trial.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          trial.trialId.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || trial.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }, [searchQuery, selectedProjectStatus]);
+  }, [searchQuery, statusFilter]);
 
-  // Helper functions
-  const getTrialStatusColor = (status: TrialStatus) => {
-    switch (status) {
-      case 'planning': return 'orange';
-      case 'recruiting': return 'blue';
-      case 'active': return 'green';
-      case 'completed': return 'teal';
-      case 'suspended': return 'red';
-      case 'terminated': return 'gray';
-      default: return 'gray';
-    }
-  };
-
-  const getTrialPhaseColor = (phase: TrialPhase) => {
-    switch (phase) {
-      case 'preclinical': return 'gray';
-      case 'phase_1': return 'orange';
-      case 'phase_2': return 'blue';
-      case 'phase_3': return 'green';
-      case 'phase_4': return 'purple';
-      default: return 'gray';
-    }
-  };
-
-  const getProjectStatusColor = (status: ProjectStatus) => {
-    switch (status) {
-      case 'proposed': return 'orange';
-      case 'approved': return 'blue';
-      case 'active': return 'green';
-      case 'completed': return 'teal';
-      case 'on_hold': return 'yellow';
-      case 'cancelled': return 'red';
-      default: return 'gray';
-    }
-  };
-
-  const getComplianceStatusColor = (status: ComplianceStatus) => {
-    switch (status) {
-      case 'compliant': return 'green';
-      case 'minor_deviation': return 'yellow';
-      case 'major_deviation': return 'orange';
-      case 'non_compliant': return 'red';
-      default: return 'gray';
-    }
-  };
-
-  const getSeverityColor = (severity: EventSeverity) => {
-    switch (severity) {
-      case 'mild': return 'green';
-      case 'moderate': return 'orange';
-      case 'severe': return 'red';
-      case 'life_threatening': return 'dark';
-      default: return 'gray';
-    }
-  };
-
-  const getRecruitmentStatusColor = (status: RecruitmentStatus) => {
-    switch (status) {
-      case 'screening': return 'blue';
-      case 'enrolled': return 'green';
-      case 'declined': return 'red';
-      case 'ineligible': return 'orange';
-      case 'withdrawn': return 'gray';
-      default: return 'gray';
-    }
-  };
-
-  const handleViewTrial = (trial: ClinicalTrial) => {
-    setSelectedTrial(trial);
-    openTrialDetail();
-  };
-
-  const handleViewProtocol = (protocol: StudyProtocol) => {
-    setSelectedProtocol(protocol);
-    openProtocolDetail();
-  };
-
-  const handleViewProject = (project: ResearchProject) => {
-    setSelectedProject(project);
-    openProjectDetail();
-  };
-
-  const handleViewParticipant = (participant: TrialParticipant) => {
-    setSelectedParticipant(participant);
-    openParticipantDetail();
-  };
-
-  const handleViewAdverseEvent = (event: AdverseEvent) => {
-    setSelectedAdverseEvent(event);
-    openAdverseEventDetail();
-  };
-
-  const handleViewDataCollection = (dataCollection: DataCollection) => {
-    setSelectedDataCollection(dataCollection);
-    openDataCollectionDetail();
-  };
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+  // Filter projects
+  const filteredProjects = useMemo(() => {
+    return mockResearchProjects.filter(project => {
+      const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          project.projectId.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || project.status === statusFilter;
+      return matchesSearch && matchesStatus;
     });
+  }, [searchQuery, statusFilter]);
+
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      recruiting: 'blue',
+      active: 'green',
+      completed: 'gray',
+      suspended: 'orange',
+      terminated: 'red',
+      planning: 'cyan',
+      on_hold: 'yellow',
+      cancelled: 'red'
+    };
+    return colors[status] || 'gray';
   };
 
-  const formatDateTime = (date: string) => {
-    return new Date(date).toLocaleString('en-IN');
+  const getPhaseLabel = (phase: string) => {
+    const labels: Record<string, string> = {
+      phase_i: 'Phase I',
+      phase_ii: 'Phase II',
+      phase_iii: 'Phase III',
+      phase_iv: 'Phase IV',
+      na: 'N/A'
+    };
+    return labels[phase] || phase;
   };
 
-  const calculateProgress = (current: number, target: number) => {
-    return Math.min((current / target) * 100, 100);
-  };
-
-  // Quick stats for overview
   const quickStats = [
     {
       title: 'Active Trials',
       value: mockResearchStats.activeTrials,
       icon: IconFlask,
-      color: 'green'
+      color: 'blue'
     },
     {
       title: 'Total Participants',
       value: mockResearchStats.totalParticipants,
       icon: IconUsers,
-      color: 'blue'
+      color: 'green'
     },
     {
       title: 'Research Projects',
-      value: mockResearchStats.researchProjects,
-      icon: IconFileReport,
-      color: 'purple'
-    },
-    {
-      title: 'Publications',
-      value: mockResearchStats.publications,
+      value: mockResearchProjects.length,
       icon: IconBooks,
       color: 'orange'
+    },
+    {
+      title: 'Adverse Events',
+      value: mockResearchStats.adverseEventsReported,
+      icon: IconAlertCircle,
+      color: 'red'
     }
   ];
 
   return (
     <Container size="xl" py="md">
-      {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={1}>Medical Research & Clinical Trials</Title>
-          <Text c="dimmed" size="sm">
-            Manage clinical trials, research projects, patient recruitment, and regulatory compliance
-          </Text>
-        </div>
-        <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openCreateTrial}
-            color="blue"
-          >
-            New Clinical Trial
-          </Button>
-          <Button
-            variant="light"
-            leftSection={<IconUsers size={16} />}
-            onClick={openRecruitPatient}
-          >
-            Recruit Patient
-          </Button>
-          <Button
-            variant="light"
-            leftSection={<IconAlertTriangle size={16} />}
-            onClick={openReportAdverseEvent}
-          >
-            Report AE
-          </Button>
+      <Stack gap="lg">
+        {/* Header */}
+        <Group justify="space-between">
+          <div>
+            <Title order={2}>Medical Research & Clinical Trials</Title>
+            <Text c="dimmed" size="sm">Manage clinical trials, research projects, and participant data</Text>
+          </div>
+          <Group>
+            <Button leftSection={<IconPlus size={16} />} onClick={openTrialModal}>
+              New Clinical Trial
+            </Button>
+            <Button leftSection={<IconPlus size={16} />} variant="light" onClick={openProjectModal}>
+              New Research Project
+            </Button>
+          </Group>
         </Group>
-      </Group>
 
-      {/* Quick Stats */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
-        {quickStats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title} padding="lg" radius="md" withBorder>
-              <Group justify="space-between">
-                <div>
-                  <Text c="dimmed" size="sm" fw={500}>
-                    {stat.title}
-                  </Text>
-                  <Text fw={700} size="xl">
-                    {stat.value}
-                  </Text>
-                </div>
-                <ThemeIcon color={stat.color} size="xl" radius="md" variant="light">
-                  <Icon size={24} />
-                </ThemeIcon>
-              </Group>
-            </Card>
-          );
-        })}
-      </SimpleGrid>
-
-      {/* Main Content Tabs */}
-      <Tabs value={activeTab} onChange={setActiveTab}>
-        <Tabs.List>
-          <Tabs.Tab value="overview" leftSection={<IconChartBar size={16} />}>
-            Overview
-          </Tabs.Tab>
-          <Tabs.Tab value="trials" leftSection={<IconFlask size={16} />}>
-            Clinical Trials
-          </Tabs.Tab>
-          <Tabs.Tab value="protocols" leftSection={<IconFileDescription size={16} />}>
-            Study Protocols
-          </Tabs.Tab>
-          <Tabs.Tab value="participants" leftSection={<IconUsers size={16} />}>
-            Participants
-          </Tabs.Tab>
-          <Tabs.Tab value="data" leftSection={<IconDatabase size={16} />}>
-            Data Collection
-          </Tabs.Tab>
-          <Tabs.Tab value="compliance" leftSection={<IconShieldCheck size={16} />}>
-            Compliance
-          </Tabs.Tab>
-          <Tabs.Tab value="projects" leftSection={<IconFileReport size={16} />}>
-            Research Projects
-          </Tabs.Tab>
-        </Tabs.List>
-
-        {/* Overview Tab */}
-        <Tabs.Panel value="overview">
-          <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
-            {/* Trial Status Distribution */}
-            <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Trial Status Distribution</Title>
-              <DonutChart
-                data={[
-                  { name: 'Active', value: 15, color: 'green' },
-                  { name: 'Recruiting', value: 8, color: 'blue' },
-                  { name: 'Planning', value: 5, color: 'orange' },
-                  { name: 'Completed', value: 12, color: 'teal' },
-                  { name: 'Suspended', value: 2, color: 'red' }
-                ]}
-                size={200}
-                thickness={40}
-                withLabels
-              />
-            </Card>
-
-            {/* Phase Distribution */}
-            <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Clinical Trial Phases</Title>
-              <BarChart
-                h={250}
-                data={[
-                  { phase: 'Preclinical', trials: 3, color: 'gray.6' },
-                  { phase: 'Phase I', trials: 8, color: 'orange.6' },
-                  { phase: 'Phase II', trials: 12, color: 'blue.6' },
-                  { phase: 'Phase III', trials: 15, color: 'green.6' },
-                  { phase: 'Phase IV', trials: 4, color: 'purple.6' }
-                ]}
-                dataKey="phase"
-                series={[{ name: 'trials', color: 'blue.6' }]}
-              />
-            </Card>
-
-            {/* Recruitment Progress */}
-            <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Recruitment Progress</Title>
-              <Stack gap="md">
-                {mockClinicalTrials.slice(0, 4).map((trial) => (
-                  <div key={trial.id}>
-                    <Group justify="space-between" mb="xs">
-                      <Text size="sm" fw={500}>{trial.title}</Text>
-                      <Text size="sm" c="dimmed">
-                        {trial.enrolledParticipants}/{trial.targetParticipants}
-                      </Text>
-                    </Group>
-                    <Progress
-                      value={calculateProgress(trial.enrolledParticipants, trial.targetParticipants)}
-                      size="md"
-                      color={trial.enrolledParticipants >= trial.targetParticipants ? 'green' : 'blue'}
-                    />
+        {/* Quick Stats */}
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
+          {quickStats.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={stat.title} shadow="sm" padding="lg" radius="md" withBorder>
+                <Group justify="space-between">
+                  <div>
+                    <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
+                      {stat.title}
+                    </Text>
+                    <Text size="xl" fw={700} mt="xs">
+                      {stat.value}
+                    </Text>
                   </div>
-                ))}
-              </Stack>
-            </Card>
+                  <ThemeIcon size="xl" radius="md" variant="light" color={stat.color}>
+                    <Icon size={24} />
+                  </ThemeIcon>
+                </Group>
+              </Card>
+            );
+          })}
+        </SimpleGrid>
 
-            {/* Recent Adverse Events */}
-            <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Recent Adverse Events</Title>
-              <Stack gap="sm">
-                {mockAdverseEvents.slice(0, 5).map((event) => (
-                  <Alert
-                    key={event.id}
-                    variant="light"
-                    color={getSeverityColor(event.severity)}
-                    icon={<IconAlertTriangle size={16} />}
-                  >
-                    <Group justify="space-between">
-                      <div>
-                        <Text size="sm" fw={500}>{event.eventDescription}</Text>
-                        <Text size="xs" c="dimmed">
-                          Trial: {event.trialId} | Participant: {event.participantId}
-                        </Text>
-                      </div>
-                      <Badge color={getSeverityColor(event.severity)} variant="light" size="sm">
-                        {event.severity}
-                      </Badge>
-                    </Group>
-                  </Alert>
-                ))}
-              </Stack>
-            </Card>
+        {/* Main Content */}
+        <Paper shadow="sm" p="md" radius="md" withBorder>
+          <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'trials')}>
+            <Tabs.List>
+              <Tabs.Tab value="trials" leftSection={<IconFlask size={16} />}>
+                Clinical Trials
+              </Tabs.Tab>
+              <Tabs.Tab value="projects" leftSection={<IconBooks size={16} />}>
+                Research Projects
+              </Tabs.Tab>
+              <Tabs.Tab value="participants" leftSection={<IconUsers size={16} />}>
+                Participants
+              </Tabs.Tab>
+              <Tabs.Tab value="adverse" leftSection={<IconAlertCircle size={16} />}>
+                Adverse Events
+              </Tabs.Tab>
+            </Tabs.List>
 
-            {/* Compliance Overview */}
-            <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Compliance Status</Title>
-              <SimpleGrid cols={2}>
-                <div style={{ textAlign: 'center' }}>
-                  <RingProgress
-                    size={100}
-                    thickness={8}
-                    sections={[{ value: 92, color: 'green' }]}
-                    label={
-                      <Text size="sm" fw={700} ta="center">
-                        92%
-                      </Text>
-                    }
-                  />
-                  <Text size="xs" c="dimmed" mt="xs">Overall Compliance</Text>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                  <RingProgress
-                    size={100}
-                    thickness={8}
-                    sections={[{ value: 88, color: 'blue' }]}
-                    label={
-                      <Text size="sm" fw={700} ta="center">
-                        88%
-                      </Text>
-                    }
-                  />
-                  <Text size="xs" c="dimmed" mt="xs">Protocol Adherence</Text>
-                </div>
-              </SimpleGrid>
-            </Card>
-
-            {/* Upcoming Milestones */}
-            <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Upcoming Milestones</Title>
-              <Timeline active={2} bulletSize={24} lineWidth={2}>
-                <Timeline.Item
-                  bullet={<ThemeIcon color="blue" size={24} radius="xl"><IconCalendar size={12} /></ThemeIcon>}
-                  title="Phase II Interim Analysis"
-                >
-                  <Text size="sm" c="dimmed">Trial NCT123456</Text>
-                  <Text size="xs" c="dimmed">Due: Dec 15, 2024</Text>
-                </Timeline.Item>
-                <Timeline.Item
-                  bullet={<ThemeIcon color="green" size={24} radius="xl"><IconCheck size={12} /></ThemeIcon>}
-                  title="FDA Submission Deadline"
-                >
-                  <Text size="sm" c="dimmed">New Drug Application</Text>
-                  <Text size="xs" c="dimmed">Due: Jan 30, 2025</Text>
-                </Timeline.Item>
-                <Timeline.Item
-                  bullet={<ThemeIcon color="orange" size={24} radius="xl"><IconUsers size={12} /></ThemeIcon>}
-                  title="Recruitment Target"
-                  lineVariant="dashed"
-                >
-                  <Text size="sm" c="dimmed">Cardiology Study</Text>
-                  <Text size="xs" c="dimmed">Target: Feb 28, 2025</Text>
-                </Timeline.Item>
-              </Timeline>
-            </Card>
-          </SimpleGrid>
-        </Tabs.Panel>
-
-        {/* Clinical Trials Tab */}
-        <Tabs.Panel value="trials">
-          <Paper p="md" radius="md" withBorder mt="md">
-            {/* Search and Filters */}
-            <Group mb="md">
+            {/* Filters */}
+            <Group mt="md" mb="md">
               <TextInput
-                placeholder="Search trials..."
+                placeholder="Search..."
                 leftSection={<IconSearch size={16} />}
                 value={searchQuery}
-                onChange={(event) => setSearchQuery(event.currentTarget.value)}
+                onChange={(e) => setSearchQuery(e.currentTarget.value)}
                 style={{ flex: 1 }}
               />
               <Select
-                placeholder="Status"
+                placeholder="Filter by status"
                 data={[
-                  { value: 'planning', label: 'Planning' },
+                  { value: 'all', label: 'All Status' },
                   { value: 'recruiting', label: 'Recruiting' },
                   { value: 'active', label: 'Active' },
                   { value: 'completed', label: 'Completed' },
-                  { value: 'suspended', label: 'Suspended' },
-                  { value: 'terminated', label: 'Terminated' }
+                  { value: 'suspended', label: 'Suspended' }
                 ]}
-                value={selectedTrialStatus}
-                onChange={setSelectedTrialStatus}
+                value={statusFilter}
+                onChange={setStatusFilter}
                 clearable
-              />
-              <Select
-                placeholder="Phase"
-                data={[
-                  { value: 'preclinical', label: 'Preclinical' },
-                  { value: 'phase_1', label: 'Phase I' },
-                  { value: 'phase_2', label: 'Phase II' },
-                  { value: 'phase_3', label: 'Phase III' },
-                  { value: 'phase_4', label: 'Phase IV' }
-                ]}
-                value={selectedTrialPhase}
-                onChange={setSelectedTrialPhase}
-                clearable
-              />
-              <Select
-                placeholder="Type"
-                data={[
-                  { value: 'interventional', label: 'Interventional' },
-                  { value: 'observational', label: 'Observational' },
-                  { value: 'expanded_access', label: 'Expanded Access' }
-                ]}
-                value={selectedTrialType}
-                onChange={setSelectedTrialType}
-                clearable
+                style={{ width: 200 }}
               />
             </Group>
 
-            {/* Clinical Trials Grid */}
-            <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {filteredTrials.map((trial) => (
-                <Card key={trial.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg" lineClamp={1}>{trial.title}</Text>
-                      <Text size="sm" c="dimmed">ID: {trial.trialId}</Text>
-                    </div>
-                    <Group>
-                      <Badge color={getTrialStatusColor(trial.status)} variant="light">
-                        {trial.status.replace('_', ' ').toUpperCase()}
-                      </Badge>
-                      <Badge color={getTrialPhaseColor(trial.phase)} variant="light">
-                        {trial.phase.replace('_', ' ').toUpperCase()}
-                      </Badge>
-                    </Group>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Principal Investigator</Text>
-                      <Text size="sm" fw={500}>{trial.investigator}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Study Type</Text>
-                      <Text size="sm">{trial.type}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Start Date</Text>
-                      <Text size="sm">{formatDate(trial.startDate)}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Expected End</Text>
-                      <Text size="sm">{formatDate(trial.expectedEndDate)}</Text>
-                    </Group>
-                  </Stack>
-
-                  {/* Enrollment Progress */}
-                  <div mb="md">
-                    <Group justify="space-between" mb="xs">
-                      <Text size="sm" c="dimmed">Enrollment Progress</Text>
-                      <Text size="sm" fw={500}>
-                        {trial.enrolledParticipants}/{trial.targetParticipants}
-                      </Text>
-                    </Group>
-                    <Progress
-                      value={calculateProgress(trial.enrolledParticipants, trial.targetParticipants)}
-                      size="md"
-                      color={trial.enrolledParticipants >= trial.targetParticipants ? 'green' : 'blue'}
-                    />
-                  </div>
-
-                  <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-                    {trial.description}
-                  </Text>
-
-                  <Group justify="space-between">
-                    <Group gap="xs">
-                      {trial.fundingSource && (
-                        <Badge variant="outline" size="xs">
-                          {trial.fundingSource}
-                        </Badge>
-                      )}
-                      <Badge variant="outline" size="xs" color="blue">
-                        {trial.sites?.length || 1} Site{(trial.sites?.length || 1) > 1 ? 's' : ''}
-                      </Badge>
-                    </Group>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewTrial(trial)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
-            </SimpleGrid>
-          </Paper>
-        </Tabs.Panel>
-
-        {/* Study Protocols Tab */}
-        <Tabs.Panel value="protocols">
-          <Paper p="md" radius="md" withBorder mt="md">
-            <Group justify="space-between" mb="lg">
-              <Title order={3}>Study Protocols</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Create Protocol
-              </Button>
-            </Group>
-
-            {/* Protocols Grid */}
-            <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockStudyProtocols.map((protocol) => (
-                <Card key={protocol.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg" lineClamp={1}>{protocol.title}</Text>
-                      <Text size="sm" c="dimmed">Version {protocol.version}</Text>
-                    </div>
-                    <Badge 
-                      color={protocol.isActive ? 'green' : 'gray'} 
-                      variant={protocol.isActive ? 'filled' : 'light'}
-                    >
-                      {protocol.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Protocol ID</Text>
-                      <Text size="sm" fw={500}>{protocol.protocolId}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Created Date</Text>
-                      <Text size="sm">{formatDate(protocol.createdDate)}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Last Modified</Text>
-                      <Text size="sm">{formatDate(protocol.lastModified)}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Author</Text>
-                      <Text size="sm">{protocol.author}</Text>
-                    </Group>
-                  </Stack>
-
-                  {protocol.objectives && (
-                    <>
-                      <Text size="sm" c="dimmed" mb="xs">Objectives:</Text>
-                      <List size="sm" mb="md">
-                        {protocol.objectives.slice(0, 3).map((objective, index) => (
-                          <List.Item key={index}>{objective}</List.Item>
-                        ))}
-                        {protocol.objectives.length > 3 && (
-                          <List.Item>
-                            <Text size="sm" c="dimmed">+{protocol.objectives.length - 3} more...</Text>
-                          </List.Item>
-                        )}
-                      </List>
-                    </>
-                  )}
-
-                  {protocol.inclusionCriteria && (
-                    <>
-                      <Text size="sm" c="dimmed" mb="xs">Inclusion Criteria ({protocol.inclusionCriteria.length}):</Text>
-                      <Text size="xs" c="dimmed" lineClamp={2} mb="md">
-                        {protocol.inclusionCriteria.slice(0, 2).join('; ')}
-                        {protocol.inclusionCriteria.length > 2 && '...'}
-                      </Text>
-                    </>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      File Size: {(protocol.fileSize / 1024).toFixed(1)} KB
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewProtocol(protocol)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
-            </SimpleGrid>
-          </Paper>
-        </Tabs.Panel>
-
-        {/* Participants Tab */}
-        <Tabs.Panel value="participants">
-          <Paper p="md" radius="md" withBorder mt="md">
-            <Group justify="space-between" mb="lg">
-              <Title order={3}>Trial Participants</Title>
-              <Group>
-                <Button leftSection={<IconUserPlus size={16} />} onClick={openRecruitPatient}>
-                  Recruit Participant
-                </Button>
-                <Button variant="light" leftSection={<IconDownload size={16} />}>
-                  Export Data
-                </Button>
-              </Group>
-            </Group>
-
-            {/* Participants Table */}
-            <ScrollArea>
-              <Table striped highlightOnHover>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>Participant ID</Table.Th>
-                    <Table.Th>Trial</Table.Th>
-                    <Table.Th>Age</Table.Th>
-                    <Table.Th>Gender</Table.Th>
-                    <Table.Th>Status</Table.Th>
-                    <Table.Th>Enrolled Date</Table.Th>
-                    <Table.Th>Next Visit</Table.Th>
-                    <Table.Th>Actions</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {mockTrialParticipants.map((participant) => (
-                    <Table.Tr key={participant.id}>
-                      <Table.Td>
-                        <Text fw={500}>{participant.participantId}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>{participant.trialId}</Text>
-                          <Text size="xs" c="dimmed">
-                            {participant.studyArm && `Arm: ${participant.studyArm}`}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">{participant.age}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">{participant.gender}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getRecruitmentStatusColor(participant.status)} variant="light">
-                          {participant.status}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">{formatDate(participant.enrollmentDate)}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        {participant.nextVisitDate ? (
-                          <Text size="sm">{formatDate(participant.nextVisitDate)}</Text>
-                        ) : (
-                          <Text size="sm" c="dimmed">-</Text>
-                        )}
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewParticipant(participant)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconCalendarEvent size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="orange">
-                            <IconAlertTriangle size={16} />
-                          </ActionIcon>
-                        </Group>
-                      </Table.Td>
+            {/* Clinical Trials Tab */}
+            <Tabs.Panel value="trials">
+              <ScrollArea>
+                <Table striped highlightOnHover>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Trial ID</Table.Th>
+                      <Table.Th>Title</Table.Th>
+                      <Table.Th>Phase</Table.Th>
+                      <Table.Th>Status</Table.Th>
+                      <Table.Th>Investigator</Table.Th>
+                      <Table.Th>Enrollment</Table.Th>
+                      <Table.Th>Actions</Table.Th>
                     </Table.Tr>
-                  ))}
-                </Table.Tbody>
-              </Table>
-            </ScrollArea>
-          </Paper>
-        </Tabs.Panel>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {filteredTrials.map((trial) => (
+                      <Table.Tr key={trial.id}>
+                        <Table.Td>
+                          <Text size="sm" fw={500}>{trial.trialId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{trial.title}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge variant="light" size="sm">
+                            {getPhaseLabel(trial.phase)}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(trial.status)} variant="light" size="sm">
+                            {trial.status}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{trial.investigator}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <Text size="sm">
+                              {trial.currentEnrollment}/{trial.targetEnrollment}
+                            </Text>
+                            <Progress
+                              value={(trial.currentEnrollment / trial.targetEnrollment) * 100}
+                              size="sm"
+                              style={{ width: 60 }}
+                            />
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => {
+                                setSelectedTrial(trial);
+                                openTrialModal();
+                              }}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="gray">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <Menu position="bottom-end">
+                              <Menu.Target>
+                                <ActionIcon variant="subtle" color="gray">
+                                  <IconDotsVertical size={16} />
+                                </ActionIcon>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Item leftSection={<IconDownload size={14} />}>
+                                  Export Data
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconFileText size={14} />}>
+                                  View Protocol
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item color="red" leftSection={<IconTrash size={14} />}>
+                                  Delete
+                                </Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </ScrollArea>
+            </Tabs.Panel>
 
-        {/* Data Collection Tab */}
-        <Tabs.Panel value="data">
-          <Paper p="md" radius="md" withBorder mt="md">
-            <Group justify="space-between" mb="lg">
-              <Title order={3}>Data Collection & Management</Title>
-              <Group>
-                <Button leftSection={<IconDatabase size={16} />}>
-                  Create Data Form
-                </Button>
-                <Button variant="light" leftSection={<IconUpload size={16} />}>
-                  Import Data
-                </Button>
-              </Group>
-            </Group>
+            {/* Research Projects Tab */}
+            <Tabs.Panel value="projects">
+              <ScrollArea>
+                <Table striped highlightOnHover>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Project ID</Table.Th>
+                      <Table.Th>Title</Table.Th>
+                      <Table.Th>Status</Table.Th>
+                      <Table.Th>Principal Investigator</Table.Th>
+                      <Table.Th>Department</Table.Th>
+                      <Table.Th>Budget</Table.Th>
+                      <Table.Th>Actions</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {filteredProjects.map((project) => (
+                      <Table.Tr key={project.id}>
+                        <Table.Td>
+                          <Text size="sm" fw={500}>{project.projectId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{project.title}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(project.status)} variant="light" size="sm">
+                            {project.status}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{project.principalInvestigator}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{project.department}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">₹{project.budget.toLocaleString()}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon variant="subtle" color="blue">
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="gray">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </ScrollArea>
+            </Tabs.Panel>
 
-            {/* Data Collection Grid */}
-            <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockDataCollection.map((dataCollection) => (
-                <Card key={dataCollection.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{dataCollection.formName}</Text>
-                      <Text size="sm" c="dimmed">Trial: {dataCollection.trialId}</Text>
-                    </div>
-                    <Badge 
-                      color={dataCollection.isCompleted ? 'green' : 'orange'} 
-                      variant="light"
-                    >
-                      {dataCollection.isCompleted ? 'Completed' : 'In Progress'}
-                    </Badge>
-                  </Group>
+            {/* Participants Tab */}
+            <Tabs.Panel value="participants">
+              <ScrollArea>
+                <Table striped highlightOnHover>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Participant ID</Table.Th>
+                      <Table.Th>Trial ID</Table.Th>
+                      <Table.Th>Name</Table.Th>
+                      <Table.Th>Status</Table.Th>
+                      <Table.Th>Study Arm</Table.Th>
+                      <Table.Th>Adherence</Table.Th>
+                      <Table.Th>Actions</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {mockTrialParticipants.map((participant) => (
+                      <Table.Tr key={participant.id}>
+                        <Table.Td>
+                          <Text size="sm" fw={500}>{participant.participantId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{participant.trialId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{participant.patientName}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(participant.status)} variant="light" size="sm">
+                            {participant.status}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{participant.studyArm}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <Progress value={participant.adherenceRate} size="sm" style={{ width: 60 }} />
+                            <Text size="sm">{participant.adherenceRate}%</Text>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon variant="subtle" color="blue">
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="gray">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </ScrollArea>
+            </Tabs.Panel>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Data Type</Text>
-                      <Text size="sm" fw={500}>{dataCollection.dataType}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Collection Date</Text>
-                      <Text size="sm">{formatDate(dataCollection.collectionDate)}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Collected By</Text>
-                      <Text size="sm">{dataCollection.collectedBy}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Quality Score</Text>
-                      <Group gap="xs">
-                        <Text size="sm" fw={500}>{dataCollection.qualityScore}/100</Text>
-                        <Progress 
-                          value={dataCollection.qualityScore} 
-                          size="sm" 
-                          color={
-                            dataCollection.qualityScore >= 90 ? 'green' :
-                            dataCollection.qualityScore >= 70 ? 'orange' : 'red'
-                          }
-                          style={{ width: '60px' }}
-                        />
-                      </Group>
-                    </Group>
-                  </Stack>
+            {/* Adverse Events Tab */}
+            <Tabs.Panel value="adverse">
+              <ScrollArea>
+                <Table striped highlightOnHover>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Event ID</Table.Th>
+                      <Table.Th>Trial ID</Table.Th>
+                      <Table.Th>Participant</Table.Th>
+                      <Table.Th>Event Type</Table.Th>
+                      <Table.Th>Severity</Table.Th>
+                      <Table.Th>Status</Table.Th>
+                      <Table.Th>Actions</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {mockAdverseEvents.map((event) => (
+                      <Table.Tr key={event.id}>
+                        <Table.Td>
+                          <Text size="sm" fw={500}>{event.eventId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{event.trialId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{event.participantId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{event.eventType.replace(/_/g, ' ')}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge
+                            color={event.severity === 'mild' ? 'yellow' : event.severity === 'moderate' ? 'orange' : 'red'}
+                            variant="light"
+                            size="sm"
+                          >
+                            {event.severity}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={event.ongoing ? 'orange' : 'green'} variant="light" size="sm">
+                            {event.ongoing ? 'Ongoing' : 'Resolved'}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon variant="subtle" color="blue">
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="gray">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </ScrollArea>
+            </Tabs.Panel>
+          </Tabs>
+        </Paper>
+      </Stack>
 
-                  {dataCollection.dataPoints && (
-                    <>
-                      <Text size="sm" c="dimmed" mb="xs">Data Points ({dataCollection.dataPoints.length}):</Text>
-                      <Stack gap="xs" mb="md">
-                        {dataCollection.dataPoints.slice(0, 3).map((point, index) => (
-                          <Card key={index} padding="xs" withBorder>
-                            <Group justify="space-between">
-                              <Text size="sm" fw={500}>{point.field}</Text>
-                              <Text size="sm">{point.value} {point.unit}</Text>
-                            </Group>
-                          </Card>
-                        ))}
-                        {dataCollection.dataPoints.length > 3 && (
-                          <Text size="xs" c="dimmed" ta="center">
-                            +{dataCollection.dataPoints.length - 3} more data points
-                          </Text>
-                        )}
-                      </Stack>
-                    </>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Last Modified: {formatDate(dataCollection.lastModified)}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewDataCollection(dataCollection)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
-            </SimpleGrid>
-          </Paper>
-        </Tabs.Panel>
-
-        {/* Compliance Tab */}
-        <Tabs.Panel value="compliance">
-          <Paper p="md" radius="md" withBorder mt="md">
-            <Group justify="space-between" mb="lg">
-              <Title order={3}>Regulatory Compliance</Title>
-              <Button leftSection={<IconFileCheck size={16} />}>
-                Submit Report
-              </Button>
-            </Group>
-
-            {/* Compliance Overview Cards */}
-            <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} mb="lg">
-              <Card padding="md" radius="md" withBorder>
-                <Group justify="space-between">
-                  <div>
-                    <Text size="sm" c="dimmed">FDA Submissions</Text>
-                    <Text fw={700} size="lg">24</Text>
-                  </div>
-                  <ThemeIcon color="blue" variant="light">
-                    <IconFileCheck size={20} />
-                  </ThemeIcon>
-                </Group>
-              </Card>
-              <Card padding="md" radius="md" withBorder>
-                <Group justify="space-between">
-                  <div>
-                    <Text size="sm" c="dimmed">Ethics Approvals</Text>
-                    <Text fw={700} size="lg">18</Text>
-                  </div>
-                  <ThemeIcon color="green" variant="light">
-                    <IconShieldCheck size={20} />
-                  </ThemeIcon>
-                </Group>
-              </Card>
-              <Card padding="md" radius="md" withBorder>
-                <Group justify="space-between">
-                  <div>
-                    <Text size="sm" c="dimmed">Protocol Deviations</Text>
-                    <Text fw={700} size="lg">7</Text>
-                  </div>
-                  <ThemeIcon color="orange" variant="light">
-                    <IconAlertTriangle size={20} />
-                  </ThemeIcon>
-                </Group>
-              </Card>
-              <Card padding="md" radius="md" withBorder>
-                <Group justify="space-between">
-                  <div>
-                    <Text size="sm" c="dimmed">Audit Findings</Text>
-                    <Text fw={700} size="lg">3</Text>
-                  </div>
-                  <ThemeIcon color="red" variant="light">
-                    <IconAlertCircle size={20} />
-                  </ThemeIcon>
-                </Group>
-              </Card>
-            </SimpleGrid>
-
-            {/* Regulatory Compliance Items */}
-            <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockRegulatoryCompliance.map((compliance) => (
-                <Card key={compliance.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{compliance.requirementType.replace('_', ' ').toUpperCase()}</Text>
-                      <Text size="sm" c="dimmed">Trial: {compliance.trialId}</Text>
-                    </div>
-                    <Badge color={getComplianceStatusColor(compliance.status)} variant="light">
-                      {compliance.status.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Submission Date</Text>
-                      <Text size="sm" fw={500}>{formatDate(compliance.submissionDate)}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Review Date</Text>
-                      <Text size="sm">
-                        {compliance.reviewDate ? formatDate(compliance.reviewDate) : 'Pending'}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Reviewer</Text>
-                      <Text size="sm">{compliance.reviewer || 'Not Assigned'}</Text>
-                    </Group>
-                    {compliance.dueDate && (
-                      <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Due Date</Text>
-                        <Text 
-                          size="sm" 
-                          c={new Date(compliance.dueDate) < new Date() ? 'red' : undefined}
-                        >
-                          {formatDate(compliance.dueDate)}
-                        </Text>
-                      </Group>
-                    )}
-                  </Stack>
-
-                  {compliance.comments && (
-                    <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-                      Comments: {compliance.comments}
-                    </Text>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Documents: {compliance.documents?.length || 0}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
-            </SimpleGrid>
-          </Paper>
-        </Tabs.Panel>
-
-        {/* Research Projects Tab */}
-        <Tabs.Panel value="projects">
-          <Paper p="md" radius="md" withBorder mt="md">
-            {/* Search and Filters */}
-            <Group mb="md">
-              <TextInput
-                placeholder="Search projects..."
-                leftSection={<IconSearch size={16} />}
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.currentTarget.value)}
-                style={{ flex: 1 }}
-              />
-              <Select
-                placeholder="Status"
-                data={[
-                  { value: 'proposed', label: 'Proposed' },
-                  { value: 'approved', label: 'Approved' },
-                  { value: 'active', label: 'Active' },
-                  { value: 'completed', label: 'Completed' },
-                  { value: 'on_hold', label: 'On Hold' },
-                  { value: 'cancelled', label: 'Cancelled' }
-                ]}
-                value={selectedProjectStatus}
-                onChange={setSelectedProjectStatus}
-                clearable
-              />
-              <Button leftSection={<IconPlus size={16} />}>
-                New Project
-              </Button>
-            </Group>
-
-            {/* Research Projects Grid */}
-            <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {filteredProjects.map((project) => (
-                <Card key={project.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg" lineClamp={1}>{project.title}</Text>
-                      <Text size="sm" c="dimmed">ID: {project.projectId}</Text>
-                    </div>
-                    <Badge color={getProjectStatusColor(project.status)} variant="light">
-                      {project.status.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Principal Investigator</Text>
-                      <Text size="sm" fw={500}>{project.principalInvestigator}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Research Area</Text>
-                      <Text size="sm">{project.researchArea}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Start Date</Text>
-                      <Text size="sm">{formatDate(project.startDate)}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Duration</Text>
-                      <Text size="sm">{project.duration}</Text>
-                    </Group>
-                    {project.budget && (
-                      <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Budget</Text>
-                        <Text size="sm" fw={500}>₹{project.budget.toLocaleString()}</Text>
-                      </Group>
-                    )}
-                  </Stack>
-
-                  <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-                    {project.description}
-                  </Text>
-
-                  <Group justify="space-between">
-                    <Group gap="xs">
-                      {project.fundingAgency && (
-                        <Badge variant="outline" size="xs">
-                          {project.fundingAgency}
-                        </Badge>
-                      )}
-                      <Badge variant="outline" size="xs" color="blue">
-                        {project.teamMembers?.length || 1} Member{(project.teamMembers?.length || 1) > 1 ? 's' : ''}
-                      </Badge>
-                    </Group>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewProject(project)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
-            </SimpleGrid>
-          </Paper>
-        </Tabs.Panel>
-      </Tabs>
-
-      {/* Create Clinical Trial Modal */}
+      {/* New Trial Modal */}
       <Modal
-        opened={createTrialOpened}
-        onClose={closeCreateTrial}
-        title="Create New Clinical Trial"
-        size="xl"
+        opened={trialModalOpened}
+        onClose={closeTrialModal}
+        title={selectedTrial ? "Trial Details" : "New Clinical Trial"}
+        size="lg"
       >
         <Stack gap="md">
-          <SimpleGrid cols={2}>
-            <TextInput
-              label="Trial Title"
-              placeholder="Enter trial title"
-              required
-            />
-            <TextInput
-              label="Trial ID"
-              placeholder="Auto-generated"
-              disabled
-            />
-          </SimpleGrid>
-          
-          <SimpleGrid cols={3}>
-            <Select
-              label="Trial Phase"
-              placeholder="Select phase"
-              data={[
-                { value: 'preclinical', label: 'Preclinical' },
-                { value: 'phase_1', label: 'Phase I' },
-                { value: 'phase_2', label: 'Phase II' },
-                { value: 'phase_3', label: 'Phase III' },
-                { value: 'phase_4', label: 'Phase IV' }
-              ]}
-              required
-            />
-            <Select
-              label="Trial Type"
-              placeholder="Select type"
-              data={[
-                { value: 'interventional', label: 'Interventional' },
-                { value: 'observational', label: 'Observational' },
-                { value: 'expanded_access', label: 'Expanded Access' }
-              ]}
-              required
-            />
-            <Select
-              label="Status"
-              placeholder="Select status"
-              data={[
-                { value: 'planning', label: 'Planning' },
-                { value: 'recruiting', label: 'Recruiting' },
-                { value: 'active', label: 'Active' }
-              ]}
-              required
-            />
-          </SimpleGrid>
-          
-          <SimpleGrid cols={2}>
-            <TextInput
-              label="Principal Investigator"
-              placeholder="Enter investigator name"
-              required
-            />
-            <TextInput
-              label="Funding Source"
-              placeholder="Enter funding source"
-            />
-          </SimpleGrid>
-          
-          <SimpleGrid cols={3}>
-            <DatePicker
-              label="Start Date"
-              placeholder="Select start date"
-              required
-            />
-            <DatePicker
-              label="Expected End Date"
-              placeholder="Select end date"
-              required
-            />
-            <NumberInput
-              label="Target Participants"
-              placeholder="Enter target number"
-              min={1}
-              required
-            />
-          </SimpleGrid>
-          
-          <Textarea
-            label="Trial Description"
-            placeholder="Enter detailed description of the trial"
-            rows={4}
+          <TextInput label="Trial ID" placeholder="TRIAL-2024-XXX" required />
+          <TextInput label="Title" placeholder="Enter trial title" required />
+          <Select
+            label="Phase"
+            placeholder="Select phase"
+            data={[
+              { value: 'phase_i', label: 'Phase I' },
+              { value: 'phase_ii', label: 'Phase II' },
+              { value: 'phase_iii', label: 'Phase III' },
+              { value: 'phase_iv', label: 'Phase IV' }
+            ]}
             required
           />
+          <Select
+            label="Status"
+            placeholder="Select status"
+            data={[
+              { value: 'recruiting', label: 'Recruiting' },
+              { value: 'active', label: 'Active' },
+              { value: 'suspended', label: 'Suspended' },
+              { value: 'completed', label: 'Completed' }
+            ]}
+            required
+          />
+          <TextInput label="Principal Investigator" placeholder="Dr. Name" required />
+          <NumberInput label="Target Enrollment" placeholder="Enter number" required />
+          <Textarea label="Description" placeholder="Enter trial description" rows={4} />
           
-          <Group justify="flex-end">
-            <Button variant="light" onClick={closeCreateTrial}>
+          <Group justify="flex-end" mt="md">
+            <Button variant="light" onClick={closeTrialModal}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Trial Created',
-                message: 'Clinical trial has been successfully created',
-                color: 'green',
-              });
-              closeCreateTrial();
-            }}>
-              Create Trial
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Success',
+                  message: 'Clinical trial saved successfully',
+                  color: 'green',
+                  icon: <IconCheck size={16} />
+                });
+                closeTrialModal();
+              }}
+            >
+              Save Trial
             </Button>
           </Group>
         </Stack>
       </Modal>
 
-      {/* Recruit Patient Modal */}
+      {/* New Project Modal */}
       <Modal
-        opened={recruitPatientOpened}
-        onClose={closeRecruitPatient}
-        title="Recruit Patient for Clinical Trial"
+        opened={projectModalOpened}
+        onClose={closeProjectModal}
+        title="New Research Project"
         size="lg"
       >
         <Stack gap="md">
-          <SimpleGrid cols={2}>
-            <Select
-              label="Clinical Trial"
-              placeholder="Select trial"
-              data={mockClinicalTrials.map(trial => ({
-                value: trial.id,
-                label: `${trial.trialId} - ${trial.title}`
-              }))}
-              required
-            />
-            <Select
-              label="Patient"
-              placeholder="Select patient"
-              data={mockPatients.map(patient => ({
-                value: patient.id,
-                label: `${patient.firstName} ${patient.lastName} (${patient.patientId})`
-              }))}
-              required
-            />
-          </SimpleGrid>
-          
-          <SimpleGrid cols={2}>
-            <DatePicker
-              label="Screening Date"
-              placeholder="Select screening date"
-              required
-            />
-            <Select
-              label="Study Arm"
-              placeholder="Select study arm"
-              data={[
-                { value: 'treatment', label: 'Treatment Arm' },
-                { value: 'control', label: 'Control Arm' },
-                { value: 'placebo', label: 'Placebo Arm' }
-              ]}
-            />
-          </SimpleGrid>
-          
-          <Checkbox
-            label="Patient meets all inclusion criteria"
+          <TextInput label="Project ID" placeholder="PROJ-2024-XXX" required />
+          <TextInput label="Title" placeholder="Enter project title" required />
+          <Select
+            label="Status"
+            placeholder="Select status"
+            data={[
+              { value: 'planning', label: 'Planning' },
+              { value: 'active', label: 'Active' },
+              { value: 'on_hold', label: 'On Hold' },
+              { value: 'completed', label: 'Completed' }
+            ]}
             required
           />
+          <TextInput label="Principal Investigator" placeholder="Dr. Name" required />
+          <TextInput label="Department" placeholder="Enter department" required />
+          <NumberInput label="Budget" placeholder="Enter budget" required />
+          <TextInput label="Funding Source" placeholder="Enter funding source" required />
+          <Textarea label="Description" placeholder="Enter project description" rows={4} />
           
-          <Checkbox
-            label="Patient has no exclusion criteria"
-            required
-          />
-          
-          <Textarea
-            label="Screening Notes"
-            placeholder="Enter screening notes and observations"
-            rows={3}
-          />
-          
-          <Group justify="flex-end">
-            <Button variant="light" onClick={closeRecruitPatient}>
+          <Group justify="flex-end" mt="md">
+            <Button variant="light" onClick={closeProjectModal}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Patient Recruited',
-                message: 'Patient has been successfully recruited for the trial',
-                color: 'green',
-              });
-              closeRecruitPatient();
-            }}>
-              Recruit Patient
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
-
-      {/* Report Adverse Event Modal */}
-      <Modal
-        opened={reportAdverseEventOpened}
-        onClose={closeReportAdverseEvent}
-        title="Report Adverse Event"
-        size="lg"
-      >
-        <Stack gap="md">
-          <SimpleGrid cols={2}>
-            <Select
-              label="Clinical Trial"
-              placeholder="Select trial"
-              data={mockClinicalTrials.map(trial => ({
-                value: trial.id,
-                label: `${trial.trialId} - ${trial.title}`
-              }))}
-              required
-            />
-            <TextInput
-              label="Participant ID"
-              placeholder="Enter participant ID"
-              required
-            />
-          </SimpleGrid>
-          
-          <SimpleGrid cols={2}>
-            <DatePicker
-              label="Event Date"
-              placeholder="Select event date"
-              required
-            />
-            <Select
-              label="Severity"
-              placeholder="Select severity"
-              data={[
-                { value: 'mild', label: 'Mild' },
-                { value: 'moderate', label: 'Moderate' },
-                { value: 'severe', label: 'Severe' },
-                { value: 'life_threatening', label: 'Life Threatening' }
-              ]}
-              required
-            />
-          </SimpleGrid>
-          
-          <TextInput
-            label="Event Description"
-            placeholder="Brief description of the event"
-            required
-          />
-          
-          <Textarea
-            label="Detailed Description"
-            placeholder="Provide detailed description of the adverse event"
-            rows={4}
-            required
-          />
-          
-          <SimpleGrid cols={2}>
-            <Select
-              label="Relationship to Study Drug"
-              placeholder="Select relationship"
-              data={[
-                { value: 'unrelated', label: 'Unrelated' },
-                { value: 'unlikely', label: 'Unlikely' },
-                { value: 'possible', label: 'Possible' },
-                { value: 'probable', label: 'Probable' },
-                { value: 'definite', label: 'Definite' }
-              ]}
-              required
-            />
-            <Select
-              label="Action Taken"
-              placeholder="Select action"
-              data={[
-                { value: 'none', label: 'No Action Required' },
-                { value: 'monitoring', label: 'Increased Monitoring' },
-                { value: 'dose_reduction', label: 'Dose Reduction' },
-                { value: 'discontinuation', label: 'Drug Discontinuation' },
-                { value: 'hospitalization', label: 'Hospitalization' }
-              ]}
-              required
-            />
-          </SimpleGrid>
-          
-          <Group justify="flex-end">
-            <Button variant="light" onClick={closeReportAdverseEvent}>
-              Cancel
-            </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Adverse Event Reported',
-                message: 'Adverse event has been successfully reported',
-                color: 'orange',
-              });
-              closeReportAdverseEvent();
-            }}>
-              Report Event
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Success',
+                  message: 'Research project saved successfully',
+                  color: 'green',
+                  icon: <IconCheck size={16} />
+                });
+                closeProjectModal();
+              }}
+            >
+              Save Project
             </Button>
           </Group>
         </Stack>
       </Modal>
     </Container>
   );
-};
-
-export default MedicalResearch;
+}

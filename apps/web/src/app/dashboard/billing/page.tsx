@@ -37,7 +37,7 @@ import {
 import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -241,6 +241,14 @@ const BillingManagement = () => {
       style: 'currency',
       currency: 'INR'
     }).format(amount);
+  };
+
+  const formatDate = (date: string | Date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   // Statistics cards
@@ -467,7 +475,7 @@ const BillingManagement = () => {
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm">
-                          {new Date(invoice.invoiceDate).toLocaleDateString()}
+                          {formatDate(invoice.invoiceDate)}
                         </Text>
                       </Table.Td>
                       <Table.Td>
@@ -475,7 +483,7 @@ const BillingManagement = () => {
                           size="sm" 
                           c={new Date(invoice.dueDate) < new Date() ? 'red' : 'dimmed'}
                         >
-                          {new Date(invoice.dueDate).toLocaleDateString()}
+                          {formatDate(invoice.dueDate)}
                         </Text>
                       </Table.Td>
                       <Table.Td>
@@ -608,7 +616,7 @@ const BillingManagement = () => {
                     <div>
                       <Text fw={600} size="lg">{payment.paymentId}</Text>
                       <Text size="sm" c="dimmed">
-                        {new Date(payment.paymentDate).toLocaleDateString()}
+                        {formatDate(payment.paymentDate)}
                       </Text>
                     </div>
                     <Badge color={getStatusColor(payment.status)} variant="light">
@@ -733,7 +741,7 @@ const BillingManagement = () => {
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm">
-                          {new Date(claim.submissionDate).toLocaleDateString()}
+                          {formatDate(claim.submissionDate)}
                         </Text>
                       </Table.Td>
                       <Table.Td>
@@ -770,22 +778,20 @@ const BillingManagement = () => {
               {/* Revenue Trends */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
                 <Title order={4} mb="md">Monthly Revenue & Collections</Title>
-                <AreaChart
-                  h={300}
+                <SimpleAreaChart
                   data={revenueData}
                   dataKey="month"
                   series={[
-                    { name: 'revenue', color: 'blue.6', label: 'Revenue' },
-                    { name: 'collections', color: 'green.6', label: 'Collections' }
+                    { name: 'revenue', color: 'blue.6' },
+                    { name: 'collections', color: 'green.6' }
                   ]}
-                  curveType="linear"
                 />
               </Card>
               
               {/* Payment Methods Distribution */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Payment Methods</Title>
-                <DonutChart
+                <MantineDonutChart
                   data={paymentMethodData}
                   size={160}
                   thickness={30}
@@ -796,8 +802,7 @@ const BillingManagement = () => {
               {/* Claim Status Distribution */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Insurance Claims Status</Title>
-                <BarChart
-                  h={200}
+                <SimpleBarChart
                   data={claimStatusData}
                   dataKey="status"
                   series={[{ name: 'count', color: 'orange.6' }]}
@@ -877,7 +882,7 @@ const BillingManagement = () => {
                 <div>
                   <Title order={3}>{selectedInvoice.invoiceNumber}</Title>
                   <Text c="dimmed">
-                    {new Date(selectedInvoice.invoiceDate).toLocaleDateString()}
+                    {formatDate(selectedInvoice.invoiceDate)}
                   </Text>
                 </div>
                 <Badge color={getStatusColor(selectedInvoice.status)} variant="light" size="lg">
@@ -909,7 +914,7 @@ const BillingManagement = () => {
                 <div>
                   <Text size="sm" fw={500} mb="sm">Invoice Details:</Text>
                   <Stack gap={4}>
-                    <Text size="sm">Due Date: {new Date(selectedInvoice.dueDate).toLocaleDateString()}</Text>
+                    <Text size="sm">Due Date: {formatDate(selectedInvoice.dueDate)}</Text>
                     <Text size="sm">Terms: {selectedInvoice.paymentTerms} days</Text>
                     {selectedInvoice.insuranceClaim && (
                       <Text size="sm">Insurance Claim: {selectedInvoice.insuranceClaim.claimNumber}</Text>

@@ -1,28 +1,38 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Patch, 
-  Delete, 
-  Body, 
-  Param, 
-  Query, 
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
   UseGuards,
-  Request,
   HttpCode,
-  HttpStatus
+  HttpStatus,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { BillingService } from './billing.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { 
-  CreateInvoiceDto, 
-  UpdateInvoiceDto, 
-  CreatePaymentDto, 
+import { TenantId } from '../shared/decorators/tenant-id.decorator';
+import {
+  CreateInvoiceDto,
+  UpdateInvoiceDto,
+  CreatePaymentDto,
   UpdatePaymentDto,
   InvoiceFilterDto,
-  PaymentFilterDto
+  PaymentFilterDto,
 } from './dto/billing.dto';
 
+@ApiTags('Billing')
+@ApiBearerAuth()
 @Controller('billing')
 @UseGuards(JwtAuthGuard)
 export class BillingController {
@@ -32,12 +42,33 @@ export class BillingController {
 
   /**
    * Create a new invoice
-   * POST /billing/invoices
    */
   @Post('invoices')
   @HttpCode(HttpStatus.CREATED)
-  async createInvoice(@Body() dto: CreateInvoiceDto, @Request() req) {
-    const invoice = await this.billingService.createInvoice(dto, req.user.tenantId);
+  @ApiOperation({ 
+    summary: 'Create a new invoice',
+    description: 'Creates a new invoice with items for a patient'
+  })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Invoice created successfully'
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Bad request - Invalid data provided'
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Patient not found'
+  })
+  async createInvoice(
+    @Body() createInvoiceDto: CreateInvoiceDto, 
+    @TenantId() tenantId: string
+  ) {
+    const invoice = await this.billingService.createInvoice(
+      createInvoiceDto,
+      tenantId,
+    );
     return {
       success: true,
       message: 'Invoice created successfully',
@@ -47,11 +78,24 @@ export class BillingController {
 
   /**
    * Get all invoices with filters
-   * GET /billing/invoices
    */
   @Get('invoices')
-  async getInvoices(@Query() filters: InvoiceFilterDto, @Request() req) {
-    const result = await this.billingService.getInvoices(filters, req.user.tenantId);
+  @ApiOperation({ 
+    summary: 'Get all invoices',
+    description: 'Retrieves paginated list of invoices with optional filters'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Invoices retrieved successfully'
+  })
+  async getInvoices(
+    @Query() filters: InvoiceFilterDto, 
+    @TenantId() tenantId: string
+  ) {
+    const result = await this.billingService.getInvoices(
+      filters,
+      tenantId,
+    );
     return {
       success: true,
       message: 'Invoices retrieved successfully',
@@ -61,11 +105,18 @@ export class BillingController {
 
   /**
    * Get billing statistics
-   * GET /billing/invoices/stats
    */
   @Get('invoices/stats')
-  async getBillingStats(@Request() req) {
-    const stats = await this.billingService.getBillingStats(req.user.tenantId);
+  @ApiOperation({ 
+    summary: 'Get billing statistics',
+    description: 'Retrieves billing statistics including revenue, invoice counts, and payment methods'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Billing statistics retrieved successfully'
+  })
+  async getBillingStats(@TenantId() tenantId: string) {
+    const stats = await this.billingService.getBillingStats(tenantId);
     return {
       success: true,
       message: 'Billing statistics retrieved successfully',
@@ -75,18 +126,37 @@ export class BillingController {
 
   /**
    * Get revenue report
-   * GET /billing/invoices/reports/revenue
    */
   @Get('invoices/reports/revenue')
+  @ApiOperation({ 
+    summary: 'Get revenue report',
+    description: 'Generates revenue report for a specific date range'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Revenue report generated successfully'
+  })
+  @ApiQuery({ 
+    name: 'startDate', 
+    required: true, 
+    description: 'Start date for the report (ISO string)',
+    example: '2024-12-01T00:00:00.000Z'
+  })
+  @ApiQuery({ 
+    name: 'endDate', 
+    required: true, 
+    description: 'End date for the report (ISO string)',
+    example: '2024-12-31T23:59:59.999Z'
+  })
   async getRevenueReport(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
-    @Request() req
+    @TenantId() tenantId: string,
   ) {
     const report = await this.billingService.getRevenueReport(
-      startDate, 
-      endDate, 
-      req.user.tenantId
+      startDate,
+      endDate,
+      tenantId,
     );
     return {
       success: true,
@@ -97,11 +167,33 @@ export class BillingController {
 
   /**
    * Get invoice by ID
-   * GET /billing/invoices/:id
    */
   @Get('invoices/:id')
-  async getInvoiceById(@Param('id') id: string, @Request() req) {
-    const invoice = await this.billingService.getInvoiceById(id, req.user.tenantId);
+  @ApiOperation({ 
+    summary: 'Get invoice by ID',
+    description: 'Retrieves a specific invoice with all its details'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Invoice retrieved successfully'
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Invoice not found'
+  })
+  @ApiParam({ 
+    name: 'id', 
+    description: 'Invoice ID',
+    example: 'invoice-uuid-123'
+  })
+  async getInvoiceById(
+    @Param('id') id: string, 
+    @TenantId() tenantId: string
+  ) {
+    const invoice = await this.billingService.getInvoiceById(
+      id,
+      tenantId,
+    );
     return {
       success: true,
       message: 'Invoice retrieved successfully',
@@ -111,15 +203,35 @@ export class BillingController {
 
   /**
    * Update invoice
-   * PATCH /billing/invoices/:id
    */
   @Patch('invoices/:id')
+  @ApiOperation({ 
+    summary: 'Update invoice',
+    description: 'Updates an existing invoice'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Invoice updated successfully'
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Invoice not found'
+  })
+  @ApiParam({ 
+    name: 'id', 
+    description: 'Invoice ID',
+    example: 'invoice-uuid-123'
+  })
   async updateInvoice(
     @Param('id') id: string,
-    @Body() dto: UpdateInvoiceDto,
-    @Request() req
+    @Body() updateInvoiceDto: UpdateInvoiceDto,
+    @TenantId() tenantId: string,
   ) {
-    const invoice = await this.billingService.updateInvoice(id, dto, req.user.tenantId);
+    const invoice = await this.billingService.updateInvoice(
+      id,
+      updateInvoiceDto,
+      tenantId,
+    );
     return {
       success: true,
       message: 'Invoice updated successfully',
@@ -129,11 +241,37 @@ export class BillingController {
 
   /**
    * Cancel invoice
-   * DELETE /billing/invoices/:id
    */
   @Delete('invoices/:id')
-  async deleteInvoice(@Param('id') id: string, @Request() req) {
-    const invoice = await this.billingService.deleteInvoice(id, req.user.tenantId);
+  @ApiOperation({ 
+    summary: 'Cancel invoice',
+    description: 'Cancels an existing invoice (soft delete)'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Invoice cancelled successfully'
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Cannot delete a paid invoice or invoice with payments'
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Invoice not found'
+  })
+  @ApiParam({ 
+    name: 'id', 
+    description: 'Invoice ID',
+    example: 'invoice-uuid-123'
+  })
+  async deleteInvoice(
+    @Param('id') id: string, 
+    @TenantId() tenantId: string
+  ) {
+    const invoice = await this.billingService.deleteInvoice(
+      id,
+      tenantId,
+    );
     return {
       success: true,
       message: 'Invoice cancelled successfully',
@@ -145,12 +283,33 @@ export class BillingController {
 
   /**
    * Create a payment
-   * POST /billing/payments
    */
   @Post('payments')
   @HttpCode(HttpStatus.CREATED)
-  async createPayment(@Body() dto: CreatePaymentDto, @Request() req) {
-    const payment = await this.billingService.createPayment(dto, req.user.tenantId);
+  @ApiOperation({ 
+    summary: 'Record a payment',
+    description: 'Records a new payment against an invoice'
+  })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Payment recorded successfully'
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Payment amount exceeds remaining balance or invalid data'
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Invoice not found'
+  })
+  async createPayment(
+    @Body() createPaymentDto: CreatePaymentDto, 
+    @TenantId() tenantId: string
+  ) {
+    const payment = await this.billingService.createPayment(
+      createPaymentDto,
+      tenantId,
+    );
     return {
       success: true,
       message: 'Payment recorded successfully',
@@ -160,11 +319,24 @@ export class BillingController {
 
   /**
    * Get all payments with filters
-   * GET /billing/payments
    */
   @Get('payments')
-  async getPayments(@Query() filters: PaymentFilterDto, @Request() req) {
-    const result = await this.billingService.getPayments(filters, req.user.tenantId);
+  @ApiOperation({ 
+    summary: 'Get all payments',
+    description: 'Retrieves paginated list of payments with optional filters'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Payments retrieved successfully'
+  })
+  async getPayments(
+    @Query() filters: PaymentFilterDto, 
+    @TenantId() tenantId: string
+  ) {
+    const result = await this.billingService.getPayments(
+      filters,
+      tenantId,
+    );
     return {
       success: true,
       message: 'Payments retrieved successfully',
@@ -174,11 +346,33 @@ export class BillingController {
 
   /**
    * Get payment by ID
-   * GET /billing/payments/:id
    */
   @Get('payments/:id')
-  async getPaymentById(@Param('id') id: string, @Request() req) {
-    const payment = await this.billingService.getPaymentById(id, req.user.tenantId);
+  @ApiOperation({ 
+    summary: 'Get payment by ID',
+    description: 'Retrieves a specific payment with all its details'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Payment retrieved successfully'
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Payment not found'
+  })
+  @ApiParam({ 
+    name: 'id', 
+    description: 'Payment ID',
+    example: 'payment-uuid-123'
+  })
+  async getPaymentById(
+    @Param('id') id: string, 
+    @TenantId() tenantId: string
+  ) {
+    const payment = await this.billingService.getPaymentById(
+      id,
+      tenantId,
+    );
     return {
       success: true,
       message: 'Payment retrieved successfully',
@@ -188,15 +382,35 @@ export class BillingController {
 
   /**
    * Update payment
-   * PATCH /billing/payments/:id
    */
   @Patch('payments/:id')
+  @ApiOperation({ 
+    summary: 'Update payment',
+    description: 'Updates an existing payment'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Payment updated successfully'
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Payment not found'
+  })
+  @ApiParam({ 
+    name: 'id', 
+    description: 'Payment ID',
+    example: 'payment-uuid-123'
+  })
   async updatePayment(
     @Param('id') id: string,
-    @Body() dto: UpdatePaymentDto,
-    @Request() req
+    @Body() updatePaymentDto: UpdatePaymentDto,
+    @TenantId() tenantId: string,
   ) {
-    const payment = await this.billingService.updatePayment(id, dto, req.user.tenantId);
+    const payment = await this.billingService.updatePayment(
+      id,
+      updatePaymentDto,
+      tenantId,
+    );
     return {
       success: true,
       message: 'Payment updated successfully',

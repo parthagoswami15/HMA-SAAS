@@ -29,18 +29,22 @@ import {
   IconCalendar,
   IconHeart,
   IconAlertCircle,
-  IconShield,
-  IconUserPlus
+  IconShieldX,
+  IconUsers as IconUserPlus
 } from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
+import PatientForm from '../../components/patients/PatientForm';
+import PatientDetails from '../../components/patients/PatientDetails';
+import MedicalHistoryManager from '../../components/patients/MedicalHistoryManager';
+import DocumentManager from '../../components/patients/DocumentManager';
 import { useAppStore } from '../../stores/appStore';
-import { User, UserRole, TableColumn, FilterOption } from '../../types/common';
-import { Patient, PatientStats, PatientListItem } from '../../types/patient';
-import { mockPatients, mockPatientStats } from '../../lib/mockData/patients';
+import { notifications } from '@mantine/notifications';
+import { User, UserRole, TableColumn, FilterOption, Status } from '../../types/common';
+import { Patient, PatientStats, PatientListItem, CreatePatientDto, UpdatePatientDto } from '../../types/patient';
+import patientsService from '../../services';
 import { formatDate, formatPhoneNumber } from '../../lib/utils';
 
-// Mock user
 const mockUser: User = {
   id: '1',
   username: 'sjohnson',
@@ -58,38 +62,248 @@ const mockUser: User = {
   updatedAt: new Date(),
 };
 
-export default function PatientsPage() {
+function PatientsPage() {
   const { user, setUser, notifications } = useAppStore();
   const [activeTab, setActiveTab] = useState('list');
-  const [patients] = useState<Patient[]>(mockPatients);
-  const [patientStats] = useState<PatientStats>(mockPatientStats);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patientStats, setPatientStats] = useState<PatientStats | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [loading] = useState(false);
-  const [, setSearchQuery] = useState('');
-  const [, setFilters] = useState<Record<string, unknown>>({});
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<Record<string, unknown>>({});
   const [opened, { open, close }] = useDisclosure(false);
   const [viewModalOpened, { open: openView, close: closeView }] = useDisclosure(false);
+  const [historyModalOpened, { open: openHistory, close: closeHistory }] = useDisclosure(false);
+  const [documentsModalOpened, { open: openDocuments, close: closeDocuments }] = useDisclosure(false);
 
   useEffect(() => {
     if (!user) {
       setUser(mockUser);
     }
+    fetchPatients();
+    fetchStats();
   }, [user, setUser]);
+
+  const fetchPatients = async () => {
+    setLoading(true);
+    try {
+      const response = await patientsService.getPatients();
+      if (response.success && response.data) {
+        setPatients(response.data.patients || []);
+      } else {
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to fetch patients',
+          color: 'red',
+        });
+      }
+    } catch (error: any) {
+      console.error('Error fetching patients:', error);
+      notifications.show({
+        title: 'Error',
+        message: error?.message || 'Failed to fetch patients',
+        color: 'red',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await patientsService.getPatientStats();
+      if (response.success && response.data) {
+        setPatientStats(response.data);
+      }
+    } catch (error: any) {
+      console.error('Error fetching stats:', error);
+    }
+  };
 
   // Convert patients to list items for table
   const patientListItems: PatientListItem[] = patients.map(patient => ({
     id: patient.id,
-    patientId: patient.patientId,
+    patientId: (patient as any).medicalRecordNumber || patient.id,
     fullName: `${patient.firstName} ${patient.lastName}`,
-    age: patient.age,
+    age: calculateAge(patient.dateOfBirth),
     gender: patient.gender,
-    phoneNumber: patient.contactInfo.phone,
-    lastVisitDate: patient.lastVisitDate,
-    totalVisits: patient.totalVisits,
-    status: patient.status,
-    hasInsurance: !!patient.insuranceInfo?.isActive,
-    emergencyFlag: patient.chronicDiseases.length > 0
+    phoneNumber: (patient as any).phone || '',
+    lastVisitDate: new Date(), // Placeholder - need to add to API
+    totalVisits: 0, // Placeholder - need to add to API
+    status: (patient as any).isActive ? Status.ACTIVE : Status.INACTIVE,
+    hasInsurance: false, // Placeholder - need to add to API
+    emergencyFlag: false // Placeholder
   }));
+
+  const calculateAge = (dateOfBirth: Date | string) => {
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  // Handle patient actions
+  const handleViewPatient = (patient: PatientListItem) => {
+    const fullPatient = patients.find(p => p.id === patient.id);
+    if (fullPatient) {
+      setSelectedPatient(fullPatient);
+      openView();
+    }
+  };
+
+  const handleEditPatientForTable = (patient: PatientListItem) => {
+    const fullPatient = patients.find(p => p.id === patient.id);
+    if (fullPatient) {
+      setSelectedPatient(fullPatient);
+      open();
+    }
+  };
+
+  const handleEditPatientForModal = (patient: Patient) => {
+    setSelectedPatient(patient);
+    open();
+  };
+
+  const handleDeletePatient = async (patient: PatientListItem) => {
+    if (window.confirm(`Are you sure you want to delete patient ${patient.fullName}?`)) {
+      try {
+        const response = await patientsService.deletePatient(patient.id);
+        if (response.success) {
+          notifications.show({
+            title: 'Success',
+            message: 'Patient deleted successfully',
+            color: 'green',
+          });
+          fetchPatients();
+          fetchStats();
+        }
+      } catch (error: any) {
+        console.error('Error deleting patient:', error);
+        notifications.show({
+          title: 'Error',
+          message: error?.message || 'Failed to delete patient',
+          color: 'red',
+        });
+      }
+    }
+  };
+
+  // Patient CRUD operations
+  const handleCreatePatient = async (data: CreatePatientDto) => {
+    try {
+      const response = await patientsService.createPatient(data);
+      if (response.success) {
+        notifications.show({
+          title: 'Success',
+          message: 'Patient created successfully',
+          color: 'green',
+        });
+        fetchPatients();
+        fetchStats();
+        close();
+      }
+    } catch (error: any) {
+      console.error('Error creating patient:', error);
+      notifications.show({
+        title: 'Error',
+        message: error?.message || 'Failed to create patient',
+        color: 'red',
+      });
+      throw error;
+    }
+  };
+
+  const handleUpdatePatient = async (data: UpdatePatientDto) => {
+    try {
+      const response = await patientsService.updatePatient(data.id, data);
+      if (response.success) {
+        notifications.show({
+          title: 'Success',
+          message: 'Patient updated successfully',
+          color: 'green',
+        });
+        fetchPatients();
+        fetchStats();
+        close();
+      }
+    } catch (error: any) {
+      console.error('Error updating patient:', error);
+      notifications.show({
+        title: 'Error',
+        message: error?.message || 'Failed to update patient',
+        color: 'red',
+      });
+      throw error;
+    }
+  };
+
+  // Medical history operations
+  const handleSaveMedicalHistory = async (history: any): Promise<void> => {
+    console.log('Saving medical history:', history);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleUpdateMedicalHistory = async (id: string, history: any): Promise<void> => {
+    console.log('Updating medical history:', id, history);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleDeleteMedicalHistory = async (id: string): Promise<void> => {
+    console.log('Deleting medical history:', id);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  // Document operations
+  const handleUploadDocument = async (document: any, file: File): Promise<void> => {
+    console.log('Uploading document:', document, file);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleUpdateDocument = async (id: string, document: any): Promise<void> => {
+    console.log('Updating document:', id, document);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleDeleteDocument = async (id: string): Promise<void> => {
+    console.log('Deleting document:', id);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleDownloadDocument = async (document: any): Promise<void> => {
+    console.log('Downloading document:', document);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  const handleViewDocument = async (document: any): Promise<void> => {
+    console.log('Viewing document:', document);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  // Additional handlers
+  const handleScheduleAppointment = (patientId: string) => {
+    console.log('Schedule appointment for patient:', patientId);
+    // Would navigate to appointment scheduling
+  };
+
+  const handleOpenHistory = (patient: PatientListItem) => {
+    const fullPatient = patients.find(p => p.id === patient.id);
+    if (fullPatient) {
+      setSelectedPatient(fullPatient);
+      openHistory();
+    }
+  };
+
+  const handleOpenDocuments = (patient: PatientListItem) => {
+    const fullPatient = patients.find(p => p.id === patient.id);
+    if (fullPatient) {
+      setSelectedPatient(fullPatient);
+      openDocuments();
+    }
+  };
 
   // Table columns configuration
   const columns: TableColumn[] = [
@@ -153,7 +367,7 @@ export default function PatientsPage() {
       key: 'status',
       title: 'Status',
       render: (value) => (
-        <Badge 
+        <Badge
           color={value === 'active' ? 'green' : 'red'}
           variant="light"
         >
@@ -167,7 +381,7 @@ export default function PatientsPage() {
       render: (value, record) => (
         <Group gap="xs">
           {value ? (
-            <Badge color="green" variant="light" leftSection={<IconShield size="0.8rem" />}>
+            <Badge color="green" variant="light" leftSection={<IconShieldX size="0.8rem" />}>
               Insured
             </Badge>
           ) : (
@@ -215,28 +429,6 @@ export default function PatientsPage() {
     }
   ];
 
-  // Handle patient actions
-  const handleViewPatient = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
-    if (fullPatient) {
-      setSelectedPatient(fullPatient);
-      openView();
-    }
-  };
-
-  const handleEditPatient = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
-    if (fullPatient) {
-      setSelectedPatient(fullPatient);
-      open();
-    }
-  };
-
-  const handleDeletePatient = (patient: PatientListItem) => {
-    // In real implementation, show confirmation modal
-    console.log('Delete patient:', patient.patientId);
-  };
-
   // Statistics cards
   const StatCard = ({ title, value, icon, color, subtitle }: { title: string; value: string; icon: React.ReactNode; color: string; subtitle?: string }) => (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -245,15 +437,15 @@ export default function PatientsPage() {
           {icon}
         </div>
       </Group>
-      
+
       <Text size="xl" fw={700} mb="xs">
         {value}
       </Text>
-      
+
       <Text size="sm" c="dimmed" mb="sm">
         {title}
       </Text>
-      
+
       {subtitle && (
         <Text size="xs" c="dimmed">
           {subtitle}
@@ -294,28 +486,28 @@ export default function PatientsPage() {
           <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
             <StatCard
               title="Total Patients"
-              value={patientStats.totalPatients.toLocaleString()}
+              value={patientStats ? patientStats.totalPatients.toLocaleString() : '0'}
               icon={<IconUsers size="2rem" />}
               color="blue"
-              subtitle={`+${patientStats.newPatientsThisMonth} this month`}
+              subtitle={patientStats ? `+${patientStats.newPatientsThisMonth} this month` : ''}
             />
             <StatCard
               title="New Today"
-              value={patientStats.newPatientsToday}
+              value={patientStats ? patientStats.newPatientsToday.toString() : '0'}
               icon={<IconUserPlus size="2rem" />}
               color="green"
               subtitle="New registrations today"
             />
             <StatCard
               title="Active Patients"
-              value={patientStats.activePatients.toLocaleString()}
+              value={patientStats ? patientStats.activePatients.toLocaleString() : '0'}
               icon={<IconHeart size="2rem" />}
               color="red"
               subtitle="Currently under care"
             />
             <StatCard
               title="Average Age"
-              value={`${patientStats.averageAge} years`}
+              value={patientStats ? `${patientStats.averageAge} years` : '0 years'}
               icon={<IconCalendar size="2rem" />}
               color="purple"
               subtitle="Patient demographics"
@@ -351,7 +543,7 @@ export default function PatientsPage() {
                 }}
                 actions={{
                   view: handleViewPatient,
-                  edit: handleEditPatient,
+                  edit: handleEditPatientForTable,
                   delete: handleDeletePatient
                 }}
                 emptyMessage="No patients found"
@@ -366,20 +558,20 @@ export default function PatientsPage() {
                       Visit Trends (Last 7 Days)
                     </Text>
                     <Stack gap="sm">
-                      {patientStats.visitTrends.map((trend, index) => (
+                      {patientStats?.visitTrends?.map((trend, index) => (
                         <Group key={index} justify="space-between">
                           <Text size="sm">{formatDate(new Date(trend.date))}</Text>
                           <Group gap="sm">
-                            <Progress 
-                              value={(trend.count / 200) * 100} 
-                              size="sm" 
+                            <Progress
+                              value={(trend.count / 200) * 100}
+                              size="sm"
                               w={100}
                               color="blue"
                             />
                             <Text size="sm" fw={500}>{trend.count}</Text>
                           </Group>
                         </Group>
-                      ))}
+                      )) || <Text>No data available</Text>}
                     </Stack>
                   </Paper>
                 </Grid.Col>
@@ -393,26 +585,26 @@ export default function PatientsPage() {
                       <Group justify="space-between">
                         <Text size="sm">Male Patients</Text>
                         <Text size="sm" fw={500}>
-                          {patientStats.genderDistribution.male} ({Math.round((patientStats.genderDistribution.male / patientStats.totalPatients) * 100)}%)
+                          {patientStats ? `${patientStats.genderDistribution.male} (${Math.round((patientStats.genderDistribution.male / patientStats.totalPatients) * 100)}%)` : '0 (0%)'}
                         </Text>
                       </Group>
                       <Group justify="space-between">
                         <Text size="sm">Female Patients</Text>
                         <Text size="sm" fw={500}>
-                          {patientStats.genderDistribution.female} ({Math.round((patientStats.genderDistribution.female / patientStats.totalPatients) * 100)}%)
+                          {patientStats ? `${patientStats.genderDistribution.female} (${Math.round((patientStats.genderDistribution.female / patientStats.totalPatients) * 100)}%)` : '0 (0%)'}
                         </Text>
                       </Group>
                       <Divider />
                       <Group justify="space-between">
                         <Text size="sm">Insured Patients</Text>
                         <Text size="sm" fw={500} c="green">
-                          {patientStats.insuranceDistribution.insured} ({Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%)
+                          {patientStats ? `${patientStats.insuranceDistribution.insured} (${Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%)` : '0 (0%)'}
                         </Text>
                       </Group>
                       <Group justify="space-between">
                         <Text size="sm">Self-Pay Patients</Text>
                         <Text size="sm" fw={500} c="orange">
-                          {patientStats.insuranceDistribution.uninsured} ({Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%)
+                          {patientStats ? `${patientStats.insuranceDistribution.uninsured} (${Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%)` : '0 (0%)'}
                         </Text>
                       </Group>
                     </Stack>
@@ -429,20 +621,20 @@ export default function PatientsPage() {
                       Blood Group Distribution
                     </Text>
                     <Stack gap="sm">
-                      {Object.entries(patientStats.bloodGroupDistribution).map(([bloodGroup, count]) => (
+                      {patientStats?.bloodGroupDistribution && Object.entries(patientStats.bloodGroupDistribution).map(([bloodGroup, count]) => (
                         <Group key={bloodGroup} justify="space-between">
                           <Text size="sm">{bloodGroup}</Text>
                           <Group gap="sm">
-                            <Progress 
-                              value={(count / patientStats.totalPatients) * 100} 
-                              size="sm" 
+                            <Progress
+                              value={(count / (patientStats.totalPatients || 1)) * 100}
+                              size="sm"
                               w={100}
                               color="red"
                             />
                             <Text size="sm" fw={500}>{count}</Text>
                           </Group>
                         </Group>
-                      ))}
+                      )) || <Text>No data available</Text>}
                     </Stack>
                   </Paper>
                 </Grid.Col>
@@ -453,7 +645,7 @@ export default function PatientsPage() {
                       Age Distribution
                     </Text>
                     <Alert icon={<IconAlertCircle size="1rem" />} color="blue">
-                      Age analytics feature will show detailed age group breakdowns, 
+                      Age analytics feature will show detailed age group breakdowns,
                       pediatric vs adult ratios, and senior citizen statistics.
                     </Alert>
                   </Paper>
@@ -472,13 +664,13 @@ export default function PatientsPage() {
                     <Group gap="lg">
                       <div>
                         <Text size="xl" fw={700} c="green">
-                          {Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%
+                          {patientStats ? `${Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%` : '0%'}
                         </Text>
                         <Text size="sm" c="dimmed">Insured</Text>
                       </div>
                       <div>
                         <Text size="xl" fw={700} c="orange">
-                          {Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%
+                          {patientStats ? `${Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%` : '0%'}
                         </Text>
                         <Text size="sm" c="dimmed">Self-Pay</Text>
                       </div>
@@ -486,7 +678,7 @@ export default function PatientsPage() {
                   </div>
                   <div>
                     <Text size="sm" c="dimmed" mb="sm">Insurance Types</Text>
-                    <Alert icon={<IconShield size="1rem" />} color="blue">
+                    <Alert icon={<IconShieldX size="1rem" />} color="blue">
                       Government: 45% • Private: 35% • Corporate: 20%
                     </Alert>
                   </div>
@@ -495,134 +687,60 @@ export default function PatientsPage() {
             </Tabs.Panel>
           </Tabs>
 
-          {/* Patient Details Modal */}
-          <Modal
+          {/* Enhanced Patient Details Modal */}
+          <PatientDetails
             opened={viewModalOpened}
             onClose={closeView}
-            title="Patient Details"
-            size="xl"
-          >
-            {selectedPatient && (
-              <Stack gap="md">
-                <Group>
-                  <Avatar size="lg" name={`${selectedPatient.firstName} ${selectedPatient.lastName}`} color="blue" />
-                  <div>
-                    <Text size="lg" fw={600}>
-                      {selectedPatient.firstName} {selectedPatient.lastName}
-                    </Text>
-                    <Text size="sm" c="dimmed">
-                      {selectedPatient.patientId} • {selectedPatient.age} years • {selectedPatient.gender}
-                    </Text>
-                  </div>
-                </Group>
+            patient={selectedPatient}
+            visits={[]}
+            documents={[]}
+            medicalHistory={[]}
+            appointments={[]}
+            onEdit={handleEditPatientForModal}
+            onScheduleAppointment={handleScheduleAppointment}
+          />
 
-                <Divider />
-
-                <SimpleGrid cols={2} spacing="md">
-                  <div>
-                    <Text size="sm" fw={500} mb="xs">Contact Information</Text>
-                    <Stack gap="xs">
-                      <Group gap="xs">
-                        <IconPhone size="1rem" />
-                        <Text size="sm">{formatPhoneNumber(selectedPatient.contactInfo.phone)}</Text>
-                      </Group>
-                      {selectedPatient.contactInfo.email && (
-                        <Group gap="xs">
-                          <IconMail size="1rem" />
-                          <Text size="sm">{selectedPatient.contactInfo.email}</Text>
-                        </Group>
-                      )}
-                    </Stack>
-                  </div>
-
-                  <div>
-                    <Text size="sm" fw={500} mb="xs">Medical Information</Text>
-                    <Stack gap="xs">
-                      <Text size="sm">
-                        <strong>Blood Group:</strong> {selectedPatient.bloodGroup || 'Not specified'}
-                      </Text>
-                      <Text size="sm">
-                        <strong>Total Visits:</strong> {selectedPatient.totalVisits}
-                      </Text>
-                      {selectedPatient.lastVisitDate && (
-                        <Text size="sm">
-                          <strong>Last Visit:</strong> {formatDate(selectedPatient.lastVisitDate)}
-                        </Text>
-                      )}
-                    </Stack>
-                  </div>
-                </SimpleGrid>
-
-                {selectedPatient.allergies.length > 0 && (
-                  <>
-                    <Divider />
-                    <div>
-                      <Text size="sm" fw={500} mb="xs" c="red">Allergies</Text>
-                      <Group gap="xs">
-                        {selectedPatient.allergies.map((allergy, index) => (
-                          <Badge key={index} color="red" variant="light">
-                            {allergy}
-                          </Badge>
-                        ))}
-                      </Group>
-                    </div>
-                  </>
-                )}
-
-                {selectedPatient.chronicDiseases.length > 0 && (
-                  <>
-                    <Divider />
-                    <div>
-                      <Text size="sm" fw={500} mb="xs" c="orange">Chronic Diseases</Text>
-                      <Group gap="xs">
-                        {selectedPatient.chronicDiseases.map((disease, index) => (
-                          <Badge key={index} color="orange" variant="light">
-                            {disease}
-                          </Badge>
-                        ))}
-                      </Group>
-                    </div>
-                  </>
-                )}
-
-                {selectedPatient.insuranceInfo && (
-                  <>
-                    <Divider />
-                    <div>
-                      <Text size="sm" fw={500} mb="xs" c="green">Insurance Information</Text>
-                      <Stack gap="xs">
-                        <Text size="sm">
-                          <strong>Provider:</strong> {selectedPatient.insuranceInfo.insuranceProvider}
-                        </Text>
-                        <Text size="sm">
-                          <strong>Policy Number:</strong> {selectedPatient.insuranceInfo.policyNumber}
-                        </Text>
-                        <Text size="sm">
-                          <strong>Coverage:</strong> ₹{selectedPatient.insuranceInfo.coverageAmount.toLocaleString()}
-                        </Text>
-                      </Stack>
-                    </div>
-                  </>
-                )}
-              </Stack>
-            )}
-          </Modal>
-
-          {/* Add/Edit Patient Modal */}
-          <Modal
+          {/* Enhanced Patient Form Modal */}
+          <PatientForm
             opened={opened}
             onClose={close}
-            title={selectedPatient ? "Edit Patient" : "Add New Patient"}
-            size="xl"
-          >
-            <Alert icon={<IconAlertCircle size="1rem" />} color="blue" mb="md">
-              Patient registration form will be implemented with all required fields including 
-              demographics, contact info, medical history, insurance details, and document uploads.
-            </Alert>
-          </Modal>
+            patient={selectedPatient}
+            onSubmit={selectedPatient ? handleUpdatePatient : handleCreatePatient}
+          />
+
+          {/* Medical History Manager */}
+          {selectedPatient && (
+            <MedicalHistoryManager
+              opened={historyModalOpened}
+              onClose={closeHistory}
+              patientId={selectedPatient.patientId}
+              patientName={`${selectedPatient.firstName} ${selectedPatient.lastName}`}
+              medicalHistory={[]}
+              onSave={handleSaveMedicalHistory}
+              onUpdate={handleUpdateMedicalHistory}
+              onDelete={handleDeleteMedicalHistory}
+            />
+          )}
+
+          {/* Document Manager */}
+          {selectedPatient && (
+            <DocumentManager
+              opened={documentsModalOpened}
+              onClose={closeDocuments}
+              patientId={selectedPatient.patientId}
+              patientName={`${selectedPatient.firstName} ${selectedPatient.lastName}`}
+              documents={[]}
+              onUpload={handleUploadDocument}
+              onUpdate={handleUpdateDocument}
+              onDelete={handleDeleteDocument}
+              onDownload={handleDownloadDocument}
+              onView={handleViewDocument}
+            />
+          )}
         </Stack>
       </Container>
     </Layout>
   );
 }
 
+export default PatientsPage;

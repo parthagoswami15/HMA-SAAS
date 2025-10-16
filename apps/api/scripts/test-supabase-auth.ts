@@ -37,9 +37,9 @@ async function testSupabaseAuth() {
     });
     
     console.log('✅ Sign up successful:', {
-      userId: signUpData.user?.id,
-      email: signUpData.user?.email,
-      role: signUpData.user?.user_metadata?.role,
+      userId: signUpData.data?.user?.id,
+      email: signUpData.data?.user?.email,
+      role: signUpData.data?.user?.user_metadata?.role,
     });
     
     // 2. Test sign in
@@ -49,11 +49,11 @@ async function testSupabaseAuth() {
       password: testPassword,
     });
     
-    const accessToken = signInData.session?.access_token;
-    const refreshToken = signInData.session?.refresh_token;
+    const accessToken = signInData.data?.session?.access_token;
+    const refreshToken = signInData.data?.session?.refresh_token;
     
     console.log('✅ Sign in successful:', {
-      userId: signInData.user?.id,
+      userId: signInData.data?.user?.id,
       accessToken: accessToken ? '***' + accessToken.slice(-8) : 'none',
       refreshToken: refreshToken ? '***' + refreshToken.slice(-8) : 'none',
     });

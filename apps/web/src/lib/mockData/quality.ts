@@ -113,11 +113,15 @@ export const mockIncidents = [
 
 export const mockQualityStats = {
   overallScore: 87,
+  overallComplianceScore: 87,
   completedAudits: 24,
   pendingAudits: 6,
+  activeAudits: 6,
   complianceRate: 89,
   activeIncidents: 8,
   resolvedIncidents: 142,
+  qualityIncidents: 8,
+  policyUpdates: 12,
   accreditationsActive: 5,
   accreditationsExpiring: 1,
   auditsByType: [
@@ -141,7 +145,64 @@ export const mockQualityStats = {
 };
 
 // Aliases expected by pages
-export const mockQualityMetrics = mockQualityStats;
+export const mockQualityMetrics = [
+  {
+    id: 'm1',
+    name: 'Patient Satisfaction Score',
+    description: 'Overall patient satisfaction rating',
+    category: 'Patient Experience',
+    target: 90,
+    current: 87,
+    status: 'warning',
+    trend: 'up',
+    unit: '%',
+    lastUpdated: '2024-01-15'
+  },
+  {
+    id: 'm2',
+    name: 'Infection Control Rate',
+    description: 'Hospital-acquired infection rate',
+    category: 'Patient Safety',
+    target: 95,
+    current: 92,
+    status: 'warning',
+    unit: '%',
+    lastUpdated: '2024-01-14'
+  },
+  {
+    id: 'm3',
+    name: 'Medication Error Rate',
+    description: 'Medication administration error rate',
+    category: 'Patient Safety',
+    target: 98,
+    current: 96,
+    status: 'good',
+    unit: '%',
+    lastUpdated: '2024-01-15'
+  },
+  {
+    id: 'm4',
+    name: 'Documentation Compliance',
+    description: 'Medical records documentation compliance',
+    category: 'Compliance',
+    target: 95,
+    current: 89,
+    status: 'warning',
+    unit: '%',
+    lastUpdated: '2024-01-13'
+  },
+  {
+    id: 'm5',
+    name: 'Staff Training Completion',
+    description: 'Mandatory training completion rate',
+    category: 'Staff Development',
+    target: 100,
+    current: 94,
+    status: 'warning',
+    unit: '%',
+    lastUpdated: '2024-01-12'
+  }
+];
 export const mockPolicies = mockComplianceItems;
 export const mockRiskAssessments = [
   { id: 'r1', area: 'ICU', risk: 'Infection Control', level: 'high', status: 'mitigated' },

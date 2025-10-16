@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from '@mantine/core';
 
 interface SignupFormData {
   organizationType: 'hospital' | 'clinic' | 'private_practice';
@@ -497,26 +498,17 @@ export default function Signup() {
             </label>
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={isLoading}
-            style={{
-              width: "100%",
-              background: isLoading ? "#9CA3AF" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              color: "white",
-              padding: "0.875rem",
-              borderRadius: "8px",
-              border: "none",
-              fontSize: "1rem",
-              fontWeight: "600",
-              cursor: isLoading ? "not-allowed" : "pointer",
-              transition: "transform 0.2s, box-shadow 0.2s",
-              marginTop: "1rem",
-              opacity: isLoading ? 0.7 : 1
-            }}
+            loading={isLoading}
+            fullWidth
+            size="lg"
+            variant="filled"
+            color="blue"
           >
             {isLoading ? "Creating Account..." : "Create Account"}
-          </button>
+          </Button>
         </form>
 
         <div style={{ marginTop: "2rem", textAlign: "center" }}>

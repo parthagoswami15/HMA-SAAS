@@ -40,7 +40,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { LineChart, BarChart, DonutChart, AreaChart } from '@mantine/charts';
+// Charts removed due to MantineProvider compatibility issues
 import {
   IconPlus,
   IconSearch,
@@ -61,7 +61,6 @@ import {
   IconChartPie,
   IconWand,
   IconArrowsRightLeft,
-  IconBrandTableau,
   IconTimeline,
   IconReportAnalytics,
   IconArrowsShuffle,
@@ -76,15 +75,12 @@ import {
   IconTool,
   IconUsers,
   IconBandage,
-  IconBrandSalesforce,
   IconBrandAws,
-  IconNerve,
   IconCloudUpload,
   IconChartDots,
   IconChartInfographic,
   IconArrowsLeftRight,
   IconClipboardCheck,
-  IconUpload,
   IconHexagonLetterA,
   IconHexagonLetterI,
   IconBrain,
@@ -110,7 +106,8 @@ import {
   IconFileText,
   IconDeviceDesktopAnalytics,
   IconLink,
-  IconUserCircle
+  IconUserCircle,
+  IconClock
 } from '@tabler/icons-react';
 
 // Import types and mock data
@@ -337,26 +334,51 @@ const IntegrationHub = () => {
             {/* Integration Status */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Integration Status</Title>
-              <DonutChart
-                data={[
-                  { name: 'Active', value: 24, color: 'green' },
-                  { name: 'Error', value: 3, color: 'red' },
-                  { name: 'Warning', value: 5, color: 'yellow' },
-                  { name: 'Pending', value: 8, color: 'blue' }
-                ]}
-                size={200}
-                thickness={40}
-                withLabels
-                withTooltip
-              />
+              <Stack gap="md">
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="green" variant="light" size="sm">
+                      <IconCheck size={12} />
+                    </ThemeIcon>
+                    <Text size="sm">Active</Text>
+                  </Group>
+                  <Text size="sm" fw={600}>24</Text>
+                </Group>
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="red" variant="light" size="sm">
+                      <IconX size={12} />
+                    </ThemeIcon>
+                    <Text size="sm">Error</Text>
+                  </Group>
+                  <Text size="sm" fw={600}>3</Text>
+                </Group>
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="yellow" variant="light" size="sm">
+                      <IconAlertCircle size={12} />
+                    </ThemeIcon>
+                    <Text size="sm">Warning</Text>
+                  </Group>
+                  <Text size="sm" fw={600}>5</Text>
+                </Group>
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="blue" variant="light" size="sm">
+                      <IconClock size={12} />
+                    </ThemeIcon>
+                    <Text size="sm">Pending</Text>
+                  </Group>
+                  <Text size="sm" fw={600}>8</Text>
+                </Group>
+              </Stack>
             </Card>
 
             {/* API Usage */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">API Usage (Last 7 days)</Title>
-              <AreaChart
-                h={200}
-                data={[
+              <Stack gap="xs">
+                {[
                   { date: 'Mon', calls: 1200 },
                   { date: 'Tue', calls: 1800 },
                   { date: 'Wed', calls: 1600 },
@@ -364,11 +386,16 @@ const IntegrationHub = () => {
                   { date: 'Fri', calls: 2400 },
                   { date: 'Sat', calls: 1500 },
                   { date: 'Sun', calls: 1300 }
-                ]}
-                dataKey="date"
-                series={[{ name: 'calls', color: 'blue.6' }]}
-                curveType="linear"
-              />
+                ].map((item) => (
+                  <Group key={item.date} justify="space-between">
+                    <Text size="sm" c="dimmed">{item.date}</Text>
+                    <Group gap="xs">
+                      <Progress value={(item.calls / 2400) * 100} style={{ width: 100 }} size="sm" />
+                      <Text size="sm" fw={500}>{item.calls.toLocaleString()}</Text>
+                    </Group>
+                  </Group>
+                ))}
+              </Stack>
             </Card>
 
             {/* Recent Integrations */}
@@ -960,22 +987,41 @@ const IntegrationHub = () => {
             <Card padding="lg" radius="md" withBorder mt="xl">
               <Title order={4} mb="md">Model Performance Metrics</Title>
               <SimpleGrid cols={2}>
-                <BarChart
-                  h={200}
-                  data={[
+                <Stack gap="md">
+                  {[
                     { model: 'Readmission', accuracy: 0.92, precision: 0.89, recall: 0.87 },
                     { model: 'LOS Prediction', accuracy: 0.85, precision: 0.83, recall: 0.81 },
                     { model: 'Disease Risk', accuracy: 0.88, precision: 0.86, recall: 0.84 },
                     { model: 'Cost Prediction', accuracy: 0.79, precision: 0.76, recall: 0.75 }
-                  ]}
-                  dataKey="model"
-                  series={[
-                    { name: 'accuracy', color: 'green.6' },
-                    { name: 'precision', color: 'blue.6' },
-                    { name: 'recall', color: 'violet.6' }
-                  ]}
-                  orientation="vertical"
-                />
+                  ].map((item) => (
+                    <div key={item.model}>
+                      <Text size="sm" fw={500} mb="xs">{item.model}</Text>
+                      <Stack gap={4}>
+                        <Group justify="space-between">
+                          <Text size="xs" c="dimmed">Accuracy</Text>
+                          <Group gap="xs">
+                            <Progress value={item.accuracy * 100} color="green" style={{ width: 80 }} size="xs" />
+                            <Text size="xs">{(item.accuracy * 100).toFixed(0)}%</Text>
+                          </Group>
+                        </Group>
+                        <Group justify="space-between">
+                          <Text size="xs" c="dimmed">Precision</Text>
+                          <Group gap="xs">
+                            <Progress value={item.precision * 100} color="blue" style={{ width: 80 }} size="xs" />
+                            <Text size="xs">{(item.precision * 100).toFixed(0)}%</Text>
+                          </Group>
+                        </Group>
+                        <Group justify="space-between">
+                          <Text size="xs" c="dimmed">Recall</Text>
+                          <Group gap="xs">
+                            <Progress value={item.recall * 100} color="violet" style={{ width: 80 }} size="xs" />
+                            <Text size="xs">{(item.recall * 100).toFixed(0)}%</Text>
+                          </Group>
+                        </Group>
+                      </Stack>
+                    </div>
+                  ))}
+                </Stack>
                 <Stack gap="md" justify="center">
                   <Alert color="blue" variant="light" title="AI-Driven Insights">
                     <Text size="sm">

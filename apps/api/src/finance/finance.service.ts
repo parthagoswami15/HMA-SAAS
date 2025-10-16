@@ -6,7 +6,14 @@ export class FinanceService {
   constructor(private prisma: PrismaService) {}
 
   async findAllInvoices(tenantId: string, query: any) {
-    const { page = 1, limit = 10, status, patientId, startDate, endDate } = query;
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      patientId,
+      startDate,
+      endDate,
+    } = query;
     const skip = (page - 1) * limit;
 
     const where: any = { tenantId };
@@ -114,7 +121,14 @@ export class FinanceService {
   }
 
   async findAllPayments(tenantId: string, query: any) {
-    const { page = 1, limit = 10, status, invoiceId, startDate, endDate } = query;
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      invoiceId,
+      startDate,
+      endDate,
+    } = query;
     const skip = (page - 1) * limit;
 
     const where: any = { tenantId };
@@ -313,7 +327,9 @@ export class FinanceService {
         where: {
           tenantId,
           status: 'COMPLETED',
-          ...(Object.keys(dateFilter).length > 0 ? { paymentDate: dateFilter } : {}),
+          ...(Object.keys(dateFilter).length > 0
+            ? { paymentDate: dateFilter }
+            : {}),
         },
         _sum: { amount: true },
       }),

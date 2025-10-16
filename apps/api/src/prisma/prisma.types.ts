@@ -17,12 +17,12 @@ export interface TokenBlacklist {
 // Extend the PrismaClient type to include our custom methods
 export interface PrismaClient extends BasePrismaClient {
   tokenBlacklist: {
-    findUnique: (args: { 
-      where: { jti: string, tenantId: string } 
+    findUnique: (args: {
+      where: { jti: string; tenantId: string };
     }) => Promise<TokenBlacklist | null>;
-    
+
     upsert: (args: {
-      where: { jti: string, tenantId: string };
+      where: { jti: string; tenantId: string };
       update: {
         revoked: boolean;
         reason: string;
@@ -38,7 +38,7 @@ export interface PrismaClient extends BasePrismaClient {
         reason: string;
       };
     }) => Promise<any>;
-    
+
     updateMany: (args: {
       where: {
         userId: string;

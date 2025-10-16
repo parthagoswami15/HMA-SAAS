@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { CustomPrismaService } from '../prisma/custom-prisma.service';
 import {
   CreateLabTestDto,
@@ -7,12 +12,14 @@ import {
   UpdateLabOrderDto,
   UpdateLabTestResultDto,
   LabOrderQueryDto,
-  LabTestQueryDto
-} from './dto/laboratory.dto';
+  LabTestQueryDto,
+} from './dto';
 
 @Injectable()
 export class LaboratoryService {
-  constructor(private prisma: CustomPrismaService) {}
+  private readonly logger = new Logger(LaboratoryService.name);
+
+  constructor(private readonly prisma: CustomPrismaService) {}
 
   // ==================== Lab Tests Management ====================
 
@@ -20,7 +27,7 @@ export class LaboratoryService {
     try {
       // Check if test code already exists
       const existing = await this.prisma.labTest.findFirst({
-        where: { code: createLabTestDto.code, tenantId }
+        where: { code: createLabTestDto.code, tenantId },
       });
 
       if (existing) {
@@ -34,43 +41,32 @@ export class LaboratoryService {
         },
       });
 
+      this.logger.log(`Lab test created: ${labTest.id} for tenant: ${tenantId}`);
+
       return {
         success: true,
         message: 'Lab test created successfully',
         data: labTest,
       };
     } catch (error) {
-      console.error('Error creating lab test:', error);
-      throw new BadRequestException(error.message || 'Failed to create lab test');
+      this.logger.error(`Error creating lab test: ${error.message}`, error.stack);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException('Failed to create lab test');
     }
   }
 
   async findAllLabTests(tenantId: string, query: LabTestQueryDto = {}) {
-    const { page = 1, limit = 10, search, category, isActive = true } = query;
+    const { page = 1, limit = 10 } = query;
     const skip = (page - 1) * limit;
-
-    const where: any = {
-      tenantId,
-      isActive,
-    };
-
-    if (category) {
-      where.category = category;
-    }
-
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { code: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-      ];
-    }
+    const where = this.buildLabTestWhereClause(tenantId, query);
 
     const [tests, total] = await Promise.all([
       this.prisma.labTest.findMany({
         where,
         skip,
-        take: parseInt(limit as any),
+        take: parseInt(limit.toString()),
         orderBy: { name: 'asc' },
       }),
       this.prisma.labTest.count({ where }),
@@ -82,9 +78,9 @@ export class LaboratoryService {
         tests,
         pagination: {
           total,
-          page: parseInt(page as any),
-          limit: parseInt(limit as any),
-          pages: Math.ceil(total / parseInt(limit as any)),
+          page: parseInt(page.toString()),
+          limit: parseInt(limit.toString()),
+          pages: Math.ceil(total / limit),
         },
       },
     };
@@ -105,12 +101,18 @@ export class LaboratoryService {
     };
   }
 
-  async updateLabTest(id: string, updateLabTestDto: UpdateLabTestDto, tenantId: string) {
+  async updateLabTest(
+    id: string,
+    updateLabTestDto: UpdateLabTestDto,
+    tenantId: string,
+  ) {
     try {
       const test = await this.prisma.labTest.update({
         where: { id, tenantId },
         data: updateLabTestDto,
       });
+
+      this.logger.log(`Lab test updated: ${id} for tenant: ${tenantId}`);
 
       return {
         success: true,
@@ -118,7 +120,7 @@ export class LaboratoryService {
         data: test,
       };
     } catch (error) {
-      console.error('Error updating lab test:', error);
+      this.logger.error(`Error updating lab test: ${error.message}`, error.stack);
       throw new BadRequestException('Failed to update lab test');
     }
   }
@@ -130,12 +132,14 @@ export class LaboratoryService {
         data: { isActive: false },
       });
 
+      this.logger.log(`Lab test deactivated: ${id} for tenant: ${tenantId}`);
+
       return {
         success: true,
         message: 'Lab test deactivated successfully',
       };
     } catch (error) {
-      console.error('Error removing lab test:', error);
+      this.logger.error(`Error deactivating lab test: ${error.message}`, error.stack);
       throw new BadRequestException('Failed to deactivate lab test');
     }
   }
@@ -157,7 +161,7 @@ export class LaboratoryService {
           status: 'PENDING',
           tenantId,
           tests: {
-            create: createLabOrderDto.tests.map(testId => ({
+            create: createLabOrderDto.tests.map((testId) => ({
               testId,
               status: 'PENDING',
               tenantId,
@@ -189,92 +193,31 @@ export class LaboratoryService {
         },
       });
 
+      this.logger.log(`Lab order created: ${labOrder.id} for tenant: ${tenantId}`);
+
       return {
         success: true,
         message: 'Lab order created successfully',
         data: labOrder,
       };
     } catch (error) {
-      console.error('Error creating lab order:', error);
-      throw new BadRequestException(error.message || 'Failed to create lab order');
+      this.logger.error(`Error creating lab order: ${error.message}`, error.stack);
+      throw new BadRequestException('Failed to create lab order');
     }
   }
 
   async findAllLabOrders(tenantId: string, query: LabOrderQueryDto = {}) {
-    const { 
-      page = 1, 
-      limit = 10, 
-      search, 
-      status, 
-      patientId, 
-      doctorId,
-      startDate,
-      endDate 
-    } = query;
+    const { page = 1, limit = 10 } = query;
     const skip = (page - 1) * limit;
-
-    const where: any = {
-      tenantId,
-    };
-
-    if (status) {
-      where.status = status;
-    }
-
-    if (patientId) {
-      where.patientId = patientId;
-    }
-
-    if (doctorId) {
-      where.doctorId = doctorId;
-    }
-
-    if (startDate || endDate) {
-      where.orderDate = {};
-      if (startDate) where.orderDate.gte = new Date(startDate);
-      if (endDate) where.orderDate.lte = new Date(endDate);
-    }
-
-    if (search) {
-      where.OR = [
-        { orderNumber: { contains: search, mode: 'insensitive' } },
-        { patient: { firstName: { contains: search, mode: 'insensitive' } } },
-        { patient: { lastName: { contains: search, mode: 'insensitive' } } },
-        { patient: { medicalRecordNumber: { contains: search, mode: 'insensitive' } } },
-      ];
-    }
+    const where = this.buildLabOrderWhereClause(tenantId, query);
 
     const [orders, total] = await Promise.all([
       this.prisma.labOrder.findMany({
         where,
         skip,
-        take: parseInt(limit as any),
+        take: parseInt(limit.toString()),
         orderBy: { orderDate: 'desc' },
-        include: {
-          patient: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              medicalRecordNumber: true,
-              dateOfBirth: true,
-              gender: true,
-            },
-          },
-          doctor: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              specialization: true,
-            },
-          },
-          tests: {
-            include: {
-              test: true,
-            },
-          },
-        },
+        include: this.getLabOrderIncludes(),
       }),
       this.prisma.labOrder.count({ where }),
     ]);
@@ -285,9 +228,9 @@ export class LaboratoryService {
         orders,
         pagination: {
           total,
-          page: parseInt(page as any),
-          limit: parseInt(limit as any),
-          pages: Math.ceil(total / parseInt(limit as any)),
+          page: parseInt(page.toString()),
+          limit: parseInt(limit.toString()),
+          pages: Math.ceil(total / limit),
         },
       },
     };
@@ -296,34 +239,7 @@ export class LaboratoryService {
   async findOneLabOrder(id: string, tenantId: string) {
     const order = await this.prisma.labOrder.findFirst({
       where: { id, tenantId },
-      include: {
-        patient: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            medicalRecordNumber: true,
-            dateOfBirth: true,
-            gender: true,
-            phone: true,
-            email: true,
-          },
-        },
-        doctor: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            specialization: true,
-            licenseNumber: true,
-          },
-        },
-        tests: {
-          include: {
-            test: true,
-          },
-        },
-      },
+      include: this.getLabOrderIncludes(),
     });
 
     if (!order) {
@@ -336,14 +252,18 @@ export class LaboratoryService {
     };
   }
 
-  async updateLabOrder(id: string, updateLabOrderDto: UpdateLabOrderDto, tenantId: string) {
+  async updateLabOrder(
+    id: string,
+    updateLabOrderDto: UpdateLabOrderDto,
+    tenantId: string,
+  ) {
     try {
       const order = await this.prisma.labOrder.update({
         where: { id, tenantId },
         data: {
           ...updateLabOrderDto,
-          completedDate: updateLabOrderDto.completedDate 
-            ? new Date(updateLabOrderDto.completedDate) 
+          completedDate: updateLabOrderDto.completedDate
+            ? new Date(updateLabOrderDto.completedDate)
             : undefined,
         },
         include: {
@@ -372,7 +292,7 @@ export class LaboratoryService {
     orderId: string,
     testId: string,
     updateResultDto: UpdateLabTestResultDto,
-    tenantId: string
+    tenantId: string,
   ) {
     try {
       // Find the specific lab order test
@@ -393,7 +313,9 @@ export class LaboratoryService {
         where: { id: labOrderTest.id },
         data: {
           result: updateResultDto.result,
-          resultDate: updateResultDto.resultDate ? new Date(updateResultDto.resultDate) : new Date(),
+          resultDate: updateResultDto.resultDate
+            ? new Date(updateResultDto.resultDate)
+            : new Date(),
           referenceRange: updateResultDto.referenceRange,
           notes: updateResultDto.notes,
           status: updateResultDto.status || 'COMPLETED',
@@ -408,7 +330,7 @@ export class LaboratoryService {
         where: { orderId, tenantId },
       });
 
-      const allCompleted = allTests.every(t => t.status === 'COMPLETED');
+      const allCompleted = allTests.every((t) => t.status === 'COMPLETED');
 
       // If all tests are completed, update the order status
       if (allCompleted) {
@@ -428,7 +350,9 @@ export class LaboratoryService {
       };
     } catch (error) {
       console.error('Error updating lab test result:', error);
-      throw new BadRequestException(error.message || 'Failed to update lab test result');
+      throw new BadRequestException(
+        error.message || 'Failed to update lab test result',
+      );
     }
   }
 
@@ -461,7 +385,9 @@ export class LaboratoryService {
     ] = await Promise.all([
       this.prisma.labOrder.count({ where: { tenantId } }),
       this.prisma.labOrder.count({ where: { tenantId, status: 'PENDING' } }),
-      this.prisma.labOrder.count({ where: { tenantId, status: 'IN_PROGRESS' } }),
+      this.prisma.labOrder.count({
+        where: { tenantId, status: 'IN_PROGRESS' },
+      }),
       this.prisma.labOrder.count({ where: { tenantId, status: 'COMPLETED' } }),
       this.prisma.labTest.count({ where: { tenantId } }),
       this.prisma.labTest.count({ where: { tenantId, isActive: true } }),
@@ -482,12 +408,115 @@ export class LaboratoryService {
         pendingOrders,
         inProgressOrders,
         completedOrders,
-        cancelledOrders: totalOrders - pendingOrders - inProgressOrders - completedOrders,
+        cancelledOrders:
+          totalOrders - pendingOrders - inProgressOrders - completedOrders,
         totalTests,
         activeTests,
         todayOrders,
       },
     };
+  }
+
+  private getLabOrderIncludes() {
+    return {
+      patient: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          medicalRecordNumber: true,
+          dateOfBirth: true,
+          gender: true,
+          phone: true,
+          email: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          specialization: true,
+          licenseNumber: true,
+        },
+      },
+      tests: {
+        include: {
+          test: true,
+        },
+      },
+    };
+  }
+
+  private buildLabOrderWhereClause(tenantId: string, query: LabOrderQueryDto) {
+    const {
+      search,
+      status,
+      patientId,
+      doctorId,
+      startDate,
+      endDate,
+    } = query;
+
+    const where: any = {
+      tenantId,
+    };
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (patientId) {
+      where.patientId = patientId;
+    }
+
+    if (doctorId) {
+      where.doctorId = doctorId;
+    }
+
+    if (startDate || endDate) {
+      where.orderDate = {};
+      if (startDate) where.orderDate.gte = new Date(startDate);
+      if (endDate) where.orderDate.lte = new Date(endDate);
+    }
+
+    if (search) {
+      where.OR = [
+        { orderNumber: { contains: search, mode: 'insensitive' } },
+        { patient: { firstName: { contains: search, mode: 'insensitive' } } },
+        { patient: { lastName: { contains: search, mode: 'insensitive' } } },
+        {
+          patient: {
+            medicalRecordNumber: { contains: search, mode: 'insensitive' },
+          },
+        },
+      ];
+    }
+
+    return where;
+  }
+
+  private buildLabTestWhereClause(tenantId: string, query: LabTestQueryDto) {
+    const { search, category, isActive = true } = query;
+
+    const where: any = {
+      tenantId,
+      isActive,
+    };
+
+    if (category) {
+      where.category = category;
+    }
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { code: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    return where;
   }
 
   private async generateOrderNumber(tenantId: string): Promise<string> {

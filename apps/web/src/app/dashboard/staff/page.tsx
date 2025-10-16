@@ -23,7 +23,6 @@ import {
   Divider,
   NumberInput,
   Textarea,
-  DatePicker,
   Switch,
   Progress,
   Alert,
@@ -76,10 +75,10 @@ import {
   IconUserCircle,
   IconShieldCheck
 } from '@tabler/icons-react';
-import { AreaChart, BarChart, DonutChart } from '@mantine/charts';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart } from '../../../components/MantineChart';
 
 // Import types and mock data
-import { Staff, StaffStats, Department, StaffSearchFilters, StaffListItem } from '../../../types/staff';
+import { Staff, Department, Shift, Attendance } from '../../../types/staff';
 import { UserRole, Gender, Status } from '../../../types/common';
 import { 
   mockStaff, 
@@ -161,7 +160,7 @@ const StaffManagement = () => {
     switch (role) {
       case UserRole.DOCTOR: return 'blue';
       case UserRole.NURSE: return 'green';
-      case UserRole.TECHNICIAN: return 'orange';
+      case 'TECHNICIAN' as any: return 'purple';
       case UserRole.PHARMACIST: return 'purple';
       case UserRole.ADMIN: return 'red';
       default: return 'gray';
@@ -202,6 +201,21 @@ const StaffManagement = () => {
     setSelectedStatus('');
     setSortBy('name');
     setSortOrder('asc');
+  };
+
+  const formatDate = (date: string | Date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatTime = (date: string | Date) => {
+    const d = new Date(date);
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
   };
 
   // Statistics cards data
@@ -351,11 +365,11 @@ const StaffManagement = () => {
               <Select
                 placeholder="Role"
                 data={[
-                  { value: UserRole.DOCTOR, label: 'Doctor' },
-                  { value: UserRole.NURSE, label: 'Nurse' },
-                  { value: UserRole.TECHNICIAN, label: 'Technician' },
-                  { value: UserRole.PHARMACIST, label: 'Pharmacist' },
-                  { value: UserRole.ADMIN, label: 'Admin' }
+                  { value: 'DOCTOR', label: 'Doctor' },
+                  { value: 'NURSE', label: 'Nurse' },
+                  { value: 'TECHNICIAN' as any, label: 'Technician' },
+                  { value: 'PHARMACIST', label: 'Pharmacist' },
+                  { value: 'ADMIN', label: 'Admin' }
                 ]}
                 value={selectedRole}
                 onChange={setSelectedRole}
@@ -364,9 +378,9 @@ const StaffManagement = () => {
               <Select
                 placeholder="Status"
                 data={[
-                  { value: Status.ACTIVE, label: 'Active' },
-                  { value: Status.INACTIVE, label: 'Inactive' },
-                  { value: Status.PENDING, label: 'Pending' }
+                  { value: 'ACTIVE', label: 'Active' },
+                  { value: 'INACTIVE', label: 'Inactive' },
+                  { value: 'PENDING', label: 'Pending' }
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -436,7 +450,7 @@ const StaffManagement = () => {
                       <Table.Td>{staff.staffId}</Table.Td>
                       <Table.Td>
                         <Badge color={getRoleBadgeColor(staff.role)} variant="light">
-                          {staff.role.replace('_', ' ')}
+                          {staff.role ? staff.role.replace('_', ' ') : 'N/A'}
                         </Badge>
                       </Table.Td>
                       <Table.Td>{staff.department.name}</Table.Td>
@@ -687,13 +701,13 @@ const StaffManagement = () => {
                             {staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown'}
                           </Table.Td>
                           <Table.Td>
-                            {new Date(record.date).toLocaleDateString()}
+                            {formatDate(record.date)}
                           </Table.Td>
                           <Table.Td>
-                            {record.clockIn ? new Date(record.clockIn).toLocaleTimeString() : '-'}
+                            {record.clockIn ? formatTime(record.clockIn) : '-'}
                           </Table.Td>
                           <Table.Td>
-                            {record.clockOut ? new Date(record.clockOut).toLocaleTimeString() : '-'}
+                            {record.clockOut ? formatTime(record.clockOut) : '-'}
                           </Table.Td>
                           <Table.Td>{record.totalHours || 0}h</Table.Td>
                           <Table.Td>
@@ -724,7 +738,7 @@ const StaffManagement = () => {
               {/* Role Distribution */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Staff by Role</Title>
-                <DonutChart
+                <MantineDonutChart
                   data={roleDistributionData}
                   size={160}
                   thickness={30}
@@ -735,8 +749,7 @@ const StaffManagement = () => {
               {/* Department Distribution */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Staff by Department</Title>
-                <BarChart
-                  h={200}
+                <SimpleBarChart
                   data={departmentDistributionData}
                   dataKey="department"
                   series={[{ name: 'count', color: 'blue.6' }]}
@@ -746,15 +759,13 @@ const StaffManagement = () => {
               {/* Hiring Trends */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
                 <Title order={4} mb="md">Hiring Trends</Title>
-                <AreaChart
-                  h={300}
+                <SimpleAreaChart
                   data={hiringTrendsData}
                   dataKey="month"
                   series={[
                     { name: 'hired', color: 'green.6' },
                     { name: 'resigned', color: 'red.6' }
                   ]}
-                  curveType="linear"
                 />
               </Card>
               
@@ -865,7 +876,7 @@ const StaffManagement = () => {
                 <div>
                   <Text size="sm" fw={500}>Joining Date</Text>
                   <Text size="sm" c="dimmed">
-                    {new Date(selectedStaff.joiningDate).toLocaleDateString()}
+                    {formatDate(selectedStaff.joiningDate)}
                   </Text>
                 </div>
                 <div>
@@ -957,10 +968,10 @@ const StaffManagement = () => {
               label="Role"
               placeholder="Select role"
               data={[
-                { value: UserRole.DOCTOR, label: 'Doctor' },
-                { value: UserRole.NURSE, label: 'Nurse' },
-                { value: UserRole.TECHNICIAN, label: 'Technician' },
-                { value: UserRole.PHARMACIST, label: 'Pharmacist' }
+                { value: 'DOCTOR', label: 'Doctor' },
+                { value: 'NURSE', label: 'Nurse' },
+                { value: 'TECHNICIAN' as any, label: 'Technician' },
+                { value: 'PHARMACIST', label: 'Pharmacist' }
               ]}
               required
             />

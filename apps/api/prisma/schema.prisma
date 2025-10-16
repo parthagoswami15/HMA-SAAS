@@ -1,6 +1,8 @@
 generator client {
   provider = "prisma-client-js"
 }
+
+// This is for schema validation
 enum Role {
   SUPER_ADMIN
   ADMIN

@@ -37,7 +37,11 @@ export class HrController {
   }
 
   @Patch('staff/:id')
-  updateStaff(@Param('id') id: string, @Body() updateDto: any, @Req() req: any) {
+  updateStaff(
+    @Param('id') id: string,
+    @Body() updateDto: any,
+    @Req() req: any,
+  ) {
     const tenantId = req.user.tenantId;
     return this.hrService.updateStaff(id, updateDto, tenantId);
   }

@@ -3,37 +3,32 @@
  * Handles all appointment-related API operations
  */
 
-import apiClient from './api-client';
-import { Appointment, AppointmentStatus, AppointmentType, AppointmentPriority } from '../types/appointment';
+import { enhancedApiClient } from '../lib/api-client';
 
 export interface CreateAppointmentDto {
   patientId: string;
   doctorId: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  appointmentType: AppointmentType;
-  priority?: AppointmentPriority;
+  departmentId?: string;
+  appointmentDateTime: string; // ISO string
   reason?: string;
   notes?: string;
-  duration?: number;
+  status?: string;
 }
 
 export interface UpdateAppointmentDto {
-  appointmentDate?: string;
-  appointmentTime?: string;
-  appointmentType?: AppointmentType;
-  priority?: AppointmentPriority;
-  status?: AppointmentStatus;
+  patientId?: string;
+  doctorId?: string;
+  departmentId?: string;
+  appointmentDateTime?: string;
   reason?: string;
   notes?: string;
-  duration?: number;
+  status?: string;
 }
 
 export interface AppointmentFilters {
   patientId?: string;
   doctorId?: string;
-  status?: AppointmentStatus;
-  appointmentType?: AppointmentType;
+  status?: string;
   startDate?: string;
   endDate?: string;
   search?: string;
@@ -41,102 +36,96 @@ export interface AppointmentFilters {
   limit?: number;
 }
 
-class AppointmentsService {
-  private baseUrl = '/appointments';
+export interface AppointmentResponse {
+  success: boolean;
+  message?: string;
+  data: any;
+}
 
+export interface AppointmentsListResponse {
+  success: boolean;
+  data: any[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface AppointmentStatsResponse {
+  success: boolean;
+  data: {
+    total: number;
+    today: number;
+    pending: number;
+    completed: number;
+  };
+}
+
+const appointmentsService = {
   /**
    * Get all appointments with optional filters
    */
-  async getAppointments(filters?: AppointmentFilters) {
-    const params = new URLSearchParams();
-    
-    if (filters?.patientId) params.append('patientId', filters.patientId);
-    if (filters?.doctorId) params.append('doctorId', filters.doctorId);
-    if (filters?.status) params.append('status', filters.status);
-    if (filters?.appointmentType) params.append('appointmentType', filters.appointmentType);
-    if (filters?.startDate) params.append('startDate', filters.startDate);
-    if (filters?.endDate) params.append('endDate', filters.endDate);
-    if (filters?.search) params.append('search', filters.search);
-    if (filters?.page) params.append('page', filters.page.toString());
-    if (filters?.limit) params.append('limit', filters.limit.toString());
-
-    const queryString = params.toString();
-    const url = queryString ? `${this.baseUrl}?${queryString}` : this.baseUrl;
-    
-    return apiClient.get<{ data: Appointment[]; total: number; page: number; limit: number }>(url);
-  }
+  getAppointments: async (filters?: AppointmentFilters): Promise<AppointmentsListResponse> => {
+    return enhancedApiClient.get('/appointments', filters);
+  },
 
   /**
    * Get a single appointment by ID
    */
-  async getAppointmentById(id: string) {
-    return apiClient.get<Appointment>(`${this.baseUrl}/${id}`);
-  }
+  getAppointmentById: async (id: string): Promise<AppointmentResponse> => {
+    return enhancedApiClient.get(`/appointments/${id}`);
+  },
 
   /**
    * Create a new appointment
    */
-  async createAppointment(data: CreateAppointmentDto) {
-    return apiClient.post<Appointment>(this.baseUrl, data);
-  }
+  createAppointment: async (data: CreateAppointmentDto): Promise<AppointmentResponse> => {
+    return enhancedApiClient.post('/appointments', data);
+  },
 
   /**
    * Update an existing appointment
    */
-  async updateAppointment(id: string, data: UpdateAppointmentDto) {
-    return apiClient.put<Appointment>(`${this.baseUrl}/${id}`, data);
-  }
+  updateAppointment: async (id: string, data: UpdateAppointmentDto): Promise<AppointmentResponse> => {
+    return enhancedApiClient.patch(`/appointments/${id}`, data);
+  },
 
   /**
    * Update appointment status
    */
-  async updateAppointmentStatus(id: string, status: AppointmentStatus) {
-    return apiClient.patch<Appointment>(`${this.baseUrl}/${id}/status`, { status });
-  }
-
-  /**
-   * Cancel an appointment
-   */
-  async cancelAppointment(id: string, reason?: string) {
-    return apiClient.patch<Appointment>(`${this.baseUrl}/${id}/cancel`, { reason });
-  }
+  updateAppointmentStatus: async (id: string, status: string): Promise<AppointmentResponse> => {
+    return enhancedApiClient.patch(`/appointments/${id}/status`, { status });
+  },
 
   /**
    * Delete an appointment
    */
-  async deleteAppointment(id: string) {
-    return apiClient.delete<void>(`${this.baseUrl}/${id}`);
-  }
+  deleteAppointment: async (id: string): Promise<AppointmentResponse> => {
+    return enhancedApiClient.delete(`/appointments/${id}`);
+  },
 
   /**
    * Get appointment statistics
    */
-  async getAppointmentStats(startDate?: string, endDate?: string) {
-    const params = new URLSearchParams();
-    if (startDate) params.append('startDate', startDate);
-    if (endDate) params.append('endDate', endDate);
-    
-    const queryString = params.toString();
-    const url = queryString ? `${this.baseUrl}/stats?${queryString}` : `${this.baseUrl}/stats`;
-    
-    return apiClient.get<any>(url);
-  }
+  getAppointmentStats: async (): Promise<AppointmentStatsResponse> => {
+    return enhancedApiClient.get('/appointments/stats');
+  },
 
   /**
-   * Get doctor availability
+   * Get calendar view of appointments
    */
-  async getDoctorAvailability(doctorId: string, date: string) {
-    return apiClient.get<any>(`${this.baseUrl}/availability/${doctorId}?date=${date}`);
-  }
+  getCalendar: async (startDate: string, endDate: string): Promise<AppointmentResponse> => {
+    return enhancedApiClient.get('/appointments/calendar', { startDate, endDate });
+  },
 
   /**
-   * Get appointment queue for today
+   * Check doctor availability
    */
-  async getAppointmentQueue(doctorId?: string) {
-    const params = doctorId ? `?doctorId=${doctorId}` : '';
-    return apiClient.get<any>(`${this.baseUrl}/queue${params}`);
-  }
-}
+  checkAvailability: async (doctorId: string, date: string): Promise<AppointmentResponse> => {
+    return enhancedApiClient.get('/appointments/availability', { doctorId, date });
+  },
+};
 
-const appointmentsService = new AppointmentsService();
 export default appointmentsService;

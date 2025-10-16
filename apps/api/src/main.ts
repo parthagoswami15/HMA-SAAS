@@ -8,7 +8,10 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   // Enable CORS
-  const corsOriginsEnv = process.env.CORS_ORIGINS || process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:3001';
+  const corsOriginsEnv =
+    process.env.CORS_ORIGINS ||
+    process.env.CORS_ORIGIN ||
+    'http://localhost:3000,http://localhost:3001';
   const parsedOrigins = corsOriginsEnv
     .split(',')
     .map((o) => o.trim())
@@ -18,28 +21,31 @@ async function bootstrap() {
     origin: (origin, callback) => {
       console.log('CORS Origin:', origin);
       console.log('Parsed Origins:', parsedOrigins);
-      
+
       // Allow requests with no origin (mobile apps, etc.)
       if (!origin) return callback(null, true);
-      
+
       // Check if origin is in allowed list
       if (parsedOrigins.includes(origin)) {
         console.log('Origin allowed from list:', origin);
         return callback(null, true);
       }
-      
+
       // Allow all Vercel domains
       if (origin.endsWith('.vercel.app') || origin.endsWith('.vercel.com')) {
         console.log('Origin allowed as Vercel domain:', origin);
         return callback(null, true);
       }
-      
+
       // For development - allow localhost with any port
-      if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      if (
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:')
+      ) {
         console.log('Origin allowed as localhost:', origin);
         return callback(null, true);
       }
-      
+
       // Reject other origins
       console.log('Origin rejected:', origin);
       callback(new Error('Not allowed by CORS'));
@@ -54,7 +60,7 @@ async function bootstrap() {
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || 'development',
-      message: 'HMS SaaS API is running - Minimal Working Version'
+      message: 'HMS SaaS API is running - Minimal Working Version',
     });
   });
 
@@ -66,8 +72,8 @@ async function bootstrap() {
       status: 'running',
       timestamp: new Date().toISOString(),
       endpoints: {
-        health: '/health'
-      }
+        health: '/health',
+      },
     });
   });
 

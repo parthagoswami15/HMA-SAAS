@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -32,9 +32,9 @@ import {
   Textarea
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { notifications } from '@mantine/notifications';
+// import { notifications } from '@mantine/notifications';
 import { Calendar, DatePickerInput } from '@mantine/dates';
-import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
+// import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
 import {
   IconPlus,
   IconSearch,
@@ -88,7 +88,24 @@ import { mockStaff } from '../../../lib/mockData/staff';
 import { mockPatients } from '../../../lib/mockData/patients';
 
 const AppointmentManagement = () => {
+  // Utility function for consistent date formatting
+  const formatDate = (date: string | Date) => {
+    return new Date(date).toLocaleDateString('en-CA'); // YYYY-MM-DD format
+  };
+
+  const formatDateTime = (date: string | Date) => {
+    return new Date(date).toLocaleString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
   // State management
+  const [isClient, setIsClient] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('appointments');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDoctor, setSelectedDoctor] = useState<string>('');
@@ -96,6 +113,11 @@ const AppointmentManagement = () => {
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+
+  // Handle hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Modal states
   const [appointmentDetailOpened, { open: openAppointmentDetail, close: closeAppointmentDetail }] = useDisclosure(false);
@@ -116,7 +138,7 @@ const AppointmentManagement = () => {
       const matchesStatus = !selectedStatus || appointment.status === selectedStatus;
       const matchesType = !selectedType || appointment.appointmentType === selectedType;
       const matchesDate = !selectedDate || 
-        new Date(appointment.appointmentDate).toDateString() === selectedDate.toDateString();
+        formatDate(appointment.appointmentDate) === formatDate(selectedDate);
 
       return matchesSearch && matchesDoctor && matchesStatus && matchesType && matchesDate;
     });
@@ -164,19 +186,21 @@ const AppointmentManagement = () => {
   };
 
   const handleStatusUpdate = (appointmentId: string, newStatus: AppointmentStatus) => {
-    notifications.show({
-      title: 'Appointment Updated',
-      message: `Appointment status changed to ${newStatus}`,
-      color: 'green',
-    });
+    // notifications.show({
+    //   title: 'Appointment Updated',
+    //   message: `Appointment status changed to ${newStatus}`,
+    //   color: 'green',
+    // });
+    console.log('Appointment status updated:', newStatus);
   };
 
   const handleCancelAppointment = (appointment: Appointment) => {
-    notifications.show({
-      title: 'Appointment Cancelled',
-      message: `Appointment for ${appointment.patient.firstName} ${appointment.patient.lastName} has been cancelled`,
-      color: 'red',
-    });
+    // notifications.show({
+    //   title: 'Appointment Cancelled',
+    //   message: `Appointment for ${appointment.patient.firstName} ${appointment.patient.lastName} has been cancelled`,
+    //   color: 'red',
+    // });
+    console.log('Appointment cancelled for:', appointment.patient.firstName, appointment.patient.lastName);
   };
 
   // Statistics cards
@@ -407,7 +431,7 @@ const AppointmentManagement = () => {
                       <Table.Td>
                         <div>
                           <Text fw={500}>
-                            {new Date(appointment.appointmentDate).toLocaleDateString()}
+                            {isClient ? formatDate(appointment.appointmentDate) : 'Loading...'}
                           </Text>
                           <Text size="sm" c="dimmed">
                             {appointment.appointmentTime} ({appointment.duration} min)
@@ -717,50 +741,33 @@ const AppointmentManagement = () => {
               {/* Appointments by Status */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Appointments by Status</Title>
-                <DonutChart
-                  data={appointmentsByStatusData}
-                  size={160}
-                  thickness={30}
-                  withLabels
-                />
+                <Text c="dimmed" ta="center" p="xl">
+                  Chart component temporarily disabled
+                </Text>
               </Card>
               
               {/* Appointments by Type */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Appointments by Type</Title>
-                <BarChart
-                  h={200}
-                  data={appointmentsByTypeData}
-                  dataKey="type"
-                  series={[{ name: 'count', color: 'blue.6' }]}
-                />
+                <Text c="dimmed" ta="center" p="xl">
+                  Chart component temporarily disabled
+                </Text>
               </Card>
               
               {/* Daily Appointments Trend */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
                 <Title order={4} mb="md">Daily Appointments</Title>
-                <AreaChart
-                  h={300}
-                  data={dailyAppointmentsData}
-                  dataKey="date"
-                  series={[
-                    { name: 'scheduled', color: 'blue.6' },
-                    { name: 'completed', color: 'green.6' },
-                    { name: 'cancelled', color: 'red.6' }
-                  ]}
-                  curveType="linear"
-                />
+                <Text c="dimmed" ta="center" p="xl">
+                  Chart component temporarily disabled
+                </Text>
               </Card>
               
               {/* Peak Hours */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Peak Hours</Title>
-                <LineChart
-                  h={200}
-                  data={peakHoursData}
-                  dataKey="hour"
-                  series={[{ name: 'appointmentCount', color: 'teal.6' }]}
-                />
+                <Text c="dimmed" ta="center" p="xl">
+                  Chart component temporarily disabled
+                </Text>
               </Card>
               
               {/* Revenue Metrics */}
@@ -994,11 +1001,12 @@ const AppointmentManagement = () => {
               Cancel
             </Button>
             <Button onClick={() => {
-              notifications.show({
-                title: 'Success',
-                message: 'Appointment booked successfully',
-                color: 'green',
-              });
+              // notifications.show({
+              //   title: 'Success',
+              //   message: 'Appointment booked successfully',
+              //   color: 'green',
+              // });
+              console.log('Appointment booked successfully');
               closeBookAppointment();
             }}>
               Book Appointment

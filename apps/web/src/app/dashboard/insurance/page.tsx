@@ -24,7 +24,6 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  DatePickerInput,
   Switch,
   Divider,
   Alert,
@@ -36,7 +35,8 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { LineChart, BarChart, DonutChart, AreaChart, PieChart } from '@mantine/charts';
+import { DatePickerInput } from '@mantine/dates';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -967,13 +967,15 @@ const InsuranceManagement = () => {
             {/* Claims Status Distribution */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Claims Status Distribution</Title>
-              <PieChart
+              <MantineDonutChart
                 data={[
                   { name: 'Approved', value: 1, color: 'green' },
                   { name: 'Pending', value: 1, color: 'yellow' },
-                  { name: 'Investigating', value: 1, color: 'orange' }
+                  { name: 'Rejected', value: 1, color: 'red' },
+                  { name: 'Under Review', value: 1, color: 'blue' }
                 ]}
                 size={200}
+                thickness={30}
                 withLabels
               />
             </Card>
@@ -981,60 +983,55 @@ const InsuranceManagement = () => {
             {/* Provider Performance */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Provider Approval Rates</Title>
-              <BarChart
-                h={200}
+              <SimpleBarChart
                 data={[
                   { provider: 'Max Bupa', rate: 92.0 },
-                  { provider: 'ICICI Lombard', rate: 91.1 },
-                  { provider: 'Star Health', rate: 84.8 },
-                  { provider: 'Medi Assist', rate: 84.2 }
+                  { provider: 'Star Health', rate: 88.5 },
+                  { provider: 'ICICI Lombard', rate: 85.0 },
+                  { provider: 'HDFC Ergo', rate: 90.0 }
                 ]}
                 dataKey="provider"
-                series={[{ name: 'rate', color: 'teal.6' }]}
+                series={[{ name: 'rate', color: 'blue.6' }]}
               />
             </Card>
 
             {/* Monthly Claims Trend */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Monthly Claims Trend</Title>
-              <LineChart
-                h={200}
+              <SimpleLineChart
                 data={[
                   { month: 'Jan', claims: 125, approved: 112 },
-                  { month: 'Feb', claims: 145, approved: 128 },
-                  { month: 'Mar', claims: 132, approved: 119 },
-                  { month: 'Apr', claims: 168, approved: 151 },
-                  { month: 'May', claims: 156, approved: 142 },
-                  { month: 'Jun', claims: 178, approved: 164 }
+                  { month: 'Feb', claims: 138, approved: 125 },
+                  { month: 'Mar', claims: 145, approved: 132 },
+                  { month: 'Apr', claims: 152, approved: 140 },
+                  { month: 'May', claims: 160, approved: 148 },
+                  { month: 'Jun', claims: 155, approved: 142 }
                 ]}
                 dataKey="month"
                 series={[
-                  { name: 'claims', color: 'blue.6' },
-                  { name: 'approved', color: 'green.6' }
+                  { name: 'claims', color: 'blue.6', label: 'Claims' },
+                  { name: 'approved', color: 'green.6', label: 'Approved' }
                 ]}
-                curveType="linear"
               />
             </Card>
 
             {/* Claim Amount Analysis */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Claim Amount Analysis</Title>
-              <AreaChart
-                h={200}
+              <SimpleAreaChart
                 data={[
                   { month: 'Jan', claimed: 2500000, approved: 2200000 },
                   { month: 'Feb', claimed: 2800000, approved: 2450000 },
-                  { month: 'Mar', claimed: 2650000, approved: 2380000 },
-                  { month: 'Apr', claimed: 3200000, approved: 2890000 },
-                  { month: 'May', claimed: 2950000, approved: 2670000 },
-                  { month: 'Jun', claimed: 3400000, approved: 3080000 }
+                  { month: 'Mar', claimed: 3100000, approved: 2750000 },
+                  { month: 'Apr', claimed: 2900000, approved: 2600000 },
+                  { month: 'May', claimed: 3300000, approved: 2950000 },
+                  { month: 'Jun', claimed: 3500000, approved: 3100000 }
                 ]}
                 dataKey="month"
                 series={[
-                  { name: 'claimed', color: 'red.6' },
+                  { name: 'claimed', color: 'orange.6' },
                   { name: 'approved', color: 'green.6' }
                 ]}
-                curveType="bump"
               />
             </Card>
           </SimpleGrid>

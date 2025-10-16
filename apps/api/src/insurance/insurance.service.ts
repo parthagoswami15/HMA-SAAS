@@ -30,7 +30,15 @@ export class InsuranceService {
     ]);
     return {
       success: true,
-      data: { items: claims, pagination: { total, page: Number(page), limit: Number(limit), pages: Math.ceil(total / limit) } },
+      data: {
+        items: claims,
+        pagination: {
+          total,
+          page: Number(page),
+          limit: Number(limit),
+          pages: Math.ceil(total / limit),
+        },
+      },
     };
   }
 
@@ -44,34 +52,57 @@ export class InsuranceService {
   }
 
   async update(id: string, updateDto: any, tenantId: string) {
-    const claim = await this.prisma.insuranceClaim.findFirst({ where: { id, tenantId } });
+    const claim = await this.prisma.insuranceClaim.findFirst({
+      where: { id, tenantId },
+    });
     if (!claim) throw new NotFoundException('Claim not found');
-    const updated = await this.prisma.insuranceClaim.update({ where: { id }, data: updateDto });
+    const updated = await this.prisma.insuranceClaim.update({
+      where: { id },
+      data: updateDto,
+    });
     return { success: true, message: 'Claim updated', data: updated };
   }
 
   async updateStatus(id: string, status: string, tenantId: string) {
-    const claim = await this.prisma.insuranceClaim.findFirst({ where: { id, tenantId } });
+    const claim = await this.prisma.insuranceClaim.findFirst({
+      where: { id, tenantId },
+    });
     if (!claim) throw new NotFoundException('Claim not found');
     const updateData: any = { status: status as any };
     if (status === 'APPROVED') updateData.approvedAt = new Date();
     if (status === 'PAID') updateData.paidAt = new Date();
 
-    const updated = await this.prisma.insuranceClaim.update({ where: { id }, data: updateData });
+    const updated = await this.prisma.insuranceClaim.update({
+      where: { id },
+      data: updateData,
+    });
     return { success: true, message: 'Claim status updated', data: updated };
   }
 
   async getStats(tenantId: string) {
     const [total, submitted, approved, paid, totalAmount] = await Promise.all([
       this.prisma.insuranceClaim.count({ where: { tenantId, isActive: true } }),
-      this.prisma.insuranceClaim.count({ where: { tenantId, status: 'SUBMITTED' } }),
-      this.prisma.insuranceClaim.count({ where: { tenantId, status: 'APPROVED' } }),
+      this.prisma.insuranceClaim.count({
+        where: { tenantId, status: 'SUBMITTED' },
+      }),
+      this.prisma.insuranceClaim.count({
+        where: { tenantId, status: 'APPROVED' },
+      }),
       this.prisma.insuranceClaim.count({ where: { tenantId, status: 'PAID' } }),
       this.prisma.insuranceClaim.aggregate({
         where: { tenantId, status: 'PAID' },
         _sum: { amount: true },
       }),
     ]);
-    return { success: true, data: { total, submitted, approved, paid, totalAmount: totalAmount._sum.amount || 0 } };
+    return {
+      success: true,
+      data: {
+        total,
+        submitted,
+        approved,
+        paid,
+        totalAmount: totalAmount._sum.amount || 0,
+      },
+    };
   }
 }

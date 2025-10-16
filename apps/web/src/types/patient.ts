@@ -1,6 +1,6 @@
 import { BaseEntity, Address, ContactInfo, Gender, BloodGroup, MaritalStatus, Status } from './common';
 
-// Patient related interfaces
+// Enhanced Patient related interfaces
 export interface Patient extends BaseEntity {
   // Basic Information
   patientId: string;
@@ -48,7 +48,7 @@ export interface Patient extends BaseEntity {
 }
 
 export interface InsuranceInfo {
-  insuranceType: 'government' | 'private' | 'corporate';
+  insuranceType: 'government' | 'private' | 'corporate' | 'self_pay';
   insuranceProvider: string;
   policyNumber: string;
   policyHolderName: string;
@@ -57,6 +57,20 @@ export interface InsuranceInfo {
   validTo: Date;
   coverageAmount: number;
   isActive: boolean;
+  copayAmount?: number;
+  deductibleAmount?: number;
+  claimHistory?: InsuranceClaim[];
+  notes?: string;
+}
+
+export interface InsuranceClaim {
+  claimId: string;
+  claimDate: Date;
+  claimAmount: number;
+  approvedAmount: number;
+  status: 'pending' | 'approved' | 'denied' | 'processing';
+  claimReason: string;
+  notes?: string;
 }
 
 // Patient Visit/Encounter
@@ -107,6 +121,9 @@ export interface VitalSigns {
   painScale?: number; // 1-10
   recordedAt: Date;
   recordedBy: string;
+  bloodGlucose?: number;
+  cholesterol?: number;
+  notes?: string;
 }
 
 export interface Prescription {
@@ -119,10 +136,16 @@ export interface Prescription {
   isGeneric?: boolean;
   isDispensed?: boolean;
   dispensedDate?: Date;
+  dispensedBy?: string;
+  refillsAllowed?: number;
+  refillsUsed?: number;
+  sideEffects?: string[];
+  interactions?: string[];
+  cost?: number;
 }
 
 export interface MedicalOrder {
-  orderType: 'lab' | 'radiology' | 'procedure' | 'consultation';
+  orderType: 'lab' | 'radiology' | 'procedure' | 'consultation' | 'therapy';
   orderName: string;
   orderCode?: string;
   priority: 'routine' | 'urgent' | 'stat';
@@ -130,24 +153,35 @@ export interface MedicalOrder {
   orderedDate: Date;
   scheduledDate?: Date;
   completedDate?: Date;
+  results?: string;
+  resultDocuments?: string[];
+  orderedBy?: string;
+  performedBy?: string;
+  cost?: number;
   notes?: string;
 }
 
 // Medical History
 export interface MedicalHistory extends BaseEntity {
   patientId: string;
-  historyType: 'medical' | 'surgical' | 'family' | 'social' | 'allergy';
+  historyType: 'medical' | 'surgical' | 'family' | 'social' | 'allergy' | 'medication' | 'immunization';
   title: string;
   description: string;
   date?: Date;
   isActive: boolean;
   severity?: 'mild' | 'moderate' | 'severe';
+  outcome?: string;
+  complications?: string;
+  treatmentReceived?: string;
+  doctorName?: string;
+  hospitalName?: string;
+  notes?: string;
 }
 
 // Patient Documents
 export interface PatientDocument extends BaseEntity {
   patientId: string;
-  documentType: 'id_proof' | 'medical_report' | 'lab_result' | 'radiology' | 'prescription' | 'insurance' | 'consent' | 'other';
+  documentType: 'id_proof' | 'medical_report' | 'lab_result' | 'radiology' | 'prescription' | 'insurance' | 'consent' | 'discharge_summary' | 'vaccination_record' | 'other';
   title: string;
   description?: string;
   fileName: string;
@@ -157,6 +191,11 @@ export interface PatientDocument extends BaseEntity {
   uploadedBy: string;
   uploadedAt: Date;
   isActive: boolean;
+  tags?: string[];
+  accessLevel: 'public' | 'restricted' | 'confidential';
+  expirationDate?: Date;
+  version?: string;
+  parentDocumentId?: string;
 }
 
 // Patient Appointment
@@ -247,4 +286,112 @@ export interface PatientStats {
     date: string;
     count: number;
   }[];
+  departmentDistribution?: {
+    departmentName: string;
+    patientCount: number;
+  }[];
+  ageGroupDistribution?: {
+    pediatric: number; // 0-18
+    adult: number; // 19-64
+    senior: number; // 65+
+  };
+  chronicDiseaseStats?: {
+    condition: string;
+    count: number;
+    percentage: number;
+  }[];
+}
+
+// Additional interfaces for enhanced functionality
+export interface CreatePatientDto {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  dateOfBirth: Date;
+  gender: Gender;
+  bloodGroup?: BloodGroup;
+  maritalStatus?: MaritalStatus;
+  contactInfo: ContactInfo;
+  address: Address;
+  aadhaarNumber?: string;
+  otherIdNumber?: string;
+  otherIdType?: 'pan' | 'passport' | 'driving_license' | 'voter_id';
+  allergies?: string[];
+  chronicDiseases?: string[];
+  currentMedications?: string[];
+  insuranceInfo?: Partial<InsuranceInfo>;
+  occupation?: string;
+  religion?: string;
+  language?: string;
+  notes?: string;
+}
+
+export interface UpdatePatientDto extends Partial<CreatePatientDto> {
+  id: string;
+}
+
+// Patient Portal Access
+export interface PatientPortalAccess extends BaseEntity {
+  patientId: string;
+  portalUserId: string;
+  isEnabled: boolean;
+  lastLogin?: Date;
+  loginAttempts: number;
+  accountLocked: boolean;
+  lockedUntil?: Date;
+  passwordResetRequired: boolean;
+  twoFactorEnabled: boolean;
+  preferences: PatientPortalPreferences;
+}
+
+export interface PatientPortalPreferences {
+  receiveEmailNotifications: boolean;
+  receiveSmsNotifications: boolean;
+  appointmentReminders: boolean;
+  labResultNotifications: boolean;
+  prescriptionRefillReminders: boolean;
+  languagePreference: string;
+  timeZone: string;
+}
+
+// Export and Reporting
+export interface PatientExportOptions {
+  format: 'csv' | 'excel' | 'pdf';
+  includeFields: string[];
+  searchCriteria?: PatientSearchParams;
+  includeVisitHistory?: boolean;
+  includeMedicalHistory?: boolean;
+  includeDocuments?: boolean;
+  dateRange?: {
+    startDate: Date;
+    endDate: Date;
+  };
+}
+
+export interface PatientReport {
+  reportType: 'demographics' | 'visit_summary' | 'medical_summary' | 'insurance_summary';
+  patientId: string;
+  generatedAt: Date;
+  generatedBy: string;
+  data: Record<string, any>;
+  format: 'pdf' | 'html' | 'json';
+}
+
+// Patient Communication
+export interface PatientCommunication extends BaseEntity {
+  patientId: string;
+  communicationType: 'sms' | 'email' | 'phone' | 'in_app';
+  subject?: string;
+  message: string;
+  status: 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
+  scheduledAt?: Date;
+  sentAt?: Date;
+  deliveredAt?: Date;
+  readAt?: Date;
+  templateId?: string;
+  recipientInfo: {
+    name: string;
+    contact: string;
+  };
+  metadata?: Record<string, any>;
 }

@@ -49,8 +49,8 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { DatePicker } from '@mantine/dates';
-import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
+import { DatePickerInput } from '@mantine/dates';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -229,8 +229,16 @@ const FinanceManagement = () => {
     }).format(amount);
   };
 
-  const formatPercentage = (value: number) => {
-    return `${value.toFixed(1)}%`;
+  const formatPercentage = (value: number | undefined) => {
+    return `${(value || 0).toFixed(1)}%`;
+  };
+
+  const formatDate = (date: string | Date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   // Statistics cards
@@ -276,7 +284,7 @@ const FinanceManagement = () => {
     ...item,
     color: getCategoryColor(item.category as ExpenseCategory)
   }));
-  const cashFlowData = mockFinancialStats.cashFlow;
+  const cashFlowData = Array.isArray(mockFinancialStats.cashFlow) ? mockFinancialStats.cashFlow : [];
 
   return (
     <Container size="xl" py="md">
@@ -370,34 +378,31 @@ const FinanceManagement = () => {
             {/* Revenue vs Expenses */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Revenue vs Expenses</Title>
-              <DonutChart
+              <MantineDonutChart
                 data={revenueExpenseData}
                 size={200}
                 thickness={40}
                 withLabels
-                withTooltip
               />
             </Card>
             
             {/* Monthly Revenue Trend */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Monthly Revenue Trend</Title>
-              <AreaChart
-                h={250}
+              <SimpleAreaChart
                 data={monthlyRevenueData}
                 dataKey="month"
                 series={[
                   { name: 'revenue', color: 'green.6' },
                   { name: 'expenses', color: 'red.6' }
                 ]}
-                curveType="linear"
               />
             </Card>
             
             {/* Expense Categories */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Expenses by Category</Title>
-              <DonutChart
+              <MantineDonutChart
                 data={expenseCategoryData}
                 size={200}
                 thickness={30}
@@ -408,13 +413,12 @@ const FinanceManagement = () => {
             {/* Cash Flow */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Cash Flow Analysis</Title>
-              <BarChart
-                h={250}
+              <SimpleBarChart
                 data={cashFlowData}
                 dataKey="month"
                 series={[
-                  { name: 'inflow', color: 'green.6', label: 'Cash Inflow' },
-                  { name: 'outflow', color: 'red.6', label: 'Cash Outflow' }
+                  { name: 'inflow', color: 'green.6' },
+                  { name: 'outflow', color: 'red.6' }
                 ]}
               />
             </Card>
@@ -545,11 +549,11 @@ const FinanceManagement = () => {
                       </Table.Td>
                       <Table.Td>
                         <div>
-                          <Text size="sm" fw={500}>
-                            {new Date(transaction.date).toLocaleDateString()}
+                          <Text size="sm" fw={500} component="span">
+                            {formatDate(transaction.date)}
                           </Text>
-                          <Text size="xs" c="dimmed">
-                            {new Date(transaction.date).toLocaleTimeString()}
+                          <Text size="xs" c="dimmed" component="span">
+                            {new Date(transaction.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                           </Text>
                         </div>
                       </Table.Td>
@@ -678,7 +682,7 @@ const FinanceManagement = () => {
 
                   <Group justify="space-between">
                     <Text size="xs" c="dimmed">
-                      Opened: {new Date(account.createdDate).toLocaleDateString()}
+                      Opened: {formatDate(account.createdDate)}
                     </Text>
                     <Group gap="xs">
                       <ActionIcon variant="subtle" color="blue">
@@ -720,7 +724,7 @@ const FinanceManagement = () => {
                   <Group justify="space-between" mb="md">
                     <div>
                       <Text fw={600} size="lg">{budget.name}</Text>
-                      <Text size="sm" c="dimmed">{budget.department}</Text>
+                      <Text size="sm" c="dimmed">{budget.description || 'No description'}</Text>
                     </div>
                     <Badge color={getStatusColor(budget.status)} variant="light">
                       {budget.status}
@@ -731,7 +735,7 @@ const FinanceManagement = () => {
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Budget Period</Text>
                       <Text size="sm" fw={500}>
-                        {new Date(budget.startDate).toLocaleDateString()} - {new Date(budget.endDate).toLocaleDateString()}
+                        {formatDate(budget.startDate)} - {formatDate(budget.endDate)}
                       </Text>
                     </Group>
                     <Group justify="space-between">
@@ -754,7 +758,7 @@ const FinanceManagement = () => {
                     </Group>
                   </Stack>
 
-                  <div mb="md">
+                  <div style={{ marginBottom: '1rem' }}>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm" c="dimmed">Budget Utilization</Text>
                       <Text size="sm" fw={500}>
@@ -821,7 +825,7 @@ const FinanceManagement = () => {
                     <div>
                       <Text fw={600} size="lg">{invoice.invoiceNumber}</Text>
                       <Text size="sm" c="dimmed">
-                        {invoice.patient?.firstName} {invoice.patient?.lastName || 'Corporate Client'}
+                        {(invoice as any).patient ? `${(invoice as any).patient.firstName} ${(invoice as any).patient.lastName}` : 'Corporate Client'}
                       </Text>
                     </div>
                     <Badge color={getStatusColor(invoice.status)} variant="light">
@@ -833,23 +837,23 @@ const FinanceManagement = () => {
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Invoice Date</Text>
                       <Text size="sm" fw={500}>
-                        {new Date(invoice.invoiceDate).toLocaleDateString()}
+                        {(invoice as any).invoiceDate ? formatDate((invoice as any).invoiceDate) : 'N/A'}
                       </Text>
                     </Group>
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Due Date</Text>
                       <Text size="sm" fw={500} c={new Date(invoice.dueDate) < new Date() && invoice.status !== 'paid' ? 'red' : undefined}>
-                        {new Date(invoice.dueDate).toLocaleDateString()}
+                        {formatDate(invoice.dueDate)}
                       </Text>
                     </Group>
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Subtotal</Text>
                       <Text size="sm" fw={500}>
-                        {formatCurrency(invoice.subtotal)}
+                        {formatCurrency((invoice as any).subtotal || 0)}
                       </Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Tax ({formatPercentage(invoice.taxRate)})</Text>
+                      <Text size="sm" c="dimmed">Tax ({formatPercentage((invoice as any).taxRate)})</Text>
                       <Text size="sm">
                         {formatCurrency(invoice.taxAmount)}
                       </Text>
@@ -928,13 +932,13 @@ const FinanceManagement = () => {
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Period</Text>
                       <Text size="sm" fw={500}>
-                        {new Date(report.startDate).toLocaleDateString()} - {new Date(report.endDate).toLocaleDateString()}
+                        {formatDate(report.startDate)} - {formatDate(report.endDate)}
                       </Text>
                     </Group>
                     <Group justify="space-between">
                       <Text size="sm" c="dimmed">Generated</Text>
                       <Text size="sm">
-                        {new Date(report.generatedDate).toLocaleDateString()}
+                        {formatDate(report.generatedDate)}
                       </Text>
                     </Group>
                     <Group justify="space-between">
@@ -943,15 +947,15 @@ const FinanceManagement = () => {
                     </Group>
                   </Stack>
 
-                  {report.summary && (
+                  {(report as any).summary && (
                     <Text size="sm" c="dimmed" lineClamp={3} mb="md">
-                      {report.summary}
+                      {(report as any).summary}
                     </Text>
                   )}
 
                   <Group justify="space-between">
                     <Text size="xs" c="dimmed">
-                      File Size: {(report.fileSize / 1024).toFixed(0)} KB
+                      File Size: {((report as any).fileSize ? ((report as any).fileSize / 1024).toFixed(0) : 'N/A')} KB
                     </Text>
                     <Group gap="xs">
                       <ActionIcon
@@ -1017,7 +1021,7 @@ const FinanceManagement = () => {
               <div>
                 <Text size="sm" fw={500}>Date</Text>
                 <Text size="sm" c="dimmed">
-                  {new Date(selectedTransaction.date).toLocaleString()}
+                  {formatDate(selectedTransaction.date)}
                 </Text>
               </div>
               <div>
@@ -1133,10 +1137,9 @@ const FinanceManagement = () => {
           </SimpleGrid>
           
           <SimpleGrid cols={2}>
-            <DatePicker
+            <DatePickerInput
               label="Transaction Date"
               placeholder="Select date"
-              onChange={(date) => {}}
               required
             />
             <Select
@@ -1209,12 +1212,12 @@ const FinanceManagement = () => {
           </SimpleGrid>
           
           <SimpleGrid cols={2}>
-            <DatePicker
+            <DatePickerInput
               label="Invoice Date"
               placeholder="Select invoice date"
               required
             />
-            <DatePicker
+            <DatePickerInput
               label="Due Date"
               placeholder="Select due date"
               required

@@ -19,32 +19,29 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
-  IconDashboard,
+  IconLayoutGrid,
   IconUsers,
-  IconUserPlus,
+  IconUser,
   IconStethoscope,
-  IconBed,
-  IconTestPipe,
-  IconScan,
+  IconNotes,
   IconPill,
-  IconCurrencyDollar,
-  IconShield,
+  IconCurrency,
+  IconShieldX,
   IconCalendar,
   IconChartBar,
   IconSettings,
   IconBell,
-  IconLogout,
-  IconUser,
+  IconX,
   IconChevronDown,
-  IconVideo,
-  IconFileText,
-  IconMessage,
-  IconHeartbeat,
-  IconAmbulance,
+  IconCamera,
   IconBuilding,
-  IconRobot,
-  IconDatabase,
-  IconShieldCheck
+  IconServer,
+  IconShieldCheck,
+  IconFileText,
+  IconHeart,
+  IconNotes,
+  IconAmbulance,
+  IconMessage
 } from '@tabler/icons-react';
 import { UserRole } from '../../types/common';
 
@@ -73,7 +70,7 @@ interface NavigationItem {
 const navigationItems: NavigationItem[] = [
   {
     label: 'Dashboard',
-    icon: <IconDashboard size="1.2rem" />,
+    icon: <IconLayoutGrid size="1.2rem" />,
     href: '/dashboard'
   },
   {
@@ -88,7 +85,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: 'Staff Management',
-    icon: <IconUserPlus size="1.2rem" />,
+    icon: <IconUser size="1.2rem" />,
     href: '/staff',
     roles: [UserRole.ADMIN, UserRole.SUPER_ADMIN],
     children: [
@@ -109,32 +106,32 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: 'IPD Management',
-    icon: <IconBed size="1.2rem" />,
+    icon: <IconSettings size="1.2rem" />,
     href: '/ipd',
     children: [
-      { label: 'Admissions', icon: <IconBed size="1rem" />, href: '/ipd/admissions' },
-      { label: 'Bed Management', icon: <IconBed size="1rem" />, href: '/ipd/beds' },
-      { label: 'Nursing Charts', icon: <IconHeartbeat size="1rem" />, href: '/ipd/nursing' }
+      { label: 'Admissions', icon: <IconSettings size="1rem" />, href: '/ipd/admissions' },
+      { label: 'Bed Management', icon: <IconSettings size="1rem" />, href: '/ipd/beds' },
+      { label: 'Nursing Charts', icon: <IconSettings size="1rem" />, href: '/ipd/nursing' }
     ]
   },
   {
     label: 'Laboratory',
-    icon: <IconTestPipe size="1.2rem" />,
+    icon: <IconSettings size="1.2rem" />,
     href: '/laboratory',
     children: [
-      { label: 'Test Orders', icon: <IconTestPipe size="1rem" />, href: '/laboratory/orders' },
-      { label: 'Results', icon: <IconFileText size="1rem" />, href: '/laboratory/results' },
+      { label: 'Test Orders', icon: <IconSettings size="1rem" />, href: '/laboratory/orders' },
+      { label: 'Results', icon: <IconSettings size="1rem" />, href: '/laboratory/results' },
       { label: 'Quality Control', icon: <IconShieldCheck size="1rem" />, href: '/laboratory/qc' }
     ]
   },
   {
     label: 'Radiology & PACS',
-    icon: <IconScan size="1.2rem" />,
+    icon: <IconSettings size="1.2rem" />,
     href: '/radiology',
     children: [
-      { label: 'Imaging Orders', icon: <IconScan size="1rem" />, href: '/radiology/orders' },
-      { label: 'PACS Viewer', icon: <IconScan size="1rem" />, href: '/radiology/viewer' },
-      { label: 'Reports', icon: <IconFileText size="1rem" />, href: '/radiology/reports' }
+      { label: 'Imaging Orders', icon: <IconSettings size="1rem" />, href: '/radiology/orders' },
+      { label: 'PACS Viewer', icon: <IconSettings size="1rem" />, href: '/radiology/viewer' },
+      { label: 'Reports', icon: <IconSettings size="1rem" />, href: '/radiology/reports' }
     ]
   },
   {
@@ -142,19 +139,19 @@ const navigationItems: NavigationItem[] = [
     icon: <IconPill size="1.2rem" />,
     href: '/pharmacy',
     children: [
-      { label: 'Inventory', icon: <IconDatabase size="1rem" />, href: '/pharmacy/inventory' },
+      { label: 'Inventory', icon: <IconSettings size="1rem" />, href: '/pharmacy/inventory' },
       { label: 'Dispensing', icon: <IconPill size="1rem" />, href: '/pharmacy/dispensing' },
-      { label: 'Procurement', icon: <IconBuilding size="1rem" />, href: '/pharmacy/procurement' }
+      { label: 'Procurement', icon: <IconSettings size="1rem" />, href: '/pharmacy/procurement' }
     ]
   },
   {
     label: 'Billing & Revenue',
-    icon: <IconCurrencyDollar size="1.2rem" />,
+    icon: <IconCurrency size="1.2rem" />,
     href: '/billing',
     children: [
       { label: 'Invoicing', icon: <IconFileText size="1rem" />, href: '/billing/invoices' },
-      { label: 'Payments', icon: <IconCurrencyDollar size="1rem" />, href: '/billing/payments' },
-      { label: 'Insurance Claims', icon: <IconShield size="1rem" />, href: '/billing/insurance' }
+      { label: 'Payments', icon: <IconCurrency size="1rem" />, href: '/billing/payments' },
+      { label: 'Insurance Claims', icon: <IconShieldX size="1rem" />, href: '/billing/insurance' }
     ]
   },
   {
@@ -169,11 +166,11 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: 'Telemedicine',
-    icon: <IconVideo size="1.2rem" />,
+    icon: <IconSettings size="1.2rem" />,
     href: '/telemedicine',
     children: [
-      { label: 'Video Consultations', icon: <IconVideo size="1rem" />, href: '/telemedicine/consultations' },
-      { label: 'Remote Monitoring', icon: <IconHeartbeat size="1rem" />, href: '/telemedicine/monitoring' }
+      { label: 'Video Consultations', icon: <IconSettings size="1rem" />, href: '/telemedicine/consultations' },
+      { label: 'Remote Monitoring', icon: <IconSettings size="1rem" />, href: '/telemedicine/monitoring' }
     ]
   },
   {
@@ -182,9 +179,9 @@ const navigationItems: NavigationItem[] = [
     href: '/emergency',
     badge: 'LIVE',
     children: [
-      { label: 'Triage', icon: <IconAmbulance size="1rem" />, href: '/emergency/triage' },
-      { label: 'Critical Care', icon: <IconHeartbeat size="1rem" />, href: '/emergency/critical' },
-      { label: 'Bed Availability', icon: <IconBed size="1rem" />, href: '/emergency/beds' }
+      { label: 'Triage', icon: <IconSettings size="1rem" />, href: '/emergency/triage' },
+      { label: 'Critical Care', icon: <IconSettings size="1rem" />, href: '/emergency/critical' },
+      { label: 'Bed Availability', icon: <IconSettings size="1rem" />, href: '/emergency/beds' }
     ]
   },
   {
@@ -192,7 +189,7 @@ const navigationItems: NavigationItem[] = [
     icon: <IconChartBar size="1.2rem" />,
     href: '/reports',
     children: [
-      { label: 'Financial Reports', icon: <IconCurrencyDollar size="1rem" />, href: '/reports/financial' },
+      { label: 'Financial Reports', icon: <IconCurrency size="1rem" />, href: '/reports/financial' },
       { label: 'Clinical Reports', icon: <IconStethoscope size="1rem" />, href: '/reports/clinical' },
       { label: 'Operational KPIs', icon: <IconChartBar size="1rem" />, href: '/reports/operational' }
     ]
@@ -209,12 +206,12 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: 'AI Assistant',
-    icon: <IconRobot size="1.2rem" />,
+    icon: <IconSettings size="1.2rem" />,
     href: '/ai-assistant',
     badge: 'BETA',
     children: [
-      { label: 'Clinical Decision Support', icon: <IconRobot size="1rem" />, href: '/ai-assistant/clinical' },
-      { label: 'Predictive Analytics', icon: <IconChartBar size="1rem" />, href: '/ai-assistant/analytics' }
+      { label: 'Clinical Decision Support', icon: <IconSettings size="1rem" />, href: '/ai-assistant/clinical' },
+      { label: 'Predictive Analytics', icon: <IconSettings size="1rem" />, href: '/ai-assistant/analytics' }
     ]
   },
   {
@@ -223,7 +220,7 @@ const navigationItems: NavigationItem[] = [
     href: '/admin',
     roles: [UserRole.ADMIN, UserRole.SUPER_ADMIN],
     children: [
-      { label: 'Tenant Management', icon: <IconBuilding size="1rem" />, href: '/admin/tenants' },
+      { label: 'Tenant Management', icon: <IconSettings size="1rem" />, href: '/admin/tenants' },
       { label: 'User Management', icon: <IconUsers size="1rem" />, href: '/admin/users' },
       { label: 'System Settings', icon: <IconSettings size="1rem" />, href: '/admin/settings' },
       { label: 'Audit Logs', icon: <IconFileText size="1rem" />, href: '/admin/audit' }
@@ -350,7 +347,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                           {user.role.replace('_', ' ').toLowerCase()}
                         </Text>
                       </Box>
-                      <IconChevronDown size="0.9rem" />
+                      <IconX size="0.9rem" />
                     </Group>
                   </UnstyledButton>
                 </Menu.Target>
@@ -371,7 +368,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                   <Menu.Divider />
                   <Menu.Item
                     color="red"
-                    icon={<IconLogout size="0.9rem" />}
+                    icon={<IconX size="0.9rem" />}
                     onClick={onLogout}
                   >
                     Logout

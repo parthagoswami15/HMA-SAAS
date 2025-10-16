@@ -32,8 +32,8 @@ import {
 } from '@mantine/core';
 import { DatePickerInput, TimeInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
-import { notifications } from '@mantine/notifications';
-import { LineChart, BarChart, DonutChart, AreaChart } from '@mantine/charts';
+// import { notifications } from '@mantine/notifications';
+// import { LineChart, BarChart, DonutChart, AreaChart } from '@mantine/charts';
 import {
   IconPlus,
   IconSearch,
@@ -640,76 +640,33 @@ const OPDManagement = () => {
             {/* Daily Visit Trends */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Daily Visit Trends</Title>
-              <LineChart
-                h={200}
-                data={[
-                  { date: 'Mon', visits: 45, completed: 42 },
-                  { date: 'Tue', visits: 52, completed: 48 },
-                  { date: 'Wed', visits: 38, completed: 36 },
-                  { date: 'Thu', visits: 61, completed: 58 },
-                  { date: 'Fri', visits: 48, completed: 45 },
-                  { date: 'Sat', visits: 25, completed: 23 }
-                ]}
-                dataKey="date"
-                series={[
-                  { name: 'visits', color: 'blue.6' },
-                  { name: 'completed', color: 'green.6' }
-                ]}
-                curveType="linear"
-              />
+              <Text c="dimmed" ta="center" p="xl">
+                Chart component temporarily disabled
+              </Text>
             </Card>
 
             {/* Department Distribution */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Department-wise Visits</Title>
-              <DonutChart
-                data={[
-                  { name: 'General Medicine', value: 35, color: 'blue' },
-                  { name: 'Cardiology', value: 25, color: 'red' },
-                  { name: 'Orthopedics', value: 20, color: 'green' },
-                  { name: 'Pediatrics', value: 15, color: 'orange' },
-                  { name: 'Others', value: 5, color: 'gray' }
-                ]}
-                size={200}
-                thickness={40}
-                withLabels
-              />
+              <Text c="dimmed" ta="center" p="xl">
+                Chart component temporarily disabled
+              </Text>
             </Card>
 
             {/* Wait Time Analysis */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Average Wait Times by Department</Title>
-              <BarChart
-                h={200}
-                data={[
-                  { department: 'Cardiology', waitTime: 25 },
-                  { department: 'General Med', waitTime: 15 },
-                  { department: 'Orthopedics', waitTime: 30 },
-                  { department: 'Pediatrics', waitTime: 12 },
-                  { department: 'Gynecology', waitTime: 20 }
-                ]}
-                dataKey="department"
-                series={[{ name: 'waitTime', color: 'orange.6' }]}
-              />
+              <Text c="dimmed" ta="center" p="xl">
+                Chart component temporarily disabled
+              </Text>
             </Card>
 
             {/* Revenue Analysis */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">OPD Revenue Trends</Title>
-              <AreaChart
-                h={200}
-                data={[
-                  { month: 'Jan', revenue: 125000 },
-                  { month: 'Feb', revenue: 145000 },
-                  { month: 'Mar', revenue: 135000 },
-                  { month: 'Apr', revenue: 160000 },
-                  { month: 'May', revenue: 155000 },
-                  { month: 'Jun', revenue: 170000 }
-                ]}
-                dataKey="month"
-                series={[{ name: 'revenue', color: 'green.6' }]}
-                curveType="bump"
-              />
+              <Text c="dimmed" ta="center" p="xl">
+                Chart component temporarily disabled
+              </Text>
             </Card>
           </SimpleGrid>
         </Tabs.Panel>
@@ -889,11 +846,12 @@ const OPDManagement = () => {
               Cancel
             </Button>
             <Button onClick={() => {
-              notifications.show({
-                title: 'OPD Visit Scheduled',
-                message: 'New OPD visit has been successfully scheduled',
-                color: 'green',
-              });
+              // notifications.show({
+              //   title: 'OPD Visit Scheduled',
+              //   message: 'New OPD visit has been successfully scheduled',
+              //   color: 'green',
+              // });
+              console.log('OPD Visit Scheduled');
               closeNewVisit();
             }}>
               Schedule Visit

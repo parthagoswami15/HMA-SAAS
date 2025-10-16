@@ -1,71 +1,104 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { PatientsService } from './patients.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreatePatientDto, UpdatePatientDto, PatientQueryDto } from './dto';
+import { CurrentUser } from '../shared/decorators/current-user.decorator';
+import { TenantId } from '../shared/decorators/tenant-id.decorator';
 
-export interface CreatePatientDto {
-  firstName: string;
-  middleName?: string;
-  lastName: string;
-  dateOfBirth?: Date;
-  gender?: 'MALE' | 'FEMALE' | 'OTHER';
-  bloodType?: string;
-  maritalStatus?: string;
-  email?: string;
-  phone?: string;
-  aadharNumber?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  pincode?: string;
-  allergies?: any;
-  chronicConditions?: any;
-  currentMedications?: any;
-  insuranceProvider?: string;
-  insuranceId?: string;
-  // Note: Emergency contact fields removed - not in database schema
-  // If needed, create a separate EmergencyContact model
+interface User {
+  id: string;
+  tenantId: string;
+  email: string;
+  role: string;
 }
 
-export interface UpdatePatientDto extends Partial<CreatePatientDto> {}
-
+@ApiTags('Patients')
+@ApiBearerAuth()
 @Controller('patients')
 @UseGuards(JwtAuthGuard)
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
   @Post()
-  async create(@Body() createPatientDto: CreatePatientDto, @Request() req) {
-    return this.patientsService.create(createPatientDto, req.user.tenantId);
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new patient' })
+  @ApiResponse({ status: 201, description: 'Patient created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  async create(
+    @Body() createPatientDto: CreatePatientDto,
+    @TenantId() tenantId: string,
+  ) {
+    return this.patientsService.create(createPatientDto, tenantId);
   }
 
   @Get()
-  async findAll(@Request() req, @Query() query: any) {
-    return this.patientsService.findAll(req.user.tenantId, query);
+  @ApiOperation({ summary: 'Get all patients with pagination' })
+  @ApiResponse({ status: 200, description: 'Patients retrieved successfully' })
+  async findAll(
+    @TenantId() tenantId: string,
+    @Query() query: PatientQueryDto,
+  ) {
+    return this.patientsService.findAll(tenantId, query);
   }
 
   @Get('search')
-  async search(@Request() req, @Query('q') query: string) {
-    return this.patientsService.search(req.user.tenantId, query);
+  @ApiOperation({ summary: 'Search patients by query' })
+  @ApiResponse({ status: 200, description: 'Search results retrieved' })
+  async search(@TenantId() tenantId: string, @Query('q') query: string) {
+    return this.patientsService.search(tenantId, query);
   }
 
   @Get('stats')
-  async getStats(@Request() req) {
-    return this.patientsService.getStats(req.user.tenantId);
+  @ApiOperation({ summary: 'Get patient statistics' })
+  @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
+  async getStats(@TenantId() tenantId: string) {
+    return this.patientsService.getStats(tenantId);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req) {
-    return this.patientsService.findOne(id, req.user.tenantId);
+  @ApiOperation({ summary: 'Get patient by ID' })
+  @ApiResponse({ status: 200, description: 'Patient retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Patient not found' })
+  async findOne(@Param('id') id: string, @TenantId() tenantId: string) {
+    return this.patientsService.findOne(id, tenantId);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto, @Request() req) {
-    return this.patientsService.update(id, updatePatientDto, req.user.tenantId);
+  @ApiOperation({ summary: 'Update patient by ID' })
+  @ApiResponse({ status: 200, description: 'Patient updated successfully' })
+  @ApiResponse({ status: 404, description: 'Patient not found' })
+  async update(
+    @Param('id') id: string,
+    @Body() updatePatientDto: UpdatePatientDto,
+    @TenantId() tenantId: string,
+  ) {
+    return this.patientsService.update(id, updatePatientDto, tenantId);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Request() req) {
-    return this.patientsService.remove(id, req.user.tenantId);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Soft delete patient by ID' })
+  @ApiResponse({ status: 204, description: 'Patient deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Patient not found' })
+  async remove(@Param('id') id: string, @TenantId() tenantId: string) {
+    return this.patientsService.remove(id, tenantId);
   }
 }

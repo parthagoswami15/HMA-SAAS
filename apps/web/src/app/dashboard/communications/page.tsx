@@ -42,7 +42,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
-import { LineChart, BarChart, DonutChart, AreaChart, PieChart } from '@mantine/charts';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -82,7 +82,7 @@ import {
   IconCreditCard,
   IconReceipt,
   IconCheckbox as IconCheck,
-  IconClose as IconX,
+  IconX,
   IconAlertCircle,
   IconArrowUp,
   IconArrowDown,
@@ -121,7 +121,6 @@ import {
   IconVideo,
   IconPhoneCall,
   IconMessageDots,
-  IconMailForward,
   IconBrandTelegram,
   IconVolume,
   IconHistory,
@@ -1230,13 +1229,15 @@ const CommunicationsManagement = () => {
             {/* Message Type Distribution */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Message Type Distribution</Title>
-              <PieChart
+              <MantineDonutChart
                 data={[
                   { name: 'SMS', value: 2, color: 'blue' },
                   { name: 'WhatsApp', value: 2, color: 'green' },
-                  { name: 'Email', value: 1, color: 'orange' }
+                  { name: 'Email', value: 1, color: 'orange' },
+                  { name: 'Push', value: 1, color: 'purple' }
                 ]}
-                size={200}
+                size={160}
+                thickness={30}
                 withLabels
               />
             </Card>
@@ -1244,15 +1245,15 @@ const CommunicationsManagement = () => {
             {/* Delivery Status */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Delivery Status Overview</Title>
-              <DonutChart
+              <MantineDonutChart
                 data={[
                   { name: 'Delivered', value: 2, color: 'green' },
                   { name: 'Read', value: 1, color: 'teal' },
-                  { name: 'Sent', value: 1, color: 'blue' },
-                  { name: 'Pending', value: 1, color: 'yellow' }
+                  { name: 'Pending', value: 1, color: 'yellow' },
+                  { name: 'Failed', value: 1, color: 'red' }
                 ]}
-                size={200}
-                thickness={40}
+                size={160}
+                thickness={30}
                 withLabels
               />
             </Card>
@@ -1260,39 +1261,38 @@ const CommunicationsManagement = () => {
             {/* Daily Message Trends */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Daily Message Volume</Title>
-              <LineChart
+              <SimpleLineChart
                 h={200}
                 data={[
                   { date: 'Mon', sms: 45, whatsapp: 32, email: 18 },
-                  { date: 'Tue', sms: 52, whatsapp: 41, email: 22 },
-                  { date: 'Wed', sms: 38, whatsapp: 28, email: 15 },
-                  { date: 'Thu', sms: 61, whatsapp: 48, email: 31 },
-                  { date: 'Fri', sms: 55, whatsapp: 43, email: 28 },
-                  { date: 'Sat', sms: 29, whatsapp: 22, email: 12 },
-                  { date: 'Sun', sms: 33, whatsapp: 25, email: 14 }
+                  { date: 'Tue', sms: 52, whatsapp: 38, email: 22 },
+                  { date: 'Wed', sms: 48, whatsapp: 35, email: 20 },
+                  { date: 'Thu', sms: 61, whatsapp: 42, email: 25 },
+                  { date: 'Fri', sms: 55, whatsapp: 40, email: 23 },
+                  { date: 'Sat', sms: 38, whatsapp: 28, email: 15 },
+                  { date: 'Sun', sms: 32, whatsapp: 25, email: 12 }
                 ]}
                 dataKey="date"
                 series={[
-                  { name: 'sms', color: 'blue.6' },
-                  { name: 'whatsapp', color: 'green.6' },
-                  { name: 'email', color: 'orange.6' }
+                  { name: 'sms', color: 'blue.6', label: 'SMS' },
+                  { name: 'whatsapp', color: 'green.6', label: 'WhatsApp' },
+                  { name: 'email', color: 'orange.6', label: 'Email' }
                 ]}
-                curveType="linear"
               />
             </Card>
 
             {/* Cost Analysis */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Monthly Communication Costs</Title>
-              <AreaChart
+              <SimpleAreaChart
                 h={200}
                 data={[
                   { month: 'Jan', sms: 156.50, whatsapp: 89.30, email: 12.80 },
-                  { month: 'Feb', sms: 178.20, whatsapp: 102.45, email: 15.60 },
-                  { month: 'Mar', sms: 134.80, whatsapp: 76.20, email: 10.40 },
-                  { month: 'Apr', sms: 201.30, whatsapp: 118.75, email: 18.90 },
-                  { month: 'May', sms: 189.45, whatsapp: 112.30, email: 16.50 },
-                  { month: 'Jun', sms: 167.90, whatsapp: 95.80, email: 14.20 }
+                  { month: 'Feb', sms: 178.20, whatsapp: 95.60, email: 15.40 },
+                  { month: 'Mar', sms: 165.80, whatsapp: 102.40, email: 18.20 },
+                  { month: 'Apr', sms: 192.30, whatsapp: 110.80, email: 20.60 },
+                  { month: 'May', sms: 185.70, whatsapp: 98.50, email: 17.90 },
+                  { month: 'Jun', sms: 201.40, whatsapp: 115.20, email: 22.30 }
                 ]}
                 dataKey="month"
                 series={[
@@ -1300,7 +1300,6 @@ const CommunicationsManagement = () => {
                   { name: 'whatsapp', color: 'green.6' },
                   { name: 'email', color: 'orange.6' }
                 ]}
-                curveType="bump"
               />
             </Card>
           </SimpleGrid>
@@ -1485,7 +1484,7 @@ const CommunicationsManagement = () => {
             <DatePickerInput
               label="Schedule Send Time (Optional)"
               placeholder="Select date and time"
-              onChange={(date: Date | null) => {/* Handle date change */}}
+              clearable
             />
           </SimpleGrid>
 

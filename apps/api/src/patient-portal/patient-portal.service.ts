@@ -97,7 +97,10 @@ export class PatientPortalService {
 
     const prescriptions = await this.prisma.prescription.findMany({
       where: { patientId: patient.id, tenantId },
-      include: { doctor: true, prescriptionItems: { include: { medication: true } } },
+      include: {
+        doctor: true,
+        prescriptionItems: { include: { medication: true } },
+      },
       orderBy: { createdAt: 'desc' },
     });
 

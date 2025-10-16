@@ -25,7 +25,7 @@ import {
   ThemeIcon
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { DonutChart, BarChart, LineChart } from '@mantine/charts';
+import { MantineDonutChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -39,8 +39,8 @@ import {
   IconChartBar,
   IconDownload,
   IconBarcode,
-  IconSyringe,
-  IconShieldAlert,
+  IconBottle,
+  IconShieldCheck,
   IconFileText,
   IconPackage,
   IconCash,
@@ -165,6 +165,8 @@ const PharmacyManagement = () => {
   const [medicationDetailOpened, { open: openMedicationDetail, close: closeMedicationDetail }] = useDisclosure(false);
   const [prescriptionDetailOpened, { open: openPrescriptionDetail, close: closePrescriptionDetail }] = useDisclosure(false);
   const [dispenseMedicationOpened, { open: openDispenseMedication, close: closeDispenseMedication }] = useDisclosure(false);
+  const [addMedicationOpened, { open: openAddMedication, close: closeAddMedication }] = useDisclosure(false);
+  const [newPrescriptionOpened, { open: openNewPrescription, close: closeNewPrescription }] = useDisclosure(false);
 
   // Filter medications
   const filteredMedications = useMemo(() => {
@@ -295,10 +297,10 @@ const PharmacyManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button leftSection={<IconPlus size={16} />}>
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddMedication}>
             Add Medication
           </Button>
-          <Button variant="light" leftSection={<IconFileText size={16} />}>
+          <Button variant="light" leftSection={<IconFileText size={16} />} onClick={openNewPrescription}>
             New Prescription
           </Button>
         </Group>
@@ -339,7 +341,7 @@ const PharmacyManagement = () => {
       </SimpleGrid>
 
       {/* Main Tabs */}
-      <Tabs value={activeTab} onChange={setActiveTab}>
+      <Tabs value={activeTab} onChange={(value) => setActiveTab(value as typeof activeTab)}>
         <Tabs.List>
           <Tabs.Tab value="overview" leftSection={<IconChartBar size={16} />}>
             Overview
@@ -353,10 +355,10 @@ const PharmacyManagement = () => {
           <Tabs.Tab value="inventory" leftSection={<IconPackage size={16} />}>
             Inventory
           </Tabs.Tab>
-          <Tabs.Tab value="dispensing" leftSection={<IconSyringe size={16} />}>
+          <Tabs.Tab value="dispensing" leftSection={<IconBottle size={16} />}>
             Dispensing
           </Tabs.Tab>
-          <Tabs.Tab value="interactions" leftSection={<IconShieldAlert size={16} />}>
+          <Tabs.Tab value="interactions" leftSection={<IconShieldCheck size={16} />}>
             Drug Interactions
           </Tabs.Tab>
           <Tabs.Tab value="analytics" leftSection={<IconActivity size={16} />}>
@@ -371,7 +373,7 @@ const PharmacyManagement = () => {
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Medications by Category</Title>
-                <DonutChart
+                <MantineDonutChart
                   data={mockPharmacyStats.medicationsByCategory.map(item => ({
                     name: item.category,
                     value: item.count,
@@ -523,8 +525,7 @@ const PharmacyManagement = () => {
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Revenue Trend</Title>
-                <LineChart
-                  h={200}
+                <SimpleLineChart
                   data={[
                     { month: 'Jan', revenue: 280000 },
                     { month: 'Feb', revenue: 295000 },
@@ -534,14 +535,12 @@ const PharmacyManagement = () => {
                     { month: 'Jun', revenue: 325000 }
                   ]}
                   dataKey="month"
-                  series={[{ name: 'revenue', color: 'blue.6' }]}
-                  curveType="linear"
+                  series={[{ name: 'revenue', color: 'blue.6', label: 'Revenue' }]}
                 />
               </Card>
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Top Selling Medications</Title>
-                <BarChart
-                  h={200}
+                <SimpleBarChart
                   data={[
                     { medication: 'Paracetamol', sales: 1500 },
                     { medication: 'Amoxicillin', sales: 1200 },
@@ -557,37 +556,180 @@ const PharmacyManagement = () => {
           </Paper>
         </Tabs.Panel>
 
-        {/* Other tabs simplified for now */}
+        {/* Prescriptions Tab */}
         <Tabs.Panel value="prescriptions">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3}>Prescriptions</Title>
-            <Text c="dimmed" mt="sm">Prescription management will be implemented here.</Text>
+            <Group justify="space-between" mb="md">
+              <Title order={3}>Prescriptions</Title>
+              <Button leftSection={<IconPlus size={16} />} onClick={openNewPrescription}>
+                New Prescription
+              </Button>
+            </Group>
+            <ScrollArea>
+              <Table striped highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Prescription ID</Table.Th>
+                    <Table.Th>Patient</Table.Th>
+                    <Table.Th>Doctor</Table.Th>
+                    <Table.Th>Date</Table.Th>
+                    <Table.Th>Medications</Table.Th>
+                    <Table.Th>Total</Table.Th>
+                    <Table.Th>Status</Table.Th>
+                    <Table.Th>Actions</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {filteredPrescriptions.map((prescription) => (
+                    <Table.Tr key={prescription.id}>
+                      <Table.Td>
+                        <Text fw={500}>{prescription.prescriptionId}</Text>
+                      </Table.Td>
+                      <Table.Td>{prescription.patientName}</Table.Td>
+                      <Table.Td>{prescription.doctorName}</Table.Td>
+                      <Table.Td>{prescription.date}</Table.Td>
+                      <Table.Td>{prescription.medications.length} items</Table.Td>
+                      <Table.Td>₹{prescription.totalAmount}</Table.Td>
+                      <Table.Td>
+                        <Badge color={getStatusColor(prescription.status)} variant="light">
+                          {prescription.status}
+                        </Badge>
+                      </Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          <ActionIcon color="blue" variant="subtle" onClick={() => handleViewPrescription(prescription)}>
+                            <IconEye size={16} />
+                          </ActionIcon>
+                          <ActionIcon color="green" variant="subtle">
+                            <IconEdit size={16} />
+                          </ActionIcon>
+                        </Group>
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </ScrollArea>
           </Paper>
         </Tabs.Panel>
 
+        {/* Inventory Tab */}
         <Tabs.Panel value="inventory">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3}>Inventory Management</Title>
-            <Text c="dimmed" mt="sm">Inventory tracking will be implemented here.</Text>
+            <Title order={3} mb="lg">Inventory Management</Title>
+            <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
+              {filteredMedications.map((medication) => (
+                <Card key={medication.id} padding="lg" radius="md" withBorder>
+                  <Group justify="space-between" mb="md">
+                    <ThemeIcon color={getCategoryColor(medication.category)} variant="light">
+                      <IconPill size={20} />
+                    </ThemeIcon>
+                    <Badge color={getStatusColor(medication.status)} variant="light">
+                      {medication.status.replace('_', ' ')}
+                    </Badge>
+                  </Group>
+                  <Title order={5} mb="xs">{medication.name}</Title>
+                  <Text size="sm" c="dimmed" mb="md">{medication.genericName}</Text>
+                  <Stack gap="xs">
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">Current Stock</Text>
+                      <Text size="sm" fw={600}>{medication.currentStock}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">Min Stock</Text>
+                      <Text size="sm" c="orange">{medication.minimumStock}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">Location</Text>
+                      <Text size="sm">{medication.location}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">Expiry</Text>
+                      <Text size="sm">{medication.expiryDate}</Text>
+                    </Group>
+                  </Stack>
+                  <Group justify="space-between" mt="md">
+                    <Button variant="light" size="xs" fullWidth>Adjust Stock</Button>
+                  </Group>
+                </Card>
+              ))}
+            </SimpleGrid>
           </Paper>
         </Tabs.Panel>
 
+        {/* Dispensing Tab */}
         <Tabs.Panel value="dispensing">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3}>Dispensing</Title>
-            <Text c="dimmed" mt="sm">Medication dispensing interface will be implemented here.</Text>
+            <Title order={3} mb="lg">Medication Dispensing</Title>
+            <Stack gap="lg">
+              {filteredPrescriptions.filter(p => p.status === 'pending').map((prescription) => (
+                <Card key={prescription.id} padding="lg" radius="md" withBorder>
+                  <Group justify="space-between" mb="md">
+                    <div>
+                      <Text fw={600} size="lg">{prescription.prescriptionId}</Text>
+                      <Text size="sm" c="dimmed">Patient: {prescription.patientName}</Text>
+                    </div>
+                    <Badge color="orange" variant="light">Pending</Badge>
+                  </Group>
+                  <Stack gap="sm">
+                    {prescription.medications.map((med, index) => (
+                      <Group key={index} justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                        <div>
+                          <Text size="sm" fw={500}>{med.name}</Text>
+                          <Text size="xs" c="dimmed">{med.dosage} - {med.frequency}</Text>
+                        </div>
+                        <Text size="sm" fw={600}>Qty: {med.quantity}</Text>
+                      </Group>
+                    ))}
+                  </Stack>
+                  <Group justify="flex-end" mt="md">
+                    <Button variant="light">View Details</Button>
+                    <Button>Dispense</Button>
+                  </Group>
+                </Card>
+              ))}
+            </Stack>
           </Paper>
         </Tabs.Panel>
 
+        {/* Drug Interactions Tab */}
         <Tabs.Panel value="interactions">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3}>Drug Interactions</Title>
-            <Text c="dimmed" mt="sm">Drug interaction checking will be implemented here.</Text>
+            <Title order={3} mb="lg">Drug Interaction Checker</Title>
+            <Card padding="lg" radius="md" withBorder mb="lg">
+              <Stack gap="md">
+                <Select
+                  label="First Medication"
+                  placeholder="Select medication"
+                  data={mockMedications.map(med => ({
+                    value: med.id,
+                    label: `${med.name} (${med.genericName || 'N/A'})`
+                  }))}
+                  searchable
+                />
+                <Select
+                  label="Second Medication"
+                  placeholder="Select medication"
+                  data={mockMedications.map(med => ({
+                    value: med.id,
+                    label: `${med.name} (${med.genericName || 'N/A'})`
+                  }))}
+                  searchable
+                />
+                <Button fullWidth leftSection={<IconShieldCheck size={16} />}>
+                  Check Interactions
+                </Button>
+              </Stack>
+            </Card>
+            <Text c="dimmed" ta="center">
+              Select two medications to check for potential drug interactions
+            </Text>
           </Paper>
         </Tabs.Panel>
       </Tabs>
 
       {/* Modals */}
+      {/* Medication Detail Modal */}
       <Modal opened={medicationDetailOpened} onClose={closeMedicationDetail} title="Medication Details" size="lg">
         {selectedMedication && (
           <Stack gap="md">
@@ -617,6 +759,142 @@ const PharmacyManagement = () => {
             <Group justify="flex-end">
               <Button variant="light" onClick={closeMedicationDetail}>Close</Button>
               <Button>Edit Medication</Button>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
+
+      {/* Add Medication Modal */}
+      <Modal opened={addMedicationOpened} onClose={closeAddMedication} title="Add New Medication" size="lg">
+        <Stack gap="md">
+          <SimpleGrid cols={2}>
+            <TextInput label="Medication Name" placeholder="Enter medication name" required />
+            <TextInput label="Generic Name" placeholder="Enter generic name" />
+          </SimpleGrid>
+          <SimpleGrid cols={2}>
+            <TextInput label="Manufacturer" placeholder="Enter manufacturer" />
+            <Select
+              label="Category"
+              placeholder="Select category"
+              data={[
+                { value: 'Analgesic', label: 'Analgesic' },
+                { value: 'Antibiotic', label: 'Antibiotic' },
+                { value: 'Cardiovascular', label: 'Cardiovascular' },
+                { value: 'Antidiabetic', label: 'Antidiabetic' },
+                { value: 'Respiratory', label: 'Respiratory' },
+                { value: 'Neurological', label: 'Neurological' }
+              ]}
+              required
+            />
+          </SimpleGrid>
+          <SimpleGrid cols={3}>
+            <TextInput label="Unit Price (₹)" placeholder="0.00" type="number" required />
+            <TextInput label="Current Stock" placeholder="0" type="number" required />
+            <TextInput label="Minimum Stock" placeholder="0" type="number" required />
+          </SimpleGrid>
+          <SimpleGrid cols={2}>
+            <TextInput label="Batch Number" placeholder="Enter batch number" />
+            <TextInput label="Expiry Date" placeholder="YYYY-MM-DD" type="date" />
+          </SimpleGrid>
+          <TextInput label="Storage Location" placeholder="e.g., A1-B2" />
+          <Group justify="flex-end">
+            <Button variant="light" onClick={closeAddMedication}>Cancel</Button>
+            <Button onClick={() => {
+              // Add medication logic here
+              closeAddMedication();
+            }}>Add Medication</Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* New Prescription Modal */}
+      <Modal opened={newPrescriptionOpened} onClose={closeNewPrescription} title="Create New Prescription" size="xl">
+        <Stack gap="md">
+          <SimpleGrid cols={2}>
+            <TextInput label="Patient Name" placeholder="Search or enter patient name" required />
+            <TextInput label="Doctor Name" placeholder="Search or enter doctor name" required />
+          </SimpleGrid>
+          <TextInput label="Prescription ID" placeholder="Auto-generated" disabled />
+          <Divider label="Medications" labelPosition="center" />
+          <Stack gap="sm">
+            <Group>
+              <Select
+                label="Medication"
+                placeholder="Select medication"
+                data={mockMedications.map(med => ({
+                  value: med.id,
+                  label: `${med.name} (${med.genericName || 'N/A'})`
+                }))}
+                style={{ flex: 1 }}
+              />
+              <Button variant="light" leftSection={<IconPlus size={16} />} mt="xl">
+                Add
+              </Button>
+            </Group>
+          </Stack>
+          <SimpleGrid cols={4}>
+            <TextInput label="Dosage" placeholder="e.g., 500mg" />
+            <TextInput label="Frequency" placeholder="e.g., Twice daily" />
+            <TextInput label="Duration" placeholder="e.g., 5 days" />
+            <TextInput label="Quantity" placeholder="0" type="number" />
+          </SimpleGrid>
+          <Group justify="flex-end">
+            <Button variant="light" onClick={closeNewPrescription}>Cancel</Button>
+            <Button onClick={() => {
+              // Create prescription logic here
+              closeNewPrescription();
+            }}>Create Prescription</Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* Prescription Detail Modal */}
+      <Modal opened={prescriptionDetailOpened} onClose={closePrescriptionDetail} title="Prescription Details" size="lg">
+        {selectedPrescription && (
+          <Stack gap="md">
+            <Group justify="space-between">
+              <div>
+                <Text fw={600} size="lg">{selectedPrescription.prescriptionId}</Text>
+                <Text size="sm" c="dimmed">Date: {selectedPrescription.date}</Text>
+              </div>
+              <Badge color={getStatusColor(selectedPrescription.status)} variant="light" size="lg">
+                {selectedPrescription.status}
+              </Badge>
+            </Group>
+            <Divider />
+            <SimpleGrid cols={2}>
+              <div>
+                <Text size="sm" fw={500}>Patient</Text>
+                <Text size="sm">{selectedPrescription.patientName}</Text>
+              </div>
+              <div>
+                <Text size="sm" fw={500}>Doctor</Text>
+                <Text size="sm">{selectedPrescription.doctorName}</Text>
+              </div>
+            </SimpleGrid>
+            <Divider label="Medications" labelPosition="center" />
+            <Stack gap="sm">
+              {selectedPrescription.medications.map((med: any, index: number) => (
+                <Card key={index} padding="sm" radius="md" withBorder>
+                  <Group justify="space-between">
+                    <div>
+                      <Text fw={500}>{med.name}</Text>
+                      <Text size="xs" c="dimmed">
+                        {med.dosage} • {med.frequency} • {med.duration}
+                      </Text>
+                    </div>
+                    <Text fw={600}>Qty: {med.quantity}</Text>
+                  </Group>
+                </Card>
+              ))}
+            </Stack>
+            <Group justify="space-between">
+              <Text fw={600}>Total Amount:</Text>
+              <Text fw={700} size="xl">₹{selectedPrescription.totalAmount}</Text>
+            </Group>
+            <Group justify="flex-end">
+              <Button variant="light" onClick={closePrescriptionDetail}>Close</Button>
+              <Button>Print Prescription</Button>
             </Group>
           </Stack>
         )}

@@ -35,7 +35,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -43,7 +43,7 @@ import {
   IconEye,
   IconTrash,
   IconCalendar,
-  IconScalpel,
+  IconScissors,
   IconChartBar,
   IconPhone,
   IconMail,
@@ -58,7 +58,6 @@ import {
   IconDownload,
   IconPrinter,
   IconShare,
-  IconActivity,
   IconExclamationMark,
   IconClockHour4,
   IconTrendingUp,
@@ -74,8 +73,7 @@ import {
   IconAlertTriangle,
   IconCircleCheck,
   IconClipboard,
-  IconVital,
-  IconLungs,
+  IconActivity,
   IconHeart,
   IconBrain,
   IconBone,
@@ -91,38 +89,18 @@ import {
   IconInfoCircle,
   IconBed,
   IconAmbulance,
-  IconSiren,
   IconFlask,
   IconDroplet,
-  IconNurse,
   IconBandage,
   IconPill,
-  IconSyringe,
-  IconMask,
   IconBolt,
   IconZoom,
-  IconCut,
-  IconTool
-} from '../../../shims/tabler-icons';
+  IconTools
+} from '@tabler/icons-react';
 import { DatePickerInput } from '@mantine/dates';
 
 // Import types and mock data
-import {
-  Surgery,
-  SurgeryStatus,
-  SurgeryType,
-  SurgeryPriority,
-  OperatingRoom,
-  ORStatus,
-  SurgicalEquipment,
-  EquipmentStatus,
-  PreOpAssessment,
-  PostOpAssessment,
-  AnesthesiaRecord,
-  SurgicalTeam,
-  SurgeryStats,
-  SurgeryFilters
-} from '../../../types/surgery';
+// Types will be defined inline since they don't exist yet
 import {
   mockSurgeries,
   mockOperatingRooms,
@@ -144,8 +122,8 @@ const SurgeryManagement = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedPriority, setSelectedPriority] = useState<string>('');
   const [selectedORStatus, setSelectedORStatus] = useState<string>('');
-  const [selectedSurgery, setSelectedSurgery] = useState<Surgery | null>(null);
-  const [selectedOR, setSelectedOR] = useState<OperatingRoom | null>(null);
+  const [selectedSurgery, setSelectedSurgery] = useState<any>(null);
+  const [selectedOR, setSelectedOR] = useState<any>(null);
 
   // Modal states
   const [surgeryDetailOpened, { open: openSurgeryDetail, close: closeSurgeryDetail }] = useDisclosure(false);
@@ -156,12 +134,11 @@ const SurgeryManagement = () => {
 
   // Filter surgeries
   const filteredSurgeries = useMemo(() => {
-    return mockSurgeries.filter((surgery) => {
+    return mockSurgeries.filter((surgery: any) => {
       const matchesSearch = 
-        surgery.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        surgery.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        surgery.surgeryId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        surgery.procedure.toLowerCase().includes(searchQuery.toLowerCase());
+        surgery.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        surgery.surgeryId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        surgery.procedure?.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesType = !selectedType || surgery.surgeryType === selectedType;
       const matchesStatus = !selectedStatus || surgery.status === selectedStatus;
@@ -173,10 +150,10 @@ const SurgeryManagement = () => {
 
   // Filter operating rooms
   const filteredORs = useMemo(() => {
-    return mockOperatingRooms.filter((or) => {
+    return mockOperatingRooms.filter((or: any) => {
       const matchesSearch = 
-        or.roomNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        or.roomName.toLowerCase().includes(searchQuery.toLowerCase());
+        or.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        or.roomName?.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesStatus = !selectedORStatus || or.status === selectedORStatus;
 
@@ -185,7 +162,7 @@ const SurgeryManagement = () => {
   }, [searchQuery, selectedORStatus]);
 
   // Helper functions
-  const getStatusColor = (status: SurgeryStatus | ORStatus | EquipmentStatus) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled':
       case 'available':
@@ -204,7 +181,7 @@ const SurgeryManagement = () => {
     }
   };
 
-  const getPriorityColor = (priority: SurgeryPriority) => {
+  const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'emergency': return 'red';
       case 'urgent': return 'orange';
@@ -214,7 +191,7 @@ const SurgeryManagement = () => {
     }
   };
 
-  const getSurgeryTypeColor = (type: SurgeryType) => {
+  const getSurgeryTypeColor = (type: string) => {
     switch (type) {
       case 'cardiac': return 'red';
       case 'neurological': return 'purple';
@@ -228,12 +205,12 @@ const SurgeryManagement = () => {
     }
   };
 
-  const handleViewSurgery = (surgery: Surgery) => {
+  const handleViewSurgery = (surgery: any) => {
     setSelectedSurgery(surgery);
     openSurgeryDetail();
   };
 
-  const handleViewOR = (or: OperatingRoom) => {
+  const handleViewOR = (or: any) => {
     setSelectedOR(or);
     openORDetail();
   };
@@ -264,7 +241,7 @@ const SurgeryManagement = () => {
     {
       title: 'Total Surgeries',
       value: mockSurgeryStats.totalSurgeries,
-      icon: IconScalpel,
+      icon: IconScissors,
       color: 'blue',
       trend: '+8.5%'
     },
@@ -292,11 +269,11 @@ const SurgeryManagement = () => {
   ];
 
   // Chart data
-  const surgeryTypeData = Object.entries(mockSurgeryStats.surgeryByType)
+  const surgeryTypeData = Object.entries(mockSurgeryStats.surgeryByType || {})
     .map(([type, count]) => ({
       name: type.replace('_', ' ').toUpperCase(),
-      value: count,
-      color: getSurgeryTypeColor(type as SurgeryType)
+      value: typeof count === 'number' ? count : 0,
+      color: getSurgeryTypeColor(type)
     }));
 
   const monthlyVolume = mockSurgeryStats.monthlySurgeryVolume;
@@ -373,7 +350,7 @@ const SurgeryManagement = () => {
           <Tabs.Tab value="theaters" leftSection={<IconBed size={16} />}>
             Operating Theaters
           </Tabs.Tab>
-          <Tabs.Tab value="equipment" leftSection={<IconTool size={16} />}>
+          <Tabs.Tab value="equipment" leftSection={<IconTools size={16} />}>
             Equipment
           </Tabs.Tab>
           <Tabs.Tab value="teams" leftSection={<IconUsers size={16} />}>
@@ -459,7 +436,7 @@ const SurgeryManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredSurgeries.map((surgery) => (
+                  {filteredSurgeries.map((surgery: any) => (
                     <Table.Tr key={surgery.id}>
                       <Table.Td>
                         <Text fw={500}>{surgery.surgeryId}</Text>
@@ -467,14 +444,14 @@ const SurgeryManagement = () => {
                       <Table.Td>
                         <Group>
                           <Avatar color="blue" radius="xl" size="sm">
-                            {surgery.patient.firstName[0]}{surgery.patient.lastName[0]}
+                            {surgery.patientName?.[0] || 'P'}
                           </Avatar>
                           <div>
                             <Text size="sm" fw={500}>
-                              {surgery.patient.firstName} {surgery.patient.lastName}
+                              {surgery.patientName || 'N/A'}
                             </Text>
                             <Text size="xs" c="dimmed">
-                              Age: {surgery.patient.age}
+                              ID: {(surgery as any).patientId || 'N/A'}
                             </Text>
                           </div>
                         </Group>
@@ -484,44 +461,44 @@ const SurgeryManagement = () => {
                           <Text size="sm" fw={500} lineClamp={1}>
                             {surgery.procedure}
                           </Text>
-                          <Badge color={getSurgeryTypeColor(surgery.surgeryType)} variant="light" size="xs">
-                            {surgery.surgeryType}
+                          <Badge color={getSurgeryTypeColor((surgery as any).surgeryType || 'general')} variant="light" size="xs">
+                            {(surgery as any).surgeryType || 'General'}
                           </Badge>
                         </div>
                       </Table.Td>
                       <Table.Td>
                         <div>
                           <Text size="sm" fw={500}>
-                            Dr. {surgery.primarySurgeon.lastName}
+                            {surgery.surgeon || 'N/A'}
                           </Text>
                           <Text size="xs" c="dimmed">
-                            {surgery.primarySurgeon.department?.name}
+                            {(surgery as any).department || 'N/A'}
                           </Text>
                         </div>
                       </Table.Td>
                       <Table.Td>
                         <div>
                           <Text size="sm" fw={500}>
-                            {new Date(surgery.scheduledDate).toLocaleDateString()}
+                            {surgery.date || 'N/A'}
                           </Text>
                           <Text size="xs" c="dimmed">
-                            {new Date(surgery.scheduledDate).toLocaleTimeString()}
+                            {surgery.time || 'N/A'}
                           </Text>
                         </div>
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm">
-                          {formatDuration(surgery.estimatedDuration)}
+                          {surgery.duration || 0} min
                         </Text>
                       </Table.Td>
                       <Table.Td>
                         <Badge color="cyan" variant="light">
-                          OR {surgery.operatingRoom.roomNumber}
+                          {surgery.operatingRoom || 'N/A'}
                         </Badge>
                       </Table.Td>
                       <Table.Td>
-                        <Badge color={getPriorityColor(surgery.priority)} variant="light">
-                          {surgery.priority.toUpperCase()}
+                        <Badge color={getPriorityColor((surgery as any).priority || 'routine')} variant="light" size="xs">
+                          {((surgery as any).priority || 'routine').toUpperCase()}
                         </Badge>
                       </Table.Td>
                       <Table.Td>
@@ -616,7 +593,7 @@ const SurgeryManagement = () => {
 
             {/* Operating Rooms Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {filteredORs.map((or) => (
+              {filteredORs.map((or: any) => (
                 <Card key={or.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -654,13 +631,10 @@ const SurgeryManagement = () => {
                     </Group>
                   </Stack>
 
-                  {or.currentSurgery && (
+                  {(or as any).currentSurgery && (
                     <Alert variant="light" color="blue" mb="md">
                       <Text size="sm" fw={500}>Current Surgery:</Text>
-                      <Text size="sm">{or.currentSurgery.procedure}</Text>
-                      <Text size="xs" c="dimmed">
-                        Started: {new Date(or.currentSurgery.startTime).toLocaleTimeString()}
-                      </Text>
+                      <Text size="sm">{(or as any).currentSurgery || 'N/A'}</Text>
                     </Alert>
                   )}
 
@@ -758,7 +732,7 @@ const SurgeryManagement = () => {
                     </div>
                   )}
 
-                  <Group justify="space-between" mt="md">
+                  <Group justify="space-between">
                     <Text size="xs" c="dimmed">
                       {equipment.equipmentType}
                     </Text>
@@ -770,7 +744,7 @@ const SurgeryManagement = () => {
                         <IconSettings size={16} />
                       </ActionIcon>
                       <ActionIcon variant="subtle" color="orange">
-                        <IconTool size={16} />
+                        <IconTools size={16} />
                       </ActionIcon>
                     </Group>
                   </Group>
@@ -876,7 +850,7 @@ const SurgeryManagement = () => {
               {/* Surgery Types Distribution */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Surgeries by Type</Title>
-                <DonutChart
+                <MantineDonutChart
                   data={surgeryTypeData}
                   size={160}
                   thickness={30}
@@ -887,24 +861,21 @@ const SurgeryManagement = () => {
               {/* Monthly Surgery Volume */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Monthly Surgery Volume</Title>
-                <AreaChart
-                  h={200}
+                <SimpleAreaChart
                   data={monthlyVolume}
                   dataKey="month"
                   series={[{ name: 'surgeries', color: 'blue.6' }]}
-                  curveType="linear"
                 />
               </Card>
               
               {/* OR Utilization */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
                 <Title order={4} mb="md">Operating Room Utilization</Title>
-                <BarChart
-                  h={300}
+                <SimpleBarChart
                   data={orUtilization}
                   dataKey="or"
                   series={[
-                    { name: 'utilization', color: 'orange.6', label: 'Utilization %' }
+                    { name: 'utilization', color: 'orange.6' }
                   ]}
                 />
               </Card>
@@ -979,7 +950,7 @@ const SurgeryManagement = () => {
             <Stack gap="md">
               <Group>
                 <ThemeIcon color="blue" size="xl" variant="light">
-                  <IconScalpel size={24} />
+                  <IconScissors size={24} />
                 </ThemeIcon>
                 <div>
                   <Title order={3}>{selectedSurgery.procedure}</Title>
@@ -996,46 +967,46 @@ const SurgeryManagement = () => {
                 <div>
                   <Text size="sm" fw={500}>Patient</Text>
                   <Text size="sm" c="dimmed">
-                    {selectedSurgery.patient.firstName} {selectedSurgery.patient.lastName}
+                    {selectedSurgery.patientName || 'N/A'}
                   </Text>
                 </div>
                 <div>
                   <Text size="sm" fw={500}>Surgery Type</Text>
-                  <Badge color={getSurgeryTypeColor(selectedSurgery.surgeryType)} variant="light">
-                    {selectedSurgery.surgeryType}
+                  <Badge color={getSurgeryTypeColor(selectedSurgery.surgeryType || 'general')} variant="light">
+                    {selectedSurgery.surgeryType || 'General'}
                   </Badge>
                 </div>
                 <div>
                   <Text size="sm" fw={500}>Primary Surgeon</Text>
                   <Text size="sm" c="dimmed">
-                    Dr. {selectedSurgery.primarySurgeon.firstName} {selectedSurgery.primarySurgeon.lastName}
+                    {selectedSurgery.surgeon || 'N/A'}
                   </Text>
                 </div>
                 <div>
                   <Text size="sm" fw={500}>Operating Room</Text>
-                  <Text size="sm" c="dimmed">OR {selectedSurgery.operatingRoom.roomNumber}</Text>
+                  <Text size="sm" c="dimmed">{selectedSurgery.operatingRoom || 'N/A'}</Text>
                 </div>
                 <div>
                   <Text size="sm" fw={500}>Scheduled Date</Text>
                   <Text size="sm" c="dimmed">
-                    {new Date(selectedSurgery.scheduledDate).toLocaleString()}
+                    {selectedSurgery.date || 'N/A'} {selectedSurgery.time || ''}
                   </Text>
                 </div>
                 <div>
                   <Text size="sm" fw={500}>Estimated Duration</Text>
                   <Text size="sm" c="dimmed">
-                    {formatDuration(selectedSurgery.estimatedDuration)}
+                    {selectedSurgery.duration || 0} minutes
                   </Text>
                 </div>
                 <div>
                   <Text size="sm" fw={500}>Priority</Text>
-                  <Badge color={getPriorityColor(selectedSurgery.priority)} variant="light">
-                    {selectedSurgery.priority.toUpperCase()}
+                  <Badge color={getPriorityColor(selectedSurgery.priority || 'routine')} variant="light">
+                    {(selectedSurgery.priority || 'routine').toUpperCase()}
                   </Badge>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Anesthesia Type</Text>
-                  <Text size="sm" c="dimmed">{selectedSurgery.anesthesiaType}</Text>
+                  <Text size="sm" fw={500}>Anesthesiologist</Text>
+                  <Text size="sm" c="dimmed">{selectedSurgery.anesthesiologist || 'N/A'}</Text>
                 </div>
               </SimpleGrid>
 
@@ -1049,21 +1020,18 @@ const SurgeryManagement = () => {
                 </>
               )}
 
-              {selectedSurgery.surgicalTeam && selectedSurgery.surgicalTeam.length > 0 && (
+              {selectedSurgery.assistants && selectedSurgery.assistants.length > 0 && (
                 <>
                   <Divider />
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Surgical Team</Text>
+                    <Text size="sm" fw={500} mb="sm">Assistants</Text>
                     <Stack gap="xs">
-                      {selectedSurgery.surgicalTeam.map((member) => (
-                        <Group key={member.id}>
+                      {selectedSurgery.assistants.map((assistant: string, index: number) => (
+                        <Group key={index}>
                           <Avatar size="sm" color="blue" radius="xl">
-                            {member.firstName[0]}{member.lastName[0]}
+                            {assistant[0]}
                           </Avatar>
-                          <div>
-                            <Text size="sm">{member.firstName} {member.lastName}</Text>
-                            <Text size="xs" c="dimmed">{member.role}</Text>
-                          </div>
+                          <Text size="sm">{assistant}</Text>
                         </Group>
                       ))}
                     </Stack>
@@ -1108,7 +1076,7 @@ const SurgeryManagement = () => {
             <Select
               label="Primary Surgeon"
               placeholder="Select surgeon"
-              data={mockStaff.filter(staff => staff.role === 'Doctor').map(surgeon => ({ 
+              data={mockStaff.filter((staff: any) => staff.role === 'Doctor' || staff.role === 'doctor').map((surgeon: any) => ({ 
                 value: surgeon.staffId, 
                 label: `Dr. ${surgeon.firstName} ${surgeon.lastName}` 
               }))}

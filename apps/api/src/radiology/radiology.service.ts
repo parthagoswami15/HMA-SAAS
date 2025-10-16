@@ -1,9 +1,140 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable, NotFoundException, Logger, BadRequestException } from '@nestjs/common';
+import { CustomPrismaService } from '../prisma/custom-prisma.service';
+import {
+  CreateStudyDto,
+  UpdateStudyDto,
+  CreateReportDto,
+  UpdateReportDto,
+  CreateRadiologyOrderDto,
+  UpdateRadiologyOrderDto,
+  RadiologyFilterDto,
+} from './dto';
 
 @Injectable()
 export class RadiologyService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(RadiologyService.name);
+
+  constructor(private prisma: CustomPrismaService) {}
+
+  /**
+   * Build where clause for radiology queries
+   */
+  private buildWhereClause(tenantId: string, filters: Partial<RadiologyFilterDto> = {}) {
+    const where: any = {
+      tenantId,
+      isActive: true,
+    };
+
+    if (filters.patientId) {
+      where.patientId = filters.patientId;
+    }
+
+    if (filters.status) {
+      where.status = filters.status;
+    }
+
+    if (filters.priority) {
+      where.priority = filters.priority;
+    }
+
+    return where;
+  }
+
+  /**
+   * Get standard includes for study queries
+   */
+  private getStudyIncludes() {
+    return {
+      patient: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          medicalRecordNumber: true,
+          email: true,
+          phone: true,
+        },
+      },
+      modality: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          description: true,
+        },
+      },
+    };
+  }
+
+  /**
+   * Get standard includes for report queries
+   */
+  private getReportIncludes() {
+    return {
+      study: {
+        include: {
+          patient: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              medicalRecordNumber: true,
+            },
+          },
+          modality: {
+            select: {
+              id: true,
+              name: true,
+              type: true,
+            },
+          },
+        },
+      },
+    };
+  }
+
+  /**
+   * Get standard includes for order queries
+   */
+  private getOrderIncludes() {
+    return {
+      patient: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          medicalRecordNumber: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          specialization: true,
+        },
+      },
+      modality: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+        },
+      },
+    };
+  }
+
+  /**
+   * Validate pagination parameters
+   */
+  private validatePaginationParams(page: number, limit: number) {
+    if (page < 1) {
+      throw new BadRequestException('Page must be greater than 0');
+    }
+    if (limit < 1 || limit > 100) {
+      throw new BadRequestException('Limit must be between 1 and 100');
+    }
+  }
 
   // Studies
   async createStudy(createDto: any, tenantId: string) {

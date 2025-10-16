@@ -1,4 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { PharmacyService } from './pharmacy.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
@@ -8,9 +26,12 @@ import {
   UpdatePharmacyOrderDto,
   UpdatePharmacyOrderItemDto,
   PharmacyOrderQueryDto,
-  MedicationQueryDto
-} from './dto/pharmacy.dto';
+  MedicationQueryDto,
+} from './dto';
+import { TenantId } from '../shared/decorators/tenant-id.decorator';
 
+@ApiTags('Pharmacy')
+@ApiBearerAuth()
 @Controller('pharmacy')
 @UseGuards(JwtAuthGuard)
 export class PharmacyController {
@@ -19,69 +40,147 @@ export class PharmacyController {
   // ==================== Medications Endpoints ====================
 
   @Post('medications')
-  async createMedication(@Body() createMedicationDto: CreateMedicationDto, @Request() req) {
-    return this.pharmacyService.createMedication(createMedicationDto, req.user.tenantId);
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new medication' })
+  @ApiResponse({ status: 201, description: 'Medication created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  async createMedication(
+    @Body() createMedicationDto: CreateMedicationDto,
+    @TenantId() tenantId: string,
+  ) {
+    return this.pharmacyService.createMedication(createMedicationDto, tenantId);
   }
 
   @Get('medications')
-  async findAllMedications(@Request() req, @Query() query: MedicationQueryDto) {
-    return this.pharmacyService.findAllMedications(req.user.tenantId, query);
+  @ApiOperation({ summary: 'Get all medications with pagination' })
+  @ApiResponse({ status: 200, description: 'Medications retrieved successfully' })
+  async findAllMedications(
+    @TenantId() tenantId: string,
+    @Query() query: MedicationQueryDto,
+  ) {
+    return this.pharmacyService.findAllMedications(tenantId, query);
   }
 
   @Get('medications/:id')
-  async findOneMedication(@Param('id') id: string, @Request() req) {
-    return this.pharmacyService.findOneMedication(id, req.user.tenantId);
+  @ApiOperation({ summary: 'Get medication by ID' })
+  @ApiResponse({ status: 200, description: 'Medication retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Medication not found' })
+  async findOneMedication(
+    @Param('id') id: string,
+    @TenantId() tenantId: string,
+  ) {
+    return this.pharmacyService.findOneMedication(id, tenantId);
   }
 
   @Patch('medications/:id')
-  async updateMedication(@Param('id') id: string, @Body() updateMedicationDto: UpdateMedicationDto, @Request() req) {
-    return this.pharmacyService.updateMedication(id, updateMedicationDto, req.user.tenantId);
+  @ApiOperation({ summary: 'Update medication by ID' })
+  @ApiResponse({ status: 200, description: 'Medication updated successfully' })
+  @ApiResponse({ status: 404, description: 'Medication not found' })
+  async updateMedication(
+    @Param('id') id: string,
+    @Body() updateMedicationDto: UpdateMedicationDto,
+    @TenantId() tenantId: string,
+  ) {
+    return this.pharmacyService.updateMedication(id, updateMedicationDto, tenantId);
   }
 
   @Delete('medications/:id')
-  async removeMedication(@Param('id') id: string, @Request() req) {
-    return this.pharmacyService.removeMedication(id, req.user.tenantId);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Soft delete medication by ID' })
+  @ApiResponse({ status: 204, description: 'Medication deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Medication not found' })
+  async removeMedication(
+    @Param('id') id: string,
+    @TenantId() tenantId: string,
+  ) {
+    return this.pharmacyService.removeMedication(id, tenantId);
   }
 
   // ==================== Pharmacy Orders Endpoints ====================
 
   @Post('orders')
-  async createPharmacyOrder(@Body() createPharmacyOrderDto: CreatePharmacyOrderDto, @Request() req) {
-    return this.pharmacyService.createPharmacyOrder(createPharmacyOrderDto, req.user.tenantId);
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new pharmacy order' })
+  @ApiResponse({ status: 201, description: 'Pharmacy order created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  async createPharmacyOrder(
+    @Body() createPharmacyOrderDto: CreatePharmacyOrderDto,
+    @TenantId() tenantId: string,
+  ) {
+    return this.pharmacyService.createPharmacyOrder(createPharmacyOrderDto, tenantId);
   }
 
   @Get('orders')
-  async findAllPharmacyOrders(@Request() req, @Query() query: PharmacyOrderQueryDto) {
-    return this.pharmacyService.findAllPharmacyOrders(req.user.tenantId, query);
+  @ApiOperation({ summary: 'Get all pharmacy orders with pagination' })
+  @ApiResponse({ status: 200, description: 'Pharmacy orders retrieved successfully' })
+  async findAllPharmacyOrders(
+    @TenantId() tenantId: string,
+    @Query() query: PharmacyOrderQueryDto,
+  ) {
+    return this.pharmacyService.findAllPharmacyOrders(tenantId, query);
   }
 
   @Get('orders/stats')
-  async getPharmacyStats(@Request() req) {
-    return this.pharmacyService.getPharmacyStats(req.user.tenantId);
+  @ApiOperation({ summary: 'Get pharmacy statistics' })
+  @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
+  async getPharmacyStats(@TenantId() tenantId: string) {
+    return this.pharmacyService.getPharmacyStats(tenantId);
   }
 
   @Get('orders/:id')
-  async findOnePharmacyOrder(@Param('id') id: string, @Request() req) {
-    return this.pharmacyService.findOnePharmacyOrder(id, req.user.tenantId);
+  @ApiOperation({ summary: 'Get pharmacy order by ID' })
+  @ApiResponse({ status: 200, description: 'Pharmacy order retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Pharmacy order not found' })
+  async findOnePharmacyOrder(
+    @Param('id') id: string,
+    @TenantId() tenantId: string,
+  ) {
+    return this.pharmacyService.findOnePharmacyOrder(id, tenantId);
   }
 
   @Patch('orders/:id')
-  async updatePharmacyOrder(@Param('id') id: string, @Body() updatePharmacyOrderDto: UpdatePharmacyOrderDto, @Request() req) {
-    return this.pharmacyService.updatePharmacyOrder(id, updatePharmacyOrderDto, req.user.tenantId);
+  @ApiOperation({ summary: 'Update pharmacy order by ID' })
+  @ApiResponse({ status: 200, description: 'Pharmacy order updated successfully' })
+  @ApiResponse({ status: 404, description: 'Pharmacy order not found' })
+  async updatePharmacyOrder(
+    @Param('id') id: string,
+    @Body() updatePharmacyOrderDto: UpdatePharmacyOrderDto,
+    @TenantId() tenantId: string,
+  ) {
+    return this.pharmacyService.updatePharmacyOrder(
+      id,
+      updatePharmacyOrderDto,
+      tenantId,
+    );
   }
 
   @Patch('orders/:orderId/items/:itemId')
+  @ApiOperation({ summary: 'Update pharmacy order item status' })
+  @ApiResponse({ status: 200, description: 'Order item updated successfully' })
+  @ApiResponse({ status: 404, description: 'Order or item not found' })
   async updatePharmacyOrderItem(
     @Param('orderId') orderId: string,
     @Param('itemId') itemId: string,
     @Body() updateItemDto: UpdatePharmacyOrderItemDto,
-    @Request() req
+    @TenantId() tenantId: string,
   ) {
-    return this.pharmacyService.updatePharmacyOrderItem(orderId, itemId, updateItemDto, req.user.tenantId);
+    return this.pharmacyService.updatePharmacyOrderItem(
+      orderId,
+      itemId,
+      updateItemDto,
+      tenantId,
+    );
   }
 
   @Delete('orders/:id')
-  async cancelPharmacyOrder(@Param('id') id: string, @Request() req) {
-    return this.pharmacyService.cancelPharmacyOrder(id, req.user.tenantId);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Cancel pharmacy order by ID' })
+  @ApiResponse({ status: 204, description: 'Pharmacy order cancelled successfully' })
+  @ApiResponse({ status: 404, description: 'Pharmacy order not found' })
+  async cancelPharmacyOrder(
+    @Param('id') id: string,
+    @TenantId() tenantId: string,
+  ) {
+    return this.pharmacyService.cancelPharmacyOrder(id, tenantId);
   }
 }

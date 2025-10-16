@@ -6,7 +6,9 @@ export class InventoryService {
   constructor(private prisma: PrismaService) {}
 
   async create(createDto: any, tenantId: string) {
-    const item = await this.prisma.inventoryItem.create({ data: { ...createDto, tenantId } });
+    const item = await this.prisma.inventoryItem.create({
+      data: { ...createDto, tenantId },
+    });
     return { success: true, message: 'Item created', data: item };
   }
 
@@ -26,7 +28,15 @@ export class InventoryService {
     ]);
     return {
       success: true,
-      data: { items, pagination: { total, page: Number(page), limit: Number(limit), pages: Math.ceil(total / limit) } },
+      data: {
+        items,
+        pagination: {
+          total,
+          page: Number(page),
+          limit: Number(limit),
+          pages: Math.ceil(total / limit),
+        },
+      },
     };
   }
 
@@ -43,20 +53,29 @@ export class InventoryService {
   }
 
   async findOne(id: string, tenantId: string) {
-    const item = await this.prisma.inventoryItem.findFirst({ where: { id, tenantId, isActive: true } });
+    const item = await this.prisma.inventoryItem.findFirst({
+      where: { id, tenantId, isActive: true },
+    });
     if (!item) throw new NotFoundException('Item not found');
     return { success: true, data: item };
   }
 
   async update(id: string, updateDto: any, tenantId: string) {
-    const item = await this.prisma.inventoryItem.findFirst({ where: { id, tenantId } });
+    const item = await this.prisma.inventoryItem.findFirst({
+      where: { id, tenantId },
+    });
     if (!item) throw new NotFoundException('Item not found');
-    const updated = await this.prisma.inventoryItem.update({ where: { id }, data: updateDto });
+    const updated = await this.prisma.inventoryItem.update({
+      where: { id },
+      data: updateDto,
+    });
     return { success: true, message: 'Item updated', data: updated };
   }
 
   async adjustStock(id: string, quantity: number, tenantId: string) {
-    const item = await this.prisma.inventoryItem.findFirst({ where: { id, tenantId } });
+    const item = await this.prisma.inventoryItem.findFirst({
+      where: { id, tenantId },
+    });
     if (!item) throw new NotFoundException('Item not found');
     const updated = await this.prisma.inventoryItem.update({
       where: { id },
@@ -66,9 +85,14 @@ export class InventoryService {
   }
 
   async remove(id: string, tenantId: string) {
-    const item = await this.prisma.inventoryItem.findFirst({ where: { id, tenantId } });
+    const item = await this.prisma.inventoryItem.findFirst({
+      where: { id, tenantId },
+    });
     if (!item) throw new NotFoundException('Item not found');
-    await this.prisma.inventoryItem.update({ where: { id }, data: { isActive: false } });
+    await this.prisma.inventoryItem.update({
+      where: { id },
+      data: { isActive: false },
+    });
     return { success: true, message: 'Item deleted' };
   }
 
@@ -87,6 +111,9 @@ export class InventoryService {
         _sum: { quantity: true },
       }),
     ]);
-    return { success: true, data: { total, lowStock, totalQuantity: totalValue._sum.quantity || 0 } };
+    return {
+      success: true,
+      data: { total, lowStock, totalQuantity: totalValue._sum.quantity || 0 },
+    };
   }
 }

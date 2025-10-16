@@ -1,39 +1,35 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { CustomPrismaService } from '../prisma/custom-prisma.service';
-import { CreatePatientDto, UpdatePatientDto } from './patients.controller';
+import { CreatePatientDto, UpdatePatientDto, PatientQueryDto } from './dto';
 
 @Injectable()
 export class PatientsService {
-  constructor(private prisma: CustomPrismaService) {}
+  private readonly logger = new Logger(PatientsService.name);
+
+  constructor(private readonly prisma: CustomPrismaService) {}
 
   async create(createPatientDto: CreatePatientDto, tenantId: string) {
     try {
-      // Generate medical record number
       const mrn = await this.generateMedicalRecordNumber(tenantId);
-      
-      // Prepare data with proper type conversions
-      const data: any = {
+
+      const data = {
         ...createPatientDto,
         medicalRecordNumber: mrn,
         tenantId,
-        gender: createPatientDto.gender as any, // Cast to enum
-        bloodType: createPatientDto.bloodType as any,
-        maritalStatus: createPatientDto.maritalStatus as any,
         country: createPatientDto.country || 'India',
+        dateOfBirth: createPatientDto.dateOfBirth
+          ? new Date(createPatientDto.dateOfBirth)
+          : undefined,
       };
-      
-      // Convert dateOfBirth string to Date object if provided
-      if (createPatientDto.dateOfBirth) {
-        data.dateOfBirth = new Date(createPatientDto.dateOfBirth);
-      }
-      
-      // Remove fields that don't exist in Prisma schema
-      delete data.emergencyContactName;
-      delete data.emergencyContactPhone;
-      delete data.emergencyContactRelation;
-      
-      // Create patient with proper enum values
+
       const patient = await this.prisma.patient.create({ data });
+
+      this.logger.log(`Patient created: ${patient.id} for tenant: ${tenantId}`);
 
       return {
         success: true,
@@ -41,12 +37,12 @@ export class PatientsService {
         data: patient,
       };
     } catch (error) {
-      console.error('Error creating patient:', error);
+      this.logger.error(`Error creating patient: ${error.message}`, error.stack);
       throw new BadRequestException('Failed to create patient');
     }
   }
 
-  async findAll(tenantId: string, query: any = {}) {
+  async findAll(tenantId: string, query: PatientQueryDto) {
     const { page = 1, limit = 10, search, status = 'active' } = query;
     const skip = (page - 1) * limit;
 
@@ -69,7 +65,7 @@ export class PatientsService {
       this.prisma.patient.findMany({
         where,
         skip,
-        take: parseInt(limit),
+        take: limit,
         orderBy: { createdAt: 'desc' },
         select: {
           id: true,
@@ -96,8 +92,8 @@ export class PatientsService {
         patients,
         pagination: {
           total,
-          page: parseInt(page),
-          limit: parseInt(limit),
+          page: page,
+          limit: limit,
           pages: Math.ceil(total / limit),
         },
       },
@@ -178,30 +174,25 @@ export class PatientsService {
     };
   }
 
-  async update(id: string, updatePatientDto: UpdatePatientDto, tenantId: string) {
+  async update(
+    id: string,
+    updatePatientDto: UpdatePatientDto,
+    tenantId: string,
+  ) {
     try {
-      // Prepare data with proper type conversions
-      const data: any = {
+      const data = {
         ...updatePatientDto,
-        gender: updatePatientDto.gender as any,
-        bloodType: updatePatientDto.bloodType as any,
-        maritalStatus: updatePatientDto.maritalStatus as any,
+        dateOfBirth: updatePatientDto.dateOfBirth
+          ? new Date(updatePatientDto.dateOfBirth)
+          : undefined,
       };
-      
-      // Convert dateOfBirth string to Date object if provided
-      if (updatePatientDto.dateOfBirth) {
-        data.dateOfBirth = new Date(updatePatientDto.dateOfBirth);
-      }
-      
-      // Remove fields that don't exist in Prisma schema
-      delete data.emergencyContactName;
-      delete data.emergencyContactPhone;
-      delete data.emergencyContactRelation;
-      
+
       const patient = await this.prisma.patient.update({
         where: { id, tenantId },
         data,
       });
+
+      this.logger.log(`Patient updated: ${id} for tenant: ${tenantId}`);
 
       return {
         success: true,
@@ -209,14 +200,13 @@ export class PatientsService {
         data: patient,
       };
     } catch (error) {
-      console.error('Error updating patient:', error);
+      this.logger.error(`Error updating patient: ${error.message}`, error.stack);
       throw new BadRequestException('Failed to update patient');
     }
   }
 
   async remove(id: string, tenantId: string) {
     try {
-      // Soft delete
       await this.prisma.patient.update({
         where: { id, tenantId },
         data: {
@@ -225,42 +215,40 @@ export class PatientsService {
         },
       });
 
+      this.logger.log(`Patient soft deleted: ${id} for tenant: ${tenantId}`);
+
       return {
         success: true,
         message: 'Patient deleted successfully',
       };
     } catch (error) {
-      console.error('Error deleting patient:', error);
+      this.logger.error(`Error deleting patient: ${error.message}`, error.stack);
       throw new BadRequestException('Failed to delete patient');
     }
   }
 
   async getStats(tenantId: string) {
-    const [
-      totalPatients,
-      activePatients,
-      todaysPatients,
-      weekPatients,
-    ] = await Promise.all([
-      this.prisma.patient.count({ where: { tenantId } }),
-      this.prisma.patient.count({ where: { tenantId, isActive: true } }),
-      this.prisma.patient.count({
-        where: {
-          tenantId,
-          createdAt: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
+    const [totalPatients, activePatients, todaysPatients, weekPatients] =
+      await Promise.all([
+        this.prisma.patient.count({ where: { tenantId } }),
+        this.prisma.patient.count({ where: { tenantId, isActive: true } }),
+        this.prisma.patient.count({
+          where: {
+            tenantId,
+            createdAt: {
+              gte: new Date(new Date().setHours(0, 0, 0, 0)),
+            },
           },
-        },
-      }),
-      this.prisma.patient.count({
-        where: {
-          tenantId,
-          createdAt: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        }),
+        this.prisma.patient.count({
+          where: {
+            tenantId,
+            createdAt: {
+              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+            },
           },
-        },
-      }),
-    ]);
+        }),
+      ]);
 
     return {
       success: true,
@@ -278,11 +266,13 @@ export class PatientsService {
     const date = new Date();
     const year = date.getFullYear().toString().slice(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    
+
     // Get the count of patients for this tenant to generate sequential number
-    const patientCount = await this.prisma.patient.count({ where: { tenantId } });
+    const patientCount = await this.prisma.patient.count({
+      where: { tenantId },
+    });
     const sequence = (patientCount + 1).toString().padStart(6, '0');
-    
+
     return `${prefix}${year}${month}${sequence}`;
   }
 }

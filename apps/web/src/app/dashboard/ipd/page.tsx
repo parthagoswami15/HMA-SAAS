@@ -32,9 +32,9 @@ import {
   Stack
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { notifications } from '@mantine/notifications';
+// import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
-import { LineChart, BarChart, DonutChart, AreaChart } from '@mantine/charts';
+// import { LineChart, BarChart, DonutChart, AreaChart } from '@mantine/charts';
 import {
   IconActivity,
   IconAlertCircle,
@@ -909,73 +909,33 @@ const IPDManagement = () => {
             {/* Occupancy Trends */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Daily Occupancy Trends</Title>
-              <LineChart
-                h={200}
-                data={[
-                  { date: 'Mon', occupancy: 85 },
-                  { date: 'Tue', occupancy: 88 },
-                  { date: 'Wed', occupancy: 82 },
-                  { date: 'Thu', occupancy: 90 },
-                  { date: 'Fri', occupancy: 87 },
-                  { date: 'Sat', occupancy: 84 },
-                  { date: 'Sun', occupancy: 86 }
-                ]}
-                dataKey="date"
-                series={[{ name: 'occupancy', color: 'blue.6' }]}
-                curveType="linear"
-              />
+              <Text c="dimmed" ta="center" p="xl">
+                Chart component temporarily disabled
+              </Text>
             </Card>
 
             {/* Ward Distribution */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Patient Distribution by Ward</Title>
-              <DonutChart
-                data={[
-                  { name: 'General Ward', value: 22, color: 'blue' },
-                  { name: 'ICU', value: 5, color: 'red' },
-                  { name: 'Private Ward', value: 8, color: 'green' },
-                  { name: 'HDU', value: 3, color: 'orange' }
-                ]}
-                size={200}
-                thickness={40}
-                withLabels
-              />
+              <Text c="dimmed" ta="center" p="xl">
+                Chart component temporarily disabled
+              </Text>
             </Card>
 
             {/* Length of Stay */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Average Length of Stay by Department</Title>
-              <BarChart
-                h={200}
-                data={[
-                  { department: 'Cardiology', los: 8.5 },
-                  { department: 'Orthopedics', los: 6.2 },
-                  { department: 'General Surgery', los: 4.8 },
-                  { department: 'Internal Medicine', los: 5.5 },
-                  { department: 'ICU', los: 12.3 }
-                ]}
-                dataKey="department"
-                series={[{ name: 'los', color: 'teal.6' }]}
-              />
+              <Text c="dimmed" ta="center" p="xl">
+                Chart component temporarily disabled
+              </Text>
             </Card>
 
             {/* Revenue Analysis */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">IPD Revenue Trends</Title>
-              <AreaChart
-                h={200}
-                data={[
-                  { month: 'Jan', revenue: 850000 },
-                  { month: 'Feb', revenue: 920000 },
-                  { month: 'Mar', revenue: 780000 },
-                  { month: 'Apr', revenue: 1100000 },
-                  { month: 'May', revenue: 950000 },
-                  { month: 'Jun', revenue: 1050000 }
-                ]}
-                dataKey="month"
-                series={[{ name: 'revenue', color: 'green.6' }]}
-                curveType="bump"
-              />
+              <Text c="dimmed" ta="center" p="xl">
+                Chart component temporarily disabled
+              </Text>
             </Card>
           </SimpleGrid>
         </Tabs.Panel>
@@ -1246,11 +1206,12 @@ const IPDManagement = () => {
               Cancel
             </Button>
             <Button onClick={() => {
-              notifications.show({
-                title: 'Patient Admitted',
-                message: 'New IPD admission has been successfully created',
-                color: 'green',
-              });
+              // notifications.show({
+              //   title: 'Patient Admitted',
+              //   message: 'New IPD admission has been successfully created',
+              //   color: 'green',
+              // });
+              console.log('Patient Admitted');
               closeAdmission();
             }}>
               Admit Patient

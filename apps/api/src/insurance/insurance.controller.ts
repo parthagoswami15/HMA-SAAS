@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { InsuranceService } from './insurance.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -28,7 +38,11 @@ export class InsuranceController {
   }
 
   @Patch('claims/:id/status')
-  updateStatus(@Param('id') id: string, @Body() statusDto: { status: string }, @Req() req: any) {
+  updateStatus(
+    @Param('id') id: string,
+    @Body() statusDto: { status: string },
+    @Req() req: any,
+  ) {
     return this.service.updateStatus(id, statusDto.status, req.user.tenantId);
   }
 

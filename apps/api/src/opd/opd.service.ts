@@ -1,82 +1,69 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { CustomPrismaService } from '../prisma/custom-prisma.service';
-import { CreateOpdVisitDto, UpdateOpdVisitDto } from './opd.controller';
+import { Prisma } from '@prisma/client';
+import {
+  CreateOpdVisitDto,
+  UpdateOpdVisitDto,
+  OpdVisitFilterDto,
+  OpdQueueFilterDto,
+  OpdVisitStatus,
+} from './dto';
 
 @Injectable()
 export class OpdService {
+  private readonly logger = new Logger(OpdService.name);
+
   constructor(private prisma: CustomPrismaService) {}
 
-  // OPD visits are essentially appointments with status tracking
-  async createVisit(createDto: CreateOpdVisitDto, tenantId: string) {
-    try {
-      // Create appointment for OPD visit
-      const visit = await this.prisma.appointment.create({
-        data: {
-          patientId: createDto.patientId,
-          doctorId: createDto.doctorId,
-          departmentId: createDto.departmentId,
-          startTime: new Date(),
-          endTime: new Date(Date.now() + 30 * 60000), // 30 min default
-          status: (createDto.status || 'SCHEDULED') as any,
-          reason: createDto.chiefComplaint,
-          notes: createDto.notes,
-          tenantId,
-        },
-        include: {
-          patient: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              phone: true,
-              medicalRecordNumber: true,
-            },
-          },
-          doctor: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              specialization: true,
-            },
-          },
-          department: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        },
-      });
+  // ==================== Helper Methods ====================
 
-      return {
-        success: true,
-        message: 'OPD visit created successfully',
-        data: visit,
-      };
-    } catch (error) {
-      console.error('Error creating OPD visit:', error);
-      throw error;
-    }
+  /**
+   * Get OPD visit include options
+   */
+  private getOpdVisitIncludes() {
+    return {
+      patient: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          phone: true,
+          email: true,
+          medicalRecordNumber: true,
+          dateOfBirth: true,
+          gender: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          specialization: true,
+          licenseNumber: true,
+        },
+      },
+      department: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    };
   }
 
-  async findAllVisits(tenantId: string, query: any = {}) {
-    const {
-      page = 1,
-      limit = 10,
-      status,
-      doctorId,
-      departmentId,
-      date,
-    } = query;
-    const skip = (page - 1) * limit;
-
-    const where: any = {
+  /**
+   * Build where clause for OPD visit queries
+   */
+  private buildOpdVisitWhereClause(tenantId: string, filters: OpdVisitFilterDto): Prisma.AppointmentWhereInput {
+    const { status, doctorId, departmentId, date, patientId, search } = filters;
+    
+    const where: Prisma.AppointmentWhereInput = {
       tenantId,
     };
 
     if (status) {
-      where.status = status;
+      where.status = status as any;
     }
 
     if (doctorId) {
@@ -85,6 +72,10 @@ export class OpdService {
 
     if (departmentId) {
       where.departmentId = departmentId;
+    }
+
+    if (patientId) {
+      where.patientId = patientId;
     }
 
     if (date) {
@@ -98,19 +89,272 @@ export class OpdService {
       };
     }
 
-    const [visits, total] = await Promise.all([
-      this.prisma.appointment.findMany({
+    if (search) {
+      where.OR = [
+        { reason: { contains: search, mode: 'insensitive' } },
+        { notes: { contains: search, mode: 'insensitive' } },
+        { patient: {
+            OR: [
+              { firstName: { contains: search, mode: 'insensitive' } },
+              { lastName: { contains: search, mode: 'insensitive' } },
+              { medicalRecordNumber: { contains: search, mode: 'insensitive' } },
+            ],
+          },
+        },
+      ];
+    }
+
+    return where;
+  }
+
+  /**
+   * Validate pagination parameters
+   */
+  private validatePaginationParams(page: any, limit: any): { page: number; limit: number } {
+    const validatedPage = Math.max(1, parseInt(page?.toString() || '1', 10));
+    const validatedLimit = Math.min(100, Math.max(1, parseInt(limit?.toString() || '10', 10)));
+    
+    return { page: validatedPage, limit: validatedLimit };
+  }
+
+  /**
+   * Create a new OPD visit
+   */
+  async createVisit(createDto: CreateOpdVisitDto, tenantId: string) {
+    try {
+      this.logger.log(`Creating OPD visit for patient: ${createDto.patientId}, doctor: ${createDto.doctorId}, tenant: ${tenantId}`);
+      
+      // Verify patient exists
+      const patient = await this.prisma.patient.findFirst({
+        where: { id: createDto.patientId, tenantId },
+      });
+      if (!patient) {
+        throw new NotFoundException('Patient not found');
+      }
+
+      // Verify doctor exists
+      const doctor = await this.prisma.staff.findFirst({
+        where: { id: createDto.doctorId, tenantId },
+      });
+      if (!doctor) {
+        throw new NotFoundException('Doctor not found');
+      }
+
+      // Create appointment for OPD visit
+      const visit = await this.prisma.appointment.create({
+        data: {
+          patientId: createDto.patientId,
+          doctorId: createDto.doctorId,
+          departmentId: createDto.departmentId,
+          startTime: new Date(),
+          endTime: new Date(Date.now() + 30 * 60000), // 30 min default
+          status: (createDto.status || OpdVisitStatus.WAITING) as any,
+          reason: createDto.chiefComplaint,
+          notes: createDto.notes,
+          tenantId,
+        },
+        include: this.getOpdVisitIncludes(),
+      });
+
+      this.logger.log(`Successfully created OPD visit with ID: ${visit.id}`);
+      return {
+        success: true,
+        message: 'OPD visit created successfully',
+        data: visit,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      this.logger.error('Error creating OPD visit:', error.message, error.stack);
+      throw new BadRequestException(
+        error.message || 'Failed to create OPD visit',
+      );
+    }
+  }
+
+  /**
+   * Get all OPD visits with filters
+   */
+  async findAllVisits(tenantId: string, filters: OpdVisitFilterDto = {}) {
+    try {
+      this.logger.log(`Finding OPD visits for tenant: ${tenantId} with filters:`, filters);
+      
+      const { page: rawPage, limit: rawLimit } = filters;
+      const { page, limit } = this.validatePaginationParams(rawPage, rawLimit);
+      const skip = (page - 1) * limit;
+
+      const where = this.buildOpdVisitWhereClause(tenantId, filters);
+
+      const [visits, total] = await Promise.all([
+        this.prisma.appointment.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { startTime: 'desc' },
+          include: this.getOpdVisitIncludes(),
+        }),
+        this.prisma.appointment.count({ where }),
+      ]);
+
+      this.logger.log(`Found ${visits.length} OPD visits out of ${total} total`);
+      return {
+        success: true,
+        data: {
+          visits,
+          pagination: {
+            total,
+            page,
+            limit,
+            pages: Math.ceil(total / limit),
+          },
+        },
+      };
+    } catch (error) {
+      this.logger.error('Error finding OPD visits:', error.message, error.stack);
+      throw new BadRequestException('Failed to fetch OPD visits');
+    }
+  }
+
+  /**
+   * Get OPD visit by ID
+   */
+  async findOneVisit(id: string, tenantId: string) {
+    try {
+      this.logger.log(`Finding OPD visit with ID: ${id} for tenant: ${tenantId}`);
+      
+      const visit = await this.prisma.appointment.findFirst({
+        where: { id, tenantId },
+        include: this.getOpdVisitIncludes(),
+      });
+
+      if (!visit) {
+        this.logger.warn(`OPD visit not found with ID: ${id} for tenant: ${tenantId}`);
+        throw new NotFoundException('OPD visit not found');
+      }
+
+      this.logger.log(`Successfully found OPD visit: ${visit.id}`);
+      return {
+        success: true,
+        data: visit,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      this.logger.error('Error finding OPD visit:', error.message, error.stack);
+      throw new BadRequestException('Failed to fetch OPD visit');
+    }
+  }
+
+  /**
+   * Update OPD visit
+   */
+  async updateVisit(
+    id: string,
+    updateDto: UpdateOpdVisitDto,
+    tenantId: string,
+  ) {
+    try {
+      this.logger.log(`Updating OPD visit with ID: ${id} for tenant: ${tenantId}`);
+      
+      const updateData: any = {};
+      if (updateDto.doctorId) updateData.doctorId = updateDto.doctorId;
+      if (updateDto.departmentId) updateData.departmentId = updateDto.departmentId;
+      if (updateDto.chiefComplaint) updateData.reason = updateDto.chiefComplaint;
+      if (updateDto.notes) updateData.notes = updateDto.notes;
+      if (updateDto.status) updateData.status = updateDto.status;
+      if (updateDto.followUpDate) updateData.followUpDate = new Date(updateDto.followUpDate);
+
+      const visit = await this.prisma.appointment.update({
+        where: { id, tenantId },
+        data: updateData,
+        include: this.getOpdVisitIncludes(),
+      });
+
+      this.logger.log(`Successfully updated OPD visit: ${visit.id}`);
+      return {
+        success: true,
+        message: 'OPD visit updated successfully',
+        data: visit,
+      };
+    } catch (error) {
+      this.logger.error('Error updating OPD visit:', error.message, error.stack);
+      if (error.code === 'P2025') {
+        throw new NotFoundException('OPD visit not found');
+      }
+      throw new BadRequestException('Failed to update OPD visit');
+    }
+  }
+
+  /**
+   * Cancel OPD visit
+   */
+  async removeVisit(id: string, tenantId: string) {
+    try {
+      this.logger.log(`Cancelling OPD visit with ID: ${id} for tenant: ${tenantId}`);
+      
+      await this.prisma.appointment.update({
+        where: { id, tenantId },
+        data: {
+          status: OpdVisitStatus.CANCELLED as any,
+        },
+      });
+
+      this.logger.log(`Successfully cancelled OPD visit: ${id}`);
+      return {
+        success: true,
+        message: 'OPD visit cancelled successfully',
+      };
+    } catch (error) {
+      this.logger.error('Error cancelling OPD visit:', error.message, error.stack);
+      if (error.code === 'P2025') {
+        throw new NotFoundException('OPD visit not found');
+      }
+      throw new BadRequestException('Failed to cancel OPD visit');
+    }
+  }
+
+  /**
+   * Get OPD queue
+   */
+  async getQueue(tenantId: string, filters: OpdQueueFilterDto = {}) {
+    try {
+      this.logger.log(`Getting OPD queue for tenant: ${tenantId} with filters:`, filters);
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const where: any = {
+        tenantId,
+        startTime: {
+          gte: today,
+          lt: tomorrow,
+        },
+        status: {
+          in: [OpdVisitStatus.WAITING, OpdVisitStatus.ARRIVED],
+        },
+      };
+
+      if (filters.doctorId) {
+        where.doctorId = filters.doctorId;
+      }
+
+      if (filters.departmentId) {
+        where.departmentId = filters.departmentId;
+      }
+
+      const queue = await this.prisma.appointment.findMany({
         where,
-        skip,
-        take: parseInt(limit),
-        orderBy: { startTime: 'desc' },
+        orderBy: { startTime: 'asc' },
         include: {
           patient: {
             select: {
               id: true,
               firstName: true,
               lastName: true,
-              phone: true,
               medicalRecordNumber: true,
             },
           },
@@ -129,216 +373,95 @@ export class OpdService {
             },
           },
         },
-      }),
-      this.prisma.appointment.count({ where }),
-    ]);
+      });
 
-    return {
-      success: true,
-      data: {
-        visits,
-        pagination: {
-          total,
-          page: parseInt(page),
-          limit: parseInt(limit),
-          pages: Math.ceil(total / limit),
-        },
-      },
-    };
-  }
-
-  async findOneVisit(id: string, tenantId: string) {
-    const visit = await this.prisma.appointment.findFirst({
-      where: { id, tenantId },
-      include: {
-        patient: true,
-        doctor: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            specialization: true,
-            licenseNumber: true,
-          },
-        },
-        department: true,
-      },
-    });
-
-    if (!visit) {
-      throw new NotFoundException('OPD visit not found');
-    }
-
-    return {
-      success: true,
-      data: visit,
-    };
-  }
-
-  async updateVisit(
-    id: string,
-    updateDto: UpdateOpdVisitDto,
-    tenantId: string,
-  ) {
-    try {
-      const visit = await this.prisma.appointment.update({
-        where: { id, tenantId },
+      this.logger.log(`Found ${queue.length} patients in OPD queue`);
+      return {
+        success: true,
         data: {
-          ...(updateDto.doctorId && { doctorId: updateDto.doctorId }),
-          ...(updateDto.departmentId && {
-            departmentId: updateDto.departmentId,
-          }),
-          ...(updateDto.chiefComplaint && { reason: updateDto.chiefComplaint }),
-          ...(updateDto.notes && { notes: updateDto.notes }),
-          ...(updateDto.status && { status: updateDto.status as any }),
+          queue,
+          count: queue.length,
         },
-        include: {
-          patient: true,
-          doctor: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              specialization: true,
+      };
+    } catch (error) {
+      this.logger.error('Error getting OPD queue:', error.message, error.stack);
+      throw new BadRequestException('Failed to fetch OPD queue');
+    }
+  }
+
+  /**
+   * Get OPD statistics
+   */
+  async getStats(tenantId: string) {
+    try {
+      this.logger.log(`Getting OPD stats for tenant: ${tenantId}`);
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const [totalToday, completed, waiting, inConsultation, cancelled] = await Promise.all([
+        this.prisma.appointment.count({
+          where: {
+            tenantId,
+            startTime: {
+              gte: today,
             },
           },
-        },
-      });
+        }),
+        this.prisma.appointment.count({
+          where: {
+            tenantId,
+            startTime: {
+              gte: today,
+            },
+            status: OpdVisitStatus.COMPLETED,
+          },
+        }),
+        this.prisma.appointment.count({
+          where: {
+            tenantId,
+            startTime: {
+              gte: today,
+            },
+            status: {
+              in: ['WAITING' as any, 'ARRIVED' as any],
+            },
+          },
+        }),
+        this.prisma.appointment.count({
+          where: {
+            tenantId,
+            startTime: {
+              gte: today,
+            },
+            status: 'IN_PROGRESS' as any,
+          },
+        }),
+        this.prisma.appointment.count({
+          where: {
+            tenantId,
+            startTime: {
+              gte: today,
+            },
+            status: OpdVisitStatus.CANCELLED,
+          },
+        }),
+      ]);
 
+      this.logger.log(`Successfully retrieved OPD stats for tenant: ${tenantId}`);
       return {
         success: true,
-        message: 'OPD visit updated successfully',
-        data: visit,
-      };
-    } catch (error) {
-      console.error('Error updating OPD visit:', error);
-      throw error;
-    }
-  }
-
-  async removeVisit(id: string, tenantId: string) {
-    try {
-      await this.prisma.appointment.update({
-        where: { id, tenantId },
         data: {
-          status: 'CANCELLED' as any,
+          totalToday,
+          completed,
+          waiting,
+          inConsultation,
+          cancelled,
         },
-      });
-
-      return {
-        success: true,
-        message: 'OPD visit cancelled successfully',
       };
     } catch (error) {
-      console.error('Error cancelling OPD visit:', error);
-      throw error;
+      this.logger.error('Error getting OPD stats:', error.message, error.stack);
+      throw new BadRequestException('Failed to fetch OPD statistics');
     }
-  }
-
-  async getQueue(tenantId: string, doctorId?: string) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const where: any = {
-      tenantId,
-      startTime: {
-        gte: today,
-        lt: tomorrow,
-      },
-      status: {
-        in: ['SCHEDULED', 'ARRIVED'],
-      },
-    };
-
-    if (doctorId) {
-      where.doctorId = doctorId;
-    }
-
-    const queue = await this.prisma.appointment.findMany({
-      where,
-      orderBy: { startTime: 'asc' },
-      include: {
-        patient: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            medicalRecordNumber: true,
-          },
-        },
-        doctor: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-    });
-
-    return {
-      success: true,
-      data: {
-        queue,
-        count: queue.length,
-      },
-    };
-  }
-
-  async getStats(tenantId: string) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const [totalToday, completed, waiting, inProgress] = await Promise.all([
-      this.prisma.appointment.count({
-        where: {
-          tenantId,
-          startTime: {
-            gte: today,
-          },
-        },
-      }),
-      this.prisma.appointment.count({
-        where: {
-          tenantId,
-          startTime: {
-            gte: today,
-          },
-          status: 'COMPLETED',
-        },
-      }),
-      this.prisma.appointment.count({
-        where: {
-          tenantId,
-          startTime: {
-            gte: today,
-          },
-          status: {
-            in: ['SCHEDULED', 'ARRIVED'],
-          },
-        },
-      }),
-      this.prisma.appointment.count({
-        where: {
-          tenantId,
-          startTime: {
-            gte: today,
-          },
-          status: 'IN_PROGRESS',
-        },
-      }),
-    ]);
-
-    return {
-      success: true,
-      data: {
-        totalToday,
-        completed,
-        waiting,
-        inProgress,
-      },
-    };
   }
 }

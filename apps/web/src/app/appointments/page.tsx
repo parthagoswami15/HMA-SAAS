@@ -1,9 +1,48 @@
 'use client';
-import Layout from '../components/Layout';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import Input from '../components/ui/Input';
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import {
+  Container,
+  Grid,
+  Paper,
+  Text,
+  Group,
+  Badge,
+  SimpleGrid,
+  Stack,
+  Button,
+  Title,
+  Card,
+  TextInput,
+  Select,
+  Modal,
+  Tabs,
+  ActionIcon,
+  Menu
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
+import { DatePickerInput } from '@mantine/dates';
+import {
+  IconPlus,
+  IconSearch,
+  IconCalendar,
+  IconClock,
+  IconEdit,
+  IconTrash,
+  IconEye,
+  IconDotsVertical,
+  IconCheck,
+  IconX,
+  IconCalendarEvent,
+  IconStethoscope
+} from '@tabler/icons-react';
+import Layout from '../../components/shared/Layout';
+import DataTable from '../../components/shared/DataTable';
+import { useAppStore } from '../../stores/appStore';
+import { User, UserRole, TableColumn, Status } from '../../types/common';
+import appointmentsService from '../../services/appointments.service';
+import type { CreateAppointmentDto, UpdateAppointmentDto, AppointmentFilters } from '../../services/appointments.service';
 
 interface Appointment {
   id: string;

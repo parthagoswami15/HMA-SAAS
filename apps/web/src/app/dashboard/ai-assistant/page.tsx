@@ -46,7 +46,8 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { LineChart, BarChart, DonutChart, AreaChart, PieChart } from '@mantine/charts';
+// Charts removed due to MantineProvider compatibility issues with Next.js 15.5.4
+// import { LineChart, BarChart, DonutChart, AreaChart, PieChart } from '@mantine/charts';
 import {
   IconPlus,
   IconSearch,
@@ -147,12 +148,12 @@ import {
   IconFlask,
   IconDna,
   IconMicroscope,
-  IconX_ray,
+  IconRadioactive,
   IconHeartbeat,
   IconBone,
   IconVaccine,
   IconPrescription,
-  IconMedicine,
+  IconPills,
   IconAmbulance,
   IconFirstAidKit,
   IconMoodCheck,
@@ -161,12 +162,10 @@ import {
   IconInfoCircle,
   IconShield,
   IconChartDots,
-  IconTrendingUp3,
   IconSparkles,
   IconWand,
-  IconMagic,
   IconCpu,
-  IconChip,
+  IconCircuitSwitchOpen,
   IconNetwork
 } from '@tabler/icons-react';
 
@@ -1198,66 +1197,151 @@ const AIAssistant = () => {
             {/* Insight Types Distribution */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">AI Insights by Type</Title>
-              <PieChart
-                data={[
-                  { name: 'Diagnosis', value: 1, color: 'blue' },
-                  { name: 'Drug Interaction', value: 1, color: 'red' },
-                  { name: 'Risk Assessment', value: 1, color: 'orange' }
-                ]}
-                size={200}
-                withLabels
-              />
+              <Stack gap="md">
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="blue" size="sm" radius="xl">
+                      <IconStethoscope size={14} />
+                    </ThemeIcon>
+                    <Text size="sm">Diagnosis</Text>
+                  </Group>
+                  <Badge color="blue" variant="light">1</Badge>
+                </Group>
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="red" size="sm" radius="xl">
+                      <IconPill size={14} />
+                    </ThemeIcon>
+                    <Text size="sm">Drug Interaction</Text>
+                  </Group>
+                  <Badge color="red" variant="light">1</Badge>
+                </Group>
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="orange" size="sm" radius="xl">
+                      <IconShield size={14} />
+                    </ThemeIcon>
+                    <Text size="sm">Risk Assessment</Text>
+                  </Group>
+                  <Badge color="orange" variant="light">1</Badge>
+                </Group>
+              </Stack>
             </Card>
 
             {/* Confidence Levels */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">AI Confidence Distribution</Title>
-              <BarChart
-                h={200}
-                data={[
-                  { range: '90-100%', count: 2 },
-                  { range: '80-89%', count: 1 },
-                  { range: '70-79%', count: 0 },
-                  { range: '60-69%', count: 0 }
-                ]}
-                dataKey="range"
-                series={[{ name: 'count', color: 'teal.6' }]}
-              />
+              <Stack gap="sm">
+                <div>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="sm">90-100%</Text>
+                    <Text size="sm" fw={500}>2</Text>
+                  </Group>
+                  <Progress value={100} color="teal" size="lg" />
+                </div>
+                <div>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="sm">80-89%</Text>
+                    <Text size="sm" fw={500}>1</Text>
+                  </Group>
+                  <Progress value={50} color="teal" size="lg" />
+                </div>
+                <div>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="sm">70-79%</Text>
+                    <Text size="sm" fw={500}>0</Text>
+                  </Group>
+                  <Progress value={0} color="teal" size="lg" />
+                </div>
+                <div>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="sm">60-69%</Text>
+                    <Text size="sm" fw={500}>0</Text>
+                  </Group>
+                  <Progress value={0} color="teal" size="lg" />
+                </div>
+              </Stack>
             </Card>
 
             {/* Query Categories */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">AI Queries by Category</Title>
-              <DonutChart
-                data={[
-                  { name: 'Diagnosis', value: 1, color: 'blue' },
-                  { name: 'Treatment', value: 1, color: 'green' },
-                  { name: 'Medication', value: 1, color: 'orange' }
-                ]}
-                size={200}
-                thickness={40}
-                withLabels
-              />
+              <Stack gap="md">
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="blue" size="sm" radius="xl">
+                      <IconStethoscope size={14} />
+                    </ThemeIcon>
+                    <Text size="sm">Diagnosis</Text>
+                  </Group>
+                  <Badge color="blue" variant="light">1</Badge>
+                </Group>
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="green" size="sm" radius="xl">
+                      <IconMedicalCross size={14} />
+                    </ThemeIcon>
+                    <Text size="sm">Treatment</Text>
+                  </Group>
+                  <Badge color="green" variant="light">1</Badge>
+                </Group>
+                <Group justify="space-between">
+                  <Group gap="xs">
+                    <ThemeIcon color="orange" size="sm" radius="xl">
+                      <IconPill size={14} />
+                    </ThemeIcon>
+                    <Text size="sm">Medication</Text>
+                  </Group>
+                  <Badge color="orange" variant="light">1</Badge>
+                </Group>
+              </Stack>
             </Card>
 
             {/* User Satisfaction */}
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">User Satisfaction Trends</Title>
-              <LineChart
-                h={200}
-                data={[
-                  { week: 'W1', rating: 4.2, helpful: 85 },
-                  { week: 'W2', rating: 4.5, helpful: 88 },
-                  { week: 'W3', rating: 4.3, helpful: 82 },
-                  { week: 'W4', rating: 4.7, helpful: 91 }
-                ]}
-                dataKey="week"
-                series={[
-                  { name: 'rating', color: 'blue.6' },
-                  { name: 'helpful', color: 'green.6' }
-                ]}
-                curveType="linear"
-              />
+              <Stack gap="sm">
+                <div>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="sm">Week 1</Text>
+                    <Group gap="md">
+                      <Badge color="blue" variant="light">Rating: 4.2</Badge>
+                      <Badge color="green" variant="light">Helpful: 85%</Badge>
+                    </Group>
+                  </Group>
+                  <Progress value={85} color="green" size="md" />
+                </div>
+                <div>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="sm">Week 2</Text>
+                    <Group gap="md">
+                      <Badge color="blue" variant="light">Rating: 4.5</Badge>
+                      <Badge color="green" variant="light">Helpful: 88%</Badge>
+                    </Group>
+                  </Group>
+                  <Progress value={88} color="green" size="md" />
+                </div>
+                <div>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="sm">Week 3</Text>
+                    <Group gap="md">
+                      <Badge color="blue" variant="light">Rating: 4.3</Badge>
+                      <Badge color="green" variant="light">Helpful: 82%</Badge>
+                    </Group>
+                  </Group>
+                  <Progress value={82} color="green" size="md" />
+                </div>
+                <div>
+                  <Group justify="space-between" mb="xs">
+                    <Text size="sm">Week 4</Text>
+                    <Group gap="md">
+                      <Badge color="blue" variant="light">Rating: 4.7</Badge>
+                      <Badge color="green" variant="light">Helpful: 91%</Badge>
+                    </Group>
+                  </Group>
+                  <Progress value={91} color="green" size="md" />
+                </div>
+              </Stack>
             </Card>
           </SimpleGrid>
         </Tabs.Panel>

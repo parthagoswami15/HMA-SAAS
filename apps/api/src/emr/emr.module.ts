@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { EmrController } from './emr.controller';
 import { EmrService } from './emr.service';
-import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [],
   controllers: [EmrController],
   providers: [EmrService],
   exports: [EmrService],

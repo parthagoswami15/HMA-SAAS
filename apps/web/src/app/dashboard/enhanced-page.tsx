@@ -60,7 +60,7 @@ export default function EnhancedDashboard() {
   const modules = [
     {
       title: "Patient Management",
-      description: "Register, manage, and view patient information",
+      description: "Patient records and demographics",
       icon: "👥",
       href: "/dashboard/patients",
       stats: `${stats.totalPatients} Patients`,
@@ -69,11 +69,11 @@ export default function EnhancedDashboard() {
     },
     {
       title: "Appointments",
-      description: "Schedule and manage appointments",
+      description: "Book and manage patient appointments",
       icon: "📅",
       href: "/dashboard/appointments", 
       stats: `${stats.todaysAppointments} Today`,
-      color: "#10b981",
+      color: "#4ecdc4",
       active: true
     },
     {
@@ -82,7 +82,7 @@ export default function EnhancedDashboard() {
       icon: "🩺",
       href: "/dashboard/opd",
       stats: "Quick Access",
-      color: "#8b5cf6",
+      color: "#45b7d1",
       active: true
     },
     {
@@ -91,7 +91,7 @@ export default function EnhancedDashboard() {
       icon: "🏥",
       href: "/dashboard/ipd",
       stats: "87% Occupancy",
-      color: "#ef4444",
+      color: "#96ceb4",
       active: true
     },
     {
@@ -100,7 +100,7 @@ export default function EnhancedDashboard() {
       icon: "🚑",
       href: "/dashboard/emergency",
       stats: "Active",
-      color: "#dc2626",
+      color: "#ff8a80",
       active: true
     },
     {
@@ -109,7 +109,7 @@ export default function EnhancedDashboard() {
       icon: "🧪",
       href: "/dashboard/laboratory", 
       stats: "24 Pending",
-      color: "#06b6d4",
+      color: "#81d4fa",
       active: true
     },
     {
@@ -118,7 +118,7 @@ export default function EnhancedDashboard() {
       icon: "🔬",
       href: "/dashboard/radiology",
       stats: "Active",
-      color: "#0891b2",
+      color: "#64b5f6",
       active: true
     },
     {
@@ -127,7 +127,7 @@ export default function EnhancedDashboard() {
       icon: "🦠",
       href: "/dashboard/pathology",
       stats: "Active",
-      color: "#0e7490",
+      color: "#4db6ac",
       active: true
     },
     {
@@ -136,7 +136,7 @@ export default function EnhancedDashboard() {
       icon: "💊",
       href: "/dashboard/pharmacy",
       stats: "In Stock",
-      color: "#84cc16",
+      color: "#81c784",
       active: true
     },
     {
@@ -145,7 +145,7 @@ export default function EnhancedDashboard() {
       icon: "💉",
       href: "/dashboard/pharmacy-management",
       stats: "Active",
-      color: "#65a30d",
+      color: "#66bb6a",
       active: true
     },
     {
@@ -154,7 +154,7 @@ export default function EnhancedDashboard() {
       icon: "⚕️",
       href: "/dashboard/surgery",
       stats: "Active",
-      color: "#be123c",
+      color: "#f48fb1",
       active: true
     },
     {
@@ -163,7 +163,7 @@ export default function EnhancedDashboard() {
       icon: "💰",
       href: "/dashboard/billing",
       stats: `${stats.pendingBills} Pending`,
-      color: "#f59e0b",
+      color: "#ffb74d",
       active: true
     },
     {
@@ -172,7 +172,7 @@ export default function EnhancedDashboard() {
       icon: "💵",
       href: "/dashboard/finance",
       stats: "Active",
-      color: "#d97706",
+      color: "#ff9800",
       active: true
     },
     {
@@ -181,7 +181,7 @@ export default function EnhancedDashboard() {
       icon: "🛡️",
       href: "/dashboard/insurance",
       stats: "Active",
-      color: "#0284c7",
+      color: "#42a5f5",
       active: true
     },
     {
@@ -190,7 +190,7 @@ export default function EnhancedDashboard() {
       icon: "👨‍⚕️",
       href: "/dashboard/staff",
       stats: `${stats.activeDoctors} Active`,
-      color: "#ec4899",
+      color: "#ab47bc",
       active: true
     },
     {
@@ -199,7 +199,7 @@ export default function EnhancedDashboard() {
       icon: "📋",
       href: "/dashboard/hr",
       stats: "Active",
-      color: "#db2777",
+      color: "#ce93d8",
       active: true
     },
     {
@@ -208,7 +208,7 @@ export default function EnhancedDashboard() {
       icon: "📄",
       href: "/dashboard/emr",
       stats: "Active",
-      color: "#7c3aed",
+      color: "#9575cd",
       active: true
     },
     {
@@ -217,7 +217,7 @@ export default function EnhancedDashboard() {
       icon: "📦",
       href: "/dashboard/inventory",
       stats: "Active",
-      color: "#2563eb",
+      color: "#5c6bc0",
       active: true
     },
     {
@@ -226,7 +226,7 @@ export default function EnhancedDashboard() {
       icon: "💻",
       href: "/dashboard/telemedicine",
       stats: "Active",
-      color: "#059669",
+      color: "#26a69a",
       active: true
     },
     {
@@ -235,7 +235,7 @@ export default function EnhancedDashboard() {
       icon: "🔐",
       href: "/dashboard/patient-portal",
       stats: "Active",
-      color: "#0d9488",
+      color: "#4caf50",
       active: true
     },
     {
@@ -244,7 +244,7 @@ export default function EnhancedDashboard() {
       icon: "📱",
       href: "/dashboard/communications",
       stats: "Active",
-      color: "#8b5cf6",
+      color: "#9c27b0",
       active: true
     },
     {
@@ -253,7 +253,7 @@ export default function EnhancedDashboard() {
       icon: "📊",
       href: "/dashboard/reports",
       stats: "View Insights",
-      color: "#6366f1",
+      color: "#ff7043",
       active: true
     },
     {
@@ -262,7 +262,7 @@ export default function EnhancedDashboard() {
       icon: "✅",
       href: "/dashboard/quality",
       stats: "Active",
-      color: "#10b981",
+      color: "#66bb6a",
       active: true
     },
     {
@@ -271,7 +271,7 @@ export default function EnhancedDashboard() {
       icon: "🔍",
       href: "/dashboard/research",
       stats: "Active",
-      color: "#6366f1",
+      color: "#42a5f5",
       active: true
     },
     {
@@ -280,7 +280,7 @@ export default function EnhancedDashboard() {
       icon: "🔗",
       href: "/dashboard/integration",
       stats: "Active",
-      color: "#64748b",
+      color: "#78909c",
       active: true
     },
     {
@@ -288,229 +288,325 @@ export default function EnhancedDashboard() {
       description: "AI-powered insights and assistance",
       icon: "🤖",
       href: "/dashboard/ai-assistant",
-      stats: "Coming Soon",
-      color: "#8b5cf6",
-      active: false
+      stats: "Active",
+      color: "#e91e63",
+      active: true
     }
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc" }}>
-      {/* Header */}
+    <div style={{
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+      minHeight: '100%',
+      borderRadius: '16px',
+      padding: '0',
+      backgroundAttachment: 'fixed'
+    }}>
+      {/* Welcome Section */}
       <div style={{
-        background: "white",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-        padding: "1rem 2rem",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center"
+        background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)',
+        color: 'white',
+        padding: '3rem 2rem',
+        borderRadius: '16px 16px 0 0',
+        marginBottom: '2rem',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <Link href="/" style={{ textDecoration: "none", color: "#667eea", fontSize: "1.5rem", fontWeight: "bold" }}>
-            HMS SAAS
-          </Link>
-          <span style={{ color: "#6b7280", fontSize: "0.9rem" }}>Hospital Management Dashboard</span>
-        </div>
-        
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontWeight: "600", color: "#374151" }}>
-              {user.firstName} {user.lastName}
-            </div>
-            <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>
-              {user.role} • {user.tenant?.name}
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            style={{
-              background: "#ef4444",
-              color: "white",
-              padding: "0.5rem 1rem",
-              borderRadius: "6px",
-              border: "none",
-              fontSize: "0.9rem",
-              cursor: "pointer"
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+        <div style={{
+          position: 'absolute',
+          top: '-50%',
+          right: '-20%',
+          width: '200px',
+          height: '200px',
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: '50%',
+          filter: 'blur(50px)'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '-30%',
+          left: '-10%',
+          width: '150px',
+          height: '150px',
+          background: 'rgba(255,255,255,0.05)',
+          borderRadius: '50%',
+          filter: 'blur(30px)'
+        }} />
 
-      {/* Main Content */}
-      <div style={{ padding: "2rem" }}>
-        {/* Welcome Section */}
-        <div style={{ marginBottom: "2rem" }}>
-          <h1 style={{ color: "#1f2937", fontSize: "2rem", fontWeight: "700", marginBottom: "0.5rem" }}>
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <h1 style={{
+            fontSize: '2rem',
+            fontWeight: '800',
+            marginBottom: '0.5rem',
+            background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
             Welcome back, {user.firstName}! 👋
           </h1>
-          <p style={{ color: "#6b7280", fontSize: "1.1rem" }}>
+          <p style={{
+            fontSize: '1rem',
+            opacity: 0.9,
+            margin: 0
+          }}>
             Here's what's happening at {user.tenant?.name} today
           </p>
         </div>
+      </div>
 
-        {/* Quick Stats */}
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", 
-          gap: "1rem", 
-          marginBottom: "2rem" 
-        }}>
-          {[
-            { label: "Total Patients", value: stats.totalPatients, color: "#3b82f6", icon: "👥" },
-            { label: "Today's Appointments", value: stats.todaysAppointments, color: "#10b981", icon: "📅" },
-            { label: "Pending Bills", value: stats.pendingBills, color: "#f59e0b", icon: "💰" },
-            { label: "Active Doctors", value: stats.activeDoctors, color: "#8b5cf6", icon: "👨‍⚕️" }
-          ].map((stat, index) => (
-            <div key={index} style={{
-              background: "white",
-              padding: "1.5rem",
-              borderRadius: "10px",
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-              border: "1px solid #f1f5f9"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div>
-                  <p style={{ color: "#6b7280", fontSize: "0.9rem", margin: "0 0 0.5rem 0" }}>{stat.label}</p>
-                  <p style={{ color: "#1f2937", fontSize: "1.8rem", fontWeight: "700", margin: 0 }}>{stat.value}</p>
-                </div>
-                <div style={{ 
-                  fontSize: "2rem", 
+      {/* Quick Stats */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gap: "1.5rem",
+        marginBottom: "3rem",
+        padding: '0 2rem'
+      }}>
+        {[
+          { label: "Total Patients", value: stats.totalPatients, color: "#ff6b6b", icon: "👥", bg: "rgba(255, 107, 107, 0.1)" },
+          { label: "Today's Appointments", value: stats.todaysAppointments, color: "#4ecdc4", icon: "📅", bg: "rgba(78, 205, 196, 0.1)" },
+          { label: "Pending Bills", value: stats.pendingBills, color: "#45b7d1", icon: "💰", bg: "rgba(69, 183, 209, 0.1)" },
+          { label: "Active Doctors", value: stats.activeDoctors, color: "#96ceb4", icon: "👨‍⚕️", bg: "rgba(150, 206, 180, 0.1)" }
+        ].map((stat, index) => (
+          <div key={index} style={{
+            background: 'rgba(255,255,255,0.95)',
+            padding: "1.5rem",
+            borderRadius: "16px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+            border: "1px solid rgba(255,255,255,0.2)",
+            transition: 'all 0.3s ease',
+            cursor: 'pointer',
+            backdropFilter: 'blur(10px)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-4px)';
+            e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.15)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1)';
+          }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div>
+                <p style={{
+                  color: "#64748b",
+                  fontSize: "0.85rem",
+                  margin: "0 0 0.5rem 0",
+                  fontWeight: "500"
+                }}>{stat.label}</p>
+                <p style={{
                   color: stat.color,
-                  background: `${stat.color}10`,
-                  padding: "0.5rem",
-                  borderRadius: "8px"
-                }}>
-                  {stat.icon}
-                </div>
+                  fontSize: "2rem",
+                  fontWeight: "800",
+                  margin: 0,
+                  background: `linear-gradient(135deg, ${stat.color} 0%, ${stat.color}dd 100%)`,
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent'
+                }}>{stat.value}</p>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* HMS Modules */}
-        <div style={{ marginBottom: "2rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-            <h2 style={{ color: "#1f2937", fontSize: "1.5rem", fontWeight: "600", margin: 0 }}>
-              HMS Modules ({modules.filter(m => m.active).length}/{modules.length} Active)
-            </h2>
-            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }}></div>
-                <span style={{ fontSize: "0.9rem", color: "#6b7280" }}>Active</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", marginLeft: "1rem" }}>
-                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#9ca3af" }}></div>
-                <span style={{ fontSize: "0.9rem", color: "#6b7280" }}>Coming Soon</span>
+              <div style={{
+                fontSize: "2.5rem",
+                background: stat.bg,
+                padding: "0.75rem",
+                borderRadius: "12px",
+                boxShadow: `0 4px 20px ${stat.color}33`
+              }}>
+                {stat.icon}
               </div>
             </div>
           </div>
-          <div style={{ 
-            display: "grid", 
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", 
-            gap: "1rem" 
+        ))}
+      </div>
+
+      {/* HMS Modules */}
+      <div style={{
+        marginBottom: "3rem",
+        padding: '0 2rem'
+      }}>
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "2rem"
+        }}>
+          <h2 style={{
+            color: "#1e293b",
+            fontSize: "1.5rem",
+            fontWeight: "700",
+            margin: 0,
+            background: 'linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
           }}>
-            {modules.map((module, index) => (
-              <Link 
-                key={index}
-                href={module.active ? module.href : "#"}
-                style={{ textDecoration: "none", pointerEvents: module.active ? "auto" : "none" }}
+            HMS Modules ({modules.filter(m => m.active).length}/{modules.length} Active)
+          </h2>
+          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              background: 'rgba(78, 205, 196, 0.1)',
+              padding: '0.5rem 1rem',
+              borderRadius: '20px',
+              border: '1px solid rgba(78, 205, 196, 0.2)'
+            }}>
+              <div style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                background: "#4ecdc4"
+              }} />
+              <span style={{ fontSize: "0.9rem", color: "#059669", fontWeight: "500" }}>Active</span>
+            </div>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              background: 'rgba(156, 163, 175, 0.1)',
+              padding: '0.5rem 1rem',
+              borderRadius: '20px',
+              border: '1px solid rgba(156, 163, 175, 0.2)'
+            }}>
+              <div style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                background: "#9ca3af"
+              }} />
+              <span style={{ fontSize: "0.9rem", color: "#6b7280", fontWeight: "500" }}>Coming Soon</span>
+            </div>
+          </div>
+        </div>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          gap: "2rem"
+        }}>
+          {modules.map((module, index) => (
+            <Link
+              key={index}
+              href={module.active ? module.href : "#"}
+              style={{ textDecoration: "none", pointerEvents: module.active ? "auto" : "none" }}
+            >
+              <div style={{
+                background: module.active ? 'rgba(255,255,255,0.95)' : 'rgba(249, 250, 251, 0.9)',
+                padding: "1.5rem",
+                borderRadius: "16px",
+                boxShadow: module.active ? "0 8px 32px rgba(0,0,0,0.1)" : "0 4px 16px rgba(0,0,0,0.05)",
+                border: module.active ? "1px solid rgba(255,255,255,0.2)" : "1px solid rgba(229, 231, 235, 0.8)",
+                transition: "all 0.3s ease",
+                cursor: module.active ? "pointer" : "not-allowed",
+                opacity: module.active ? 1 : 0.6,
+                position: "relative",
+                backdropFilter: 'blur(10px)',
+                overflow: 'hidden'
+              }}
+              onMouseEnter={(e) => {
+                if (module.active) {
+                  e.currentTarget.style.transform = "translateY(-8px)";
+                  e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,0,0,0.15)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (module.active) {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.1)";
+                }
+              }}
               >
+                {/* Active Indicator Badge */}
                 <div style={{
-                  background: module.active ? "white" : "#f9fafb",
-                  padding: "1.5rem",
-                  borderRadius: "10px",
-                  boxShadow: module.active ? "0 1px 3px rgba(0, 0, 0, 0.1)" : "0 1px 2px rgba(0, 0, 0, 0.05)",
-                  border: module.active ? "1px solid #f1f5f9" : "1px solid #e5e7eb",
-                  transition: "transform 0.2s, box-shadow 0.2s",
-                  cursor: module.active ? "pointer" : "not-allowed",
-                  opacity: module.active ? 1 : 0.6,
-                  position: "relative"
-                }}
-                onMouseEnter={(e) => {
-                  if (module.active) {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (module.active) {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.1)";
-                  }
-                }}
-                >
-                  {/* Active Indicator Badge */}
+                  position: "absolute",
+                  top: "1.5rem",
+                  right: "1.5rem",
+                  width: "12px",
+                  height: "12px",
+                  borderRadius: "50%",
+                  background: module.active ? "#4ecdc4" : "#9ca3af",
+                  border: '2px solid white',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                }} />
+
+                <div style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  left: '1rem',
+                  width: '4px',
+                  height: '100%',
+                  background: module.active ? `linear-gradient(135deg, ${module.color} 0%, ${module.color}dd 100%)` : '#e5e7eb',
+                  borderRadius: '2px'
+                }} />
+
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "1.5rem", marginLeft: '1rem' }}>
                   <div style={{
-                    position: "absolute",
-                    top: "1rem",
-                    right: "1rem",
-                    width: "8px",
-                    height: "8px",
-                    borderRadius: "50%",
-                    background: module.active ? "#10b981" : "#9ca3af"
-                  }}></div>
-                  
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
-                    <div style={{ 
-                      fontSize: "2rem", 
-                      background: `${module.color}15`,
-                      padding: "0.75rem",
-                      borderRadius: "8px"
+                    fontSize: "2.5rem",
+                    background: module.active ? `${module.color}15` : '#f3f4f6',
+                    padding: "0.75rem",
+                    borderRadius: "12px",
+                    transition: 'all 0.3s ease',
+                    boxShadow: module.active ? `0 4px 20px ${module.color}25` : '0 2px 8px rgba(0,0,0,0.05)'
+                  }}>
+                    {module.icon}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{
+                      color: module.active ? "#1f2937" : "#6b7280",
+                      fontSize: "1.1rem",
+                      fontWeight: "600",
+                      margin: "0 0 0.75rem 0",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem"
                     }}>
-                      {module.icon}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <h3 style={{ 
-                        color: module.active ? "#1f2937" : "#6b7280", 
-                        fontSize: "1.1rem", 
-                        fontWeight: "600", 
-                        margin: "0 0 0.5rem 0",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.5rem"
-                      }}>
-                        {module.title}
-                      </h3>
-                      <p style={{ 
-                        color: "#6b7280", 
-                        fontSize: "0.9rem", 
-                        margin: "0 0 1rem 0",
-                        lineHeight: "1.4"
-                      }}>
-                        {module.description}
-                      </p>
-                      <div style={{ 
-                        color: module.active ? module.color : "#9ca3af", 
-                        fontSize: "0.85rem", 
-                        fontWeight: "500",
-                        background: module.active ? `${module.color}10` : "#f3f4f6",
-                        padding: "0.25rem 0.5rem",
-                        borderRadius: "4px",
-                        display: "inline-block"
-                      }}>
-                        {module.stats}
-                      </div>
+                      {module.title}
+                    </h3>
+                    <p style={{
+                      color: "#6b7280",
+                      fontSize: "0.9rem",
+                      margin: "0 0 1.5rem 0",
+                      lineHeight: "1.5"
+                    }}>
+                      {module.description}
+                    </p>
+                    <div style={{
+                      color: module.active ? module.color : "#9ca3af",
+                      fontSize: "0.85rem",
+                      fontWeight: "600",
+                      background: module.active ? `${module.color}15` : "#f3f4f6",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "8px",
+                      display: "inline-block",
+                      border: module.active ? `1px solid ${module.color}25` : '1px solid #e5e7eb'
+                    }}>
+                      {module.stats}
                     </div>
                   </div>
                 </div>
-              </Link>
-            ))}
-          </div>
+              </div>
+            </Link>
+          ))}
         </div>
+      </div>
 
-        {/* Footer */}
-        <div style={{ 
-          textAlign: "center", 
-          padding: "2rem", 
-          color: "#6b7280", 
-          fontSize: "0.9rem",
-          borderTop: "1px solid #f1f5f9"
-        }}>
-          <p>HMS SAAS - Complete Hospital Management System</p>
-          <p>Built with ❤️ for modern healthcare facilities</p>
-        </div>
+      {/* Footer */}
+      <div style={{
+        textAlign: "center",
+        padding: "2rem 2rem",
+        color: "#64748b",
+        fontSize: "0.9rem",
+        background: 'rgba(255,255,255,0.9)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: '16px',
+        margin: '0 2rem',
+        border: '1px solid rgba(255,255,255,0.2)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+      }}>
+        <p style={{ margin: 0, fontWeight: '500' }}>🏥 HMS SAAS - Complete Hospital Management System</p>
+        <p style={{ margin: '0.5rem 0 0 0', opacity: 0.8 }}>Built with ❤️ for modern healthcare facilities</p>
       </div>
     </div>
   );

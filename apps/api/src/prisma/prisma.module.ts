@@ -7,5 +7,3 @@ import { CustomPrismaService } from './custom-prisma.service';
   exports: [CustomPrismaService],
 })
 export class PrismaModule {}
-
-

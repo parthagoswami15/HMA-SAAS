@@ -30,12 +30,12 @@ import {
   Anchor,
   NumberInput,
   Textarea,
-  DatePickerInput,
   List
 } from '@mantine/core';
+import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -64,7 +64,6 @@ import {
   IconTrendingUp,
   IconTrendingDown,
   IconClipboardList,
-  IconMedicine,
   IconMedicalCross,
   IconVaccine,
   IconReportMedical,
@@ -134,6 +133,14 @@ const EMRManagement = () => {
   }, [searchQuery, selectedPatient, selectedDoctor, selectedRecordType, selectedStatus]);
 
   // Helper functions
+  const formatDate = (date: string | Date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const getStatusColor = (status: MedicalRecordStatus) => {
     switch (status) {
       case 'draft': return 'gray';
@@ -431,7 +438,7 @@ const EMRManagement = () => {
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm">
-                          {new Date(record.recordDate).toLocaleDateString()}
+                          {formatDate(record.recordDate)}
                         </Text>
                       </Table.Td>
                       <Table.Td>
@@ -551,7 +558,7 @@ const EMRManagement = () => {
 
                   <Group justify="space-between">
                     <Text size="xs" c="dimmed">
-                      Reported: {new Date(result.reportDate).toLocaleDateString()}
+                      Reported: {formatDate(result.reportDate)}
                     </Text>
                     <Group gap="xs">
                       <ActionIcon variant="subtle" color="blue" size="sm">
@@ -585,7 +592,7 @@ const EMRManagement = () => {
                     <div>
                       <Text fw={600} size="lg">{prescription.prescriptionNumber}</Text>
                       <Text size="sm" c="dimmed">
-                        {new Date(prescription.prescriptionDate).toLocaleDateString()}
+                        {formatDate(prescription.prescriptionDate)}
                       </Text>
                     </div>
                     <Badge 
@@ -661,7 +668,7 @@ const EMRManagement = () => {
                       <strong>Type:</strong> {doc.documentType.replace('_', ' ')}
                     </Text>
                     <Text size="xs" c="dimmed">
-                      <strong>Date:</strong> {new Date(doc.documentDate).toLocaleDateString()}
+                      <strong>Date:</strong> {formatDate(doc.documentDate)}
                     </Text>
                     <Text size="xs" c="dimmed">
                       <strong>Size:</strong> {(doc.fileSize / 1024 / 1024).toFixed(2)} MB
@@ -700,7 +707,7 @@ const EMRManagement = () => {
               {/* Records by Type */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Records by Type</Title>
-                <DonutChart
+                <MantineDonutChart
                   data={recordsByTypeData}
                   size={160}
                   thickness={30}
@@ -711,7 +718,7 @@ const EMRManagement = () => {
               {/* Records by Status */}
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Records by Status</Title>
-                <BarChart
+                <SimpleBarChart
                   h={200}
                   data={recordsByStatusData}
                   dataKey="status"
@@ -766,7 +773,7 @@ const EMRManagement = () => {
               {/* Recent Activity */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
                 <Title order={4} mb="md">Recent Activity</Title>
-                <AreaChart
+                <SimpleAreaChart
                   h={300}
                   data={recentActivityData}
                   dataKey="date"
@@ -821,7 +828,7 @@ const EMRManagement = () => {
                 <div>
                   <Text size="sm" fw={500}>Record Date</Text>
                   <Text size="sm" c="dimmed">
-                    {new Date(selectedRecord.recordDate).toLocaleDateString()}
+                    {formatDate(selectedRecord.recordDate)}
                   </Text>
                 </div>
                 <div>

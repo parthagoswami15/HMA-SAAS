@@ -1,11 +1,18 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { CustomPrismaService } from '../prisma/custom-prisma.service';
-import { CreateStaffDto, UpdateStaffDto, StaffQueryDto } from './dto/staff.dto';
+import { CreateStaffDto, UpdateStaffDto, StaffQueryDto } from './dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class StaffService {
-  constructor(private prisma: CustomPrismaService) {}
+  private readonly logger = new Logger(StaffService.name);
+
+  constructor(private readonly prisma: CustomPrismaService) {}
 
   async create(createStaffDto: CreateStaffDto, tenantId: string) {
     try {
@@ -14,7 +21,7 @@ export class StaffService {
       // If userId not provided, create a new user
       if (!userId && createStaffDto.email && createStaffDto.password) {
         const hashedPassword = await bcrypt.hash(createStaffDto.password, 10);
-        
+
         const user = await this.prisma.user.create({
           data: {
             email: createStaffDto.email,
@@ -35,7 +42,8 @@ export class StaffService {
       }
 
       // Generate employee ID if not provided
-      const employeeId = createStaffDto.employeeId || await this.generateEmployeeId(tenantId);
+      const employeeId =
+        createStaffDto.employeeId || (await this.generateEmployeeId(tenantId));
 
       const staff = await this.prisma.staff.create({
         data: {
@@ -43,7 +51,9 @@ export class StaffService {
           employeeId,
           designation: createStaffDto.designation,
           departmentId: createStaffDto.departmentId,
-          joiningDate: createStaffDto.joiningDate ? new Date(createStaffDto.joiningDate) : new Date(),
+          joiningDate: createStaffDto.joiningDate
+            ? new Date(createStaffDto.joiningDate)
+            : new Date(),
           qualification: createStaffDto.qualification,
           experience: createStaffDto.experience,
           tenantId,
@@ -65,74 +75,31 @@ export class StaffService {
         },
       });
 
+      this.logger.log(`Staff member created: ${staff.id} for tenant: ${tenantId}`);
+
       return {
         success: true,
         message: 'Staff member added successfully',
         data: staff,
       };
     } catch (error) {
-      console.error('Error creating staff:', error);
-      throw new BadRequestException(error.message || 'Failed to create staff member');
+      this.logger.error(`Error creating staff: ${error.message}`, error.stack);
+      throw new BadRequestException('Failed to create staff member');
     }
   }
 
   async findAll(tenantId: string, query: StaffQueryDto = {}) {
-    const { page = 1, limit = 10, search, role, departmentId, status = 'active' } = query;
+    const { page = 1, limit = 10 } = query;
     const skip = (page - 1) * limit;
-
-    const where: any = {
-      tenantId,
-      isActive: status === 'active',
-    };
-
-    if (departmentId) {
-      where.departmentId = departmentId;
-    }
-
-    if (role) {
-      where.user = {
-        role: role,
-      };
-    }
-
-    if (search) {
-      where.OR = [
-        { employeeId: { contains: search, mode: 'insensitive' } },
-        { designation: { contains: search, mode: 'insensitive' } },
-        { user: { firstName: { contains: search, mode: 'insensitive' } } },
-        { user: { lastName: { contains: search, mode: 'insensitive' } } },
-        { user: { email: { contains: search, mode: 'insensitive' } } },
-      ];
-    }
+    const where = this.buildWhereClause(tenantId, query);
 
     const [staff, total] = await Promise.all([
       this.prisma.staff.findMany({
         where,
         skip,
-        take: parseInt(limit as any),
+        take: parseInt(limit.toString()),
         orderBy: { createdAt: 'desc' },
-        include: {
-          user: {
-            select: {
-              id: true,
-              email: true,
-              firstName: true,
-              lastName: true,
-              role: true,
-              specialization: true,
-              licenseNumber: true,
-              experience: true,
-              isActive: true,
-            },
-          },
-          department: {
-            select: {
-              id: true,
-              name: true,
-              code: true,
-            },
-          },
-        },
+        include: this.getIncludes(),
       }),
       this.prisma.staff.count({ where }),
     ]);
@@ -143,9 +110,9 @@ export class StaffService {
         staff,
         pagination: {
           total,
-          page: parseInt(page as any),
-          limit: parseInt(limit as any),
-          pages: Math.ceil(total / parseInt(limit as any)),
+          page: parseInt(page.toString()),
+          limit: parseInt(limit.toString()),
+          pages: Math.ceil(total / limit),
         },
       },
     };
@@ -154,23 +121,7 @@ export class StaffService {
   async findOne(id: string, tenantId: string) {
     const staff = await this.prisma.staff.findFirst({
       where: { id, tenantId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            role: true,
-            specialization: true,
-            licenseNumber: true,
-            experience: true,
-            isActive: true,
-            lastLoginAt: true,
-          },
-        },
-        department: true,
-      },
+      include: this.getIncludes(),
     });
 
     if (!staff) {
@@ -195,7 +146,12 @@ export class StaffService {
       }
 
       // Update user details if provided
-      if (updateStaffDto.firstName || updateStaffDto.lastName || updateStaffDto.specialization || updateStaffDto.licenseNumber) {
+      if (
+        updateStaffDto.firstName ||
+        updateStaffDto.lastName ||
+        updateStaffDto.specialization ||
+        updateStaffDto.licenseNumber
+      ) {
         await this.prisma.user.update({
           where: { id: staff.userId },
           data: {
@@ -214,7 +170,9 @@ export class StaffService {
           employeeId: updateStaffDto.employeeId,
           designation: updateStaffDto.designation,
           departmentId: updateStaffDto.departmentId,
-          joiningDate: updateStaffDto.joiningDate ? new Date(updateStaffDto.joiningDate) : undefined,
+          joiningDate: updateStaffDto.joiningDate
+            ? new Date(updateStaffDto.joiningDate)
+            : undefined,
           qualification: updateStaffDto.qualification,
           experience: updateStaffDto.experience,
           isActive: updateStaffDto.isActive,
@@ -235,13 +193,18 @@ export class StaffService {
         },
       });
 
+      this.logger.log(`Staff member updated: ${id} for tenant: ${tenantId}`);
+
       return {
         success: true,
         message: 'Staff member updated successfully',
         data: updatedStaff,
       };
     } catch (error) {
-      console.error('Error updating staff:', error);
+      this.logger.error(`Error updating staff: ${error.message}`, error.stack);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new BadRequestException('Failed to update staff member');
     }
   }
@@ -256,12 +219,14 @@ export class StaffService {
         },
       });
 
+      this.logger.log(`Staff member deactivated: ${id} for tenant: ${tenantId}`);
+
       return {
         success: true,
         message: 'Staff member deactivated successfully',
       };
     } catch (error) {
-      console.error('Error removing staff:', error);
+      this.logger.error(`Error deactivating staff: ${error.message}`, error.stack);
       throw new BadRequestException('Failed to deactivate staff member');
     }
   }
@@ -277,10 +242,18 @@ export class StaffService {
     ] = await Promise.all([
       this.prisma.staff.count({ where: { tenantId } }),
       this.prisma.staff.count({ where: { tenantId, isActive: true } }),
-      this.prisma.staff.count({ where: { tenantId, isActive: true, user: { role: 'DOCTOR' } } }),
-      this.prisma.staff.count({ where: { tenantId, isActive: true, user: { role: 'NURSE' } } }),
-      this.prisma.staff.count({ where: { tenantId, isActive: true, user: { role: 'LAB_TECHNICIAN' } } }),
-      this.prisma.staff.count({ where: { tenantId, isActive: true, user: { role: 'PHARMACIST' } } }),
+      this.prisma.staff.count({
+        where: { tenantId, isActive: true, user: { role: 'DOCTOR' } },
+      }),
+      this.prisma.staff.count({
+        where: { tenantId, isActive: true, user: { role: 'NURSE' } },
+      }),
+      this.prisma.staff.count({
+        where: { tenantId, isActive: true, user: { role: 'LAB_TECHNICIAN' } },
+      }),
+      this.prisma.staff.count({
+        where: { tenantId, isActive: true, user: { role: 'PHARMACIST' } },
+      }),
     ]);
 
     return {
@@ -338,6 +311,68 @@ export class StaffService {
       success: true,
       data: staff,
     };
+  }
+
+  private getIncludes() {
+    return {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          specialization: true,
+          licenseNumber: true,
+          experience: true,
+          isActive: true,
+          lastLoginAt: true,
+        },
+      },
+      department: {
+        select: {
+          id: true,
+          name: true,
+          code: true,
+        },
+      },
+    };
+  }
+
+  private buildWhereClause(tenantId: string, query: StaffQueryDto) {
+    const {
+      search,
+      role,
+      departmentId,
+      status = 'active',
+    } = query;
+
+    const where: any = {
+      tenantId,
+      isActive: status === 'active',
+    };
+
+    if (departmentId) {
+      where.departmentId = departmentId;
+    }
+
+    if (role) {
+      where.user = {
+        role: role,
+      };
+    }
+
+    if (search) {
+      where.OR = [
+        { employeeId: { contains: search, mode: 'insensitive' } },
+        { designation: { contains: search, mode: 'insensitive' } },
+        { user: { firstName: { contains: search, mode: 'insensitive' } } },
+        { user: { lastName: { contains: search, mode: 'insensitive' } } },
+        { user: { email: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+
+    return where;
   }
 
   private async generateEmployeeId(tenantId: string): Promise<string> {

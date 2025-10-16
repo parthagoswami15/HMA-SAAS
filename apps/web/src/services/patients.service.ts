@@ -1,4 +1,4 @@
-import { apiClient } from './api-client';
+import { enhancedApiClient } from '../lib/api-client';
 
 /**
  * Patients Management API Service
@@ -37,54 +37,83 @@ export interface PatientFilters {
   limit?: number;
 }
 
+export interface PatientResponse {
+  success: boolean;
+  message?: string;
+  data: any;
+}
+
+export interface PatientsListResponse {
+  success: boolean;
+  data: {
+    patients: any[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      pages: number;
+    };
+  };
+}
+
+export interface PatientStatsResponse {
+  success: boolean;
+  data: {
+    totalPatients: number;
+    activePatients: number;
+    todaysPatients: number;
+    weekPatients: number;
+  };
+}
+
 const patientsService = {
   /**
    * Create new patient
    */
-  createPatient: async (data: CreatePatientDto) => {
-    return apiClient.post('/patients', data);
+  createPatient: async (data: CreatePatientDto): Promise<PatientResponse> => {
+    return enhancedApiClient.post('/patients', data);
   },
 
   /**
    * Get all patients with filters
    */
-  getPatients: async (filters?: PatientFilters) => {
-    return apiClient.get('/patients', filters);
+  getPatients: async (filters?: PatientFilters): Promise<PatientsListResponse> => {
+    return enhancedApiClient.get('/patients', filters);
   },
 
   /**
    * Get patient by ID
    */
-  getPatientById: async (id: string) => {
-    return apiClient.get(`/patients/${id}`);
+  getPatientById: async (id: string): Promise<PatientResponse> => {
+    return enhancedApiClient.get(`/patients/${id}`);
   },
 
   /**
    * Update patient
    */
-  updatePatient: async (id: string, data: Partial<CreatePatientDto>) => {
-    return apiClient.patch(`/patients/${id}`, data);
+  updatePatient: async (id: string, data: Partial<CreatePatientDto>): Promise<PatientResponse> => {
+    return enhancedApiClient.patch(`/patients/${id}`, data);
   },
 
   /**
    * Delete patient
    */
-  deletePatient: async (id: string) => {
-    return apiClient.delete(`/patients/${id}`);
+  deletePatient: async (id: string): Promise<PatientResponse> => {
+    return enhancedApiClient.delete(`/patients/${id}`);
   },
 
   /**
    * Search patients
    */
-  searchPatients: async (query: string) => {
-    return apiClient.get('/patients/search', { q: query });
+  searchPatients: async (query: string): Promise<PatientResponse> => {
+    return enhancedApiClient.get('/patients/search', { q: query });
   },
 
   /**
    * Get patient statistics
    */
-  getPatientStats: async () => {
-    return apiClient.get('/patients/stats');
+  getPatientStats: async (): Promise<PatientStatsResponse> => {
+    return enhancedApiClient.get('/patients/stats');
   },
 };
 

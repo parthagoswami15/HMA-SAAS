@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -267,7 +271,12 @@ export class PathologyService {
     };
   }
 
-  async updateTestResult(orderId: string, testId: string, resultDto: any, tenantId: string) {
+  async updateTestResult(
+    orderId: string,
+    testId: string,
+    resultDto: any,
+    tenantId: string,
+  ) {
     const orderTest = await this.prisma.labOrderTest.findFirst({
       where: {
         orderId,
@@ -299,7 +308,7 @@ export class PathologyService {
       where: { orderId },
     });
 
-    const allCompleted = allTests.every(t => t.status === 'COMPLETED');
+    const allCompleted = allTests.every((t) => t.status === 'COMPLETED');
 
     if (allCompleted) {
       await this.prisma.labOrder.update({

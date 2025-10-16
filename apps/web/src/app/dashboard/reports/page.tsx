@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Container,
   Paper,
@@ -21,7 +22,6 @@ import {
   ScrollArea,
   ThemeIcon,
   Progress,
-  DatePickerInput,
   MultiSelect,
   Divider,
   Alert,
@@ -31,7 +31,8 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { LineChart, BarChart, DonutChart, AreaChart } from '@mantine/charts';
+import { DatePickerInput } from '@mantine/dates';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -56,7 +57,7 @@ import {
   IconFilter,
   IconRefresh,
   IconFileSpreadsheet,
-  IconFilePdf,
+  IconFileTypePdf,
   IconMail,
   IconClock,
   IconCheck,
@@ -247,6 +248,8 @@ const mockAnalytics: Analytics[] = [
 ];
 
 const ReportsAnalytics = () => {
+  const router = useRouter();
+  
   // State management
   const [activeTab, setActiveTab] = useState<string>('reports');
   const [searchQuery, setSearchQuery] = useState('');
@@ -302,7 +305,7 @@ const ReportsAnalytics = () => {
 
   const getFormatIcon = (format: string) => {
     switch (format) {
-      case 'PDF': return <IconFilePdf size={16} />;
+      case 'PDF': return <IconFileTypePdf size={16} />;
       case 'Excel': return <IconFileSpreadsheet size={16} />;
       case 'CSV': return <IconFileText size={16} />;
       case 'Dashboard': return <IconChartBar size={16} />;
@@ -497,13 +500,40 @@ const ReportsAnalytics = () => {
                           >
                             <IconEye size={16} />
                           </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
+                          <ActionIcon 
+                            variant="subtle" 
+                            color="green"
+                            onClick={() => {
+                              notifications.show({
+                                title: 'Downloading Report',
+                                message: `${report.name} is being downloaded...`,
+                                color: 'green',
+                              });
+                            }}
+                          >
                             <IconDownload size={16} />
                           </ActionIcon>
-                          <ActionIcon variant="subtle" color="orange">
+                          <ActionIcon 
+                            variant="subtle" 
+                            color="orange"
+                            onClick={() => {
+                              notifications.show({
+                                title: 'Edit Report',
+                                message: `Opening editor for ${report.name}...`,
+                                color: 'orange',
+                              });
+                            }}
+                          >
                             <IconEdit size={16} />
                           </ActionIcon>
-                          <ActionIcon variant="subtle" color="purple">
+                          <ActionIcon 
+                            variant="subtle" 
+                            color="purple"
+                            onClick={() => {
+                              openScheduleReport();
+                              setSelectedReport(report);
+                            }}
+                          >
                             <IconCalendarEvent size={16} />
                           </ActionIcon>
                         </Group>
@@ -556,20 +586,20 @@ const ReportsAnalytics = () => {
 
                 {/* Chart */}
                 {analytics.chartType === 'line' && (
-                  <LineChart
+                  <SimpleLineChart
                     h={200}
                     data={analytics.chartData}
                     dataKey="date"
                     series={[
-                      { name: 'admissions', color: 'blue.6' },
-                      { name: 'discharges', color: 'red.6' }
+                      { name: 'admissions', color: 'blue.6', label: 'Admissions' },
+                      { name: 'discharges', color: 'red.6', label: 'Discharges' }
                     ]}
                     curveType="linear"
                   />
                 )}
 
                 {analytics.chartType === 'bar' && (
-                  <BarChart
+                  <SimpleBarChart
                     h={200}
                     data={analytics.chartData}
                     dataKey="department"
@@ -602,7 +632,19 @@ const ReportsAnalytics = () => {
                 </Text>
                 <Group justify="space-between">
                   <Badge variant="light" color="green">Live</Badge>
-                  <Button size="xs" variant="light">Open Dashboard</Button>
+                  <Button size="xs" variant="light" onClick={() => {
+                    console.log('Executive Dashboard button clicked');
+                    notifications.show({
+                      title: 'Opening Dashboard',
+                      message: 'Executive Dashboard is loading...',
+                      color: 'blue',
+                    });
+                    // Navigate to main dashboard with executive view
+                    setTimeout(() => {
+                      console.log('Navigating to /dashboard');
+                      router.push('/dashboard');
+                    }, 1000);
+                  }}>Open Dashboard</Button>
                 </Group>
               </Card>
 
@@ -617,7 +659,19 @@ const ReportsAnalytics = () => {
                 </Text>
                 <Group justify="space-between">
                   <Badge variant="light" color="green">Live</Badge>
-                  <Button size="xs" variant="light">Open Dashboard</Button>
+                  <Button size="xs" variant="light" onClick={() => {
+                    console.log('Operations Dashboard button clicked');
+                    notifications.show({
+                      title: 'Opening Dashboard',
+                      message: 'Operations Dashboard is loading...',
+                      color: 'orange',
+                    });
+                    // Navigate to IPD for operations metrics
+                    setTimeout(() => {
+                      console.log('Navigating to /dashboard/ipd');
+                      router.push('/dashboard/ipd');
+                    }, 1000);
+                  }}>Open Dashboard</Button>
                 </Group>
               </Card>
 
@@ -632,7 +686,19 @@ const ReportsAnalytics = () => {
                 </Text>
                 <Group justify="space-between">
                   <Badge variant="light" color="green">Live</Badge>
-                  <Button size="xs" variant="light">Open Dashboard</Button>
+                  <Button size="xs" variant="light" onClick={() => {
+                    console.log('Financial Dashboard button clicked');
+                    notifications.show({
+                      title: 'Opening Dashboard',
+                      message: 'Financial Dashboard is loading...',
+                      color: 'green',
+                    });
+                    // Navigate to finance dashboard
+                    setTimeout(() => {
+                      console.log('Navigating to /dashboard/finance');
+                      router.push('/dashboard/finance');
+                    }, 1000);
+                  }}>Open Dashboard</Button>
                 </Group>
               </Card>
 
@@ -647,7 +713,19 @@ const ReportsAnalytics = () => {
                 </Text>
                 <Group justify="space-between">
                   <Badge variant="light" color="green">Live</Badge>
-                  <Button size="xs" variant="light">Open Dashboard</Button>
+                  <Button size="xs" variant="light" onClick={() => {
+                    console.log('Quality Dashboard button clicked');
+                    notifications.show({
+                      title: 'Opening Dashboard',
+                      message: 'Quality Dashboard is loading...',
+                      color: 'purple',
+                    });
+                    // Navigate to quality management
+                    setTimeout(() => {
+                      console.log('Navigating to /dashboard/quality');
+                      router.push('/dashboard/quality');
+                    }, 1000);
+                  }}>Open Dashboard</Button>
                 </Group>
               </Card>
 
@@ -662,7 +740,19 @@ const ReportsAnalytics = () => {
                 </Text>
                 <Group justify="space-between">
                   <Badge variant="light" color="green">Live</Badge>
-                  <Button size="xs" variant="light">Open Dashboard</Button>
+                  <Button size="xs" variant="light" onClick={() => {
+                    console.log('Clinical Dashboard button clicked');
+                    notifications.show({
+                      title: 'Opening Dashboard',
+                      message: 'Clinical Dashboard is loading...',
+                      color: 'red',
+                    });
+                    // Navigate to EMR for clinical metrics
+                    setTimeout(() => {
+                      console.log('Navigating to /dashboard/emr');
+                      router.push('/dashboard/emr');
+                    }, 1000);
+                  }}>Open Dashboard</Button>
                 </Group>
               </Card>
 
@@ -675,7 +765,15 @@ const ReportsAnalytics = () => {
                 <Text size="sm" c="dimmed" mb="md">
                   Build your own dashboard with custom metrics
                 </Text>
-                <Button size="xs" variant="outline" fullWidth>
+                <Button size="xs" variant="outline" fullWidth onClick={() => {
+                  console.log('Create Custom Dashboard button clicked');
+                  notifications.show({
+                    title: 'Create Dashboard',
+                    message: 'Custom dashboard builder coming soon!',
+                    color: 'blue',
+                  });
+                  // Future: Open custom dashboard builder modal
+                }}>
                   Create Dashboard
                 </Button>
               </Card>
