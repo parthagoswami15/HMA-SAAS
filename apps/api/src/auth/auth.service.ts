@@ -9,27 +9,27 @@ import { CustomPrismaService } from '../prisma/custom-prisma.service';
 import * as bcrypt from 'bcryptjs';
 
 export interface RegisterUserDto {
-  organizationType: 'hospital' | 'clinic' | 'private_practice';
-  organizationName: string;
-  address: string;
-  phone: string;
   email: string;
-  adminFirstName: string;
-  adminLastName: string;
-  adminEmail: string;
-  adminPhone: string;
-  adminPassword: string;
-  features: string[];
-  preferences: {
-    notifications: boolean;
-    analytics: boolean;
-    backups: boolean;
-  };
+  password: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  tenantId: string;
+  role?: string;
 }
 
 export interface LoginDto {
   email: string;
   password: string;
+}
+
+export interface ForgotPasswordDto {
+  email: string;
+}
+
+export interface ResetPasswordDto {
+  token: string;
+  newPassword: string;
 }
 
 @Injectable()
@@ -40,12 +40,16 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterUserDto) {
-    const { adminEmail, adminPassword, organizationName, ...orgData } =
-      registerDto;
+    const { email, password, firstName, lastName, phone, tenantId, role } = registerDto;
+
+    // Validate required fields
+    if (!email || !password || !firstName || !lastName || !tenantId) {
+      throw new BadRequestException('Missing required fields: email, password, firstName, lastName, tenantId');
+    }
 
     // Check if user already exists
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: adminEmail },
+      where: { email },
     });
 
     if (existingUser) {
@@ -53,53 +57,29 @@ export class AuthService {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(adminPassword, 12);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     try {
-      // Create transaction to create tenant and admin user
-      const result = await this.prisma.$transaction(async (prisma) => {
-        // Create tenant organization
-        const tenantTypeMap = {
-          hospital: 'HOSPITAL',
-          clinic: 'CLINIC',
-          private_practice: 'CLINIC',
-        } as const;
-
-        const tenant = await prisma.tenant.create({
-          data: {
-            name: organizationName,
-            slug: organizationName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-            type: tenantTypeMap[registerDto.organizationType],
-            address: registerDto.address,
-            phone: registerDto.phone,
-            email: registerDto.email,
-            isActive: true,
-          },
-        });
-
-        // Create admin user
-        const user = await prisma.user.create({
-          data: {
-            email: adminEmail,
-            passwordHash: hashedPassword,
-            firstName: registerDto.adminFirstName,
-            lastName: registerDto.adminLastName,
-            role: 'ADMIN',
-            tenantId: tenant.id,
-            isActive: true,
-          },
-        });
-
-        return { user, tenant };
+      // Create admin user
+      const user = await this.prisma.user.create({
+        data: {
+          email,
+          passwordHash: hashedPassword,
+          firstName,
+          lastName,
+          role: (role || 'ADMIN') as any,
+          tenantId,
+          isActive: true,
+        },
       });
 
       return {
         success: true,
-        message: 'Registration successful',
+        message: 'User registered successfully',
         data: {
-          userId: result.user.id,
-          tenantId: result.tenant.id,
-          email: result.user.email,
+          userId: user.id,
+          email: user.email,
+          tenantId: user.tenantId,
         },
       };
     } catch (error) {
@@ -182,5 +162,89 @@ export class AuthService {
       role: user.role,
       tenantId: user.tenantId,
     };
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const { email } = forgotPasswordDto;
+
+    // Find user by email
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    // Don't reveal if user exists or not for security
+    if (!user) {
+      return {
+        success: true,
+        message: 'If an account with that email exists, a password reset link has been sent.',
+      };
+    }
+
+    // Generate reset token (valid for 1 hour)
+    const resetToken = this.jwtService.sign(
+      { sub: user.id, email: user.email, type: 'password-reset' },
+      { expiresIn: '1h' }
+    );
+
+    // In production, send email with reset link
+    // For now, we'll return the token (in production, never return this!)
+    const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+
+    // TODO: Send email with resetLink
+    console.log('Password reset link:', resetLink);
+
+    return {
+      success: true,
+      message: 'If an account with that email exists, a password reset link has been sent.',
+      // Remove this in production!
+      resetToken, // Only for development
+    };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const { token, newPassword } = resetPasswordDto;
+
+    try {
+      // Verify token
+      const payload = this.jwtService.verify(token);
+
+      // Check if it's a password reset token
+      if (payload.type !== 'password-reset') {
+        throw new BadRequestException('Invalid reset token');
+      }
+
+      // Find user
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+      });
+
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+      // Update password
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          passwordHash: hashedPassword,
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Password has been reset successfully. You can now login with your new password.',
+      };
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new BadRequestException('Reset token has expired. Please request a new one.');
+      }
+      if (error.name === 'JsonWebTokenError') {
+        throw new BadRequestException('Invalid reset token.');
+      }
+      throw error;
+    }
   }
 }

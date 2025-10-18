@@ -250,7 +250,7 @@ const NotificationsPage = () => {
     weekendNotifications: true
   };
 
-  const filteredNotifications = mockNotifications.filter(notification => {
+  const filteredNotifications = [].filter /* TODO: API */(notification => {
     const matchesSearch = notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          notification.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          notification.recipientName.toLowerCase().includes(searchTerm.toLowerCase());
@@ -633,7 +633,7 @@ const NotificationsPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#ef4444', marginBottom: '0.5rem' }}>📬</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockNotifications.filter(n => !n.isRead).length}
+                {[].filter /* TODO: API */(n => !n.isRead).length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Unread</div>
             </div>
@@ -642,7 +642,7 @@ const NotificationsPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#f59e0b', marginBottom: '0.5rem' }}>🚨</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockNotifications.filter(n => n.priority === 'HIGH').length}
+                {[].filter /* TODO: API */(n => n.priority === 'HIGH').length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>High Priority</div>
             </div>
@@ -651,7 +651,7 @@ const NotificationsPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#10b981', marginBottom: '0.5rem' }}>📤</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockNotifications.filter(n => n.deliveryStatus === 'DELIVERED').length}
+                {[].filter /* TODO: API */(n => n.deliveryStatus === 'DELIVERED').length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Delivered</div>
             </div>
@@ -660,7 +660,7 @@ const NotificationsPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#3b82f6', marginBottom: '0.5rem' }}>⚡</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockNotifications.filter(n => n.actionRequired).length}
+                {[].filter /* TODO: API */(n => n.actionRequired).length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Action Required</div>
             </div>
@@ -894,7 +894,7 @@ const NotificationsPage = () => {
         {/* Templates Tab */}
         {currentTab === 'templates' && (
           <div style={{ display: 'grid', gap: '1rem' }}>
-            {mockTemplates.map(template => (
+            {[].map /* TODO: API */(template => (
               <Card key={template.id}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>

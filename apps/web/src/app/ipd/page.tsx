@@ -540,7 +540,7 @@ function IpdPage() {
     }
   ];
 
-  const layoutUser = user || mockUser;
+  const layoutUser = user || [];
   const userForLayout = {
     id: layoutUser.id,
     name: `${layoutUser.firstName} ${layoutUser.lastName}`,

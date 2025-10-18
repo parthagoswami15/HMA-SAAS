@@ -24,7 +24,8 @@ import {
   Menu,
   Button,
   Center,
-  Divider
+  Divider,
+  Modal
 } from '@mantine/core';
 import {
   IconTrendingUp,
@@ -53,8 +54,10 @@ import { BloodGroup } from '../../types/common';
 import { formatDate } from '../../lib/utils';
 
 interface PatientAnalyticsProps {
+  opened: boolean;
+  onClose: () => void;
   patients: Patient[];
-  stats: PatientStats;
+  stats: PatientStats | null;
 }
 
 interface ChartTimeframe {
@@ -69,11 +72,11 @@ const timeframes: ChartTimeframe[] = [
   { value: '1y', label: 'Last Year' }
 ];
 
-export default function PatientAnalytics({ patients, stats }: PatientAnalyticsProps) {
+export default function PatientAnalytics({ opened, onClose, patients, stats }: PatientAnalyticsProps) {
   const [selectedTimeframe, setSelectedTimeframe] = useState('30d');
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Calculate derived statistics
+  // Calculate derived statistics (must be before conditional return to follow Rules of Hooks)
   const derivedStats = useMemo(() => {
     const totalPatients = patients.length;
     const today = new Date();
@@ -127,6 +130,27 @@ export default function PatientAnalytics({ patients, stats }: PatientAnalyticsPr
       newPatientsThisMonth
     };
   }, [patients]);
+
+  // Handle null stats (after all hooks to follow Rules of Hooks)
+  if (!stats) {
+    return (
+      <Modal
+        opened={opened}
+        onClose={onClose}
+        size="xl"
+        title="Patient Analytics"
+        padding="lg"
+      >
+        <Center p="xl">
+          <Stack align="center" gap="md">
+            <IconAlertCircle size="3rem" color="gray" />
+            <Text size="lg" c="dimmed">No patient statistics available</Text>
+            <Text size="sm" c="dimmed">Patient data is still loading or unavailable</Text>
+          </Stack>
+        </Center>
+      </Modal>
+    );
+  }
 
   // Stat Card Component
   const StatCard = ({ 
@@ -600,12 +624,19 @@ export default function PatientAnalytics({ patients, stats }: PatientAnalyticsPr
   );
 
   return (
-    <Paper p="lg">
-      <Group justify="space-between" align="flex-start" mb="xl">
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      size="xl"
+      title={
         <div>
           <Title order={2}>Patient Analytics</Title>
-          <Text c="dimmed">Comprehensive insights and statistics about patient data</Text>
+          <Text c="dimmed" size="sm">Comprehensive insights and statistics about patient data</Text>
         </div>
+      }
+      padding="lg"
+    >
+      <Group justify="space-between" align="flex-start" mb="md">
         <Group>
           <ActionIcon variant="light" size="lg">
             <IconRefresh size="1.2rem" />
@@ -636,29 +667,29 @@ export default function PatientAnalytics({ patients, stats }: PatientAnalyticsPr
 
       <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'overview')}>
         <Tabs.List>
-          <Tabs.Tab value="overview" leftSection={<IconChartBar size="0.8rem" />}>
-            Overview
-          </Tabs.Tab>
-          <Tabs.Tab value="medical" leftSection={<IconStethoscope size="0.8rem" />}>
-            Medical Analytics
-          </Tabs.Tab>
-          <Tabs.Tab value="insurance" leftSection={<IconShield size="0.8rem" />}>
-            Insurance Analytics
-          </Tabs.Tab>
-        </Tabs.List>
+            <Tabs.Tab value="overview" leftSection={<IconChartBar size="0.8rem" />}>
+              Overview
+            </Tabs.Tab>
+            <Tabs.Tab value="medical" leftSection={<IconStethoscope size="0.8rem" />}>
+              Medical Analytics
+            </Tabs.Tab>
+            <Tabs.Tab value="insurance" leftSection={<IconShield size="0.8rem" />}>
+              Insurance Analytics
+            </Tabs.Tab>
+          </Tabs.List>
 
-        <Tabs.Panel value="overview" pt="md">
-          <OverviewTab />
-        </Tabs.Panel>
+          <Tabs.Panel value="overview" pt="md">
+            <OverviewTab />
+          </Tabs.Panel>
 
-        <Tabs.Panel value="medical" pt="md">
-          <MedicalTab />
-        </Tabs.Panel>
+          <Tabs.Panel value="medical" pt="md">
+            <MedicalTab />
+          </Tabs.Panel>
 
-        <Tabs.Panel value="insurance" pt="md">
-          <InsuranceTab />
-        </Tabs.Panel>
-      </Tabs>
-    </Paper>
+          <Tabs.Panel value="insurance" pt="md">
+            <InsuranceTab />
+          </Tabs.Panel>
+        </Tabs>
+    </Modal>
   );
 }

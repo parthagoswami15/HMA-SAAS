@@ -1,12 +1,13 @@
 'use client';
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { getModulesForRole, getRoleDisplayName, getRoleBadgeColor, type UserRole, type DashboardModule } from '@/lib/rbac';
 
 export default function EnhancedDashboard() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState({
     totalPatients: 0,
     todaysAppointments: 0,
@@ -23,16 +24,28 @@ export default function EnhancedDashboard() {
       return;
     }
 
-    setUser(JSON.parse(storedUser));
+    const userData = JSON.parse(storedUser);
+    setUser(userData);
     
-    // Mock stats - in real app, fetch from API
+    // Stats will be fetched from API - showing zeros until implemented
     setStats({
-      totalPatients: 2847,
-      todaysAppointments: 45,
-      pendingBills: 12,
-      activeDoctors: 15
+      totalPatients: 0,
+      todaysAppointments: 0,
+      pendingBills: 0,
+      activeDoctors: 0
     });
+    
+    // TODO: Fetch real stats from API
+    // fetchDashboardStats().then(data => setStats(data));
   }, [router]);
+
+  // Get modules accessible to this user's role (RBAC filtering)
+  const accessibleModules = useMemo(() => {
+    if (!user?.role) return [];
+    const filtered = getModulesForRole(user.role as UserRole);
+    console.log(`[Dashboard] Modules for ${user.role}:`, filtered.length, 'modules');
+    return filtered;
+  }, [user]);
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -57,242 +70,7 @@ export default function EnhancedDashboard() {
     );
   }
 
-  const modules = [
-    {
-      title: "Patient Management",
-      description: "Patient records and demographics",
-      icon: "👥",
-      href: "/dashboard/patients",
-      stats: `${stats.totalPatients} Patients`,
-      color: "#3b82f6",
-      active: true
-    },
-    {
-      title: "Appointments",
-      description: "Book and manage patient appointments",
-      icon: "📅",
-      href: "/dashboard/appointments", 
-      stats: `${stats.todaysAppointments} Today`,
-      color: "#4ecdc4",
-      active: true
-    },
-    {
-      title: "OPD Management",
-      description: "Outpatient consultations and records",
-      icon: "🩺",
-      href: "/dashboard/opd",
-      stats: "Quick Access",
-      color: "#45b7d1",
-      active: true
-    },
-    {
-      title: "IPD Management", 
-      description: "Inpatient care and bed management",
-      icon: "🏥",
-      href: "/dashboard/ipd",
-      stats: "87% Occupancy",
-      color: "#96ceb4",
-      active: true
-    },
-    {
-      title: "Emergency",
-      description: "Emergency cases and triage management",
-      icon: "🚑",
-      href: "/dashboard/emergency",
-      stats: "Active",
-      color: "#ff8a80",
-      active: true
-    },
-    {
-      title: "Laboratory",
-      description: "Lab tests and reports management",
-      icon: "🧪",
-      href: "/dashboard/laboratory", 
-      stats: "24 Pending",
-      color: "#81d4fa",
-      active: true
-    },
-    {
-      title: "Radiology",
-      description: "X-Ray, CT, MRI and imaging services",
-      icon: "🔬",
-      href: "/dashboard/radiology",
-      stats: "Active",
-      color: "#64b5f6",
-      active: true
-    },
-    {
-      title: "Pathology",
-      description: "Pathology tests and reports",
-      icon: "🦠",
-      href: "/dashboard/pathology",
-      stats: "Active",
-      color: "#4db6ac",
-      active: true
-    },
-    {
-      title: "Pharmacy",
-      description: "Medicine inventory and dispensing",
-      icon: "💊",
-      href: "/dashboard/pharmacy",
-      stats: "In Stock",
-      color: "#81c784",
-      active: true
-    },
-    {
-      title: "Pharmacy Management",
-      description: "Advanced pharmacy inventory control",
-      icon: "💉",
-      href: "/dashboard/pharmacy-management",
-      stats: "Active",
-      color: "#66bb6a",
-      active: true
-    },
-    {
-      title: "Surgery",
-      description: "Operation theater and surgery scheduling",
-      icon: "⚕️",
-      href: "/dashboard/surgery",
-      stats: "Active",
-      color: "#f48fb1",
-      active: true
-    },
-    {
-      title: "Billing & Invoices",
-      description: "Generate bills and track payments",
-      icon: "💰",
-      href: "/dashboard/billing",
-      stats: `${stats.pendingBills} Pending`,
-      color: "#ffb74d",
-      active: true
-    },
-    {
-      title: "Finance",
-      description: "Financial reports and revenue tracking",
-      icon: "💵",
-      href: "/dashboard/finance",
-      stats: "Active",
-      color: "#ff9800",
-      active: true
-    },
-    {
-      title: "Insurance",
-      description: "Insurance claims and coverage",
-      icon: "🛡️",
-      href: "/dashboard/insurance",
-      stats: "Active",
-      color: "#42a5f5",
-      active: true
-    },
-    {
-      title: "Staff Management",
-      description: "Manage doctors, nurses, and staff",
-      icon: "👨‍⚕️",
-      href: "/dashboard/staff",
-      stats: `${stats.activeDoctors} Active`,
-      color: "#ab47bc",
-      active: true
-    },
-    {
-      title: "HR Management",
-      description: "Human resources and attendance",
-      icon: "📋",
-      href: "/dashboard/hr",
-      stats: "Active",
-      color: "#ce93d8",
-      active: true
-    },
-    {
-      title: "EMR",
-      description: "Electronic Medical Records system",
-      icon: "📄",
-      href: "/dashboard/emr",
-      stats: "Active",
-      color: "#9575cd",
-      active: true
-    },
-    {
-      title: "Inventory",
-      description: "Medical supplies and equipment tracking",
-      icon: "📦",
-      href: "/dashboard/inventory",
-      stats: "Active",
-      color: "#5c6bc0",
-      active: true
-    },
-    {
-      title: "Telemedicine",
-      description: "Virtual consultations and video calls",
-      icon: "💻",
-      href: "/dashboard/telemedicine",
-      stats: "Active",
-      color: "#26a69a",
-      active: true
-    },
-    {
-      title: "Patient Portal",
-      description: "Patient self-service and access",
-      icon: "🔐",
-      href: "/dashboard/patient-portal",
-      stats: "Active",
-      color: "#4caf50",
-      active: true
-    },
-    {
-      title: "Communications",
-      description: "Messages, notifications, and alerts",
-      icon: "📱",
-      href: "/dashboard/communications",
-      stats: "Active",
-      color: "#9c27b0",
-      active: true
-    },
-    {
-      title: "Reports & Analytics",
-      description: "Hospital performance and insights",
-      icon: "📊",
-      href: "/dashboard/reports",
-      stats: "View Insights",
-      color: "#ff7043",
-      active: true
-    },
-    {
-      title: "Quality Management",
-      description: "Quality metrics and incident tracking",
-      icon: "✅",
-      href: "/dashboard/quality",
-      stats: "Active",
-      color: "#66bb6a",
-      active: true
-    },
-    {
-      title: "Research",
-      description: "Clinical trials and research projects",
-      icon: "🔍",
-      href: "/dashboard/research",
-      stats: "Active",
-      color: "#42a5f5",
-      active: true
-    },
-    {
-      title: "Integration",
-      description: "Third-party integrations and APIs",
-      icon: "🔗",
-      href: "/dashboard/integration",
-      stats: "Active",
-      color: "#78909c",
-      active: true
-    },
-    {
-      title: "AI Assistant",
-      description: "AI-powered insights and assistance",
-      icon: "🤖",
-      href: "/dashboard/ai-assistant",
-      stats: "Active",
-      color: "#e91e63",
-      active: true
-    }
-  ];
+  const modules = accessibleModules;
 
   return (
     <div style={{
@@ -334,28 +112,41 @@ export default function EnhancedDashboard() {
         }} />
 
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <h1 style={{
-            fontSize: '2rem',
-            fontWeight: '800',
-            marginBottom: '0.5rem',
-            background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            Welcome back, {user.firstName}! 👋
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+            <h1 style={{
+              fontSize: '2rem',
+              fontWeight: '800',
+              margin: 0,
+              background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
+              Welcome back, {user.firstName}! 👋
+            </h1>
+            <span style={{
+              background: getRoleBadgeColor(user.role as UserRole),
+              color: 'white',
+              padding: '0.4rem 1rem',
+              borderRadius: '20px',
+              fontSize: '0.85rem',
+              fontWeight: '600',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+            }}>
+              {getRoleDisplayName(user.role as UserRole)}
+            </span>
+          </div>
           <p style={{
             fontSize: '1rem',
             opacity: 0.9,
             margin: 0
           }}>
-            Here's what's happening at {user.tenant?.name} today
+            Here's what's happening at {user.tenant?.name} today • {modules.length} modules available
           </p>
         </div>
       </div>
 
-      {/* Quick Stats */}
+      {/* Quick Stats - Role-based */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
@@ -363,12 +154,17 @@ export default function EnhancedDashboard() {
         marginBottom: "3rem",
         padding: '0 2rem'
       }}>
-        {[
+        {(user.role === 'PATIENT' ? [
+          { label: "My Appointments", value: stats.todaysAppointments, color: "#4ecdc4", icon: "📅", bg: "rgba(78, 205, 196, 0.1)" },
+          { label: "Pending Bills", value: stats.pendingBills, color: "#45b7d1", icon: "💰", bg: "rgba(69, 183, 209, 0.1)" },
+          { label: "Medical Records", value: 0, color: "#ff6b6b", icon: "📋", bg: "rgba(255, 107, 107, 0.1)" },
+          { label: "Prescriptions", value: 0, color: "#96ceb4", icon: "💊", bg: "rgba(150, 206, 180, 0.1)" }
+        ] : [
           { label: "Total Patients", value: stats.totalPatients, color: "#ff6b6b", icon: "👥", bg: "rgba(255, 107, 107, 0.1)" },
           { label: "Today's Appointments", value: stats.todaysAppointments, color: "#4ecdc4", icon: "📅", bg: "rgba(78, 205, 196, 0.1)" },
           { label: "Pending Bills", value: stats.pendingBills, color: "#45b7d1", icon: "💰", bg: "rgba(69, 183, 209, 0.1)" },
           { label: "Active Doctors", value: stats.activeDoctors, color: "#96ceb4", icon: "👨‍⚕️", bg: "rgba(150, 206, 180, 0.1)" }
-        ].map((stat, index) => (
+        ]).map((stat, index) => (
           <div key={index} style={{
             background: 'rgba(255,255,255,0.95)',
             padding: "1.5rem",
@@ -421,7 +217,8 @@ export default function EnhancedDashboard() {
         ))}
       </div>
 
-      {/* HMS Modules */}
+      {/* HMS Modules - Only for Staff/Admin, not Patients */}
+      {user.role !== 'PATIENT' && (
       <div style={{
         marginBottom: "3rem",
         padding: '0 2rem'
@@ -591,6 +388,94 @@ export default function EnhancedDashboard() {
           ))}
         </div>
       </div>
+      )}
+
+      {/* Patient Quick Actions - Only for Patients */}
+      {user.role === 'PATIENT' && (
+        <div style={{
+          marginBottom: "3rem",
+          padding: '0 2rem'
+        }}>
+          <h2 style={{
+            color: "#1e293b",
+            fontSize: "1.5rem",
+            fontWeight: "700",
+            marginBottom: "2rem",
+            background: 'linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            Quick Actions
+          </h2>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "1.5rem"
+          }}>
+            {[
+              { title: "My Health Records", desc: "View your complete medical history", href: "/dashboard/my-records", icon: "📋", color: "#ff6b6b" },
+              { title: "My Appointments", desc: "Manage your upcoming appointments", href: "/dashboard/my-appointments", icon: "📅", color: "#4ecdc4" },
+              { title: "My Bills", desc: "View and pay your medical bills", href: "/dashboard/my-bills", icon: "💰", color: "#45b7d1" },
+              { title: "Book Appointment", desc: "Schedule a new appointment", href: "/dashboard/appointments", icon: "🗓️", color: "#96ceb4" },
+            ].map((action, index) => (
+              <Link key={index} href={action.href} style={{ textDecoration: "none" }}>
+                <div style={{
+                  background: 'rgba(255,255,255,0.95)',
+                  padding: "1.5rem",
+                  borderRadius: "16px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                  backdropFilter: 'blur(10px)',
+                  minHeight: '140px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                  e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.1)";
+                }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+                    <div style={{
+                      fontSize: "2rem",
+                      background: `${action.color}15`,
+                      padding: "0.75rem",
+                      borderRadius: "12px",
+                      boxShadow: `0 4px 20px ${action.color}25`
+                    }}>
+                      {action.icon}
+                    </div>
+                    <h3 style={{
+                      color: "#1f2937",
+                      fontSize: "1.1rem",
+                      fontWeight: "600",
+                      margin: 0
+                    }}>
+                      {action.title}
+                    </h3>
+                  </div>
+                  <p style={{
+                    color: "#6b7280",
+                    fontSize: "0.9rem",
+                    margin: 0,
+                    lineHeight: "1.5"
+                  }}>
+                    {action.desc}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div style={{

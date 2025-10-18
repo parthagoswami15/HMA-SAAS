@@ -27,11 +27,18 @@ interface LineChartProps {
 }
 
 export function MantineDonutChart({ data }: MantineChartProps) {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  // Safety check: ensure data is an array
+  const safeData = Array.isArray(data) ? data : [];
+  
+  if (safeData.length === 0) {
+    return <Text size="sm" c="dimmed">No data available</Text>;
+  }
+  
+  const total = safeData.reduce((sum, item) => sum + item.value, 0);
   
   return (
     <Stack gap="sm">
-      {data.map((item, index) => (
+      {safeData.map((item, index) => (
         <Group key={index} justify="space-between">
           <Group gap="xs">
             <Box
@@ -57,11 +64,18 @@ export function MantineDonutChart({ data }: MantineChartProps) {
 }
 
 export function SimpleAreaChart({ data, series }: AreaChartProps) {
-  const maxValue = Math.max(...data.map(item => item[series[0].name]));
+  // Safety check: ensure data is an array
+  const safeData = Array.isArray(data) ? data : [];
+  
+  if (safeData.length === 0) {
+    return <Text size="sm" c="dimmed">No data available</Text>;
+  }
+  
+  const maxValue = Math.max(...safeData.map(item => item[series[0].name]));
   
   return (
     <Stack gap="xs">
-      {data.slice(-6).map((item, index) => (
+      {safeData.slice(-6).map((item, index) => (
         <Group key={index} justify="space-between">
           <Text size="sm" w={60}>{item.hour || item.date}</Text>
           <Box style={{ flex: 1 }}>
@@ -81,13 +95,20 @@ export function SimpleAreaChart({ data, series }: AreaChartProps) {
 }
 
 export function SimpleLineChart({ data, series }: LineChartProps) {
-  const maxValue = Math.max(...data.flatMap(item => 
+  // Safety check: ensure data is an array
+  const safeData = Array.isArray(data) ? data : [];
+  
+  if (safeData.length === 0) {
+    return <Text size="sm" c="dimmed">No data available</Text>;
+  }
+  
+  const maxValue = Math.max(...safeData.flatMap(item => 
     series.map(s => item[s.name])
   ));
   
   return (
     <Stack gap="xs">
-      {data.map((item, index) => (
+      {safeData.map((item, index) => (
         <Group key={index} justify="space-between">
           <Text size="sm" w={60}>{item.date}</Text>
           <Box style={{ flex: 1 }}>
@@ -130,11 +151,18 @@ interface BarChartProps {
 }
 
 export function SimpleBarChart({ data, series }: BarChartProps) {
-  const maxValue = Math.max(...data.map(item => item[series[0].name]));
+  // Safety check: ensure data is an array
+  const safeData = Array.isArray(data) ? data : [];
+  
+  if (safeData.length === 0) {
+    return <Text size="sm" c="dimmed">No data available</Text>;
+  }
+  
+  const maxValue = Math.max(...safeData.map(item => item[series[0].name]));
   
   return (
     <Stack gap="sm">
-      {data.map((item, index) => (
+      {safeData.map((item, index) => (
         <Group key={index} justify="space-between">
           <Text size="sm" w={120}>{item.category || item[Object.keys(item)[0]]}</Text>
           <Box style={{ flex: 1 }}>

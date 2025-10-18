@@ -194,7 +194,7 @@ const RadiologyPage = () => {
     }
   ];
 
-  const filteredOrders = mockOrders.filter(order => {
+  const filteredOrders = [].filter /* TODO: API */(order => {
     const matchesSearch = order.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          order.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          order.examType.toLowerCase().includes(searchTerm.toLowerCase());
@@ -743,7 +743,7 @@ const RadiologyPage = () => {
                           size="sm"
                           variant="primary"
                           onClick={() => {
-                            const report = mockReports.find(r => r.orderId === order.orderId);
+                            const report = [].find /* TODO: API */(r => r.orderId === order.orderId);
                             if (report) {
                               setSelectedReport(report);
                               setShowReportModal(true);
@@ -788,7 +788,7 @@ const RadiologyPage = () => {
         {currentTab === 'reports' && (
           <>
             <div style={{ display: 'grid', gap: '1rem' }}>
-              {mockReports.map(report => (
+              {[].map /* TODO: API */(report => (
                 <Card key={report.id} style={{ cursor: 'pointer' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>

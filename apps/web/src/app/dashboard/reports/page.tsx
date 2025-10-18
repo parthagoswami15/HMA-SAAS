@@ -32,6 +32,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
+import EmptyState from '../../../components/EmptyState';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
@@ -43,6 +44,7 @@ import {
   IconChartBar,
   IconReportAnalytics,
   IconFileText,
+  IconFileReport,
   IconCalendar,
   IconUsers,
   IconCurrencyDollar,
@@ -264,7 +266,7 @@ const ReportsAnalytics = () => {
 
   // Filter reports
   const filteredReports = useMemo(() => {
-    return mockReports.filter((report) => {
+    return [].filter /* TODO: Fetch from API */((report) => {
       const matchesSearch = 
         report.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         report.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -315,10 +317,10 @@ const ReportsAnalytics = () => {
 
   // Quick stats
   const reportStats = {
-    total: mockReports.length,
-    active: mockReports.filter(r => r.status === 'active' || r.status === 'scheduled').length,
-    completed: mockReports.filter(r => r.status === 'completed').length,
-    failed: mockReports.filter(r => r.status === 'failed').length
+    total: 0 /* TODO: Fetch from API */,
+    active: [].filter /* TODO: Fetch from API */(r => r.status === 'active' || r.status === 'scheduled').length,
+    completed: [].filter /* TODO: Fetch from API */(r => r.status === 'completed').length,
+    failed: [].filter /* TODO: Fetch from API */(r => r.status === 'failed').length
   };
 
   return (
@@ -461,95 +463,108 @@ const ReportsAnalytics = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredReports.map((report) => (
-                    <Table.Tr key={report.id}>
-                      <Table.Td>
-                        <div>
-                          <Text fw={500} size="sm">{report.name}</Text>
-                          <Text size="xs" c="dimmed" lineClamp={1}>{report.description}</Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge variant="light" size="sm">
-                          {report.category}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          {getFormatIcon(report.format)}
-                          <Text size="sm">{report.format}</Text>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm" tt="capitalize">{report.frequency}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">{formatDate(report.lastGenerated)}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(report.status)} variant="light">
-                          {report.status.toUpperCase()}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewReport(report)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon 
-                            variant="subtle" 
-                            color="green"
-                            onClick={() => {
-                              notifications.show({
-                                title: 'Downloading Report',
-                                message: `${report.name} is being downloaded...`,
-                                color: 'green',
-                              });
-                            }}
-                          >
-                            <IconDownload size={16} />
-                          </ActionIcon>
-                          <ActionIcon 
-                            variant="subtle" 
-                            color="orange"
-                            onClick={() => {
-                              notifications.show({
-                                title: 'Edit Report',
-                                message: `Opening editor for ${report.name}...`,
-                                color: 'orange',
-                              });
-                            }}
-                          >
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon 
-                            variant="subtle" 
-                            color="purple"
-                            onClick={() => {
-                              openScheduleReport();
-                              setSelectedReport(report);
-                            }}
-                          >
-                            <IconCalendarEvent size={16} />
-                          </ActionIcon>
-                        </Group>
+                  {filteredReports.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={7}>
+                        <EmptyState
+                          icon={<IconFileReport size={48} />}
+                          title="No reports generated"
+                          description="Generate your first report"
+                          size="sm"
+                        />
                       </Table.Td>
                     </Table.Tr>
-                  ))}
-                </Table.Tbody>
-              </Table>
-            </ScrollArea>
-          </Paper>
-        </Tabs.Panel>
+                  ) : (
+                    filteredReports.map((report) => (
+                      <Table.Tr key={report.id}>
+                        <Table.Td>
+                          <div>
+                            <Text fw={500} size="sm">{report.name}</Text>
+                            <Text size="xs" c="dimmed" lineClamp={1}>{report.description}</Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge variant="light" size="sm">
+                            {report.category}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            {getFormatIcon(report.format)}
+                            <Text size="sm">{report.format}</Text>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm" tt="capitalize">{report.frequency}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{formatDate(report.lastGenerated)}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(report.status)} variant="light">
+                            {report.status.toUpperCase()}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewReport(report)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon 
+                              variant="subtle" 
+                              color="green"
+                              onClick={() => {
+                                notifications.show({
+                                  title: 'Downloading Report',
+                                  message: `${report.name} is being downloaded...`,
+                                  color: 'green',
+                                });
+                              }}
+                            >
+                              <IconDownload size={16} />
+                            </ActionIcon>
+                            <ActionIcon 
+                              variant="subtle" 
+                              color="orange"
+                              onClick={() => {
+                                notifications.show({
+                                  title: 'Edit Report',
+                                  message: `Opening editor for ${report.name}...`,
+                                  color: 'orange',
+                                });
+                              }}
+                            >
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon 
+                              variant="subtle" 
+                              color="purple"
+                              onClick={() => {
+                                openScheduleReport();
+                                setSelectedReport(report);
+                              }}
+                            >
+                              <IconCalendarEvent size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
+              </Table.Tbody>
+            </Table>
+          </ScrollArea>
+        </Paper>
+      </Tabs.Panel>
 
         {/* Analytics Tab */}
         <Tabs.Panel value="analytics">
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
-            {mockAnalytics.map((analytics) => (
+            {[].map /* TODO: Fetch from API */((analytics) => (
               <Card key={analytics.id} padding="lg" radius="md" withBorder>
                 <Group justify="space-between" mb="md">
                   <div>

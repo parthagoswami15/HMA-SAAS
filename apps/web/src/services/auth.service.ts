@@ -37,14 +37,21 @@ class AuthService {
     try {
       const response = await apiClient.post('/auth/register', data);
       
+      // Backend returns { user: {...}, tokens: { accessToken, refreshToken } }
+      const { user, tokens } = response.data;
+      
       // Store tokens and user info
       if (typeof window !== 'undefined') {
-        localStorage.setItem('accessToken', response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('accessToken', tokens.accessToken);
+        localStorage.setItem('refreshToken', tokens.refreshToken);
+        localStorage.setItem('user', JSON.stringify(user));
       }
       
-      return response.data;
+      return {
+        user,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      };
     } catch (error) {
       throw new Error(handleApiError(error));
     }
@@ -57,14 +64,21 @@ class AuthService {
     try {
       const response = await apiClient.post('/auth/login', credentials);
       
+      // Backend returns { user: {...}, tokens: { accessToken, refreshToken } }
+      const { user, tokens } = response.data;
+      
       // Store tokens and user info
       if (typeof window !== 'undefined') {
-        localStorage.setItem('accessToken', response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('accessToken', tokens.accessToken);
+        localStorage.setItem('refreshToken', tokens.refreshToken);
+        localStorage.setItem('user', JSON.stringify(user));
       }
       
-      return response.data;
+      return {
+        user,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      };
     } catch (error) {
       throw new Error(handleApiError(error));
     }

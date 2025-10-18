@@ -1,12 +1,15 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Module, ValidationPipe } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import Joi from 'joi';
 
-// Core modules that exist and work
+// Tenants module
+import { TenantsModule } from './tenants/tenants.module';
+
+// Existing Prisma-based modules (keep as is for now)
 import { PrismaModule } from './prisma/prisma.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule as OldAuthModule } from './auth/auth.module';
 import { PatientsModule } from './patients/patients.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { StaffModule } from './staff/staff.module';
@@ -42,13 +45,23 @@ import { AppService } from './app.service';
     // Configuration with validation
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test')
           .default('development'),
         PORT: Joi.number().default(3001),
+        
+        // Prisma (existing)
         DATABASE_URL: Joi.string().required(),
-        // Optional CORS configuration
+        
+        // JWT
+        JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
+        JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
+        JWT_ACCESS_TOKEN_EXPIRY: Joi.string().default('15m'),
+        JWT_REFRESH_TOKEN_EXPIRY: Joi.string().default('7d'),
+        
+        // Optional
         CORS_ORIGIN: Joi.string().default('http://localhost:3000'),
       }),
     }),
@@ -57,28 +70,31 @@ import { AppService } from './app.service';
     ThrottlerModule.forRoot([
       {
         name: 'short',
-        ttl: 1000, // 1 second
-        limit: 3, // 3 requests per second
+        ttl: 1000,
+        limit: 3,
       },
       {
         name: 'medium',
-        ttl: 10000, // 10 seconds
-        limit: 20, // 20 requests per 10 seconds
+        ttl: 10000,
+        limit: 20,
       },
       {
         name: 'long',
-        ttl: 60000, // 1 minute
-        limit: 100, // 100 requests per minute
+        ttl: 60000,
+        limit: 100,
       },
     ]),
 
-    // Core database module
+    // Existing Prisma database module
     PrismaModule,
 
-    // Authentication module
-    AuthModule,
+    // Tenant management
+    TenantsModule,
 
-    // HMS modules
+    // Keep existing auth for backward compatibility
+    OldAuthModule,
+
+    // Existing HMS modules (Prisma-based)
     PatientsModule,
     AppointmentsModule,
     StaffModule,
@@ -108,11 +124,32 @@ import { AppService } from './app.service';
   controllers: [AppController],
   providers: [
     AppService,
+    
+    // Global validation pipe for DTOs
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
+    },
+    
     // Global rate limiting guard
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    
+    // Uncomment to make JWT auth global for ALL routes
+    // (requires @Public() decorator on public routes)
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
   ],
 })
 export class AppModule {}

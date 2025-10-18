@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -35,6 +35,7 @@ import {
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
@@ -80,7 +81,7 @@ import {
   IconClipboard
 } from '@tabler/icons-react';
 
-// Import types and mock data
+// Import types, services and mock data
 import {
   InventoryItem,
   ItemCategory,
@@ -98,17 +99,8 @@ import {
   AlertType,
   InventoryStats
 } from '../../../types/inventory';
-import {
-  mockInventoryItems,
-  mockStockTransactions,
-  mockPurchaseOrders,
-  mockSuppliers,
-  mockRequisitions,
-  mockEquipment,
-  mockMaintenanceRecords,
-  mockInventoryAlerts,
-  mockInventoryStats
-} from '../../../lib/mockData/inventory';
+import inventoryService from '../../../services/inventory.service';
+// Mock data imports removed
 
 const InventoryManagement = () => {
   // State management
@@ -121,6 +113,12 @@ const InventoryManagement = () => {
   const [selectedOrder, setSelectedOrder] = useState<PurchaseOrder | null>(null);
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
 
+  // API data state
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [inventoryStats, setInventoryStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   // Modal states
   const [itemDetailOpened, { open: openItemDetail, close: closeItemDetail }] = useDisclosure(false);
   const [addItemOpened, { open: openAddItem, close: closeAddItem }] = useDisclosure(false);
@@ -128,25 +126,87 @@ const InventoryManagement = () => {
   const [addOrderOpened, { open: openAddOrder, close: closeAddOrder }] = useDisclosure(false);
   const [equipmentDetailOpened, { open: openEquipmentDetail, close: closeEquipmentDetail }] = useDisclosure(false);
 
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([
+        fetchInventoryItems(),
+        fetchInventoryStats()
+      ]);
+    } catch (err: any) {
+      console.error('Error loading inventory data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load inventory data');
+      // Fallback to mock data
+      setInventoryItems([] /* TODO: Fetch from API */);
+      setInventoryStats([] /* TODO: Fetch from API */);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchInventoryItems = async () => {
+    try {
+      const filters = {
+        category: selectedCategory || undefined,
+        supplier: selectedSupplier || undefined,
+        search: searchQuery || undefined
+      };
+      const response = await inventoryService.getItems(filters);
+      const itemsData = Array.isArray(response.data) ? response.data : (response.data?.items || []);
+      setInventoryItems(itemsData as InventoryItem[]);
+    } catch (err: any) {
+      console.warn('Error fetching inventory items (using empty data):', err.response?.data?.message || err.message);
+      setInventoryItems([]);
+    }
+  };
+
+  const fetchInventoryStats = async () => {
+    try {
+      const response = await inventoryService.getStats();
+      setInventoryStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching inventory stats (using default values):', err.response?.data?.message || err.message);
+      setInventoryStats({
+        totalItems: 0,
+        lowStockItems: 0,
+        outOfStockItems: 0,
+        expiringSoon: 0,
+        totalValue: 0,
+        categoriesCount: 0
+      });
+    }
+  };
+
+  // Refetch when filters change
+  useEffect(() => {
+    if (!loading) {
+      fetchInventoryItems();
+    }
+  }, [searchQuery, selectedCategory, selectedSupplier]);
+
   // Filter inventory items
   const filteredItems = useMemo(() => {
-    return mockInventoryItems.filter((item) => {
+    return inventoryItems.filter((item) => {
       const matchesSearch = 
-        ((item as any).itemName || item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ((item as any).itemName || (item as any).name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (item.itemCode || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (item.description || '').toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesCategory = !selectedCategory || item.category === selectedCategory;
-      const matchesStatus = !selectedStatus || item.status === selectedStatus;
-      const matchesSupplier = !selectedSupplier || (item as any).supplierId === selectedSupplier;
+      const matchesCategory = !selectedCategory || (item as any).category === selectedCategory;
+      const matchesStatus = !selectedStatus || (item as any).status === selectedStatus;
 
-      return matchesSearch && matchesCategory && matchesStatus && matchesSupplier;
+      return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [searchQuery, selectedCategory, selectedStatus, selectedSupplier]);
 
   // Filter purchase orders
   const filteredOrders = useMemo(() => {
-    return mockPurchaseOrders.filter((order) => {
+    return [].filter /* TODO: Fetch from API */((order) => {
       const matchesSearch = 
         ((order as any).orderNumber || order.id || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         ((order.supplier as any)?.companyName || (order.supplier as any)?.name || '').toLowerCase().includes(searchQuery.toLowerCase());
@@ -159,7 +219,7 @@ const InventoryManagement = () => {
 
   // Filter equipment
   const filteredEquipment = useMemo(() => {
-    return mockEquipment.filter((equipment) => {
+    return [].filter /* TODO: Fetch from API */((equipment) => {
       const matchesSearch = 
         ((equipment as any).equipmentName || equipment.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         ((equipment as any).model || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -261,28 +321,28 @@ const InventoryManagement = () => {
   const statsCards = [
     {
       title: 'Total Items',
-      value: mockInventoryStats.totalItems,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconPackage,
       color: 'blue',
       trend: '+5.2%'
     },
     {
       title: 'Low Stock Alerts',
-      value: mockInventoryStats.lowStockItems,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconAlertCircle,
       color: 'orange',
       trend: '-12%'
     },
     {
       title: 'Total Value',
-      value: formatCurrency(mockInventoryStats.totalValue),
+      value: formatCurrency(0 /* TODO: Fetch from API */),
       icon: IconCalculator,
       color: 'green',
       trend: '+8.7%'
     },
     {
       title: 'Equipment',
-      value: mockInventoryStats.totalEquipment,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconStethoscope,
       color: 'purple',
       trend: '+3.1%'
@@ -290,15 +350,10 @@ const InventoryManagement = () => {
   ];
 
   // Chart data
-  const categoryDistribution = Object.entries((mockInventoryStats as any).categoryDistribution || {})
-    .map(([category, count]) => ({
-      name: category.replace('_', ' ').toUpperCase(),
-      value: count,
-      color: getCategoryColor(category)
-    }));
+  const categoryDistribution = [];
 
-  const stockLevelsData = (mockInventoryStats as any).stockLevels || [];
-  const monthlyConsumption = (mockInventoryStats as any).monthlyConsumption || [];
+  const stockLevelsData = [];
+  const monthlyConsumption = [];
 
   return (
     <Container size="xl" py="md">
@@ -361,37 +416,7 @@ const InventoryManagement = () => {
         })}
       </SimpleGrid>
 
-      {/* Alerts Section */}
-      {mockInventoryAlerts.length > 0 && (
-        <Alert
-          variant="light"
-          color="orange"
-          title="Inventory Alerts"
-          icon={<IconAlertTriangle size={16} />}
-          mb="lg"
-        >
-          <Stack gap="xs">
-            {mockInventoryAlerts.slice(0, 3).map((alert) => (
-              <Group key={alert.id} justify="space-between">
-                <Text size="sm">
-                  <Badge size="xs" color={getAlertColor((alert as any).alertType || alert.type)} mr="xs">
-                    {((alert as any).alertType || alert.type).replace('_', ' ')}
-                  </Badge>
-                  {(alert as any).message || `${alert.itemName} - ${alert.type}`}
-                </Text>
-                <Text size="xs" c="dimmed">
-                  {new Date((alert as any).createdAt || new Date()).toLocaleDateString()}
-                </Text>
-              </Group>
-            ))}
-            {mockInventoryAlerts.length > 3 && (
-              <Text size="xs" c="dimmed" ta="right">
-                +{mockInventoryAlerts.length - 3} more alerts
-              </Text>
-            )}
-          </Stack>
-        </Alert>
-      )}
+      {/* Alerts Section - Hidden until API data available */}
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={setActiveTab}>
@@ -451,7 +476,7 @@ const InventoryManagement = () => {
               />
               <Select
                 placeholder="Supplier"
-                data={mockSuppliers.map(supplier => ({ 
+                data={[].map /* TODO: Fetch from API */(supplier => ({ 
                   value: supplier.id, 
                   label: (supplier as any).companyName || (supplier as any).name || 'Unknown' 
                 }))}
@@ -480,116 +505,116 @@ const InventoryManagement = () => {
                         <Group>
                           <ThemeIcon 
                             color={getCategoryColor((item as any).category || item.category)} 
-                            variant="light" 
+                            variant="light"
                             size="lg"
                           >
                             <IconPackage size={20} />
                           </ThemeIcon>
                           <div>
                             <Text fw={600} size="sm" lineClamp={1}>
-                              {(item as any).itemName || item.name}
+                              {(item as any).itemName || (item as any).name}
                             </Text>
                             <Text size="xs" c="dimmed">
-                              {item.itemCode}
+                              {(item as any).itemCode || 'N/A'}
                             </Text>
                           </div>
                         </Group>
                       </div>
-                      <Badge color={getStatusColor(item.status)} variant="light" size="sm">
-                        {item.status.replace('_', ' ')}
-                      </Badge>
+                  <Badge color={getStatusColor((item as any).status)} variant="light" size="sm">
+                    {(item as any).status?.replace('_', ' ') || 'N/A'}
+                  </Badge>
+                </Group>
+
+                <Stack gap="sm" mb="md">
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Current Stock</Text>
+                    <Text size="sm" fw={600}>
+                      {(item as any).currentStock || 0} {(item as any).unit || 'units'}
+                    </Text>
+                  </Group>
+                  
+                  <div>
+                    <Group justify="space-between" mb="xs">
+                      <Text size="xs" c="dimmed">Stock Level</Text>
+                      <Text size="xs" c={stockInfo.color} fw={500}>
+                        {stockInfo.level}
+                      </Text>
                     </Group>
+                    <Progress 
+                      value={stockInfo.percentage} 
+                      color={stockInfo.color} 
+                      size="sm" 
+                    />
+                  </div>
 
-                    <Stack gap="sm" mb="md">
-                      <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Current Stock</Text>
-                        <Text size="sm" fw={600}>
-                          {item.currentStock} {(item as any).unit || 'units'}
-                        </Text>
-                      </Group>
-                      
-                      <div>
-                        <Group justify="space-between" mb="xs">
-                          <Text size="xs" c="dimmed">Stock Level</Text>
-                          <Text size="xs" c={stockInfo.color} fw={500}>
-                            {stockInfo.level}
-                          </Text>
-                        </Group>
-                        <Progress 
-                          value={stockInfo.percentage} 
-                          color={stockInfo.color} 
-                          size="sm" 
-                        />
-                      </div>
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Unit Price</Text>
+                    <Text size="sm" fw={600}>
+                      {formatCurrency((item as any).unitPrice || item.unitCost || 0)}
+                    </Text>
+                  </Group>
 
-                      <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Unit Price</Text>
-                        <Text size="sm" fw={600}>
-                          {formatCurrency(item.unitPrice)}
-                        </Text>
-                      </Group>
+                  <Group justify="space-between">
+                    <Text size="sm" c="dimmed">Total Value</Text>
+                    <Text size="sm" fw={600} c="green">
+                      {formatCurrency((item as any).currentStock * ((item as any).unitPrice || item.unitCost || 0))}
+                    </Text>
+                  </Group>
 
-                      <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Total Value</Text>
-                        <Text size="sm" fw={600} c="green">
-                          {formatCurrency(item.currentStock * item.unitPrice)}
-                        </Text>
-                      </Group>
-
-                      {item.expiryDate && (
-                        <Group justify="space-between">
-                          <Text size="sm" c="dimmed">Expiry Date</Text>
-                          <Text 
-                            size="sm" 
-                            c={new Date(item.expiryDate) < new Date() ? 'red' : 'dimmed'}
-                          >
-                            {new Date(item.expiryDate).toLocaleDateString()}
-                          </Text>
-                        </Group>
-                      )}
-                    </Stack>
-
+                  {(item as any).expiryDate && (
                     <Group justify="space-between">
-                      <Badge color={getCategoryColor((item as any).category || item.category)} variant="light" size="xs">
-                        {item.category.replace('_', ' ')}
-                      </Badge>
-                      <Group gap="xs">
-                        <ActionIcon
-                          variant="subtle"
-                          color="blue"
-                          onClick={() => handleViewItem(item as any)}
+                      <Text size="sm" c="dimmed">Expiry Date</Text>
+                      <Text 
+                        size="sm" 
+                        c={new Date((item as any).expiryDate) < new Date() ? 'red' : 'dimmed'}
+                      >
+                        {new Date((item as any).expiryDate).toLocaleDateString()}
+                      </Text>
+                    </Group>
+                  )}
+                </Stack>
+
+                <Group justify="space-between">
+                  <Badge color={getCategoryColor((item as any).category || item.category)} variant="light" size="xs">
+                    {(item as any).category?.replace('_', ' ') || 'N/A'}
+                  </Badge>
+                  <Group gap="xs">
+                    <ActionIcon
+                      variant="subtle"
+                      color="blue"
+                      onClick={() => handleViewItem(item as any)}
+                    >
+                      <IconEye size={16} />
+                    </ActionIcon>
+                    <ActionIcon variant="subtle" color="green">
+                      <IconEdit size={16} />
+                    </ActionIcon>
+                    <Menu>
+                      <Menu.Target>
+                        <ActionIcon variant="subtle" color="gray">
+                          <IconDotsVertical size={16} />
+                        </ActionIcon>
+                      </Menu.Target>
+                      <Menu.Dropdown>
+                        <Menu.Item leftSection={<IconClipboard size={14} />}>
+                          Stock Adjustment
+                        </Menu.Item>
+                        <Menu.Item leftSection={<IconShoppingCart size={14} />}>
+                          Reorder
+                        </Menu.Item>
+                        <Menu.Item leftSection={<IconDownload size={14} />}>
+                          Export Data
+                        </Menu.Item>
+                        <Menu.Divider />
+                        <Menu.Item 
+                          leftSection={<IconTrash size={14} />}
+                          color="red"
                         >
-                          <IconEye size={16} />
-                        </ActionIcon>
-                        <ActionIcon variant="subtle" color="green">
-                          <IconEdit size={16} />
-                        </ActionIcon>
-                        <Menu>
-                          <Menu.Target>
-                            <ActionIcon variant="subtle" color="gray">
-                              <IconDotsVertical size={16} />
-                            </ActionIcon>
-                          </Menu.Target>
-                          <Menu.Dropdown>
-                            <Menu.Item leftSection={<IconClipboard size={14} />}>
-                              Stock Adjustment
-                            </Menu.Item>
-                            <Menu.Item leftSection={<IconShoppingCart size={14} />}>
-                              Reorder
-                            </Menu.Item>
-                            <Menu.Item leftSection={<IconDownload size={14} />}>
-                              Export Data
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item 
-                              leftSection={<IconTrash size={14} />}
-                              color="red"
-                            >
-                              Delete
-                            </Menu.Item>
-                          </Menu.Dropdown>
-                        </Menu>
-                      </Group>
+                          Delete
+                        </Menu.Item>
+                      </Menu.Dropdown>
+                    </Menu>
+                  </Group>
                     </Group>
                   </Card>
                 );
@@ -648,7 +673,19 @@ const InventoryManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredOrders.map((order) => (
+                  {filteredOrders.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={9}>
+                        <EmptyState
+                          icon={<IconPackage size={48} />}
+                          title="No inventory items"
+                          description="Add items to your inventory"
+                          size="sm"
+                        />
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    filteredOrders.map((order) => (
                     <Table.Tr key={order.id}>
                       <Table.Td>
                         <Text fw={500}>{(order as any).orderNumber || order.id}</Text>
@@ -702,7 +739,7 @@ const InventoryManagement = () => {
                         </Group>
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  )))}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -920,7 +957,7 @@ const InventoryManagement = () => {
             <Select
               label="Supplier"
               placeholder="Select supplier"
-              data={mockSuppliers.map(supplier => ({ 
+              data={[].map /* TODO: Fetch from API */(supplier => ({ 
                 value: supplier.id, 
                 label: (supplier as any).companyName || (supplier as any).name || 'Unknown' 
               }))}
@@ -961,7 +998,7 @@ const InventoryManagement = () => {
           <Select
             label="Supplier"
             placeholder="Select supplier"
-            data={mockSuppliers.map(supplier => ({ 
+            data={[].map /* TODO: Fetch from API */(supplier => ({ 
               value: supplier.id, 
               label: (supplier as any).companyName || (supplier as any).name || 'Unknown' 
             }))}
@@ -980,7 +1017,7 @@ const InventoryManagement = () => {
             <Select
               label="Item"
               placeholder="Select item"
-              data={mockInventoryItems.map(item => ({ 
+              data={[].map /* TODO: Fetch from API */(item => ({ 
                 value: item.id, 
                 label: (item as any).itemName || item.name 
               }))}

@@ -18,8 +18,8 @@ export default function Home() {
             HMS SAAS
           </div>
           <Group gap="md">
-            <Button component={Link} href="/login" variant="outline" color="white">Login</Button>
-            <Button component={Link} href="/signup" color="white">Sign Up</Button>
+            <Button component={Link} href="/login" color="red">Login</Button>
+            <Button component={Link} href="/signup" color="green">Sign Up</Button>
           </Group>
         </div>
       </nav>
@@ -106,7 +106,7 @@ export default function Home() {
             component={Link} 
             href="/signup"
             size="lg"
-            color="white"
+            color="green"
             fw={600}
             style={{
               boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
@@ -119,8 +119,7 @@ export default function Home() {
             component={Link} 
             href="/dashboard"
             size="lg"
-            variant="outline"
-            color="white"
+            color="red"
             fw={600}
           >
             View Dashboard

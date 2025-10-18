@@ -70,8 +70,8 @@ export class IpdService {
 
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search } },
+        { description: { contains: search } },
       ];
     }
 
@@ -99,7 +99,7 @@ export class IpdService {
 
     if (search) {
       where.OR = [
-        { bedNumber: { contains: search, mode: 'insensitive' } },
+        { bedNumber: { contains: search } },
       ];
     }
 

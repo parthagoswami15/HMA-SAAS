@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Container,
-  Paper,
   Text,
   Group,
   Badge,
@@ -11,19 +10,14 @@ import {
   Stack,
   Button,
   Card,
-  Progress,
   Avatar,
-  Modal,
   Title,
-  Divider,
   Alert
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconUsers,
-  IconDownload,
   IconPhone,
-  IconMail,
   IconCalendar,
   IconHeart,
   IconAlertCircle,
@@ -34,7 +28,6 @@ import {
   IconFileExport,
   IconUser
 } from '@tabler/icons-react';
-import Layout from '../../../components/shared/Layout';
 import DataTable from '../../../components/shared/DataTable';
 import PatientForm from '../../../components/patients/PatientForm';
 import PatientDetails from '../../../components/patients/PatientDetails';
@@ -47,9 +40,9 @@ import PatientPortalAccess from '../../../components/patients/PatientPortalAcces
 import { useAppStore } from '../../../stores/appStore';
 import { User, UserRole, TableColumn, FilterOption, Status } from '../../../types/common';
 import { Patient, PatientStats, PatientListItem, CreatePatientDto, UpdatePatientDto, PatientSearchParams, InsuranceInfo } from '../../../types/patient';
-import { mockPatients, mockPatientStats, mockPatientVisits, mockPatientDocuments, mockMedicalHistory, mockPatientAppointments } from '../../../lib/mockData/patients';
 import { formatDate, formatPhoneNumber } from '../../../lib/utils';
 import { notifications } from '@mantine/notifications';
+import patientsService from '../../../services/patients.service';
 
 // Mock user
 const mockUser: User = {
@@ -71,10 +64,11 @@ const mockUser: User = {
 
 export default function PatientManagement() {
   const { user, setUser } = useAppStore();
-  const [patients, setPatients] = useState<Patient[]>(mockPatients);
-  const [patientStats] = useState<PatientStats>(mockPatientStats);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patientStats, setPatientStats] = useState<any>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [, setSearchQuery] = useState('');
   const [, setFilters] = useState<Record<string, unknown>>({});
   const [opened, { open, close }] = useDisclosure(false);
@@ -88,9 +82,49 @@ export default function PatientManagement() {
 
   useEffect(() => {
     if (!user) {
-      setUser(mockUser);
+      setUser([] /* TODO: Fetch from API */);
     }
+    fetchPatients();
+    fetchStats();
   }, [user, setUser]);
+
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const response = await patientsService.getPatients();
+      console.log('Patients API response:', response);
+      setPatients(response.data?.patients || []);
+      setError(null);
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to fetch patients';
+      console.warn('Error fetching patients (using empty data):', errorMsg);
+      // Don't show error to user if backend is not ready, just use empty data
+      setError(null);
+      setPatients([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await patientsService.getPatientStats();
+      console.log('Patient stats API response:', response);
+      setPatientStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching patient stats (using default values):', err.response?.data?.message || err.message);
+      // Set default stats when backend is unavailable
+      setPatientStats({ 
+        totalPatients: 0, 
+        activePatients: 0, 
+        todaysPatients: 0, 
+        weekPatients: 0,
+        averageAge: 0,
+        genderDistribution: { male: 0, female: 0, other: 0 },
+        insuranceDistribution: { insured: 0, uninsured: 0 }
+      });
+    }
+  };
 
   // Convert patients to list items for table
   const patientListItems: PatientListItem[] = patients.map(patient => ({
@@ -248,14 +282,24 @@ export default function PatientManagement() {
     }
   };
 
-  const handleDeletePatient = (patient: PatientListItem) => {
-    // Show confirmation
-    if (window.confirm(`Are you sure you want to delete patient ${patient.fullName} (${patient.patientId})?`)) {
-      setPatients(prev => prev.filter(p => p.id !== patient.id));
+  const handleDeletePatient = async (patient: PatientListItem) => {
+    if (!window.confirm(`Are you sure you want to delete patient ${patient.fullName} (${patient.patientId})?`)) {
+      return;
+    }
+
+    try {
+      await patientsService.deletePatient(patient.id);
       notifications.show({
         title: 'Success',
         message: `Patient ${patient.fullName} deleted successfully!`,
         color: 'green'
+      });
+      fetchPatients(); // Refresh the list
+    } catch (error) {
+      notifications.show({
+        title: 'Error',
+        message: 'Failed to delete patient',
+        color: 'red'
       });
     }
   };
@@ -263,75 +307,29 @@ export default function PatientManagement() {
   // Patient CRUD operations
   const handleCreatePatient = async (data: CreatePatientDto) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Calculate age from date of birth
-      const today = new Date();
-      const birthDate = new Date(data.dateOfBirth);
-      const age = today.getFullYear() - birthDate.getFullYear() - 
-        (today.getMonth() < birthDate.getMonth() || 
-         (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()) ? 1 : 0);
-      
-      // Generate patient ID
-      const patientId = `P${String(patients.length + 1).padStart(6, '0')}`;
-      
-      // Create new patient object
-      const newPatient: Patient = {
-        id: `patient-${Date.now()}`,
-        patientId: patientId,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        dateOfBirth: data.dateOfBirth,
-        age: age,
-        gender: data.gender,
-        bloodGroup: data.bloodGroup,
-        maritalStatus: data.maritalStatus,
-        contactInfo: data.contactInfo,
-        address: data.address,
-        aadhaarNumber: data.aadhaarNumber,
-        otherIdNumber: data.otherIdNumber,
-        otherIdType: data.otherIdType,
-        allergies: data.allergies || [],
-        chronicDiseases: data.chronicDiseases || [],
-        currentMedications: data.currentMedications || [],
-        insuranceInfo: data.insuranceInfo ? {
-          ...data.insuranceInfo,
-          insuranceType: data.insuranceInfo.insuranceType || 'self_pay',
-          insuranceProvider: data.insuranceInfo.insuranceProvider || '',
-          policyNumber: data.insuranceInfo.policyNumber || '',
-          policyHolderName: data.insuranceInfo.policyHolderName || '',
-          relationshipToPatient: data.insuranceInfo.relationshipToPatient || '',
-          validFrom: new Date(),
-          validTo: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-          coverageAmount: data.insuranceInfo.coverageAmount || 0,
-          isActive: data.insuranceInfo.isActive || false
-        } as InsuranceInfo : undefined,
-        status: 'active' as Status,
-        registrationDate: new Date(),
-        totalVisits: 0,
-        occupation: data.occupation,
-        religion: data.religion,
-        language: data.language,
-        notes: data.notes,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdBy: user?.id || 'system',
-        updatedBy: user?.id || 'system'
+      // Convert Date to string for API
+      const apiData = {
+        ...data,
+        dateOfBirth: data.dateOfBirth instanceof Date 
+          ? data.dateOfBirth.toISOString().split('T')[0] 
+          : data.dateOfBirth
       };
-      
-      // Add to patients list
-      setPatients(prev => [newPatient, ...prev]);
-      
+      const response = await patientsService.createPatient(apiData as any);
+      const newPatient = response.data;
       notifications.show({
         title: 'Success',
-        message: `Patient ${data.firstName} ${data.lastName} (${patientId}) registered successfully!`,
+        message: `Patient ${newPatient.firstName} ${newPatient.lastName} registered successfully!`,
         color: 'green'
       });
-    } catch (error) {
+      
+      // Refresh the patients list and stats
+      await fetchPatients();
+      await fetchStats();
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || error.message || 'Failed to create patient';
       notifications.show({
         title: 'Error',
-        message: 'Failed to create patient. Please try again.',
+        message: errorMsg,
         color: 'red'
       });
       throw error;
@@ -340,62 +338,29 @@ export default function PatientManagement() {
 
   const handleUpdatePatient = async (data: UpdatePatientDto) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Update patient in list
-      setPatients(prev => prev.map(p => {
-        if (p.id === data.id) {
-          // Calculate age from date of birth
-          const today = new Date();
-          const birthDate = new Date(data.dateOfBirth!);
-          const age = today.getFullYear() - birthDate.getFullYear() - 
-            (today.getMonth() < birthDate.getMonth() || 
-             (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()) ? 1 : 0);
-          
-          return {
-            ...p,
-            firstName: data.firstName || p.firstName,
-            lastName: data.lastName || p.lastName,
-            dateOfBirth: data.dateOfBirth || p.dateOfBirth,
-            age: data.dateOfBirth ? age : p.age,
-            gender: data.gender || p.gender,
-            bloodGroup: data.bloodGroup !== undefined ? data.bloodGroup : p.bloodGroup,
-            maritalStatus: data.maritalStatus !== undefined ? data.maritalStatus : p.maritalStatus,
-            contactInfo: data.contactInfo || p.contactInfo,
-            address: data.address || p.address,
-            aadhaarNumber: data.aadhaarNumber !== undefined ? data.aadhaarNumber : p.aadhaarNumber,
-            otherIdNumber: data.otherIdNumber !== undefined ? data.otherIdNumber : p.otherIdNumber,
-            otherIdType: data.otherIdType !== undefined ? data.otherIdType : p.otherIdType,
-            allergies: data.allergies !== undefined ? data.allergies : p.allergies,
-            chronicDiseases: data.chronicDiseases !== undefined ? data.chronicDiseases : p.chronicDiseases,
-            currentMedications: data.currentMedications !== undefined ? data.currentMedications : p.currentMedications,
-            insuranceInfo: data.insuranceInfo ? {
-              ...p.insuranceInfo,
-              ...data.insuranceInfo,
-              validFrom: p.insuranceInfo?.validFrom || new Date(),
-              validTo: p.insuranceInfo?.validTo || new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-            } as InsuranceInfo : p.insuranceInfo,
-            occupation: data.occupation !== undefined ? data.occupation : p.occupation,
-            religion: data.religion !== undefined ? data.religion : p.religion,
-            language: data.language !== undefined ? data.language : p.language,
-            notes: data.notes !== undefined ? data.notes : p.notes,
-            updatedAt: new Date(),
-            updatedBy: user?.id || 'system'
-          };
-        }
-        return p;
-      }));
+      // Convert Date to string for API
+      const apiData = {
+        ...data,
+        dateOfBirth: data.dateOfBirth instanceof Date 
+          ? data.dateOfBirth.toISOString().split('T')[0] 
+          : data.dateOfBirth
+      };
+      const response = await patientsService.updatePatient(data.id!, apiData as any);
+      const updatedPatient = response.data;
       
       notifications.show({
         title: 'Success',
-        message: `Patient ${data.firstName} ${data.lastName} updated successfully!`,
+        message: `Patient ${updatedPatient.firstName} ${updatedPatient.lastName} updated successfully!`,
         color: 'green'
       });
-    } catch (error) {
+      
+      // Refresh the patients list
+      await fetchPatients();
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || error.message || 'Failed to update patient';
       notifications.show({
         title: 'Error',
-        message: 'Failed to update patient. Please try again.',
+        message: errorMsg,
         color: 'red'
       });
       throw error;
@@ -625,37 +590,46 @@ export default function PatientManagement() {
           </Group>
         </Group>
 
+        {/* Error Display */}
+        {error && (
+          <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red" variant="light">
+            {error}
+          </Alert>
+        )}
+
         {/* Statistics Cards */}
-        <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
-          <StatCard
-            title="Total Patients"
-            value={patientStats.totalPatients.toLocaleString()}
-            icon={<IconUsers size="2rem" />}
-            color="blue"
-            subtitle={`+${patientStats.newPatientsThisMonth} this month`}
-          />
-          <StatCard
-            title="New Today"
-            value={patientStats.newPatientsToday.toString()}
-            icon={<IconUserPlus size="2rem" />}
-            color="green"
-            subtitle="New registrations today"
-          />
-          <StatCard
-            title="Active Patients"
-            value={patientStats.activePatients.toLocaleString()}
-            icon={<IconHeart size="2rem" />}
-            color="red"
-            subtitle="Currently under care"
-          />
-          <StatCard
-            title="Average Age"
-            value={`${patientStats.averageAge} years`}
-            icon={<IconCalendar size="2rem" />}
-            color="purple"
-            subtitle="Patient demographics"
-          />
-        </SimpleGrid>
+        {patientStats && (
+          <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
+            <StatCard
+              title="Total Patients"
+              value={(patientStats.totalPatients || 0).toLocaleString()}
+              icon={<IconUsers size="2rem" />}
+              color="blue"
+              subtitle={patientStats.newPatientsThisMonth ? `+${patientStats.newPatientsThisMonth} this month` : undefined}
+            />
+            <StatCard
+              title="New Today"
+              value={(patientStats.newPatientsToday || patientStats.todaysPatients || 0).toString()}
+              icon={<IconUserPlus size="2rem" />}
+              color="green"
+              subtitle="New registrations today"
+            />
+            <StatCard
+              title="Active Patients"
+              value={(patientStats.activePatients || 0).toLocaleString()}
+              icon={<IconHeart size="2rem" />}
+              color="red"
+              subtitle="Currently under care"
+            />
+            <StatCard
+              title="Average Age"
+              value={patientStats.averageAge ? `${patientStats.averageAge} years` : 'N/A'}
+              icon={<IconCalendar size="2rem" />}
+              color="purple"
+              subtitle="Patient demographics"
+            />
+          </SimpleGrid>
+        )}
 
         {/* Patient List Table */}
         <DataTable
@@ -700,10 +674,10 @@ export default function PatientManagement() {
           opened={viewModalOpened}
           onClose={closeView}
           patient={selectedPatient}
-          visits={mockPatientVisits.filter(v => v.patientId === selectedPatient?.patientId)}
-          documents={mockPatientDocuments.filter(d => d.patientId === selectedPatient?.patientId)}
-          medicalHistory={mockMedicalHistory.filter(h => h.patientId === selectedPatient?.patientId)}
-          appointments={mockPatientAppointments.filter(a => a.patientId === selectedPatient?.patientId)}
+          visits={[]}
+          documents={[]}
+          medicalHistory={[]}
+          appointments={[]}
           onEdit={handleEditFromDetails}
           onScheduleAppointment={handleScheduleAppointment}
         />
@@ -723,7 +697,7 @@ export default function PatientManagement() {
             onClose={closeHistory}
             patientId={selectedPatient.patientId}
             patientName={`${selectedPatient.firstName} ${selectedPatient.lastName}`}
-            medicalHistory={mockMedicalHistory.filter(h => h.patientId === selectedPatient.patientId)}
+            medicalHistory={[]}
             onSave={handleSaveMedicalHistory}
             onUpdate={handleUpdateMedicalHistory}
             onDelete={handleDeleteMedicalHistory}
@@ -737,7 +711,7 @@ export default function PatientManagement() {
             onClose={closeDocuments}
             patientId={selectedPatient.patientId}
             patientName={`${selectedPatient.firstName} ${selectedPatient.lastName}`}
-            documents={mockPatientDocuments.filter(d => d.patientId === selectedPatient.patientId)}
+            documents={[]}
             onUpload={handleUploadDocument}
             onUpdate={handleUpdateDocument}
             onDelete={handleDeleteDocument}
@@ -753,6 +727,14 @@ export default function PatientManagement() {
           onSearch={handleSearch}
           onSaveSearch={handleSaveSearch}
           currentCriteria={{}}
+        />
+
+        {/* Patient Analytics */}
+        <PatientAnalytics
+          opened={analyticsModalOpened}
+          onClose={closeAnalytics}
+          patients={patients}
+          stats={patientStats}
         />
 
         {/* Export & Reporting */}

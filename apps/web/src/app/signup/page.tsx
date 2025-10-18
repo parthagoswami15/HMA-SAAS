@@ -80,23 +80,53 @@ export default function Signup() {
     setIsLoading(true);
     
     try {
-      const registrationData = {
-        organizationType: formData.organizationType,
-        organizationName: formData.organizationName,
-        address: formData.address,
-        phone: formData.phone,
+      // Step 1: Create tenant
+      // Generate unique identifiers to avoid conflicts
+      const timestamp = Date.now();
+      const baseSlug = formData.organizationName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      const uniqueSlug = `${baseSlug}-${timestamp}`;
+      const uniqueName = `${formData.organizationName} (${timestamp})`;
+      
+      const tenantPayload = {
+        name: uniqueName,
+        slug: uniqueSlug,
+        type: formData.organizationType,
         email: formData.email,
-        adminFirstName: formData.adminFirstName,
-        adminLastName: formData.adminLastName,
-        adminEmail: formData.adminEmail,
-        adminPhone: formData.adminPhone,
-        adminPassword: formData.adminPassword,
-        features: ['appointments', 'billing', 'medical-records'],
-        preferences: {
-          notifications: true,
-          analytics: true,
-          backups: true
+        phone: formData.phone,
+        subscriptionPlan: 'free',
+        settings: {
+          address: formData.address
         }
+      };
+
+      const tenantResponse = await fetch(`${API_BASE_URL}/tenants`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(tenantPayload)
+      });
+
+      if (!tenantResponse.ok) {
+        const tenantResult = await tenantResponse.json();
+        throw new Error(tenantResult.message || 'Failed to create organization');
+      }
+
+      const tenantResult = await tenantResponse.json();
+      const tenant = tenantResult.data; // Extract tenant from response.data
+
+      // Step 2: Register admin user
+      const userPayload = {
+        email: formData.adminEmail,
+        password: formData.adminPassword,
+        firstName: formData.adminFirstName,
+        lastName: formData.adminLastName,
+        phone: formData.adminPhone,
+        tenantId: tenant.id,
+        role: 'HOSPITAL_ADMIN'
       };
 
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -104,7 +134,7 @@ export default function Signup() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(registrationData)
+        body: JSON.stringify(userPayload)
       });
 
       const result = await response.json();
@@ -227,7 +257,9 @@ export default function Signup() {
             >
               <option value="hospital">Hospital</option>
               <option value="clinic">Clinic</option>
-              <option value="private_practice">Private Practice</option>
+              <option value="diagnostic_center">Diagnostic Center</option>
+              <option value="pharmacy">Pharmacy</option>
+              <option value="laboratory">Laboratory</option>
             </select>
           </div>
           

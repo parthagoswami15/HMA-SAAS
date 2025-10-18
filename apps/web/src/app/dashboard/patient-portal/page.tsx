@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -38,8 +38,10 @@ import {
   SimpleGrid
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { Calendar, DatePickerInput } from '@mantine/dates';
+import patientPortalService from '../../../services/patient-portal.service';
 import {
   IconPlus,
   IconSearch,
@@ -270,21 +272,10 @@ import {
 
 // Import types and mock data
 // Types are inferred from mock data
-import {
-  mockPatientPortalData,
-  mockAppointments,
-  mockPrescriptions,
-  mockTestResults,
-  mockMedicalRecords,
-  mockCommunications,
-  mockPatientNotifications,
-  mockPatientPortalStats
-} from '../../../lib/mockData/patient-portal';
-import { mockDoctors } from '../../../lib/mockData/doctors';
-
+// Mock data imports removed
 const PatientPortal = () => {
   // Current logged-in patient (mock data)
-  const currentPatient = mockPatientPortalData;
+  const currentPatient = []; // TODO: Fetch from API
   
   // State management
   const [activeTab, setActiveTab] = useState<string>('dashboard');
@@ -299,6 +290,80 @@ const PatientPortal = () => {
   const [selectedMedicalRecord, setSelectedMedicalRecord] = useState<any | null>(null);
   const [newMessage, setNewMessage] = useState('');
 
+  // API data state
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [prescriptions, setPrescriptions] = useState<any[]>([]);
+  const [labResults, setLabResults] = useState<any[]>([]);
+  const [medicalRecords, setMedicalRecords] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([
+        fetchAppointments(),
+        fetchPrescriptions(),
+        fetchLabResults(),
+        fetchMedicalRecords()
+      ]);
+    } catch (err: any) {
+      console.error('Error loading patient portal data:', err);
+      setError(err.response?.data?.message || 'Failed to load data');
+      setAppointments([] /* TODO: Fetch from API */);
+      setPrescriptions([] /* TODO: Fetch from API */);
+      setLabResults([] /* TODO: Fetch from API */);
+      setMedicalRecords([] /* TODO: Fetch from API */);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAppointments = async () => {
+    try {
+      const response = await patientPortalService.getAppointments();
+      setAppointments(response.data || []);
+    } catch (err) {
+      console.error('Error fetching appointments:', err);
+      setAppointments([] /* TODO: Fetch from API */);
+    }
+  };
+
+  const fetchPrescriptions = async () => {
+    try {
+      const response = await patientPortalService.getPrescriptions();
+      setPrescriptions(response.data || []);
+    } catch (err) {
+      console.error('Error fetching prescriptions:', err);
+      setPrescriptions([] /* TODO: Fetch from API */);
+    }
+  };
+
+  const fetchLabResults = async () => {
+    try {
+      const response = await patientPortalService.getLabResults();
+      setLabResults(response.data || []);
+    } catch (err) {
+      console.error('Error fetching lab results:', err);
+      setLabResults([] /* TODO: Fetch from API */);
+    }
+  };
+
+  const fetchMedicalRecords = async () => {
+    try {
+      const response = await patientPortalService.getMedicalRecords();
+      setMedicalRecords(response.data || []);
+    } catch (err) {
+      console.error('Error fetching medical records:', err);
+      setMedicalRecords([] /* TODO: Fetch from API */);
+    }
+  };
+
   // Modal states
   const [appointmentDetailOpened, { open: openAppointmentDetail, close: closeAppointmentDetail }] = useDisclosure(false);
   const [bookAppointmentOpened, { open: openBookAppointment, close: closeBookAppointment }] = useDisclosure(false);
@@ -309,7 +374,7 @@ const PatientPortal = () => {
 
   // Filter appointments
   const filteredAppointments = useMemo(() => {
-    return mockAppointments.filter((appointment) => {
+    return appointments.filter((appointment) => {
       const matchesSearch = 
         (appointment.doctor?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
         (appointment.department?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
@@ -411,25 +476,25 @@ const PatientPortal = () => {
   const quickStats = [
     {
       title: 'Upcoming Appointments',
-      value: mockPatientPortalStats.upcomingAppointments,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconCalendarEvent,
       color: 'blue'
     },
     {
       title: 'Active Prescriptions',
-      value: mockPatientPortalStats.activePrescriptions,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconPill,
       color: 'green'
     },
     {
       title: 'Test Results',
-      value: mockPatientPortalStats.testResults,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconFlask,
       color: 'orange'
     },
     {
       title: 'Medical Records',
-      value: mockPatientPortalStats.medicalRecords,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconMessage,
       color: 'red'
     }
@@ -534,7 +599,7 @@ const PatientPortal = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Recent Notifications</Title>
               <Stack gap="sm">
-                {mockPatientNotifications.slice(0, 5).map((notification) => (
+                {0 /* TODO: Fetch from API */(0, 5).map((notification) => (
                   <Alert
                     key={notification.id}
                     variant="light"
@@ -626,7 +691,7 @@ const PatientPortal = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Recent Test Results</Title>
               <Stack gap="sm">
-                {mockTestResults.slice(0, 3).map((result) => (
+                {0 /* TODO: Fetch from API */(0, 3).map((result) => (
                   <Card key={result.id} padding="sm" withBorder>
                     <Group justify="space-between">
                       <div>
@@ -694,7 +759,7 @@ const PatientPortal = () => {
               />
               <Select
                 placeholder="Doctor"
-                data={mockDoctors.map(doctor => ({
+                data={[].map /* TODO: Fetch from API */(doctor => ({
                   value: doctor.id,
                   label: doctor.name
                 }))}
@@ -706,17 +771,27 @@ const PatientPortal = () => {
 
             {/* Appointments Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {filteredAppointments.map((appointment) => (
-                <Card key={appointment.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{appointment.doctor}</Text>
-                      <Text size="sm" c="dimmed">{appointment.department}</Text>
-                    </div>
-                    <Badge color={getStatusColor(appointment.status)} variant="light">
-                      {appointment.status.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                  </Group>
+              {filteredAppointments.length === 0 ? (
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <EmptyState
+                    icon={<IconUserCircle size={48} />}
+                    title="No portal activity"
+                    description="Patient portal activity will appear here"
+                    size="sm"
+                  />
+                </div>
+              ) : (
+                filteredAppointments.map((appointment) => (
+                  <Card key={appointment.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">{appointment.doctor}</Text>
+                        <Text size="sm" c="dimmed">{appointment.department}</Text>
+                      </div>
+                      <Badge color={getStatusColor(appointment.status)} variant="light">
+                        {appointment.status.replace('_', ' ').toUpperCase()}
+                      </Badge>
+                    </Group>
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
@@ -758,7 +833,8 @@ const PatientPortal = () => {
                     </Group>
                   </Group>
                 </Card>
-              ))}
+              )))
+              }
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -775,7 +851,7 @@ const PatientPortal = () => {
 
             {/* Prescriptions Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockPrescriptions.map((prescription) => (
+              {[].map /* TODO: Fetch from API */((prescription) => (
                 <Card key={prescription.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -863,7 +939,7 @@ const PatientPortal = () => {
 
             {/* Test Results Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockTestResults.map((result) => (
+              {[].map /* TODO: Fetch from API */((result) => (
                 <Card key={result.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -960,8 +1036,8 @@ const PatientPortal = () => {
             </Group>
 
             {/* Medical Records Timeline */}
-            <Timeline active={mockMedicalRecords.length} bulletSize={24} lineWidth={2}>
-              {mockMedicalRecords.map((record, index) => (
+            <Timeline active={0 /* TODO: Fetch from API */} bulletSize={24} lineWidth={2}>
+              {[].map /* TODO: Fetch from API */((record, index) => (
                 <Timeline.Item
                   key={record.id}
                   bullet={
@@ -1059,7 +1135,7 @@ const PatientPortal = () => {
               <Paper p="md" radius="md" withBorder>
                 <Title order={4} mb="md">Messages</Title>
                 <Stack gap="sm">
-                  {mockCommunications.map((communication) => (
+                  {[].map /* TODO: Fetch from API */((communication) => (
                     <Card key={communication.id} padding="md" withBorder>
                       <Group justify="space-between" mb="sm">
                         <Group>
@@ -1126,7 +1202,7 @@ const PatientPortal = () => {
                 <Select
                   label="To"
                   placeholder="Select healthcare provider"
-                  data={mockDoctors.map(doctor => ({
+                  data={[].map /* TODO: Fetch from API */(doctor => ({
                     value: doctor.id,
                     label: `${doctor.name} - ${doctor.specialization}`
                   }))}
@@ -1170,7 +1246,7 @@ const PatientPortal = () => {
             <Select
               label="Doctor"
               placeholder="Select doctor"
-              data={mockDoctors.map(doctor => ({
+              data={[].map /* TODO: Fetch from API */(doctor => ({
                 value: doctor.id,
                 label: `${doctor.name} - ${doctor.specialization}`
               }))}

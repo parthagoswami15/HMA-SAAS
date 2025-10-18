@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { CustomPrismaService } from '../prisma/custom-prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, AppointmentStatus } from '@prisma/client';
 import {
   CreateOpdVisitDto,
   UpdateOpdVisitDto,
@@ -91,13 +91,14 @@ export class OpdService {
 
     if (search) {
       where.OR = [
-        { reason: { contains: search, mode: 'insensitive' } },
-        { notes: { contains: search, mode: 'insensitive' } },
-        { patient: {
+        { reason: { contains: search } },
+        { notes: { contains: search } },
+        {
+          patient: {
             OR: [
-              { firstName: { contains: search, mode: 'insensitive' } },
-              { lastName: { contains: search, mode: 'insensitive' } },
-              { medicalRecordNumber: { contains: search, mode: 'insensitive' } },
+              { firstName: { contains: search } },
+              { lastName: { contains: search } },
+              { medicalRecordNumber: { contains: search } },
             ],
           },
         },
@@ -424,7 +425,7 @@ export class OpdService {
               gte: today,
             },
             status: {
-              in: ['WAITING' as any, 'ARRIVED' as any],
+              in: [AppointmentStatus.SCHEDULED, AppointmentStatus.ARRIVED],
             },
           },
         }),
@@ -434,7 +435,7 @@ export class OpdService {
             startTime: {
               gte: today,
             },
-            status: 'IN_PROGRESS' as any,
+            status: AppointmentStatus.IN_PROGRESS,
           },
         }),
         this.prisma.appointment.count({

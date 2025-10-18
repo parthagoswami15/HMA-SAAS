@@ -49,6 +49,7 @@ import {
   SimpleGrid
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import { Calendar, DatePickerInput } from '@mantine/dates';
@@ -90,7 +91,8 @@ import {
   IconUserCircle,
   IconBuilding,
   IconCertificate,
-  IconSend
+  IconSend,
+  IconBriefcase
 } from '@tabler/icons-react';
 
 // Import types and mock data
@@ -115,17 +117,7 @@ import {
   HRStats,
   HRFilters
 } from '../../../types/hr';
-import {
-  mockEmployees,
-  mockDepartments,
-  mockShifts,
-  mockPayroll,
-  mockPerformanceReviews,
-  mockLeaveRequests,
-  mockTraining,
-  mockAttendance,
-  mockHRStats
-} from '../../../lib/mockData/hr';
+// Mock data imports removed
 
 const HRManagement = () => {
   // State management
@@ -153,7 +145,7 @@ const HRManagement = () => {
 
   // Filter employees
   const filteredEmployees = useMemo(() => {
-    return mockEmployees.filter((employee) => {
+    return [].filter /* TODO: Fetch from API */((employee) => {
       const matchesSearch = 
         employee.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         employee.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -170,7 +162,7 @@ const HRManagement = () => {
 
   // Filter shifts
   const filteredShifts = useMemo(() => {
-    return mockShifts.filter((shift) => {
+    return [].filter /* TODO: Fetch from API */((shift) => {
       const matchesSearch = 
         shift.employee.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         shift.employee.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -184,7 +176,7 @@ const HRManagement = () => {
 
   // Filter leave requests
   const filteredLeaveRequests = useMemo(() => {
-    return mockLeaveRequests.filter((leave) => {
+    return [].filter /* TODO: Fetch from API */((leave) => {
       const matchesSearch = 
         (leave as any).employee?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (leave as any).employee?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -298,28 +290,28 @@ const HRManagement = () => {
   const statsCards = [
     {
       title: 'Total Employees',
-      value: mockHRStats.totalEmployees,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconUsers,
       color: 'blue',
       trend: '+5.2%'
     },
     {
       title: 'Active Staff',
-      value: mockHRStats.activeEmployees,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconUserCheck,
       color: 'green',
-      trend: `${((mockHRStats.activeEmployees / mockHRStats.totalEmployees) * 100).toFixed(1)}%`
+      trend: `${((0 /* TODO: Fetch from API */ / 0 /* TODO: Fetch from API */) * 100).toFixed(1)}%`
     },
     {
       title: 'Open Positions',
-      value: (mockHRStats as any).openPositions || 0,
+      value: 0,
       icon: IconUserPlus,
       color: 'orange',
       trend: '+3'
     },
     {
       title: 'Avg Satisfaction',
-      value: `${(mockHRStats as any).averageSatisfaction || 0}/10`,
+      value: `0/10`,
       icon: IconStar,
       color: 'purple',
       trend: '+0.3'
@@ -327,15 +319,15 @@ const HRManagement = () => {
   ];
 
   // Chart data
-  const departmentData = mockDepartments.map((dept) => ({
+  const departmentData = [].map /* TODO: Fetch from API */((dept) => ({
     name: dept.name,
     value: (dept as any).employeeCount || 0,
     color: getRoleColor(dept.name)
   }));
 
-  const monthlyHiring = (mockHRStats as any).monthlyHiring || [];
-  const attendanceData = (mockHRStats as any).attendanceData || [];
-  const payrollData = (mockHRStats as any).payrollData || [];
+  const monthlyHiring = [];
+  const attendanceData = [];
+  const payrollData = [];
 
   return (
     <Container size="xl" py="md">
@@ -439,7 +431,7 @@ const HRManagement = () => {
               />
               <Select
                 placeholder="Department"
-                data={mockDepartments.map(dept => ({
+                data={[].map /* TODO: Fetch from API */(dept => ({
                   value: dept.name,
                   label: dept.name
                 }))}
@@ -494,23 +486,35 @@ const HRManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredEmployees.map((employee) => (
-                    <Table.Tr key={employee.id}>
-                      <Table.Td>
-                        <Group>
-                          <Avatar color="blue" radius="xl" size="sm">
-                            {employee.firstName[0]}{employee.lastName[0]}
-                          </Avatar>
-                          <div>
-                            <Text size="sm" fw={500}>
-                              {employee.firstName} {employee.lastName}
-                            </Text>
-                            <Text size="xs" c="dimmed">
-                              {employee.email}
-                            </Text>
-                          </div>
-                        </Group>
+                  {filteredEmployees.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={8}>
+                        <EmptyState
+                          icon={<IconBriefcase size={48} />}
+                          title="No HR records"
+                          description="Add employee records to get started"
+                          size="sm"
+                        />
                       </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    filteredEmployees.map((employee) => (
+                      <Table.Tr key={employee.id}>
+                        <Table.Td>
+                          <Group>
+                            <Avatar color="blue" radius="xl">
+                              {employee.firstName[0]}{employee.lastName[0]}
+                            </Avatar>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {employee.firstName} {employee.lastName}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {employee.email}
+                              </Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
                       <Table.Td>
                         <Text fw={500}>{employee.employeeId}</Text>
                       </Table.Td>
@@ -588,7 +592,8 @@ const HRManagement = () => {
                         </Group>
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  )))
+                  }
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -737,7 +742,7 @@ const HRManagement = () => {
 
             {/* Payroll Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockPayroll.map((payroll) => (
+              {[].map /* TODO: Fetch from API */((payroll) => (
                 <Card key={payroll.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -832,7 +837,7 @@ const HRManagement = () => {
 
             {/* Performance Reviews Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockPerformanceReviews.map((review) => (
+              {[].map /* TODO: Fetch from API */((review) => (
                 <Card key={review.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1069,7 +1074,7 @@ const HRManagement = () => {
 
             {/* Training Programs Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockTraining.map((training) => (
+              {[].map /* TODO: Fetch from API */((training) => (
                 <Card key={training.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1188,7 +1193,6 @@ const HRManagement = () => {
                 />
               </Card>
               
-              {/* Key Metrics */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
                 <Title order={4} mb="md">Key Performance Indicators</Title>
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
@@ -1196,10 +1200,10 @@ const HRManagement = () => {
                     <RingProgress
                       size={120}
                       thickness={12}
-                      sections={[{ value: (mockHRStats as any).employeeRetentionRate || 0, color: 'green' }]}
+                      sections={[{ value: 0, color: 'green' }]}
                       label={
                         <Text size="lg" fw={700} ta="center">
-                          {(mockHRStats as any).employeeRetentionRate || 0}%
+                          0%
                         </Text>
                       }
                     />
@@ -1210,10 +1214,10 @@ const HRManagement = () => {
                     <RingProgress
                       size={120}
                       thickness={12}
-                      sections={[{ value: (mockHRStats as any).averageAttendance || 0, color: 'blue' }]}
+                      sections={[{ value: 0, color: 'blue' }]}
                       label={
                         <Text size="lg" fw={700} ta="center">
-                          {(mockHRStats as any).averageAttendance || 0}%
+                          0%
                         </Text>
                       }
                     />
@@ -1224,10 +1228,10 @@ const HRManagement = () => {
                     <RingProgress
                       size={120}
                       thickness={12}
-                      sections={[{ value: (mockHRStats as any).trainingCompletionRate || 0, color: 'purple' }]}
+                      sections={[{ value: 0, color: 'purple' }]}
                       label={
                         <Text size="lg" fw={700} ta="center">
-                          {(mockHRStats as any).trainingCompletionRate || 0}%
+                          0%
                         </Text>
                       }
                     />
@@ -1238,10 +1242,10 @@ const HRManagement = () => {
                     <RingProgress
                       size={120}
                       thickness={12}
-                      sections={[{ value: ((mockHRStats as any).averageSatisfaction || 0) * 10, color: 'orange' }]}
+                      sections={[{ value: 0, color: 'orange' }]}
                       label={
                         <Text size="lg" fw={700} ta="center">
-                          {(mockHRStats as any).averageSatisfaction || 0}/10
+                          0/10
                         </Text>
                       }
                     />
@@ -1422,7 +1426,7 @@ const HRManagement = () => {
             <Select
               label="Department"
               placeholder="Select department"
-              data={mockDepartments.map(dept => ({
+              data={[].map /* TODO: Fetch from API */(dept => ({
                 value: dept.name,
                 label: dept.name
               }))}

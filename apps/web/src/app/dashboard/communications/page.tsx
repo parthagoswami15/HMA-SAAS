@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -40,8 +40,10 @@ import {
   Notification
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
+import communicationsService from '../../../services/communications.service';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
@@ -517,7 +519,7 @@ const CommunicationsManagement = () => {
 
   // Filter messages
   const filteredMessages = useMemo(() => {
-    return mockMessages.filter((message) => {
+    return [].filter /* TODO: Fetch from API */((message) => {
       const matchesSearch = 
         message.recipient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         message.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -532,7 +534,7 @@ const CommunicationsManagement = () => {
 
   // Filter templates
   const filteredTemplates = useMemo(() => {
-    return mockTemplates.filter((template) => {
+    return [].filter /* TODO: Fetch from API */((template) => {
       const matchesSearch = 
         template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         template.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -615,14 +617,14 @@ const CommunicationsManagement = () => {
 
   // Communication stats
   const communicationStats = {
-    totalMessages: mockMessages.length,
-    sentMessages: mockMessages.filter(m => m.status === 'sent' || m.status === 'delivered' || m.status === 'read').length,
-    pendingMessages: mockMessages.filter(m => m.status === 'pending' || m.status === 'scheduled').length,
-    failedMessages: mockMessages.filter(m => m.status === 'failed').length,
-    totalTemplates: mockTemplates.length,
-    activeTemplates: mockTemplates.filter(t => t.isActive).length,
-    totalCampaigns: mockCampaigns.length,
-    activeCampaigns: mockCampaigns.filter(c => c.status === 'running' || c.status === 'scheduled').length
+    totalMessages: 0 /* TODO: Fetch from API */,
+    sentMessages: [].filter /* TODO: Fetch from API */(m => m.status === 'sent' || m.status === 'delivered' || m.status === 'read').length,
+    pendingMessages: [].filter /* TODO: Fetch from API */(m => m.status === 'pending' || m.status === 'scheduled').length,
+    failedMessages: [].filter /* TODO: Fetch from API */(m => m.status === 'failed').length,
+    totalTemplates: 0 /* TODO: Fetch from API */,
+    activeTemplates: [].filter /* TODO: Fetch from API */(t => t.isActive).length,
+    totalCampaigns: 0 /* TODO: Fetch from API */,
+    activeCampaigns: [].filter /* TODO: Fetch from API */(c => c.status === 'running' || c.status === 'scheduled').length
   };
 
   return (
@@ -822,80 +824,93 @@ const CommunicationsManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredMessages.map((message) => (
-                    <Table.Tr key={message.id}>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ThemeIcon size="sm" variant="light">
-                            {getTypeIcon(message.type)}
-                          </ThemeIcon>
-                          <Text size="sm" tt="uppercase">{message.type}</Text>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>{message.recipient.name}</Text>
-                          <Text size="xs" c="dimmed">
-                            {message.recipient.phone || message.recipient.email}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>{message.templateName || 'Custom'}</Text>
-                          {message.subject && (
-                            <Text size="xs" c="dimmed">{message.subject}</Text>
-                          )}
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm" lineClamp={2} style={{ maxWidth: 200 }}>
-                          {message.content}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <Badge color={getStatusColor(message.status)} variant="light" size="sm">
-                            {message.status.toUpperCase()}
-                          </Badge>
-                          {message.status === 'pending' && (
-                            <Indicator color="orange" size={6} />
-                          )}
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getPriorityColor(message.priority)} variant="outline" size="sm">
-                          {message.priority.toUpperCase()}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">
-                          {message.sentTime ? formatDateTime(message.sentTime) : 
-                           message.scheduledTime ? `Scheduled: ${formatDateTime(message.scheduledTime)}` : '-'}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm" fw={500}>₹{message.cost.toFixed(2)}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewMessage(message)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconSend size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="red">
-                            <IconTrash size={16} />
-                          </ActionIcon>
-                        </Group>
+                  {filteredMessages.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={9}>
+                        <EmptyState
+                          icon={<IconMessage size={48} />}
+                          title="No messages"
+                          description="Communication history will appear here"
+                          size="sm"
+                        />
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  ) : (
+                    filteredMessages.map((message) => (
+                      <Table.Tr key={message.id}>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ThemeIcon size="sm" variant="light">
+                              {getTypeIcon(message.type)}
+                            </ThemeIcon>
+                            <Text size="sm" tt="uppercase">{message.type}</Text>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>{message.recipient.name}</Text>
+                            <Text size="xs" c="dimmed">
+                              {message.recipient.phone || message.recipient.email}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>{message.templateName || 'Custom'}</Text>
+                            {message.subject && (
+                              <Text size="xs" c="dimmed">{message.subject}</Text>
+                            )}
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm" lineClamp={2} style={{ maxWidth: 200 }}>
+                            {message.content}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <Badge color={getStatusColor(message.status)} variant="light" size="sm">
+                              {message.status.toUpperCase()}
+                            </Badge>
+                            {message.status === 'pending' && (
+                              <Indicator color="orange" size={6} />
+                            )}
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getPriorityColor(message.priority)} variant="outline" size="sm">
+                            {message.priority.toUpperCase()}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">
+                            {message.sentTime ? formatDateTime(message.sentTime) : 
+                             message.scheduledTime ? `Scheduled: ${formatDateTime(message.scheduledTime)}` : '-'}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm" fw={500}>₹{message.cost.toFixed(2)}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewMessage(message)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconSend size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="red">
+                              <IconTrash size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -989,7 +1004,7 @@ const CommunicationsManagement = () => {
             </Group>
             
             <Stack gap="lg">
-              {mockCampaigns.map((campaign) => (
+              {[].map /* TODO: Fetch from API */((campaign) => (
                 <Card key={campaign.id} padding="lg" radius="md" withBorder onClick={() => handleViewCampaign(campaign)} style={{ cursor: 'pointer' }}>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1437,7 +1452,7 @@ const CommunicationsManagement = () => {
             <Select
               label="Template"
               placeholder="Select template (optional)"
-              data={mockTemplates.map(t => ({ value: t.id, label: t.name }))}
+              data={[].map /* TODO: Fetch from API */(t => ({ value: t.id, label: t.name }))}
               searchable
               clearable
             />

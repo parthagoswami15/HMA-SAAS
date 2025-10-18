@@ -45,6 +45,7 @@ import {
   Spoiler
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 // Charts removed due to MantineProvider compatibility issues with Next.js 15.5.4
 // import { LineChart, BarChart, DonutChart, AreaChart, PieChart } from '@mantine/charts';
@@ -598,7 +599,7 @@ const AIAssistant = () => {
 
   // Filter insights
   const filteredInsights = useMemo(() => {
-    return mockAIInsights.filter((insight) => {
+    return [].filter /* TODO: Fetch from API */((insight) => {
       const matchesSearch = 
         insight.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         insight.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -613,7 +614,7 @@ const AIAssistant = () => {
 
   // Filter queries
   const filteredQueries = useMemo(() => {
-    return mockAIQueries.filter((query) => {
+    return [].filter /* TODO: Fetch from API */((query) => {
       const matchesSearch = 
         query.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
         query.response.toLowerCase().includes(searchQuery.toLowerCase());
@@ -702,14 +703,14 @@ const AIAssistant = () => {
 
   // AI Assistant stats
   const aiStats = {
-    totalInsights: mockAIInsights.length,
-    pendingInsights: mockAIInsights.filter(i => i.status === 'pending').length,
-    acceptedInsights: mockAIInsights.filter(i => i.status === 'accepted').length,
-    criticalInsights: mockAIInsights.filter(i => i.severity === 'critical').length,
-    totalQueries: mockAIQueries.length,
-    avgConfidence: Math.round(mockAIInsights.reduce((acc, i) => acc + i.confidence, 0) / mockAIInsights.length),
-    avgRating: mockAIQueries.filter(q => q.feedback?.rating).reduce((acc, q) => acc + (q.feedback?.rating || 0), 0) / mockAIQueries.filter(q => q.feedback?.rating).length,
-    helpfulResponses: mockAIQueries.filter(q => q.feedback?.helpful).length
+    totalInsights: 0 /* TODO: Fetch from API */,
+    pendingInsights: [].filter /* TODO: Fetch from API */(i => i.status === 'pending').length,
+    acceptedInsights: [].filter /* TODO: Fetch from API */(i => i.status === 'accepted').length,
+    criticalInsights: [].filter /* TODO: Fetch from API */(i => i.severity === 'critical').length,
+    totalQueries: 0 /* TODO: Fetch from API */,
+    avgConfidence: Math.round([].reduce /* TODO: Fetch from API */((acc, i) => acc + i.confidence, 0) / 0 /* TODO: Fetch from API */),
+    avgRating: [].filter /* TODO: Fetch from API */(q => q.feedback?.rating).reduce((acc, q) => acc + (q.feedback?.rating || 0), 0) / [].filter /* TODO: Fetch from API */(q => q.feedback?.rating).length,
+    helpfulResponses: [].filter /* TODO: Fetch from API */(q => q.feedback?.helpful).length
   };
 
   return (
@@ -900,38 +901,41 @@ const AIAssistant = () => {
 
             {/* Insights Cards */}
             <Stack gap="md">
-              {filteredInsights.map((insight) => (
-                <Card key={insight.id} padding="lg" radius="md" withBorder onClick={() => handleViewInsight(insight)} style={{ cursor: 'pointer' }}>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Group mb="xs">
-                        <ThemeIcon size="sm" variant="light" color={getSeverityColor(insight.severity)}>
-                          {getTypeIcon(insight.type)}
-                        </ThemeIcon>
-                        <Title order={4}>{insight.title}</Title>
-                      </Group>
-                      {insight.patientName && (
-                        <Text c="dimmed" size="sm">Patient: {insight.patientName}</Text>
-                      )}
-                    </div>
-                    <Group>
-                      <Badge color={getSeverityColor(insight.severity)} variant="light" size="lg">
-                        {insight.severity.toUpperCase()}
-                      </Badge>
-                      <Badge color={getStatusColor(insight.status)} variant="outline">
-                        {insight.status.toUpperCase()}
-                      </Badge>
-                      <Group gap="xs">
-                        <Text size="xs" c="dimmed">Confidence:</Text>
-                        <Progress value={insight.confidence} size="sm" w={60} color="blue" />
-                        <Text size="xs" fw={500}>{insight.confidence}%</Text>
+              {filteredInsights.length === 0 ? (
+                <EmptyState
+                  icon={<IconRobot size={48} />}
+                  title="No AI insights"
+                  description="Start using AI assistant"
+                  size="sm"
+                />
+              ) : (
+                filteredInsights.map((insight) => (
+                  <Card key={insight.id} padding="lg" radius="md" withBorder onClick={() => handleViewInsight(insight)} style={{ cursor: 'pointer' }}>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Group mb="xs">
+                          <ThemeIcon size="sm" variant="light" color={getSeverityColor(insight.severity)}>
+                            {getTypeIcon(insight.type)}
+                          </ThemeIcon>
+                          <Title order={4}>{insight.title}</Title>
+                        </Group>
+                        {insight.patientName && (
+                          <Text c="dimmed" size="sm">Patient: {insight.patientName}</Text>
+                        )}
+                      </div>
+                      <Group>
+                        <Badge color={getSeverityColor(insight.severity)} variant="light" size="lg">
+                          {insight.severity.toUpperCase()}
+                        </Badge>
+                        <Badge color={getStatusColor(insight.status)} variant="outline">
+                          {insight.status.toUpperCase()}
+                        </Badge>
                       </Group>
                     </Group>
-                  </Group>
 
-                  <Text size="sm" mb="md" lineClamp={2}>
-                    {insight.description}
-                  </Text>
+                    <Text size="sm" mb="md" lineClamp={2}>
+                      {insight.description}
+                    </Text>
 
                   <Group justify="space-between">
                     <div>
@@ -957,7 +961,8 @@ const AIAssistant = () => {
                     </Group>
                   </Group>
                 </Card>
-              ))}
+              )))
+              }
             </Stack>
           </Paper>
         </Tabs.Panel>
@@ -1043,7 +1048,7 @@ const AIAssistant = () => {
             <Title order={3} mb="lg">Evidence-Based Clinical Guidelines</Title>
             
             <Accordion variant="contained">
-              {mockClinicalGuidelines.map((guideline) => (
+              {[].map /* TODO: Fetch from API */((guideline) => (
                 <Accordion.Item key={guideline.id} value={guideline.id}>
                   <Accordion.Control>
                     <Group justify="space-between">
@@ -1119,7 +1124,7 @@ const AIAssistant = () => {
             <Title order={3} mb="lg">Drug Interaction Checker</Title>
             
             <Stack gap="md">
-              {mockDrugInteractions.map((interaction) => (
+              {[].map /* TODO: Fetch from API */((interaction) => (
                 <Card key={interaction.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>

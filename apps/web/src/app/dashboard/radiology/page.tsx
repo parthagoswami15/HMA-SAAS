@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -39,6 +39,7 @@ import {
   FileButton
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { MantineDonutChart, SimpleAreaChart, SimpleLineChart, SimpleBarChart } from '../../../components/MantineChart';
 import {
@@ -129,16 +130,8 @@ import {
 } from '@tabler/icons-react';
 
 // Import types and mock data - using any for now due to type mismatches
-import {
-  mockImagingRequests,
-  mockRadiologyReports,
-  mockImagingEquipment,
-  mockImagingStudies,
-  mockRadiologyStats,
-  mockRadiologists
-} from '../../../lib/mockData/radiology';
-import { mockPatients } from '../../../lib/mockData/patients';
-import { mockStaff } from '../../../lib/mockData/staff';
+// Mock data imports removed
+import radiologyService from '../../../services/radiology.service';
 
 const RadiologyManagement = () => {
   // State management
@@ -153,6 +146,96 @@ const RadiologyManagement = () => {
   const [selectedEquipment, setSelectedEquipment] = useState<any>(null);
   const [selectedStudy, setSelectedStudy] = useState<any>(null);
 
+  // API state
+  const [studies, setStudies] = useState<any[]>([]);
+  const [reports, setReports] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [radiologyStats, setRadiologyStats] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch radiology studies
+  const fetchStudies = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await radiologyService.getStudies({ limit: 100 });
+      if (response.success) {
+        setStudies(response.data.items);
+      }
+    } catch (err: any) {
+      console.warn('Error fetching studies (using empty data):', err.response?.data?.message || err.message);
+      setError(null);
+      setStudies([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch radiology reports
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await radiologyService.getReports({ limit: 100 });
+      if (response.success) {
+        setReports(response.data.items);
+      }
+    } catch (err: any) {
+      console.warn('Error fetching reports (using empty data):', err.response?.data?.message || err.message);
+      setError(null);
+      setReports([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch radiology orders
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await radiologyService.getOrders({ limit: 100 });
+      if (response.success) {
+        setOrders(response.data.items);
+      }
+    } catch (err: any) {
+      console.warn('Error fetching orders (using empty data):', err.response?.data?.message || err.message);
+      setError(null);
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch radiology stats
+  const fetchRadiologyStats = async () => {
+    try {
+      const response = await radiologyService.getStats();
+      if (response.success) {
+        setRadiologyStats(response.data);
+      }
+    } catch (err: any) {
+      console.warn('Error fetching radiology stats (using default values):', err.response?.data?.message || err.message);
+      setRadiologyStats({
+        totalStudies: 0,
+        pendingStudies: 0,
+        completedStudies: 0,
+        totalReports: 0,
+        pendingReports: 0,
+        completedReports: 0
+      });
+    }
+  };
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchStudies();
+    fetchReports();
+    fetchOrders();
+    fetchRadiologyStats();
+  }, []);
+
   // Modal states
   const [requestDetailOpened, { open: openRequestDetail, close: closeRequestDetail }] = useDisclosure(false);
   const [addRequestOpened, { open: openAddRequest, close: closeAddRequest }] = useDisclosure(false);
@@ -163,7 +246,7 @@ const RadiologyManagement = () => {
 
   // Filter imaging requests
   const filteredRequests = useMemo(() => {
-    return mockImagingRequests.filter((request: any) => {
+    return [].filter /* TODO: Fetch from API */((request: any) => {
       const matchesSearch = 
         request.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         request.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -182,7 +265,7 @@ const RadiologyManagement = () => {
 
   // Filter equipment
   const filteredEquipment = useMemo(() => {
-    return mockImagingEquipment.filter((equipment: any) => {
+    return [].filter /* TODO: Fetch from API */((equipment: any) => {
       const matchesSearch = 
         equipment.equipmentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         equipment.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -279,47 +362,41 @@ const RadiologyManagement = () => {
   // Statistics cards
   const statsCards = [
     {
-      title: 'Total Requests',
-      value: (mockRadiologyStats as any).totalRequests || mockRadiologyStats.scheduledAppointments || 0,
+      title: 'Total Studies',
+      value: radiologyStats?.totalStudies || 0,
       icon: IconClipboardList,
       color: 'blue',
-      trend: '+12.5%'
+      trend: '+0%'
     },
     {
-      title: 'Today\'s Scans',
-      value: 24,
+      title: 'Completed Studies',
+      value: radiologyStats?.completedStudies || 0,
       icon: IconScan,
       color: 'green',
-      trend: '+8'
+      trend: '+0'
     },
     {
       title: 'Pending Reports',
-      value: (mockRadiologyStats as any).pendingReports || 0,
+      value: radiologyStats?.totalReports || 0,
       icon: IconReportMedical,
       color: 'orange',
-      trend: '-3'
+      trend: '0'
     },
     {
-      title: 'Equipment Active',
-      value: `${(mockRadiologyStats as any).activeEquipment || mockRadiologyStats.operationalEquipment || 0}/${mockRadiologyStats.totalEquipment || 0}`,
+      title: 'Pending Orders',
+      value: radiologyStats?.pendingOrders || 0,
       icon: IconDeviceDesktop,
       color: 'purple',
-      trend: '95% uptime'
+      trend: '0% uptime'
     }
   ];
 
   // Chart data
-  const imagingTypeData = (mockRadiologyStats as any)?.requestsByType 
-    ? Object.entries((mockRadiologyStats as any).requestsByType).map(([type, count]) => ({
-        name: type.replace('_', ' ').toUpperCase(),
-        value: count,
-        color: getImagingTypeColor(type)
-      }))
-    : [];
+  const imagingTypeData = [];
 
-  const monthlyVolume = (mockRadiologyStats as any)?.monthlyVolume || (mockRadiologyStats as any)?.monthlyAppointmentVolume || [];
-  const equipmentUtilization = (mockRadiologyStats as any)?.equipmentUtilization || [];
-  const turnaroundTimes = (mockRadiologyStats as any)?.turnaroundTimes || [];
+  const monthlyVolume = [];
+  const equipmentUtilization = [];
+  const turnaroundTimes = [];
 
   return (
     <Container size="xl" py="md">
@@ -409,6 +486,17 @@ const RadiologyManagement = () => {
         {/* Imaging Requests Tab */}
         <Tabs.Panel value="requests">
           <Paper p="md" radius="md" withBorder mt="md">
+            {loading && (
+              <Group justify="center" mb="md">
+                <Loader size="sm" />
+                <Text size="sm" c="dimmed">Loading radiology data...</Text>
+              </Group>
+            )}
+            {error && (
+              <Alert icon={<IconAlertCircle size={16} />} color="red" mb="md" onClose={() => setError(null)} withCloseButton>
+                {error}
+              </Alert>
+            )}
             {/* Search and Filters */}
             <Group mb="md">
               <TextInput
@@ -481,114 +569,127 @@ const RadiologyManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredRequests.map((request) => (
-                    <Table.Tr key={request.id}>
-                      <Table.Td>
-                        <Text fw={500}>{(request as any).requestId || (request as any).appointmentId || 'N/A'}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group>
-                          <Avatar color="blue" radius="xl" size="sm">
-                            {request.patient.firstName[0]}{request.patient.lastName[0]}
-                          </Avatar>
-                          <div>
-                            <Text size="sm" fw={500}>
-                              {request.patient.firstName} {request.patient.lastName}
-                            </Text>
-                            <Text size="xs" c="dimmed">
-                              {(request.patient as any).medicalRecordNumber ? `MRN: ${(request.patient as any).medicalRecordNumber}` : request.patient.id}
-                            </Text>
-                          </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500} lineClamp={1}>
-                            {(request as any).examType || (request as any).modality || 'N/A'}
-                          </Text>
-                          {(request as any).bodyPart && (
-                            <Text size="xs" c="dimmed">{(request as any).bodyPart}</Text>
-                          )}
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getImagingTypeColor((request as any).imagingType || (request as any).modality)} variant="light">
-                          {((request as any).imagingType || (request as any).modality)?.replace('_', ' ').toUpperCase() || 'N/A'}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {(request as any).orderingPhysician?.lastName ? `Dr. ${(request as any).orderingPhysician.lastName}` : 'N/A'}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {(request as any).orderingPhysician?.department?.name || 'N/A'}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {request.scheduledDate ? (typeof request.scheduledDate === 'string' ? request.scheduledDate : new Date(request.scheduledDate).toISOString().split('T')[0]) : 'Not scheduled'}
-                          </Text>
-                          {request.scheduledDate && (
-                            <Text size="xs" c="dimmed">
-                              {typeof request.scheduledDate === 'string' ? '' : new Date(request.scheduledDate).toLocaleTimeString()}
-                            </Text>
-                          )}
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getPriorityColor((request as any).priority)} variant="light">
-                          {(request as any).priority?.toUpperCase() || 'ROUTINE'}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(request.status)} variant="light">
-                          {request.status.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewRequest(request)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <Menu>
-                            <Menu.Target>
-                              <ActionIcon variant="subtle" color="gray">
-                                <IconDotsVertical size={16} />
-                              </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Menu.Item leftSection={<IconCalendar size={14} />}>
-                                Schedule Exam
-                              </Menu.Item>
-                              <Menu.Item leftSection={<IconScan size={14} />}>
-                                Start Scan
-                              </Menu.Item>
-                              <Menu.Item leftSection={<IconReportMedical size={14} />}>
-                                Create Report
-                              </Menu.Item>
-                              <Menu.Divider />
-                              <Menu.Item 
-                                leftSection={<IconX size={14} />}
-                                color="red"
-                              >
-                                Cancel Request
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
-                        </Group>
+                  {filteredRequests.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={10}>
+                        <EmptyState
+                          icon={<IconRadioactive size={48} />}
+                          title="No radiology orders"
+                          description="Order your first imaging study to get started"
+                          size="sm"
+                        />
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  ) : (
+                    filteredRequests.map((request) => (
+                      <Table.Tr key={request.id}>
+                        <Table.Td>
+                          <Text fw={500}>{(request as any).requestId || (request as any).appointmentId || 'N/A'}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group>
+                            <Avatar color="blue" radius="xl" size="sm">
+                              {request.patient.firstName[0]}{request.patient.lastName[0]}
+                            </Avatar>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {request.patient.firstName} {request.patient.lastName}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {(request.patient as any).medicalRecordNumber ? `MRN: ${(request.patient as any).medicalRecordNumber}` : request.patient.id}
+                              </Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500} lineClamp={1}>
+                              {(request as any).examType || (request as any).modality || 'N/A'}
+                            </Text>
+                            {(request as any).bodyPart && (
+                              <Text size="xs" c="dimmed">{(request as any).bodyPart}</Text>
+                            )}
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getImagingTypeColor((request as any).imagingType || (request as any).modality)} variant="light">
+                            {((request as any).imagingType || (request as any).modality)?.replace('_', ' ').toUpperCase() || 'N/A'}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {(request as any).orderingPhysician?.lastName ? `Dr. ${(request as any).orderingPhysician.lastName}` : 'N/A'}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {(request as any).orderingPhysician?.department?.name || 'N/A'}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {request.scheduledDate ? (typeof request.scheduledDate === 'string' ? request.scheduledDate : new Date(request.scheduledDate).toISOString().split('T')[0]) : 'Not scheduled'}
+                            </Text>
+                            {request.scheduledDate && (
+                              <Text size="xs" c="dimmed">
+                                {typeof request.scheduledDate === 'string' ? '' : new Date(request.scheduledDate).toLocaleTimeString()}
+                              </Text>
+                            )}
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getPriorityColor((request as any).priority)} variant="light">
+                            {(request as any).priority?.toUpperCase() || 'ROUTINE'}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(request.status)} variant="light">
+                            {request.status.replace('_', ' ')}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewRequest(request)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <Menu>
+                              <Menu.Target>
+                                <ActionIcon variant="subtle" color="gray">
+                                  <IconDotsVertical size={16} />
+                                </ActionIcon>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Item leftSection={<IconCalendar size={14} />}>
+                                  Schedule Exam
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconScan size={14} />}>
+                                  Start Scan
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconReportMedical size={14} />}>
+                                  Create Report
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item 
+                                  leftSection={<IconX size={14} />}
+                                  color="red"
+                                >
+                                  Cancel Request
+                                </Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -612,7 +713,7 @@ const RadiologyManagement = () => {
 
             {/* Reports Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockRadiologyReports.map((report) => (
+              {[].map /* TODO: Fetch from API */((report) => (
                 <Card key={report.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -703,7 +804,7 @@ const RadiologyManagement = () => {
 
             {/* Studies Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockImagingStudies.map((study) => (
+              {[].map /* TODO: Fetch from API */((study) => (
                 <Card key={study.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -910,7 +1011,7 @@ const RadiologyManagement = () => {
 
             {/* Radiologists Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockRadiologists.map((radiologist) => (
+              {[].map /* TODO: Fetch from API */((radiologist) => (
                 <Card key={radiologist.id} padding="lg" radius="md" withBorder>
                   <Group mb="md">
                     <Avatar size="lg" color="blue" radius="xl">
@@ -1043,10 +1144,10 @@ const RadiologyManagement = () => {
                     <RingProgress
                       size={120}
                       thickness={12}
-                      sections={[{ value: (mockRadiologyStats as any).reportCompletionRate || 0, color: 'green' }]}
+                      sections={[{ value: 0, color: 'green' }]}
                       label={
                         <Text size="lg" fw={700} ta="center">
-                          {(mockRadiologyStats as any).reportCompletionRate || 0}%
+                          0%
                         </Text>
                       }
                     />
@@ -1057,10 +1158,10 @@ const RadiologyManagement = () => {
                     <RingProgress
                       size={120}
                       thickness={12}
-                      sections={[{ value: 100 - ((mockRadiologyStats as any).averageReportTime || 0), color: 'blue' }]}
+                      sections={[{ value: 0, color: 'blue' }]}
                       label={
                         <Text size="lg" fw={700} ta="center">
-                          {(mockRadiologyStats as any).averageReportTime || 0}h
+                          0h
                         </Text>
                       }
                     />
@@ -1071,10 +1172,10 @@ const RadiologyManagement = () => {
                     <RingProgress
                       size={120}
                       thickness={12}
-                      sections={[{ value: mockRadiologyStats.equipmentUptime, color: 'orange' }]}
+                      sections={[{ value: 0, color: 'orange' }]}
                       label={
                         <Text size="lg" fw={700} ta="center">
-                          {mockRadiologyStats.equipmentUptime}%
+                          0%
                         </Text>
                       }
                     />
@@ -1085,10 +1186,10 @@ const RadiologyManagement = () => {
                     <RingProgress
                       size={120}
                       thickness={12}
-                      sections={[{ value: (mockRadiologyStats as any).patientSatisfaction || 0, color: 'purple' }]}
+                      sections={[{ value: 0, color: 'purple' }]}
                       label={
                         <Text size="lg" fw={700} ta="center">
-                          {(mockRadiologyStats as any).patientSatisfaction || 0}%
+                          0%
                         </Text>
                       }
                     />
@@ -1224,7 +1325,7 @@ const RadiologyManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={mockPatients.map(patient => ({ 
+              data={[].map /* TODO: Fetch from API */(patient => ({ 
                 value: patient.id, 
                 label: `${patient.firstName} ${patient.lastName}` 
               }))}
@@ -1233,7 +1334,7 @@ const RadiologyManagement = () => {
             <Select
               label="Ordering Physician"
               placeholder="Select physician"
-              data={mockStaff.filter((staff: any) => staff.role === 'Doctor' || staff.role === 'doctor').map((doctor: any) => ({ 
+              data={[].filter /* TODO: Fetch from API */((staff: any) => staff.role === 'Doctor' || staff.role === 'doctor').map((doctor: any) => ({ 
                 value: doctor.staffId, 
                 label: `Dr. ${doctor.firstName} ${doctor.lastName}` 
               }))}

@@ -42,9 +42,9 @@ export class PharmacyService {
 
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { genericName: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search } },
+        { genericName: { contains: search } },
+        { description: { contains: search } },
       ];
     }
 
@@ -85,12 +85,13 @@ export class PharmacyService {
 
     if (search) {
       where.OR = [
-        { orderNumber: { contains: search, mode: 'insensitive' } },
-        { patient: {
+        { orderNumber: { contains: search } },
+        {
+          patient: {
             OR: [
-              { firstName: { contains: search, mode: 'insensitive' } },
-              { lastName: { contains: search, mode: 'insensitive' } },
-              { medicalRecordNumber: { contains: search, mode: 'insensitive' } },
+              { firstName: { contains: search } },
+              { lastName: { contains: search } },
+              { medicalRecordNumber: { contains: search } },
             ],
           },
         },

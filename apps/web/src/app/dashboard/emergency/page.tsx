@@ -34,6 +34,7 @@ import {
   Stepper
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { MantineDonutChart, SimpleAreaChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
@@ -114,16 +115,8 @@ import {
   EmergencyStats,
   EmergencyFilters
 } from '../../../types/emergency';
-import {
-  mockEmergencyCases,
-  mockICUBeds,
-  mockCriticalCareEquipment,
-  mockEmergencyProtocols,
-  mockEmergencyStats,
-  mockTriageQueue
-} from '../../../lib/mockData/emergency';
-import { mockPatients } from '../../../lib/mockData/patients';
-import { mockStaff } from '../../../lib/mockData/staff';
+
+// Mock data imports removed - using API data only
 
 const EmergencyManagement = () => {
   // State management
@@ -144,7 +137,8 @@ const EmergencyManagement = () => {
 
   // Filter emergency cases
   const filteredCases = useMemo(() => {
-    return mockEmergencyCases.filter((emergencyCase) => {
+    const cases: any[] = []; // TODO: Fetch from API
+    return cases.filter((emergencyCase) => {
       const matchesSearch = 
         emergencyCase.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         emergencyCase.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -159,7 +153,8 @@ const EmergencyManagement = () => {
 
   // Filter ICU beds
   const filteredBeds = useMemo(() => {
-    return mockICUBeds.filter((bed) => {
+    const beds: any[] = []; // TODO: Fetch from API
+    return beds.filter((bed) => {
       const matchesSearch = 
         bed.bedNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (bed.patientName && 
@@ -256,66 +251,39 @@ const EmergencyManagement = () => {
   const statsCards = [
     {
       title: 'Active Cases',
-      value: 24,
+      value: 0,
       icon: IconUrgent,
       color: 'red',
-      trend: '+5'
+      trend: '+0'
     },
     {
       title: 'ICU Beds',
-      value: `17/20`,
+      value: `0/0`,
       icon: IconBed,
       color: 'blue',
-      trend: '85% occupied'
+      trend: '0% occupied'
     },
     {
       title: 'Average Wait Time',
-      value: `${mockEmergencyStats?.averageWaitTime || 23}min`,
+      value: `0min`,
       icon: IconClockHour4,
       color: 'orange',
-      trend: '-12min'
+      trend: '0min'
     },
     {
       title: 'Code Blue Today',
-      value: 2,
+      value: 0,
       icon: IconAlertTriangle,
       color: 'purple',
-      trend: '+2'
+      trend: '+0'
     }
   ];
 
   // Chart data
-  const triageDistribution = [
-    { name: 'Resuscitation', value: 3, color: 'red' },
-    { name: 'Emergency', value: 8, color: 'orange' },
-    { name: 'Urgent', value: 15, color: 'yellow' },
-    { name: 'Less Urgent', value: 22, color: 'green' },
-    { name: 'Non-urgent', value: 12, color: 'blue' }
-  ];
+  const triageDistribution = [];
 
-  const hourlyAdmissions = [
-    { hour: '00:00', admissions: 2 },
-    { hour: '01:00', admissions: 1 },
-    { hour: '02:00', admissions: 0 },
-    { hour: '03:00', admissions: 1 },
-    { hour: '04:00', admissions: 3 },
-    { hour: '05:00', admissions: 2 },
-    { hour: '06:00', admissions: 5 },
-    { hour: '07:00', admissions: 8 },
-    { hour: '08:00', admissions: 12 },
-    { hour: '09:00', admissions: 15 },
-    { hour: '10:00', admissions: 18 },
-    { hour: '11:00', admissions: 14 }
-  ];
-  const bedOccupancy = [
-    { date: 'Mon', occupied: 15, available: 5 },
-    { date: 'Tue', occupied: 17, available: 3 },
-    { date: 'Wed', occupied: 16, available: 4 },
-    { date: 'Thu', occupied: 18, available: 2 },
-    { date: 'Fri', occupied: 19, available: 1 },
-    { date: 'Sat', occupied: 14, available: 6 },
-    { date: 'Sun', occupied: 13, available: 7 }
-  ];
+  const hourlyAdmissions = [];
+  const bedOccupancy = [];
 
   return (
     <Container size="xl" py="md">
@@ -546,7 +514,7 @@ const EmergencyManagement = () => {
 
             {/* Triage Queue Display */}
             <Stack gap="md">
-              {mockTriageQueue.map((patient, index) => (
+              {[].map((patient, index) => (
                 <Card key={patient.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between">
                     <Group>
@@ -673,7 +641,19 @@ const EmergencyManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredCases.map((emergencyCase) => (
+                  {[].length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={9}>
+                        <EmptyState
+                          icon={<IconAmbulance size={48} />}
+                          title="No emergency cases"
+                          description="Register emergency cases as they arrive"
+                          size="sm"
+                        />
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    [].map((emergencyCase) => (
                     <Table.Tr key={emergencyCase.id}>
                       <Table.Td>
                         <Text fw={500}>{emergencyCase.caseNumber}</Text>
@@ -757,7 +737,7 @@ const EmergencyManagement = () => {
                         </Group>
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  )))}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -804,7 +784,7 @@ const EmergencyManagement = () => {
 
             {/* ICU Beds Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {filteredBeds.map((bed) => (
+              {[].map((bed) => (
                 <Card key={bed.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -902,7 +882,7 @@ const EmergencyManagement = () => {
 
             {/* Equipment Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockCriticalCareEquipment.map((equipment) => (
+              {[].map((equipment) => (
                 <Card key={equipment.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -982,7 +962,7 @@ const EmergencyManagement = () => {
 
             {/* Emergency Protocols */}
             <Stack gap="lg">
-              {mockEmergencyProtocols.map((protocol) => (
+              {[].map((protocol) => (
                 <Card key={protocol.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1137,10 +1117,8 @@ const EmergencyManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={mockPatients.map(patient => ({ 
-                value: patient.id, 
-                label: `${patient.firstName} ${patient.lastName}` 
-              }))}
+              data={[]} // TODO: Fetch from patients API
+              searchable
               required
             />
             <Select

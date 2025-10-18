@@ -1,7 +1,9 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect, Suspense } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import {
   AppShell,
   AppShellNavbar,
@@ -50,6 +52,7 @@ import {
   IconBell,
   IconUserCircle
 } from '@tabler/icons-react';
+import { UserRole } from '@/lib/rbac';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -70,190 +73,260 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   }, [router]);
 
-  const modules = [
+  // Show loading spinner while checking auth
+  if (!user) {
+    return <LoadingSpinner fullScreen message="Loading Dashboard..." />;
+  }
+
+  // Define all modules with role-based access control
+  const allModules: {
+    title: string;
+    href: string;
+    icon: any;
+    active: boolean;
+    color: string;
+    requiredRoles: UserRole[];
+  }[] = [
     {
       title: "Dashboard",
       href: "/dashboard",
       icon: IconLayoutDashboard,
       active: true,
-      color: "#3b82f6"
+      color: "#3b82f6",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'RESIDENT', 'NURSE', 'LAB_TECHNICIAN', 'RADIOLOGIST', 'PHARMACIST', 'RECEPTIONIST', 'ACCOUNTANT', 'HR_MANAGER', 'INVENTORY_MANAGER', 'PATIENT']
     },
     {
       title: "Patient Management",
       href: "/dashboard/patients",
       icon: IconUsers,
       active: true,
-      color: "#3b82f6"
+      color: "#3b82f6",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'RESIDENT', 'NURSE', 'RECEPTIONIST']
     },
     {
       title: "Appointments",
       href: "/dashboard/appointments",
       icon: IconCalendarEvent,
       active: true,
-      color: "#10b981"
+      color: "#10b981",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'RESIDENT', 'NURSE', 'RECEPTIONIST', 'PATIENT']
     },
     {
       title: "OPD Management",
       href: "/dashboard/opd",
       icon: IconStethoscope,
       active: true,
-      color: "#8b5cf6"
+      color: "#8b5cf6",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'RESIDENT', 'NURSE', 'RECEPTIONIST']
     },
     {
       title: "IPD Management",
       href: "/dashboard/ipd",
       icon: IconBuildingHospital,
       active: true,
-      color: "#ef4444"
+      color: "#ef4444",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'NURSE']
     },
     {
       title: "Emergency",
       href: "/dashboard/emergency",
       icon: IconAmbulance,
       active: true,
-      color: "#dc2626"
+      color: "#dc2626",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'NURSE']
     },
     {
       title: "Laboratory",
       href: "/dashboard/laboratory",
       icon: IconFlask,
       active: true,
-      color: "#06b6d4"
+      color: "#06b6d4",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'RESIDENT', 'LAB_TECHNICIAN', 'NURSE']
     },
     {
       title: "Radiology",
       href: "/dashboard/radiology",
       icon: IconMicroscope,
       active: true,
-      color: "#0891b2"
+      color: "#0891b2",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'RADIOLOGIST']
     },
     {
       title: "Pathology",
       href: "/dashboard/pathology",
       icon: IconVaccine,
       active: true,
-      color: "#0e7490"
+      color: "#0e7490",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'LAB_TECHNICIAN']
     },
     {
       title: "Pharmacy",
       href: "/dashboard/pharmacy",
       icon: IconPills,
       active: true,
-      color: "#84cc16"
+      color: "#84cc16",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'PHARMACIST', 'DOCTOR', 'SPECIALIST']
     },
     {
       title: "Surgery",
       href: "/dashboard/surgery",
       icon: IconScissors,
       active: true,
-      color: "#be123c"
+      color: "#be123c",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'NURSE']
     },
     {
       title: "Billing & Invoices",
       href: "/dashboard/billing",
       icon: IconCalculator,
       active: true,
-      color: "#f59e0b"
+      color: "#f59e0b",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'ACCOUNTANT', 'RECEPTIONIST']
     },
     {
       title: "Finance",
       href: "/dashboard/finance",
       icon: IconCash,
       active: true,
-      color: "#d97706"
+      color: "#d97706",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'ACCOUNTANT']
     },
     {
       title: "Insurance",
       href: "/dashboard/insurance",
       icon: IconShieldCheck,
       active: true,
-      color: "#0284c7"
+      color: "#0284c7",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'ACCOUNTANT', 'INSURANCE_PROVIDER']
     },
     {
       title: "Staff Management",
       href: "/dashboard/staff",
       icon: IconUser,
       active: true,
-      color: "#ec4899"
+      color: "#ec4899",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'HR_MANAGER']
     },
     {
       title: "HR Management",
       href: "/dashboard/hr",
       icon: IconHeart,
       active: true,
-      color: "#db2777"
+      color: "#db2777",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'HR_MANAGER']
     },
     {
       title: "EMR",
       href: "/dashboard/emr",
       icon: IconHeart,
       active: true,
-      color: "#7c3aed"
+      color: "#7c3aed",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'RESIDENT', 'NURSE']
     },
     {
       title: "Inventory",
       href: "/dashboard/inventory",
       icon: IconPackage,
       active: true,
-      color: "#2563eb"
+      color: "#2563eb",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'INVENTORY_MANAGER', 'PHARMACIST']
     },
     {
       title: "Telemedicine",
       href: "/dashboard/telemedicine",
       icon: IconDeviceComputerCamera,
       active: true,
-      color: "#059669"
+      color: "#059669",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'PATIENT']
     },
     {
       title: "Patient Portal",
       href: "/dashboard/patient-portal",
       icon: IconKey,
       active: true,
-      color: "#0d9488"
+      color: "#0d9488",
+      requiredRoles: ['PATIENT']
     },
     {
       title: "Communications",
       href: "/dashboard/communications",
       icon: IconMessage,
       active: true,
-      color: "#8b5cf6"
+      color: "#8b5cf6",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST', 'NURSE', 'RECEPTIONIST']
     },
     {
       title: "Reports & Analytics",
       href: "/dashboard/reports",
       icon: IconChartBar,
       active: true,
-      color: "#6366f1"
+      color: "#6366f1",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'ACCOUNTANT', 'DOCTOR']
     },
     {
       title: "Quality Management",
       href: "/dashboard/quality",
       icon: IconShield,
       active: true,
-      color: "#10b981"
+      color: "#10b981",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN']
     },
     {
       title: "Research",
       href: "/dashboard/research",
       icon: IconSearch,
       active: true,
-      color: "#6366f1"
+      color: "#6366f1",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST']
     },
     {
       title: "Integration",
       href: "/dashboard/integration",
       icon: IconPlug,
       active: true,
-      color: "#64748b"
+      color: "#64748b",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN']
     },
     {
       title: "AI Assistant",
       href: "/dashboard/ai-assistant",
       icon: IconRobot,
       active: true,
-      color: "#8b5cf6"
+      color: "#8b5cf6",
+      requiredRoles: ['SUPER_ADMIN', 'TENANT_ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR', 'SPECIALIST']
+    },
+    {
+      title: "My Health Records",
+      href: "/dashboard/my-records",
+      icon: IconHeart,
+      active: true,
+      color: "#4caf50",
+      requiredRoles: ['PATIENT']
+    },
+    {
+      title: "My Appointments",
+      href: "/dashboard/my-appointments",
+      icon: IconCalendarEvent,
+      active: true,
+      color: "#2196f3",
+      requiredRoles: ['PATIENT']
+    },
+    {
+      title: "My Bills",
+      href: "/dashboard/my-bills",
+      icon: IconCash,
+      active: true,
+      color: "#ff9800",
+      requiredRoles: ['PATIENT']
     }
   ];
+
+  // Filter modules based on user role
+  const modules = user?.role 
+    ? allModules.filter(module => 
+        module.requiredRoles.includes(user.role as UserRole) || user.role === 'SUPER_ADMIN'
+      )
+    : [];
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -262,10 +335,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const isActive = (href: string) => pathname.startsWith(href);
-
-  if (!user) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <AppShell
@@ -277,12 +346,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         height: 70
       }}
     >
-      <AppShellNavbar p="md" style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-        borderRight: '1px solid rgba(255,255,255,0.1)',
-        boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
-        backgroundAttachment: 'fixed'
-      }}>
+      <AppShellNavbar 
+        p="md" 
+        style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+          borderRight: '1px solid rgba(255,255,255,0.1)',
+          boxShadow: '4px 0 20px rgba(0,0,0,0.1)',
+          backgroundAttachment: 'fixed'
+        }}
+        role="navigation"
+        aria-label="Main navigation"
+      >
         <ScrollArea h="100%">
           <div style={{ padding: '1rem 0' }}>
             <div style={{
@@ -331,6 +405,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       component="a"
                       href={module.active ? module.href : '#'}
                       label={!sidebarCollapsed ? module.title : ''}
+                      aria-label={module.title}
+                      aria-current={active ? 'page' : undefined}
                       leftSection={
                         <div style={{
                           background: active ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',

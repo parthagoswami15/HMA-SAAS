@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 interface LoginFormData {
   email: string;
@@ -61,14 +62,26 @@ export default function Login() {
         })
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Login failed');
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        throw new Error('Invalid response from server');
       }
 
-      // Store the access token
-      if (result.accessToken) {
+      if (!response.ok) {
+        const errorMessage = result?.message || result?.error || `Login failed (${response.status})`;
+        throw new Error(errorMessage);
+      }
+
+      // Store the access token and user info
+      // Backend returns { user: {...}, tokens: { accessToken, refreshToken } }
+      if (result.tokens && result.tokens.accessToken) {
+        localStorage.setItem('accessToken', result.tokens.accessToken);
+        localStorage.setItem('refreshToken', result.tokens.refreshToken);
+        localStorage.setItem('user', JSON.stringify(result.user));
+      } else if (result.accessToken) {
+        // Fallback for old format
         localStorage.setItem('accessToken', result.accessToken);
         localStorage.setItem('user', JSON.stringify(result.user));
       }
@@ -78,10 +91,19 @@ export default function Login() {
         router.push('/dashboard');
       }, 1500);
     } catch (err) {
-      console.error('Login error:', err);
+      console.error('Login error details:', {
+        error: err,
+        apiUrl: API_BASE_URL,
+        formData: { ...formData, password: '[HIDDEN]' }
+      });
+
       if (err instanceof Error) {
-        if (err.message.includes('fetch')) {
-          setError('Unable to connect to server. Please check your internet connection and try again.');
+        if (err.message.includes('fetch') || err.message.includes('network')) {
+          setError('Unable to connect to server. Please ensure the backend server is running and try again.');
+        } else if (err.message.includes('401')) {
+          setError('Invalid email or password. Please check your credentials.');
+        } else if (err.message.includes('500')) {
+          setError('Server error. Please try again later or contact support.');
         } else {
           setError(err.message);
         }
@@ -95,25 +117,14 @@ export default function Login() {
   
   // Show loading state during hydration
   if (!isClient) {
-    return (
-      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{
-          background: "rgba(255, 255, 255, 0.95)",
-          padding: "3rem",
-          borderRadius: "15px",
-          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-          width: "100%",
-          maxWidth: "400px",
-          backdropFilter: "blur(10px)",
-          textAlign: "center"
-        }}>
-          <div>Loading...</div>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen message="Loading Login..." />;
   }
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div 
+      style={{ minHeight: "100vh", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      role="main"
+      aria-label="Login page"
+    >
       <div style={{
         background: "rgba(255, 255, 255, 0.95)",
         padding: "3rem",
@@ -161,7 +172,11 @@ export default function Login() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <form 
+          onSubmit={handleSubmit} 
+          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          aria-label="Login form"
+        >
           <div>
             <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
               Email Address
@@ -169,9 +184,13 @@ export default function Login() {
             <input
               type="email"
               name="email"
+              id="email"
               value={formData.email}
               onChange={handleInputChange}
               placeholder="Enter your email"
+              aria-label="Email address"
+              aria-required="true"
+              autoComplete="email"
               style={{
                 width: "100%",
                 padding: "0.75rem",
@@ -193,9 +212,13 @@ export default function Login() {
             <input
               type="password"
               name="password"
+              id="password"
               value={formData.password}
               onChange={handleInputChange}
               placeholder="Enter your password"
+              aria-label="Password"
+              aria-required="true"
+              autoComplete="current-password"
               style={{
                 width: "100%",
                 padding: "0.75rem",
@@ -228,6 +251,8 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading}
+            aria-busy={isLoading}
+            aria-label={isLoading ? "Signing in, please wait" : "Sign in to your account"}
             style={{
               width: "100%",
               background: isLoading ? "#9CA3AF" : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -243,8 +268,28 @@ export default function Login() {
               opacity: isLoading ? 0.7 : 1
             }}
           >
-            {isLoading ? "Signing In..." : "Sign In"}
+            {isLoading ? (
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                <span className="spinner" />
+                Signing In...
+              </span>
+            ) : "Sign In"}
           </button>
+          
+          <style jsx>{`
+            @keyframes spin {
+              to { transform: rotate(360deg); }
+            }
+            .spinner {
+              display: inline-block;
+              width: 16px;
+              height: 16px;
+              border: 2px solid rgba(255,255,255,0.3);
+              border-top-color: white;
+              border-radius: 50%;
+              animation: spin 0.6s linear infinite;
+            }
+          `}</style>
         </form>
 
         <div style={{ marginTop: "2rem", textAlign: "center" }}>

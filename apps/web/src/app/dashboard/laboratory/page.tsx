@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -32,6 +32,7 @@ import {
   Checkbox
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { MantineDonutChart, SimpleAreaChart, SimpleLineChart, SimpleBarChart } from '../../../components/MantineChart';
 import {
@@ -82,7 +83,7 @@ import {
   IconMedicalCross
 } from '@tabler/icons-react';
 
-// Import types and mock data
+// Import types, services and mock data
 import {
   LabTest,
   TestStatus,
@@ -102,18 +103,8 @@ import {
   LabStats,
   LabFilters
 } from '../../../types/laboratory';
-import {
-  mockLabTests,
-  mockLabOrders,
-  mockLabResults,
-  mockSamples,
-  mockLabEquipment,
-  mockQualityControl,
-  mockLabStats
-} from '../../../lib/mockData/laboratory';
-import { mockPatients } from '../../../lib/mockData/patients';
-import { mockStaff } from '../../../lib/mockData/staff';
-
+import laboratoryService from '../../../services/laboratory.service';
+// Mock data imports removed
 const LaboratoryManagement = () => {
   // State management
   const [activeTab, setActiveTab] = useState<string>('tests');
@@ -126,6 +117,13 @@ const LaboratoryManagement = () => {
   const [selectedOrder, setSelectedOrder] = useState<LabOrder | null>(null);
   const [selectedSample, setSelectedSample] = useState<Sample | null>(null);
 
+  // API data state
+  const [labTests, setLabTests] = useState<LabTest[]>([]);
+  const [labOrders, setLabOrders] = useState<LabOrder[]>([]);
+  const [labStats, setLabStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   // Modal states
   const [testDetailOpened, { open: openTestDetail, close: closeTestDetail }] = useDisclosure(false);
   const [addTestOpened, { open: openAddTest, close: closeAddTest }] = useDisclosure(false);
@@ -133,9 +131,90 @@ const LaboratoryManagement = () => {
   const [addOrderOpened, { open: openAddOrder, close: closeAddOrder }] = useDisclosure(false);
   const [sampleDetailOpened, { open: openSampleDetail, close: closeSampleDetail }] = useDisclosure(false);
 
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([
+        fetchLabTests(),
+        fetchLabOrders(),
+        fetchLabStats()
+      ]);
+    } catch (err: any) {
+      console.error('Error loading laboratory data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load laboratory data');
+      // Fallback to mock data
+      setLabTests([] /* TODO: Fetch from API */);
+      setLabOrders([] /* TODO: Fetch from API */);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchLabTests = async () => {
+    try {
+      const filters = {
+        category: selectedCategory || undefined,
+        search: searchQuery || undefined
+      };
+      const response = await laboratoryService.getLabTests(filters) as any;
+      setLabTests(response.data?.items || response.data || []);
+    } catch (err: any) {
+      console.warn('Error fetching lab tests (using empty data):', err.message || err);
+      setLabTests([]);
+    }
+  };
+
+  const fetchLabOrders = async () => {
+    try {
+      const filters = {
+        patientId: selectedPatient || undefined,
+        status: selectedStatus || undefined,
+        search: searchQuery || undefined
+      };
+      const response = await laboratoryService.getLabOrders(filters) as any;
+      setLabOrders(response.data?.items || response.data || []);
+    } catch (err: any) {
+      console.warn('Error fetching lab orders (using empty data):', err.message || err);
+      setLabOrders([]);
+    }
+  };
+
+  const fetchLabStats = async () => {
+    try {
+      const response = await laboratoryService.getLabStats() as any;
+      setLabStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching lab stats (using default values):', err.message || err);
+      setLabStats({
+        totalTests: 0,
+        pendingTests: 0,
+        completedTests: 0,
+        totalOrders: 0,
+        pendingOrders: 0,
+        completedOrders: 0
+      });
+    }
+  };
+
+  // Refetch when filters change
+  useEffect(() => {
+    if (!loading) {
+      if (activeTab === 'tests') {
+        fetchLabTests();
+      } else if (activeTab === 'orders') {
+        fetchLabOrders();
+      }
+    }
+  }, [activeTab, searchQuery, selectedCategory, selectedStatus, selectedPatient]);
+
   // Filter lab tests
   const filteredTests = useMemo(() => {
-    return mockLabTests.filter((test) => {
+    return labTests.filter((test) => {
       const matchesSearch = 
         test.testName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         test.testCode.toLowerCase().includes(searchQuery.toLowerCase());
@@ -150,7 +229,7 @@ const LaboratoryManagement = () => {
 
   // Filter lab orders
   const filteredOrders = useMemo(() => {
-    return mockLabOrders.filter((order) => {
+    return labOrders.filter((order) => {
       const matchesSearch = 
         order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -165,7 +244,7 @@ const LaboratoryManagement = () => {
 
   // Filter samples
   const filteredSamples = useMemo(() => {
-    return mockSamples.filter((sample) => {
+    return [].filter /* TODO: Fetch from API */((sample) => {
       const matchesSearch = 
         sample.sampleId.toLowerCase().includes(searchQuery.toLowerCase()) ||
         sample.patientName.toLowerCase().includes(searchQuery.toLowerCase());
@@ -264,44 +343,48 @@ const LaboratoryManagement = () => {
   const statsCards = [
     {
       title: 'Total Tests',
-      value: mockLabStats.totalTests,
+      value: labStats?.totalTests || 0 /* TODO: Fetch from API */,
       icon: IconTestPipe,
       color: 'blue',
-      trend: '+8.3%'
+      trend: '+0%'
     },
     {
       title: 'Pending Results',
-      value: mockLabStats.pendingTests,
+      value: labStats?.pendingTests || 0 /* TODO: Fetch from API */,
       icon: IconClockHour4,
       color: 'orange',
-      trend: '-15.2%'
+      trend: '0%'
     },
     {
       title: 'Completed Today',
-      value: 127,
+      value: labStats?.completedToday || 0,
       icon: IconCheck,
       color: 'green',
-      trend: '+22.4%'
+      trend: '+0%'
     },
     {
       title: 'Equipment Status',
-      value: `${mockLabStats.equipmentOperational}/${mockLabStats.totalEquipment}`,
+      value: labStats?.equipmentOperational && labStats?.totalEquipment 
+        ? `${labStats.equipmentOperational}/${labStats.totalEquipment}`
+        : `${0 /* TODO: Fetch from API */}/${0 /* TODO: Fetch from API */}`,
       icon: IconSettings,
       color: 'purple',
-      trend: '98.5%'
+      trend: '0%'
     }
   ];
 
   // Chart data
-  const testCategoryData = Object.entries(mockLabStats.testsByCategory)
-    .map(([category, count]) => ({
-      name: category.replace('_', ' ').toUpperCase(),
-      value: count,
-      color: getCategoryColor(category as TestCategory)
-    }));
+  const testCategoryData = (labStats?.testsByCategory && typeof labStats.testsByCategory === 'object')
+    ? Object.entries(labStats.testsByCategory)
+        .map(([category, count]) => ({
+          name: category.replace('_', ' ').toUpperCase(),
+          value: count as number,
+          color: getCategoryColor(category as TestCategory)
+        }))
+    : [];
 
-  const dailyTestsData = mockLabStats.dailyTestVolume;
-  const turnaroundTimeData = mockLabStats.averageTurnaroundTime;
+  const dailyTestsData = Array.isArray(labStats?.dailyTestVolume) ? labStats.dailyTestVolume : [];
+  const turnaroundTimeData = Array.isArray(labStats?.averageTurnaroundTime) ? labStats.averageTurnaroundTime : [];
 
   return (
     <Container size="xl" py="md">
@@ -329,6 +412,20 @@ const LaboratoryManagement = () => {
           </Button>
         </Group>
       </Group>
+
+      {/* Loading State */}
+      {loading && (
+        <Alert icon={<IconAlertCircle size={16} />} color="blue" mb="lg">
+          Loading laboratory data...
+        </Alert>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <Alert icon={<IconAlertTriangle size={16} />} color="red" mb="lg" withCloseButton onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
       {/* Statistics Cards */}
       <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
@@ -577,7 +674,7 @@ const LaboratoryManagement = () => {
               />
               <Select
                 placeholder="Patient"
-                data={mockPatients.map(patient => ({ 
+                data={[].map /* TODO: Fetch from API */(patient => ({ 
                   value: patient.id, 
                   label: `${patient.firstName} ${patient.lastName}` 
                 }))}
@@ -615,80 +712,93 @@ const LaboratoryManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredOrders.map((order) => (
-                    <Table.Tr key={order.id}>
-                      <Table.Td>
-                        <Text fw={500}>{order.orderNumber}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group>
-                          <Avatar color="blue" radius="xl" size="sm">
-                            {order.patient.firstName[0]}{order.patient.lastName[0]}
-                          </Avatar>
-                          <div>
-                            <Text size="sm" fw={500}>
-                              {order.patient.firstName} {order.patient.lastName}
-                            </Text>
-                            <Text size="xs" c="dimmed">
-                              {order.patient.patientId}
-                            </Text>
-                          </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {order.orderingDoctor.firstName} {order.orderingDoctor.lastName}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {order.orderingDoctor.department?.name}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">{order.tests.length} tests</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">
-                          {typeof order.orderDate === 'string' ? order.orderDate : new Date(order.orderDate).toISOString().split('T')[0]}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge 
-                          color={
-                            order.priority === 'stat' ? 'red' : 
-                            order.priority === 'urgent' ? 'orange' : 'blue'
-                          } 
-                          variant="light"
+                  {filteredOrders.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={9}>
+                        <EmptyState
+                          icon={<IconTestPipe size={48} />}
+                          title="No lab tests"
+                          description="Order your first lab test to begin diagnostics"
                           size="sm"
-                        >
-                          {order.priority.toUpperCase()}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(order.status)} variant="light">
-                          {order.status.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewOrder(order)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="orange">
-                            <IconDownload size={16} />
-                          </ActionIcon>
-                        </Group>
+                        />
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  ) : (
+                    filteredOrders.map((order) => (
+                      <Table.Tr key={order.id}>
+                        <Table.Td>
+                          <Text fw={500}>{order.orderNumber}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group>
+                            <Avatar color="blue" radius="xl" size="sm">
+                              {order.patient.firstName[0]}{order.patient.lastName[0]}
+                            </Avatar>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {order.patient.firstName} {order.patient.lastName}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {order.patient.patientId}
+                              </Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {order.orderingDoctor.firstName} {order.orderingDoctor.lastName}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {order.orderingDoctor.department?.name}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{order.tests.length} tests</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">
+                            {typeof order.orderDate === 'string' ? order.orderDate : new Date(order.orderDate).toISOString().split('T')[0]}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge 
+                            color={
+                              order.priority === 'stat' ? 'red' : 
+                              order.priority === 'urgent' ? 'orange' : 'blue'
+                            } 
+                            variant="light"
+                            size="sm"
+                          >
+                            {order.priority.toUpperCase()}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(order.status)} variant="light">
+                            {order.status.replace('_', ' ')}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewOrder(order)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="orange">
+                              <IconDownload size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -852,7 +962,7 @@ const LaboratoryManagement = () => {
 
             {/* Equipment Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockLabEquipment.map((equipment) => (
+              {[].map /* TODO: Fetch from API */((equipment) => (
                 <Card key={equipment.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div style={{ flex: 1 }}>
@@ -952,7 +1062,7 @@ const LaboratoryManagement = () => {
 
             {/* QC Grid */}
             <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-              {mockQualityControl.map((qc) => (
+              {[].map /* TODO: Fetch from API */((qc) => (
                 <Card key={qc.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1067,28 +1177,28 @@ const LaboratoryManagement = () => {
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Test Accuracy Rate</Text>
                     <Text size="sm" fw={600} c="green">
-                      {mockLabStats.accuracy}%
+                      {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Average TAT</Text>
                     <Text size="sm" fw={600}>
-                      {mockLabStats.averageTAT} hours
+                      {0 /* TODO: Fetch from API */} hours
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Sample Rejection Rate</Text>
                     <Text size="sm" fw={600} c="red">
-                      {mockLabStats.rejectionRate}%
+                      {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Equipment Uptime</Text>
                     <Text size="sm" fw={600} c="green">
-                      {mockLabStats.equipmentUptime}%
+                      {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
                 </Stack>

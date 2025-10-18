@@ -50,6 +50,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
+import EmptyState from '../../../components/EmptyState';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
@@ -93,16 +94,7 @@ import {
   FinancialStats,
   FinancialFilters
 } from '../../../types/finance';
-import {
-  mockTransactions,
-  mockAccounts,
-  mockBudgets,
-  mockInvoices,
-  mockFinancialReports,
-  mockFinancialStats
-} from '../../../lib/mockData/finance';
-import { mockPatients } from '../../../lib/mockData/patients';
-
+// Mock data imports removed
 const FinanceManagement = () => {
   // State management
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -127,7 +119,7 @@ const FinanceManagement = () => {
 
   // Filter transactions
   const filteredTransactions = useMemo(() => {
-    return mockTransactions.filter((transaction) => {
+    return [].filter /* TODO: Fetch from API */((transaction) => {
       const matchesSearch = 
         transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         transaction.transactionId.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -245,28 +237,28 @@ const FinanceManagement = () => {
   const statsCards = [
     {
       title: 'Total Revenue',
-      value: formatCurrency(mockFinancialStats.totalRevenue),
+      value: formatCurrency(0 /* TODO: Fetch from API */ || 0),
       icon: IconTrendingUp,
       color: 'green',
       trend: '+12.5%'
     },
     {
       title: 'Total Expenses',
-      value: formatCurrency(mockFinancialStats.totalExpenses),
+      value: formatCurrency(0 /* TODO: Fetch from API */ || 0),
       icon: IconTrendingDown,
       color: 'red',
       trend: '+8.3%'
     },
     {
       title: 'Net Profit',
-      value: formatCurrency(mockFinancialStats.netProfit),
+      value: formatCurrency(0 /* TODO: Fetch from API */ || 0),
       icon: IconWallet,
       color: 'blue',
       trend: '+18.7%'
     },
     {
       title: 'Cash Flow',
-      value: formatCurrency(mockFinancialStats.cashFlow),
+      value: formatCurrency(typeof 0 /* TODO: Fetch from API */ === 'number' ? 0 /* TODO: Fetch from API */ : 0),
       icon: IconCash,
       color: 'purple',
       trend: '+5.2%'
@@ -275,16 +267,16 @@ const FinanceManagement = () => {
 
   // Chart data
   const revenueExpenseData = [
-    { name: 'Revenue', value: mockFinancialStats.totalRevenue, color: 'green' },
-    { name: 'Expenses', value: mockFinancialStats.totalExpenses, color: 'red' }
+    { name: 'Revenue', value: 0 /* TODO: Fetch from API */ || 0, color: 'green' },
+    { name: 'Expenses', value: 0 /* TODO: Fetch from API */ || 0, color: 'red' }
   ];
 
-  const monthlyRevenueData = mockFinancialStats.monthlyRevenue;
-  const expenseCategoryData = mockFinancialStats.expenseByCategory.map(item => ({
+  const monthlyRevenueData = 0 /* TODO: Fetch from API */ || [];
+  const expenseCategoryData = (0 /* TODO: Fetch from API */ || []).map(item => ({
     ...item,
     color: getCategoryColor(item.category as ExpenseCategory)
   }));
-  const cashFlowData = Array.isArray(mockFinancialStats.cashFlow) ? mockFinancialStats.cashFlow : [];
+  const cashFlowData = Array.isArray(0 /* TODO: Fetch from API */) ? 0 /* TODO: Fetch from API */ : [];
 
   return (
     <Container size="xl" py="md">
@@ -433,12 +425,12 @@ const FinanceManagement = () => {
                   size={100}
                   thickness={8}
                   sections={[{ 
-                    value: (mockFinancialStats.profitMargin / 100) * 100, 
-                    color: mockFinancialStats.profitMargin > 0 ? 'green' : 'red' 
+                    value: ((0 /* TODO: Fetch from API */ || 0) / 100) * 100, 
+                    color: (0 /* TODO: Fetch from API */ || 0) > 0 ? 'green' : 'red' 
                   }]}
                   label={
                     <Text size="sm" fw={700} ta="center">
-                      {formatPercentage(mockFinancialStats.profitMargin)}
+                      {formatPercentage(0 /* TODO: Fetch from API */)}
                     </Text>
                   }
                 />
@@ -447,21 +439,21 @@ const FinanceManagement = () => {
               
               <div style={{ textAlign: 'center' }}>
                 <Text size="xl" fw={700} c="green">
-                  {formatCurrency(mockFinancialStats.accountsReceivable)}
+                  {formatCurrency(0 /* TODO: Fetch from API */ || 0)}
                 </Text>
                 <Text size="xs" c="dimmed">Accounts Receivable</Text>
               </div>
               
               <div style={{ textAlign: 'center' }}>
                 <Text size="xl" fw={700} c="red">
-                  {formatCurrency(mockFinancialStats.accountsPayable)}
+                  {formatCurrency(0 /* TODO: Fetch from API */ || 0)}
                 </Text>
                 <Text size="xs" c="dimmed">Accounts Payable</Text>
               </div>
               
               <div style={{ textAlign: 'center' }}>
                 <Text size="xl" fw={700} c="blue">
-                  {formatCurrency(mockFinancialStats.totalAssets)}
+                  {formatCurrency(0 /* TODO: Fetch from API */ || 0)}
                 </Text>
                 <Text size="xs" c="dimmed">Total Assets</Text>
               </div>
@@ -542,85 +534,98 @@ const FinanceManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredTransactions.map((transaction) => (
-                    <Table.Tr key={transaction.id}>
-                      <Table.Td>
-                        <Text fw={500}>{transaction.transactionId}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500} component="span">
-                            {formatDate(transaction.date)}
-                          </Text>
-                          <Text size="xs" c="dimmed" component="span">
-                            {new Date(transaction.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500} lineClamp={1}>
-                            {transaction.description}
-                          </Text>
-                          {transaction.reference && (
-                            <Text size="xs" c="dimmed">
-                              Ref: {transaction.reference}
-                            </Text>
-                          )}
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getTransactionTypeColor(transaction.type)} variant="light">
-                          {transaction.type.toUpperCase()}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getCategoryColor(transaction.category)} variant="light" size="sm">
-                          {transaction.category.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text 
-                          size="sm" 
-                          fw={600} 
-                          c={transaction.type === 'income' ? 'green' : transaction.type === 'expense' ? 'red' : 'blue'}
-                        >
-                          {transaction.type === 'income' ? '+' : transaction.type === 'expense' ? '-' : ''}
-                          {formatCurrency(transaction.amount)}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>{transaction.account.name}</Text>
-                          <Badge color={getAccountTypeColor(transaction.account.type)} variant="light" size="xs">
-                            {transaction.account.type}
-                          </Badge>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(transaction.status)} variant="light">
-                          {transaction.status}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewTransaction(transaction)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="orange">
-                            <IconDownload size={16} />
-                          </ActionIcon>
-                        </Group>
+                  {filteredTransactions.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={8}>
+                        <EmptyState
+                          icon={<IconCash size={48} />}
+                          title="No financial records"
+                          description="Add financial transactions"
+                          size="sm"
+                        />
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  ) : (
+                    filteredTransactions.map((transaction) => (
+                      <Table.Tr key={transaction.id}>
+                        <Table.Td>
+                          <Text fw={500}>{transaction.transactionId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500} component="span">
+                              {formatDate(transaction.date)}
+                            </Text>
+                            <Text size="xs" c="dimmed" component="span">
+                              {new Date(transaction.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500} lineClamp={1}>
+                              {transaction.description}
+                            </Text>
+                            {transaction.reference && (
+                              <Text size="xs" c="dimmed">
+                                Ref: {transaction.reference}
+                              </Text>
+                            )}
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getTransactionTypeColor(transaction.type)} variant="light">
+                            {transaction.type.toUpperCase()}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getCategoryColor(transaction.category)} variant="light" size="sm">
+                            {transaction.category.replace('_', ' ')}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text 
+                            size="sm" 
+                            fw={600} 
+                            c={transaction.type === 'income' ? 'green' : transaction.type === 'expense' ? 'red' : 'blue'}
+                          >
+                            {transaction.type === 'income' ? '+' : transaction.type === 'expense' ? '-' : ''}
+                            {formatCurrency(transaction.amount)}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>{transaction.account.name}</Text>
+                            <Badge color={getAccountTypeColor(transaction.account.type)} variant="light" size="xs">
+                              {transaction.account.type}
+                            </Badge>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(transaction.status)} variant="light">
+                            {transaction.status}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewTransaction(transaction)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="orange">
+                              <IconDownload size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -639,7 +644,7 @@ const FinanceManagement = () => {
 
             {/* Accounts Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockAccounts.map((account) => (
+              {[].map /* TODO: Fetch from API */((account) => (
                 <Card key={account.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -719,7 +724,7 @@ const FinanceManagement = () => {
 
             {/* Budgets Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockBudgets.map((budget) => (
+              {[].map /* TODO: Fetch from API */((budget) => (
                 <Card key={budget.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -819,7 +824,7 @@ const FinanceManagement = () => {
 
             {/* Invoices Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockInvoices.map((invoice) => (
+              {[].map /* TODO: Fetch from API */((invoice) => (
                 <Card key={invoice.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -916,7 +921,7 @@ const FinanceManagement = () => {
 
             {/* Reports Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockFinancialReports.map((report) => (
+              {[].map /* TODO: Fetch from API */((report) => (
                 <Card key={report.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1127,7 +1132,7 @@ const FinanceManagement = () => {
             <Select
               label="Account"
               placeholder="Select account"
-              data={mockAccounts.map(account => ({
+              data={[].map /* TODO: Fetch from API */(account => ({
                 value: account.id,
                 label: account.name
               }))}
@@ -1198,7 +1203,7 @@ const FinanceManagement = () => {
             <Select
               label="Patient/Client"
               placeholder="Select patient or client"
-              data={mockPatients.map(patient => ({
+              data={[].map /* TODO: Fetch from API */(patient => ({
                 value: patient.id,
                 label: `${patient.firstName} ${patient.lastName}`
               }))}

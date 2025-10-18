@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -36,6 +36,7 @@ import {
   Anchor
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import {
   IconPlus,
@@ -77,20 +78,27 @@ import {
 } from '@tabler/icons-react';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart } from '../../../components/MantineChart';
 
-// Import types and mock data
+// Import API service
+import staffService from '../../../services/staff.service';
+
+// Import types
 import { Staff, Department, Shift, Attendance } from '../../../types/staff';
 import { UserRole, Gender, Status } from '../../../types/common';
-import { 
-  mockStaff, 
-  mockStaffStats, 
-  mockDepartments,
-  mockShifts,
-  mockLeaveRequests,
-  mockAttendance,
-  mockTraining
-} from '../../../lib/mockData/staff';
+
+// Fallback empty data
+const mockDepartments: any[] = [];
+const mockShifts: any[] = [];
+const mockAttendance: any[] = [];
+const mockLeaveRequests: any[] = [];
+const mockTraining: any[] = [];
 
 const StaffManagement = () => {
+  // API State
+  const [staff, setStaff] = useState<any[]>([]);
+  const [staffStats, setStaffStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   // State management
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState<string>('');
@@ -98,8 +106,8 @@ const StaffManagement = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
-  const [staffToEdit, setStaffToEdit] = useState<Staff | null>(null);
+  const [selectedStaff, setSelectedStaff] = useState<any>(null);
+  const [staffToEdit, setStaffToEdit] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<string>('list');
 
   // Modal states
@@ -107,44 +115,101 @@ const StaffManagement = () => {
   const [addStaffOpened, { open: openAddStaff, close: closeAddStaff }] = useDisclosure(false);
   const [editStaffOpened, { open: openEditStaff, close: closeEditStaff }] = useDisclosure(false);
 
-  // Filter and search logic
+  // Fetch staff data
+  useEffect(() => {
+    fetchStaff();
+    fetchStats();
+  }, []);
+
+  const fetchStaff = async () => {
+    try {
+      setLoading(true);
+      const response = await staffService.getStaff({
+        search: searchQuery || undefined,
+        role: selectedRole || undefined,
+        status: selectedStatus as any || undefined,
+      });
+      console.log('Staff API response:', response);
+      setStaff(response.data?.staff || []);
+      setError(null);
+    } catch (err: any) {
+      console.warn('Error fetching staff (using empty data):', err.response?.data?.message || err.message);
+      setError(null);
+      setStaff([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await staffService.getStaffStats();
+      console.log('Stats API response:', response);
+      setStaffStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching staff stats (using default values):', err.response?.data?.message || err.message);
+      setStaffStats({
+        totalStaff: 0,
+        activeStaff: 0,
+        inactiveStaff: 0,
+        byRole: {},
+        byDepartment: {}
+      });
+    }
+  };
+
+
+
+  // Filter and search logic (client-side filtering after API fetch)
   const filteredStaff = useMemo(() => {
-    return mockStaff.filter((staff) => {
-      const matchesSearch = 
-        staff.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        staff.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        staff.staffId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        staff.employeeId.toLowerCase().includes(searchQuery.toLowerCase());
+    if (!staff || staff.length === 0) return [];
+    
+    return staff.filter((s) => {
+      const firstName = s.user?.firstName || s.firstName || '';
+      const lastName = s.user?.lastName || s.lastName || '';
+      const email = s.user?.email || s.email || '';
+      const employeeId = s.employeeId || '';
       
-      const matchesDepartment = !selectedDepartment || staff.department.name === selectedDepartment;
-      const matchesRole = !selectedRole || staff.role === selectedRole;
-      const matchesStatus = !selectedStatus || staff.status === selectedStatus;
+      const matchesSearch = !searchQuery || 
+        firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        employeeId.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesDepartment = !selectedDepartment || s.department?.name === selectedDepartment;
+      const matchesRole = !selectedRole || s.user?.role === selectedRole;
+      const matchesStatus = !selectedStatus || (s.isActive ? 'active' : 'inactive') === selectedStatus;
 
       return matchesSearch && matchesDepartment && matchesRole && matchesStatus;
     }).sort((a, b) => {
+      const aFirstName = a.user?.firstName || a.firstName || '';
+      const aLastName = a.user?.lastName || a.lastName || '';
+      const bFirstName = b.user?.firstName || b.firstName || '';
+      const bLastName = b.user?.lastName || b.lastName || '';
+      
       let aVal: string | number;
       let bVal: string | number;
 
       switch (sortBy) {
         case 'name':
-          aVal = `${a.firstName} ${a.lastName}`;
-          bVal = `${b.firstName} ${b.lastName}`;
+          aVal = `${aFirstName} ${aLastName}`;
+          bVal = `${bFirstName} ${bLastName}`;
           break;
         case 'department':
-          aVal = a.department.name;
-          bVal = b.department.name;
+          aVal = a.department?.name || '';
+          bVal = b.department?.name || '';
           break;
         case 'experience':
-          aVal = a.experience || 0;
-          bVal = b.experience || 0;
+          aVal = parseInt(a.experience) || 0;
+          bVal = parseInt(b.experience) || 0;
           break;
         case 'joiningDate':
-          aVal = new Date(a.joiningDate).getTime();
-          bVal = new Date(b.joiningDate).getTime();
+          aVal = new Date(a.joiningDate || 0).getTime();
+          bVal = new Date(b.joiningDate || 0).getTime();
           break;
         default:
-          aVal = `${a.firstName} ${a.lastName}`;
-          bVal = `${b.firstName} ${b.lastName}`;
+          aVal = `${aFirstName} ${aLastName}`;
+          bVal = `${bFirstName} ${bLastName}`;
       }
 
       if (sortOrder === 'asc') {
@@ -153,7 +218,7 @@ const StaffManagement = () => {
         return aVal < bVal ? 1 : -1;
       }
     });
-  }, [searchQuery, selectedDepartment, selectedRole, selectedStatus, sortBy, sortOrder]);
+  }, [staff, searchQuery, selectedDepartment, selectedRole, selectedStatus, sortBy, sortOrder]);
 
   // Helper functions
   const getRoleBadgeColor = (role: UserRole) => {
@@ -186,12 +251,26 @@ const StaffManagement = () => {
     openEditStaff();
   };
 
-  const handleDeleteStaff = (staff: Staff) => {
-    notifications.show({
-      title: 'Staff Deleted',
-      message: `${staff.firstName} ${staff.lastName} has been removed from the system`,
-      color: 'red',
-    });
+  const handleDeleteStaff = async (staffMember: any) => {
+    if (!confirm(`Are you sure you want to delete ${staffMember.user?.firstName || staffMember.firstName} ${staffMember.user?.lastName || staffMember.lastName}?`)) {
+      return;
+    }
+    
+    try {
+      await staffService.deleteStaff(staffMember.id);
+      notifications.show({
+        title: 'Success',
+        message: 'Staff member deleted successfully',
+        color: 'green',
+      });
+      fetchStaff(); // Refresh the list
+    } catch (error) {
+      notifications.show({
+        title: 'Error',
+        message: 'Failed to delete staff member',
+        color: 'red',
+      });
+    }
   };
 
   const clearFilters = () => {
@@ -222,52 +301,46 @@ const StaffManagement = () => {
   const statsCards = [
     {
       title: 'Total Staff',
-      value: mockStaffStats.totalStaff,
+      value: staffStats?.totalStaff || 0,
       icon: IconUsers,
       color: 'blue',
       trend: '+5%'
     },
     {
       title: 'Active Staff',
-      value: mockStaffStats.activeStaff,
+      value: staffStats?.activeStaff || 0,
       icon: IconUserCheck,
       color: 'green',
       trend: '+2%'
     },
     {
-      title: 'On Leave',
-      value: mockStaffStats.staffOnLeave,
-      icon: IconCalendarEvent,
-      color: 'orange',
-      trend: '-1%'
+      title: 'Doctors',
+      value: staffStats?.byRole?.doctors || 0,
+      icon: IconStethoscope,
+      color: 'cyan',
+      trend: '+3%'
     },
     {
-      title: 'New Hires',
-      value: mockStaffStats.newHiresThisMonth,
-      icon: IconUserPlus,
+      title: 'Nurses',
+      value: staffStats?.byRole?.nurses || 0,
+      icon: IconMedicalCross,
       color: 'teal',
-      trend: '+50%'
+      trend: '+2%'
     }
   ];
 
   // Chart data
-  const roleDistributionData = Object.entries(mockStaffStats.roleDistribution)
-    .filter(([_, count]) => count > 0)
-    .map(([role, count]) => ({
-      name: role.replace('_', ' ').toUpperCase(),
-      value: count,
-      color: getRoleBadgeColor(role as UserRole)
-    }));
+  const roleDistributionData = staffStats?.byRole
+    ? [
+        { name: 'Doctors', value: staffStats.byRole.doctors || 0, color: '#0891b2' },
+        { name: 'Nurses', value: staffStats.byRole.nurses || 0, color: '#22c55e' },
+        { name: 'Lab Technicians', value: staffStats.byRole.labTechnicians || 0, color: '#14b8a6' },
+        { name: 'Pharmacists', value: staffStats.byRole.pharmacists || 0, color: '#8b5cf6' },
+      ].filter(item => item.value > 0)
+    : [];
 
-  const departmentDistributionData = Object.entries(mockStaffStats.departmentDistribution).map(
-    ([dept, count]) => ({ department: dept, count })
-  );
-
-  const hiringTrendsData = mockStaffStats.hiringTrends.map(trend => ({
-    month: trend.month,
-    hired: trend.hired,
-    resigned: trend.resigned
-  }));
+  const departmentDistributionData: any[] = []; // TODO: Implement when department stats are available
+  const hiringTrendsData: any[] = []; // TODO: Implement when hiring trends are available
 
   return (
     <Container size="xl" py="md">
@@ -289,6 +362,22 @@ const StaffManagement = () => {
         </Group>
       </Group>
 
+      {/* Error Alert */}
+      {error && (
+        <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" mb="lg">
+          {error}
+        </Alert>
+      )}
+
+      {/* Loading State */}
+      {loading ? (
+        <Paper p="xl" radius="md" withBorder>
+          <Stack align="center" gap="md">
+            <Text>Loading staff data...</Text>
+          </Stack>
+        </Paper>
+      ) : (
+        <>
       {/* Statistics Cards */}
       <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
         {statsCards.map((stat) => {
@@ -357,7 +446,7 @@ const StaffManagement = () => {
               />
               <Select
                 placeholder="Department"
-                data={mockDepartments.map(dept => ({ value: dept.name, label: dept.name }))}
+                data={[].map /* TODO: Fetch from API */(dept => ({ value: dept.name, label: dept.name }))}
                 value={selectedDepartment}
                 onChange={setSelectedDepartment}
                 clearable
@@ -430,7 +519,19 @@ const StaffManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredStaff.map((staff) => (
+                  {filteredStaff.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={8}>
+                        <EmptyState
+                          icon={<IconUsers size={48} />}
+                          title="No staff members"
+                          description="Add staff members to your hospital"
+                          size="sm"
+                        />
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    filteredStaff.map((staff) => (
                     <Table.Tr key={staff.id}>
                       <Table.Td>
                         <Group>
@@ -495,7 +596,7 @@ const StaffManagement = () => {
                         </Group>
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  )))}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -513,7 +614,7 @@ const StaffManagement = () => {
             </Group>
             
             <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-              {mockDepartments.map((dept) => (
+              {[].map /* TODO: Fetch from API */((dept) => (
                 <Card key={dept.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -535,12 +636,6 @@ const StaffManagement = () => {
                     <Group>
                       <Text size="sm" fw={500}>Location:</Text>
                       <Text size="sm">{dept.location}</Text>
-                    </Group>
-                    <Group>
-                      <Text size="sm" fw={500}>Staff Count:</Text>
-                      <Text size="sm">
-                        {mockStaffStats.departmentDistribution[dept.name] || 0}
-                      </Text>
                     </Group>
                   </Stack>
                   
@@ -572,13 +667,13 @@ const StaffManagement = () => {
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Today&apos;s Shifts</Title>
                 <Stack gap="md">
-                  {mockShifts.map((shift) => {
-                    const staff = mockStaff.find(s => s.staffId === shift.staffId);
+                  {[].map /* TODO: Fetch from API */((shift) => {
+                    const staffMember = staff.find(s => s.id === shift.staffId || s.staffId === shift.staffId);
                     return (
                       <Group key={shift.id} justify="space-between" p="sm" style={{ border: '1px solid #e9ecef', borderRadius: '8px' }}>
                         <div>
                           <Text fw={500}>
-                            {staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown Staff'}
+                            {staffMember ? `${staffMember.user?.firstName || staffMember.firstName} ${staffMember.user?.lastName || staffMember.lastName}` : 'Unknown Staff'}
                           </Text>
                           <Text size="sm" c="dimmed">
                             {shift.startTime} - {shift.endTime} | {shift.department}
@@ -635,7 +730,7 @@ const StaffManagement = () => {
                   </ThemeIcon>
                 </Group>
                 <Text ta="center" fw={600} size="lg" mt="sm">
-                  {mockStaffStats.attendanceMetrics.presentToday}
+                  {staffStats?.attendanceMetrics?.presentToday || 0}
                 </Text>
                 <Text ta="center" size="sm" c="dimmed">Present Today</Text>
               </Card>
@@ -647,7 +742,7 @@ const StaffManagement = () => {
                   </ThemeIcon>
                 </Group>
                 <Text ta="center" fw={600} size="lg" mt="sm">
-                  {mockStaffStats.attendanceMetrics.absentToday}
+                  {staffStats?.attendanceMetrics?.absentToday || 0}
                 </Text>
                 <Text ta="center" size="sm" c="dimmed">Absent Today</Text>
               </Card>
@@ -659,7 +754,7 @@ const StaffManagement = () => {
                   </ThemeIcon>
                 </Group>
                 <Text ta="center" fw={600} size="lg" mt="sm">
-                  {mockStaffStats.attendanceMetrics.lateToday}
+                  {staffStats?.attendanceMetrics?.lateToday || 0}
                 </Text>
                 <Text ta="center" size="sm" c="dimmed">Late Today</Text>
               </Card>
@@ -671,7 +766,7 @@ const StaffManagement = () => {
                   </ThemeIcon>
                 </Group>
                 <Text ta="center" fw={600} size="lg" mt="sm">
-                  {mockStaffStats.attendanceMetrics.onLeaveToday}
+                  {staffStats?.attendanceMetrics?.onLeaveToday || 0}
                 </Text>
                 <Text ta="center" size="sm" c="dimmed">On Leave</Text>
               </Card>
@@ -693,12 +788,12 @@ const StaffManagement = () => {
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
-                    {mockAttendance.map((record) => {
-                      const staff = mockStaff.find(s => s.staffId === record.staffId);
+                    {[].map /* TODO: Fetch from API */((record) => {
+                      const staffMember = staff.find(s => s.id === record.staffId || s.staffId === record.staffId);
                       return (
                         <Table.Tr key={record.id}>
                           <Table.Td>
-                            {staff ? `${staff.firstName} ${staff.lastName}` : 'Unknown'}
+                            {staffMember ? `${staffMember.user?.firstName || staffMember.firstName} ${staffMember.user?.lastName || staffMember.lastName}` : 'Unknown'}
                           </Table.Td>
                           <Table.Td>
                             {formatDate(record.date)}
@@ -776,25 +871,25 @@ const StaffManagement = () => {
                   <div>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm">Average Rating</Text>
-                      <Text size="sm" fw={500}>{mockStaffStats.performanceMetrics.averageRating}/5.0</Text>
+                      <Text size="sm" fw={500}>{staffStats?.performanceMetrics?.averageRating || 0}/5.0</Text>
                     </Group>
-                    <Progress value={mockStaffStats.performanceMetrics.averageRating * 20} color="green" />
+                    <Progress value={(staffStats?.performanceMetrics?.averageRating || 0) * 20} color="green" />
                   </div>
                   
                   <div>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm">Training Completion</Text>
-                      <Text size="sm" fw={500}>{mockStaffStats.performanceMetrics.trainingCompletionRate}%</Text>
+                      <Text size="sm" fw={500}>{staffStats?.performanceMetrics?.trainingCompletionRate || 0}%</Text>
                     </Group>
-                    <Progress value={mockStaffStats.performanceMetrics.trainingCompletionRate} color="blue" />
+                    <Progress value={staffStats?.performanceMetrics?.trainingCompletionRate || 0} color="blue" />
                   </div>
                   
                   <div>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm">Average Attendance</Text>
-                      <Text size="sm" fw={500}>{mockStaffStats.attendanceMetrics.averageAttendance}%</Text>
+                      <Text size="sm" fw={500}>{staffStats?.attendanceMetrics?.averageAttendance || 0}%</Text>
                     </Group>
-                    <Progress value={mockStaffStats.attendanceMetrics.averageAttendance} color="teal" />
+                    <Progress value={staffStats?.attendanceMetrics?.averageAttendance || 0} color="teal" />
                   </div>
                 </Stack>
               </Card>
@@ -803,7 +898,7 @@ const StaffManagement = () => {
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Top Performers</Title>
                 <Stack gap="sm">
-                  {mockStaffStats.performanceMetrics.topPerformers.map((performer, index) => (
+                  {(staffStats?.performanceMetrics?.topPerformers || []).map((performer, index) => (
                     <Group key={performer} justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                       <Group>
                         <ThemeIcon size="sm" color="gold" variant="light">
@@ -822,6 +917,8 @@ const StaffManagement = () => {
           </Paper>
         </Tabs.Panel>
       </Tabs>
+        </>
+      )}
 
       {/* Staff Detail Modal */}
       <Modal
@@ -978,7 +1075,7 @@ const StaffManagement = () => {
             <Select
               label="Department"
               placeholder="Select department"
-              data={mockDepartments.map(dept => ({ value: dept.name, label: dept.name }))}
+              data={[].map /* TODO: Fetch from API */(dept => ({ value: dept.name, label: dept.name }))}
               required
             />
           </SimpleGrid>

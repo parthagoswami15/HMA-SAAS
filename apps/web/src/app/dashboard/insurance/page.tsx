@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -34,8 +34,10 @@ import {
   Stepper
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
+import insuranceService from '../../../services/insurance.service';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
@@ -423,6 +425,71 @@ const InsuranceManagement = () => {
   const [selectedClaim, setSelectedClaim] = useState<InsuranceClaim | null>(null);
   const [selectedPolicy, setSelectedPolicy] = useState<PolicyDetails | null>(null);
 
+  // API data state
+  const [claims, setClaims] = useState<InsuranceClaim[]>([]);
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([fetchClaims(), fetchStats()]);
+    } catch (err: any) {
+      console.error('Error loading insurance data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load insurance data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchClaims = async () => {
+    try {
+      const filters = {
+        status: selectedStatus || undefined,
+        providerId: selectedProvider || undefined,
+        search: searchQuery || undefined
+      };
+      const response = await insuranceService.getClaims(filters);
+      // Handle different response structures
+      const claimsData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.items || []);
+      setClaims(claimsData as InsuranceClaim[]);
+    } catch (err: any) {
+      console.warn('Error fetching claims (using empty data):', err.response?.data?.message || err.message);
+      setClaims([]);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await insuranceService.getStats();
+      setStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching insurance stats (using default values):', err.response?.data?.message || err.message);
+      setStats({
+        totalClaims: 0,
+        pendingClaims: 0,
+        approvedClaims: 0,
+        rejectedClaims: 0,
+        totalClaimAmount: 0,
+        approvedAmount: 0
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      fetchClaims();
+    }
+  }, [searchQuery, selectedProvider, selectedStatus]);
+
   // Modal states
   const [claimDetailOpened, { open: openClaimDetail, close: closeClaimDetail }] = useDisclosure(false);
   const [newClaimOpened, { open: openNewClaim, close: closeNewClaim }] = useDisclosure(false);
@@ -431,7 +498,7 @@ const InsuranceManagement = () => {
 
   // Filter claims
   const filteredClaims = useMemo(() => {
-    return mockInsuranceClaims.filter((claim) => {
+    return [].filter /* TODO: Fetch from API */((claim) => {
       const matchesSearch = 
         claim.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         claim.claimNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -496,14 +563,14 @@ const InsuranceManagement = () => {
 
   // Insurance stats
   const insuranceStats = {
-    totalClaims: mockInsuranceClaims.length,
-    pendingClaims: mockInsuranceClaims.filter(c => c.status === 'pending').length,
-    approvedClaims: mockInsuranceClaims.filter(c => c.status === 'approved').length,
-    rejectedClaims: mockInsuranceClaims.filter(c => c.status === 'rejected').length,
-    totalClaimedAmount: mockInsuranceClaims.reduce((acc, c) => acc + c.claimedAmount, 0),
-    totalApprovedAmount: mockInsuranceClaims.reduce((acc, c) => acc + c.approvedAmount, 0),
-    averageProcessingTime: Math.round(mockInsuranceClaims.reduce((acc, c) => acc + (c.approvalDate ? 48 : 24), 0) / mockInsuranceClaims.length),
-    approvalRate: Math.round((mockInsuranceClaims.filter(c => c.status === 'approved').length / mockInsuranceClaims.length) * 100)
+    totalClaims: 0 /* TODO: Fetch from API */,
+    pendingClaims: [].filter /* TODO: Fetch from API */(c => c.status === 'pending').length,
+    approvedClaims: [].filter /* TODO: Fetch from API */(c => c.status === 'approved').length,
+    rejectedClaims: [].filter /* TODO: Fetch from API */(c => c.status === 'rejected').length,
+    totalClaimedAmount: [].reduce /* TODO: Fetch from API */((acc, c) => acc + c.claimedAmount, 0),
+    totalApprovedAmount: [].reduce /* TODO: Fetch from API */((acc, c) => acc + c.approvedAmount, 0),
+    averageProcessingTime: Math.round([].reduce /* TODO: Fetch from API */((acc, c) => acc + (c.approvalDate ? 48 : 24), 0) / 0 /* TODO: Fetch from API */),
+    approvalRate: Math.round(([].filter /* TODO: Fetch from API */(c => c.status === 'approved').length / 0 /* TODO: Fetch from API */) * 100)
   };
 
   return (
@@ -656,7 +723,7 @@ const InsuranceManagement = () => {
               />
               <Select
                 placeholder="Provider"
-                data={mockInsuranceProviders.map(p => ({ value: p.id, label: p.name }))}
+                data={[].map /* TODO: Fetch from API */(p => ({ value: p.id, label: p.name }))}
                 value={selectedProvider}
                 onChange={setSelectedProvider}
                 clearable
@@ -704,89 +771,102 @@ const InsuranceManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredClaims.map((claim) => (
-                    <Table.Tr key={claim.id}>
-                      <Table.Td>
-                        <Text fw={500} size="sm">{claim.claimNumber}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group>
-                          <Avatar color="blue" radius="xl" size="sm">
-                            {claim.patientName.split(' ').map(n => n[0]).join('')}
-                          </Avatar>
-                          <div>
-                            <Text size="sm" fw={500}>{claim.patientName}</Text>
-                            <Text size="xs" c="dimmed">{claim.patientAge}Y, {claim.patientGender}</Text>
-                          </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>{claim.providerName}</Text>
-                          <Text size="xs" c="dimmed">{claim.policyNumber}</Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge variant="light" size="sm" tt="uppercase">
-                          {claim.claimType}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>{claim.diagnosis}</Text>
-                          {claim.procedure && (
-                            <Text size="xs" c="dimmed">{claim.procedure}</Text>
-                          )}
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>₹{claim.claimedAmount.toLocaleString()}</Text>
-                          {claim.approvedAmount > 0 && (
-                            <Text size="xs" c="green">Approved: ₹{claim.approvedAmount.toLocaleString()}</Text>
-                          )}
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <Badge color={getStatusColor(claim.status)} variant="light" size="sm">
-                            {claim.status.toUpperCase()}
-                          </Badge>
-                          {claim.status === 'pending' && (
-                            <Indicator color="orange" size={8} />
-                          )}
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getPriorityColor(claim.priority)} variant="outline" size="sm">
-                          {claim.priority.toUpperCase()}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">{formatDate(claim.submissionDate)}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewClaim(claim)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="purple">
-                            <IconFileUpload size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="orange">
-                            <IconPrinter size={16} />
-                          </ActionIcon>
-                        </Group>
+                  {filteredClaims.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={10}>
+                        <EmptyState
+                          icon={<IconShield size={48} />}
+                          title="No insurance records"
+                          description="Add insurance information"
+                          size="sm"
+                        />
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  ) : (
+                    filteredClaims.map((claim) => (
+                      <Table.Tr key={claim.id}>
+                        <Table.Td>
+                          <Text fw={500} size="sm">{claim.claimNumber}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group>
+                            <Avatar color="blue" radius="xl" size="sm">
+                              {claim.patientName.split(' ').map(n => n[0]).join('')}
+                            </Avatar>
+                            <div>
+                              <Text size="sm" fw={500}>{claim.patientName}</Text>
+                              <Text size="xs" c="dimmed">{claim.patientAge}Y, {claim.patientGender}</Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>{claim.providerName}</Text>
+                            <Text size="xs" c="dimmed">{claim.policyNumber}</Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge variant="light" size="sm" tt="uppercase">
+                            {claim.claimType}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>{claim.diagnosis}</Text>
+                            {claim.procedure && (
+                              <Text size="xs" c="dimmed">{claim.procedure}</Text>
+                            )}
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>₹{claim.claimedAmount.toLocaleString()}</Text>
+                            {claim.approvedAmount > 0 && (
+                              <Text size="xs" c="green">Approved: ₹{claim.approvedAmount.toLocaleString()}</Text>
+                            )}
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <Badge color={getStatusColor(claim.status)} variant="light" size="sm">
+                              {claim.status.toUpperCase()}
+                            </Badge>
+                            {claim.status === 'pending' && (
+                              <Indicator color="orange" size={8} />
+                            )}
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getPriorityColor(claim.priority)} variant="outline" size="sm">
+                            {claim.priority.toUpperCase()}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{formatDate(claim.submissionDate)}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewClaim(claim)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="purple">
+                              <IconFileUpload size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="orange">
+                              <IconPrinter size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -799,7 +879,7 @@ const InsuranceManagement = () => {
             <Title order={3} mb="lg">Active Policies</Title>
             
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockPolicyDetails.map((policy) => (
+              {[].map /* TODO: Fetch from API */((policy) => (
                 <Card key={policy.id} padding="lg" radius="md" withBorder onClick={() => handleViewPolicy(policy)} style={{ cursor: 'pointer' }}>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -882,7 +962,7 @@ const InsuranceManagement = () => {
             <Title order={3} mb="lg">Insurance Providers & TPA</Title>
             
             <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-              {mockInsuranceProviders.map((provider) => (
+              {[].map /* TODO: Fetch from API */((provider) => (
                 <Card key={provider.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1219,7 +1299,7 @@ const InsuranceManagement = () => {
             <Select
               label="Insurance Provider"
               placeholder="Select provider"
-              data={mockInsuranceProviders.map(p => ({ value: p.id, label: p.name }))}
+              data={[].map /* TODO: Fetch from API */(p => ({ value: p.id, label: p.name }))}
               required
             />
           </SimpleGrid>

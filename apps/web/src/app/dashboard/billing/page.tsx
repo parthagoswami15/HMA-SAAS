@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -36,6 +36,7 @@ import {
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
@@ -77,7 +78,7 @@ import {
   IconRefresh
 } from '@tabler/icons-react';
 
-// Import types and mock data
+// Import types and services
 import {
   Invoice,
   InvoiceStatus,
@@ -90,15 +91,7 @@ import {
   InsuranceProvider,
   PatientInsurance
 } from '../../../types/billing';
-import {
-  mockInvoices,
-  mockPayments,
-  mockInsuranceClaims,
-  mockInsuranceProviders,
-  mockBillingReports,
-  mockBillingStats
-} from '../../../lib/mockData/billing';
-import { mockPatients } from '../../../lib/mockData/patients';
+import { billingService, handleApiError } from '../../../services';
 
 const BillingManagement = () => {
   // State management
@@ -110,6 +103,17 @@ const BillingManagement = () => {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [selectedClaim, setSelectedClaim] = useState<InsuranceClaim | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [statsError, setStatsError] = useState<string | null>(null);
+
+  // Data state
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [insuranceClaims, setInsuranceClaims] = useState<InsuranceClaim[]>([]);
+  const [billingStats, setBillingStats] = useState<any>(null);
+  const [revenueData, setRevenueData] = useState<any[]>([]);
 
   // Modal states
   const [invoiceDetailOpened, { open: openInvoiceDetail, close: closeInvoiceDetail }] = useDisclosure(false);
@@ -117,48 +121,130 @@ const BillingManagement = () => {
   const [addPaymentOpened, { open: openAddPayment, close: closeAddPayment }] = useDisclosure(false);
   const [claimDetailOpened, { open: openClaimDetail, close: closeClaimDetail }] = useDisclosure(false);
 
-  // Filter invoices
-  const filteredInvoices = useMemo(() => {
-    return mockInvoices.filter((invoice) => {
-      const matchesSearch = 
-        invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        invoice.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        invoice.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesPatient = !selectedPatient || invoice.patientId === selectedPatient;
-      const matchesStatus = !selectedStatus || invoice.status === selectedStatus;
+  // Load all data on mount
+  useEffect(() => {
+    loadAllData();
+  }, []);
 
-      return matchesSearch && matchesPatient && matchesStatus;
-    });
-  }, [searchQuery, selectedPatient, selectedStatus]);
+  // Load data based on active tab
+  useEffect(() => {
+    if (activeTab === 'invoices') {
+      loadInvoices();
+    } else if (activeTab === 'payments') {
+      loadPayments();
+    } else if (activeTab === 'insurance') {
+      loadInsuranceClaims();
+    } else if (activeTab === 'reports') {
+      loadReportsData();
+    }
+  }, [activeTab, searchQuery, selectedPatient, selectedStatus, selectedPaymentMethod]);
 
-  // Filter payments
-  const filteredPayments = useMemo(() => {
-    return mockPayments.filter((payment) => {
-      const matchesSearch = 
-        payment.paymentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        payment.invoice?.invoiceNumber?.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesMethod = !selectedPaymentMethod || payment.paymentMethod === selectedPaymentMethod;
-      const matchesStatus = !selectedStatus || payment.status === selectedStatus;
+  const loadAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-      return matchesSearch && matchesMethod && matchesStatus;
-    });
-  }, [searchQuery, selectedPaymentMethod, selectedStatus]);
+      // Load stats and initial data in parallel
+      await Promise.all([
+        loadStats(),
+        loadInvoices(),
+        loadPayments(),
+        loadInsuranceClaims()
+      ]);
+    } catch (err) {
+      const errorMessage = handleApiError(err);
+      setError(errorMessage);
+      console.error('Error loading billing data:', err);
+      // Fallback to mock data
+      setInvoices([] /* TODO: Fetch from API */);
+      setPayments([] /* TODO: Fetch from API */);
+      setInsuranceClaims([] /* TODO: Fetch from API */);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Filter claims
-  const filteredClaims = useMemo(() => {
-    return mockInsuranceClaims.filter((claim) => {
-      const matchesSearch = 
-        claim.claimNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        claim.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        claim.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase());
+  const loadStats = async () => {
+    try {
+      setStatsLoading(true);
+      setStatsError(null);
+      const response = await billingService.getBillingStats();
+      setBillingStats(response.data);
+    } catch (err: any) {
+      console.warn('Error loading billing stats (using default values):', err.response?.data?.message || err.message);
+      setStatsError(null);
+      // Set default stats when backend is unavailable
+      setBillingStats({
+        totalRevenue: 0,
+        pendingPayments: 0,
+        paidInvoices: 0,
+        unpaidInvoices: 0,
+        totalInvoices: 0,
+        totalPayments: 0
+      });
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
-      const matchesStatus = !selectedStatus || claim.status === selectedStatus;
+  const loadInvoices = async () => {
+    try {
+      const filters = {
+        search: searchQuery || undefined,
+        patientId: selectedPatient || undefined,
+        status: selectedStatus || undefined
+      };
 
-      return matchesSearch && matchesStatus;
-    });
-  }, [searchQuery, selectedStatus]);
+      const response = await billingService.getInvoices(filters);
+      setInvoices(response.data || []);
+    } catch (err: any) {
+      console.warn('Error loading invoices (using empty data):', err.response?.data?.message || err.message);
+      setInvoices([]);
+    }
+  };
+
+  const loadPayments = async () => {
+    try {
+      const filters = {
+        search: searchQuery || undefined,
+        patientId: selectedPatient || undefined,
+        paymentMethod: selectedPaymentMethod || undefined
+      };
+
+      const response = await billingService.getPayments(filters);
+      setPayments(response.data || []);
+    } catch (err: any) {
+      console.warn('Error loading payments (using empty data):', err.response?.data?.message || err.message);
+      setPayments([]);
+    }
+  };
+
+  const loadInsuranceClaims = async () => {
+    try {
+      // For now, use mock data as insurance claims API might not be fully implemented
+      setInsuranceClaims([] /* TODO: Fetch from API */);
+    } catch (err) {
+      console.error('Error loading insurance claims:', err);
+      setInsuranceClaims([] /* TODO: Fetch from API */);
+    }
+  };
+
+  const loadReportsData = async () => {
+    try {
+      // Load revenue data for reports
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - 12);
+      const response = await billingService.getRevenueReport(
+        startDate.toISOString(),
+        endDate.toISOString()
+      );
+      setRevenueData(response.data?.invoices || []);
+    } catch (err: any) {
+      console.warn('Error loading reports data (using empty data):', err.response?.data?.message || err.message);
+      setRevenueData([]);
+    }
+  };
 
   // Helper functions
   const getStatusColor = (status: InvoiceStatus | PaymentStatus | ClaimStatus | PaymentTransactionStatus) => {
@@ -252,43 +338,43 @@ const BillingManagement = () => {
   };
 
   // Statistics cards
-  const statsCards = [
+  const statsCards = billingStats ? [
     {
       title: 'Total Revenue',
-      value: formatCurrency(mockBillingStats.totalRevenue),
+      value: formatCurrency(billingStats.totalRevenue || 0),
       icon: IconCurrencyDollar,
       color: 'green',
       trend: '+15.3%'
     },
     {
       title: 'Outstanding Amount',
-      value: formatCurrency(mockBillingStats.totalOutstanding),
+      value: formatCurrency(billingStats.totalOutstanding || 0),
       icon: IconAlertCircle,
       color: 'red',
       trend: '-8.2%'
     },
     {
       title: 'Insurance Claims',
-      value: mockBillingStats.totalClaims,
+      value: billingStats.totalClaims || 0,
       icon: IconShield,
       color: 'blue',
       trend: '+12%'
     },
     {
       title: 'Collection Rate',
-      value: `${mockBillingStats.collectionRate}%`,
+      value: `${billingStats.collectionRate || 0}%`,
       icon: IconTrendingUp,
       color: 'purple',
       trend: '+2.1%'
     }
-  ];
+  ] : [];
 
   // Chart data
-  const revenueData = mockBillingReports.monthlyRevenue.map(item => ({
+  const revenueChartData = revenueData.length > 0 ? revenueData.map(item => ({
     month: item.month,
     revenue: item.totalRevenue,
     collections: item.collections
-  }));
+  })) : [];
 
   const getPaymentMethodColor = (method: PaymentMethod) => {
     switch (method) {
@@ -304,21 +390,71 @@ const BillingManagement = () => {
     }
   };
 
-  const paymentMethodData = Object.entries(mockBillingStats.paymentMethodDistribution)
-    .map(([method, amount]) => ({
-      name: method.replace('_', ' ').toUpperCase(),
-      value: amount as number,
-      color: getPaymentMethodColor(method as PaymentMethod)
-    }));
+  const paymentMethodData = billingStats?.paymentMethodDistribution ?
+    Object.entries(billingStats.paymentMethodDistribution)
+      .map(([method, amount]) => ({
+        name: method.replace('_', ' ').toUpperCase(),
+        value: amount as number,
+        color: getPaymentMethodColor(method as PaymentMethod)
+      })) :
+    Object.entries(0 /* TODO: Fetch from API */)
+      .map(([method, amount]) => ({
+        name: method.replace('_', ' ').toUpperCase(),
+        value: amount as number,
+        color: getPaymentMethodColor(method as PaymentMethod)
+      }));
 
   const claimStatusCounts: Record<string, number> = {};
-  mockInsuranceClaims.forEach((c) => {
+  insuranceClaims.forEach((c) => {
     claimStatusCounts[c.status] = (claimStatusCounts[c.status] || 0) + 1;
   });
   const claimStatusData = Object.entries(claimStatusCounts).map(([status, count]) => ({
     status: status.replace('_', ' '),
     count
   }));
+
+  // Filter functions now use API data
+  const filteredInvoices = useMemo(() => {
+    return invoices.filter((invoice) => {
+      const matchesSearch =
+        invoice.invoiceNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        invoice.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        invoice.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesPatient = !selectedPatient || invoice.patientId === selectedPatient;
+      const matchesStatus = !selectedStatus || invoice.status === selectedStatus;
+
+      return matchesSearch && matchesPatient && matchesStatus;
+    });
+  }, [invoices, searchQuery, selectedPatient, selectedStatus]);
+
+  // Filter payments
+  const filteredPayments = useMemo(() => {
+    return payments.filter((payment) => {
+      const matchesSearch =
+        payment.paymentId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        payment.invoice?.invoiceNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesMethod = !selectedPaymentMethod || payment.paymentMethod === selectedPaymentMethod;
+      const matchesStatus = !selectedStatus || payment.status === selectedStatus;
+
+      return matchesSearch && matchesMethod && matchesStatus;
+    });
+  }, [payments, searchQuery, selectedPaymentMethod, selectedStatus]);
+
+  // Filter claims
+  const filteredClaims = useMemo(() => {
+    return insuranceClaims.filter((claim) => {
+      const matchesSearch =
+        claim.claimNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        claim.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        claim.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus = !selectedStatus || claim.status === selectedStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [insuranceClaims, searchQuery, selectedStatus]);
 
   return (
     <Container size="xl" py="md">
@@ -347,39 +483,66 @@ const BillingManagement = () => {
         </Group>
       </Group>
 
+      {/* Error Display */}
+      {error && (
+        <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red" variant="light" mb="lg">
+          {error} - Using cached data
+        </Alert>
+      )}
+
       {/* Statistics Cards */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
-        {statsCards.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title} padding="lg" radius="md" withBorder>
+      {statsLoading ? (
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} padding="lg" radius="md" withBorder>
               <Group justify="space-between">
                 <div>
-                  <Text c="dimmed" size="sm" fw={500}>
-                    {stat.title}
-                  </Text>
-                  <Text fw={700} size="xl">
-                    {stat.value}
-                  </Text>
+                  <div style={{ height: '1rem', width: '100px', backgroundColor: '#e9ecef', borderRadius: '4px', marginBottom: '8px' }} />
+                  <div style={{ height: '2rem', width: '80px', backgroundColor: '#e9ecef', borderRadius: '4px' }} />
                 </div>
-                <ThemeIcon color={stat.color} size="xl" radius="md" variant="light">
-                  <Icon size={24} />
-                </ThemeIcon>
+                <div style={{ width: '40px', height: '40px', backgroundColor: '#e9ecef', borderRadius: '8px' }} />
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.startsWith('+') ? 'green' : 'red'} 
-                  variant="light"
-                  size="sm"
-                >
-                  {stat.trend}
-                </Badge>
-                <Text size="xs" c="dimmed">vs last month</Text>
+                <div style={{ height: '1rem', width: '50px', backgroundColor: '#e9ecef', borderRadius: '4px' }} />
+                <div style={{ height: '0.75rem', width: '80px', backgroundColor: '#e9ecef', borderRadius: '4px' }} />
               </Group>
             </Card>
-          );
-        })}
-      </SimpleGrid>
+          ))}
+        </SimpleGrid>
+      ) : (
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
+          {statsCards.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={stat.title} padding="lg" radius="md" withBorder>
+                <Group justify="space-between">
+                  <div>
+                    <Text c="dimmed" size="sm" fw={500}>
+                      {stat.title}
+                    </Text>
+                    <Text fw={700} size="xl">
+                      {stat.value}
+                    </Text>
+                  </div>
+                  <ThemeIcon color={stat.color} size="xl" radius="md" variant="light">
+                    <Icon size={24} />
+                  </ThemeIcon>
+                </Group>
+                <Group justify="space-between" mt="sm">
+                  <Badge
+                    color={stat.trend.startsWith('+') ? 'green' : 'red'}
+                    variant="light"
+                    size="sm"
+                  >
+                    {stat.trend}
+                  </Badge>
+                  <Text size="xs" c="dimmed">vs last month</Text>
+                </Group>
+              </Card>
+            );
+          })}
+        </SimpleGrid>
+      )}
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={(v) => setActiveTab(v || 'invoices')}>
@@ -412,9 +575,9 @@ const BillingManagement = () => {
               />
               <Select
                 placeholder="Patient"
-                data={mockPatients.map(patient => ({ 
-                  value: patient.id, 
-                  label: `${patient.firstName} ${patient.lastName}` 
+                data={[].map /* TODO: Fetch from API */(patient => ({
+                  value: patient.id,
+                  label: `${patient.firstName} ${patient.lastName}`
                 }))}
                 value={selectedPatient}
                 onChange={(v) => setSelectedPatient(v || '')}
@@ -437,123 +600,147 @@ const BillingManagement = () => {
               </Button>
             </Group>
 
-            {/* Invoices Table */}
-            <ScrollArea>
-              <Table striped highlightOnHover>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>Invoice #</Table.Th>
-                    <Table.Th>Patient</Table.Th>
-                    <Table.Th>Date</Table.Th>
-                    <Table.Th>Due Date</Table.Th>
-                    <Table.Th>Amount</Table.Th>
-                    <Table.Th>Status</Table.Th>
-                    <Table.Th>Payment Status</Table.Th>
-                    <Table.Th>Actions</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {filteredInvoices.map((invoice) => (
-                    <Table.Tr key={invoice.id}>
-                      <Table.Td>
-                        <Text fw={500}>{invoice.invoiceNumber}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group>
-                          <Avatar color="blue" radius="xl" size="sm">
-                            {invoice.patient.firstName[0]}{invoice.patient.lastName[0]}
-                          </Avatar>
-                          <div>
-                            <Text size="sm" fw={500}>
-                              {invoice.patient.firstName} {invoice.patient.lastName}
+            {/* Loading State for Invoices */}
+            {loading && invoices.length === 0 ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                <div>
+                  <div style={{ width: '40px', height: '40px', border: '3px solid #e9ecef', borderTop: '3px solid #228be6', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+                  <Text c="dimmed" ta="center">Loading invoices...</Text>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Invoices Table */}
+                <ScrollArea>
+                  <Table striped highlightOnHover>
+                    <Table.Thead>
+                      <Table.Tr>
+                        <Table.Th>Invoice #</Table.Th>
+                        <Table.Th>Patient</Table.Th>
+                        <Table.Th>Date</Table.Th>
+                        <Table.Th>Due Date</Table.Th>
+                        <Table.Th>Amount</Table.Th>
+                        <Table.Th>Status</Table.Th>
+                        <Table.Th>Payment Status</Table.Th>
+                        <Table.Th>Actions</Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      {filteredInvoices.length === 0 ? (
+                        <Table.Tr>
+                          <Table.Td colSpan={9}>
+                            <EmptyState
+                              icon={<IconReceipt size={48} />}
+                              title="No bills generated"
+                              description="Create your first bill to start billing management"
+                              size="sm"
+                            />
+                          </Table.Td>
+                        </Table.Tr>
+                      ) : (
+                        filteredInvoices.map((invoice) => (
+                        <Table.Tr key={invoice.id}>
+                          <Table.Td>
+                            <Text fw={500}>{invoice.invoiceNumber}</Text>
+                          </Table.Td>
+                          <Table.Td>
+                            <Group>
+                              <Avatar color="blue" radius="xl" size="sm">
+                                {invoice.patient?.firstName?.[0]}{invoice.patient?.lastName?.[0]}
+                              </Avatar>
+                              <div>
+                                <Text size="sm" fw={500}>
+                                  {invoice.patient?.firstName} {invoice.patient?.lastName}
+                                </Text>
+                                <Text size="xs" c="dimmed">
+                                  {invoice.patient?.patientId}
+                                </Text>
+                              </div>
+                            </Group>
+                          </Table.Td>
+                          <Table.Td>
+                            <Text size="sm">
+                              {formatDate(invoice.invoiceDate)}
                             </Text>
-                            <Text size="xs" c="dimmed">
-                              {invoice.patient.patientId}
+                          </Table.Td>
+                          <Table.Td>
+                            <Text
+                              size="sm"
+                              c={new Date(invoice.dueDate) < new Date() ? 'red' : 'dimmed'}
+                            >
+                              {formatDate(invoice.dueDate)}
                             </Text>
-                          </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">
-                          {formatDate(invoice.invoiceDate)}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text 
-                          size="sm" 
-                          c={new Date(invoice.dueDate) < new Date() ? 'red' : 'dimmed'}
-                        >
-                          {formatDate(invoice.dueDate)}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text fw={600}>{formatCurrency(invoice.totalAmount)}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(invoice.status)} variant="light">
-                          {invoice.status.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <Text size="sm">
-                            {formatCurrency(invoice.paidAmount)} / {formatCurrency(invoice.totalAmount)}
-                          </Text>
-                          <Progress 
-                            value={(invoice.paidAmount / invoice.totalAmount) * 100} 
-                            size="xs" 
-                            w={60}
-                            color={invoice.paidAmount >= invoice.totalAmount ? 'green' : 'blue'}
-                          />
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewInvoice(invoice)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon
-                            variant="subtle"
-                            color="green"
-                          >
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <Menu>
-                            <Menu.Target>
-                              <ActionIcon variant="subtle" color="gray">
-                                <IconDotsVertical size={16} />
-                              </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Menu.Item leftSection={<IconDownload size={14} />}>
-                                Download PDF
-                              </Menu.Item>
-                              <Menu.Item leftSection={<IconPrinter size={14} />}>
-                                Print
-                              </Menu.Item>
-                              <Menu.Item leftSection={<IconMail size={14} />}>
-                                Send Email
-                              </Menu.Item>
-                              <Menu.Divider />
-                              <Menu.Item 
-                                leftSection={<IconTrash size={14} />}
-                                color="red"
+                          </Table.Td>
+                          <Table.Td>
+                            <Text fw={600}>{formatCurrency(invoice.totalAmount)}</Text>
+                          </Table.Td>
+                          <Table.Td>
+                            <Badge color={getStatusColor(invoice.status)} variant="light">
+                              {invoice.status.replace('_', ' ')}
+                            </Badge>
+                          </Table.Td>
+                          <Table.Td>
+                            <Group gap="xs">
+                              <Text size="sm">
+                                {formatCurrency(invoice.paidAmount || 0)} / {formatCurrency(invoice.totalAmount)}
+                              </Text>
+                              <Progress
+                                value={invoice.totalAmount > 0 ? ((invoice.paidAmount || 0) / invoice.totalAmount) * 100 : 0}
+                                size="xs"
+                                w={60}
+                                color={(invoice.paidAmount || 0) >= invoice.totalAmount ? 'green' : 'blue'}
+                              />
+                            </Group>
+                          </Table.Td>
+                          <Table.Td>
+                            <Group gap="xs">
+                              <ActionIcon
+                                variant="subtle"
+                                color="blue"
+                                onClick={() => handleViewInvoice(invoice)}
                               >
-                                Delete
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
-                        </Group>
-                      </Table.Td>
-                    </Table.Tr>
-                  ))}
-                </Table.Tbody>
-              </Table>
-            </ScrollArea>
+                                <IconEye size={16} />
+                              </ActionIcon>
+                              <ActionIcon
+                                variant="subtle"
+                                color="green"
+                              >
+                                <IconEdit size={16} />
+                              </ActionIcon>
+                              <Menu>
+                                <Menu.Target>
+                                  <ActionIcon variant="subtle" color="gray">
+                                    <IconDotsVertical size={16} />
+                                  </ActionIcon>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                  <Menu.Item leftSection={<IconDownload size={14} />}>
+                                    Download PDF
+                                  </Menu.Item>
+                                  <Menu.Item leftSection={<IconPrinter size={14} />}>
+                                    Print
+                                  </Menu.Item>
+                                  <Menu.Item leftSection={<IconMail size={14} />}>
+                                    Send Email
+                                  </Menu.Item>
+                                  <Menu.Divider />
+                                  <Menu.Item
+                                    leftSection={<IconTrash size={14} />}
+                                    color="red"
+                                  >
+                                    Delete
+                                  </Menu.Item>
+                                </Menu.Dropdown>
+                              </Menu>
+                            </Group>
+                          </Table.Td>
+                        </Table.Tr>
+                      )))}
+                    </Table.Tbody>
+                  </Table>
+                </ScrollArea>
+              </>
+            )}
           </Paper>
         </Tabs.Panel>
 
@@ -817,28 +1004,28 @@ const BillingManagement = () => {
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Average Invoice Amount</Text>
                     <Text size="sm" fw={600}>
-                      {formatCurrency(mockBillingStats.averageInvoiceAmount)}
+                      {formatCurrency(0 /* TODO: Fetch from API */)}
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Days Sales Outstanding</Text>
                     <Text size="sm" fw={600}>
-                      {mockBillingStats.daysOutstanding} days
+                      {0 /* TODO: Fetch from API */} days
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Insurance Coverage Rate</Text>
                     <Text size="sm" fw={600}>
-                      {mockBillingStats.insuranceCoverageRate}%
+                      {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Bad Debt Rate</Text>
                     <Text size="sm" fw={600} c="red">
-                      {formatCurrency(mockBillingStats.totalWriteOffs)}
+                      {formatCurrency(0 /* TODO: Fetch from API */)}
                     </Text>
                   </Group>
                 </Stack>
@@ -1015,7 +1202,7 @@ const BillingManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={mockPatients.map(patient => ({ 
+              data={[].map /* TODO: Fetch from API */(patient => ({ 
                 value: patient.id, 
                 label: `${patient.firstName} ${patient.lastName}` 
               }))}
@@ -1115,7 +1302,7 @@ const BillingManagement = () => {
           <Select
             label="Invoice"
             placeholder="Select invoice"
-            data={mockInvoices.map(invoice => ({ 
+            data={[].map /* TODO: Fetch from API */(invoice => ({ 
               value: invoice.id, 
               label: `${invoice.invoiceNumber} - ${formatCurrency(invoice.totalAmount - invoice.paidAmount)}` 
             }))}

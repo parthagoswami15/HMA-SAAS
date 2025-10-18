@@ -2,7 +2,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// This is for schema validation
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
 enum Role {
   SUPER_ADMIN
   ADMIN
@@ -24,11 +29,7 @@ enum TenantType {
   LAB
   PHARMACY
   CHAMBER
-  MULTI_SPECIALTY
-}
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  UNKNOWN
 }
 
 model Department {

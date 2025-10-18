@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -28,6 +28,7 @@ import {
   Textarea
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import {
   IconPlus,
@@ -49,13 +50,8 @@ import {
   IconActivity,
   IconDownload
 } from '@tabler/icons-react';
-import {
-  mockClinicalTrials,
-  mockResearchProjects,
-  mockResearchStats,
-  mockTrialParticipants,
-  mockAdverseEvents
-} from '../../../lib/mockData/research';
+// Mock data imports removed
+import researchService from '../../../services/research.service';
 
 export default function ResearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,9 +62,53 @@ export default function ResearchPage() {
   const [trialModalOpened, { open: openTrialModal, close: closeTrialModal }] = useDisclosure(false);
   const [projectModalOpened, { open: openProjectModal, close: closeProjectModal }] = useDisclosure(false);
 
+  // API state
+  const [projects, setProjects] = useState<any[]>([]);
+  const [researchStats, setResearchStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch data
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([fetchProjects(), fetchStats()]);
+    } catch (err: any) {
+      console.error('Error loading research data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load research data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const response = await researchService.getProjects();
+      setProjects(response.data || []);
+    } catch (err: any) {
+      console.error('Error fetching research projects:', err);
+      setProjects([] /* TODO: Fetch from API */);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await researchService.getStats();
+      setResearchStats(response.data);
+    } catch (err: any) {
+      console.error('Error fetching research stats:', err);
+      setResearchStats([] /* TODO: Fetch from API */);
+    }
+  };
+
   // Filter trials
   const filteredTrials = useMemo(() => {
-    return mockClinicalTrials.filter(trial => {
+    return [].filter /* TODO: Fetch from API */(trial => {
       const matchesSearch = trial.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           trial.trialId.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === 'all' || trial.status === statusFilter;
@@ -78,7 +118,7 @@ export default function ResearchPage() {
 
   // Filter projects
   const filteredProjects = useMemo(() => {
-    return mockResearchProjects.filter(project => {
+    return [].filter /* TODO: Fetch from API */(project => {
       const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           project.projectId.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === 'all' || project.status === statusFilter;
@@ -114,25 +154,25 @@ export default function ResearchPage() {
   const quickStats = [
     {
       title: 'Active Trials',
-      value: mockResearchStats.activeTrials,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconFlask,
       color: 'blue'
     },
     {
       title: 'Total Participants',
-      value: mockResearchStats.totalParticipants,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconUsers,
       color: 'green'
     },
     {
       title: 'Research Projects',
-      value: mockResearchProjects.length,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconBooks,
       color: 'orange'
     },
     {
       title: 'Adverse Events',
-      value: mockResearchStats.adverseEventsReported,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconAlertCircle,
       color: 'red'
     }
@@ -332,7 +372,19 @@ export default function ResearchPage() {
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
-                    {filteredProjects.map((project) => (
+                    {filteredProjects.length === 0 ? (
+                      <Table.Tr>
+                        <Table.Td colSpan={7}>
+                          <EmptyState
+                            icon={<IconFlask size={48} />}
+                            title="No research projects"
+                            description="Add your first research project"
+                            size="sm"
+                          />
+                        </Table.Td>
+                      </Table.Tr>
+                    ) : (
+                      filteredProjects.map((project) => (
                       <Table.Tr key={project.id}>
                         <Table.Td>
                           <Text size="sm" fw={500}>{project.projectId}</Text>
@@ -365,7 +417,7 @@ export default function ResearchPage() {
                           </Group>
                         </Table.Td>
                       </Table.Tr>
-                    ))}
+                    )))}
                   </Table.Tbody>
                 </Table>
               </ScrollArea>
@@ -387,7 +439,7 @@ export default function ResearchPage() {
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
-                    {mockTrialParticipants.map((participant) => (
+                    {[].map /* TODO: Fetch from API */((participant) => (
                       <Table.Tr key={participant.id}>
                         <Table.Td>
                           <Text size="sm" fw={500}>{participant.participantId}</Text>
@@ -445,7 +497,7 @@ export default function ResearchPage() {
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
-                    {mockAdverseEvents.map((event) => (
+                    {[].map /* TODO: Fetch from API */((event) => (
                       <Table.Tr key={event.id}>
                         <Table.Td>
                           <Text size="sm" fw={500}>{event.eventId}</Text>

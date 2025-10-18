@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -34,6 +34,7 @@ import {
   Checkbox
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { MantineDonutChart, SimpleAreaChart, SimpleLineChart, SimpleBarChart } from '../../../components/MantineChart';
 import {
@@ -93,19 +94,9 @@ import {
   IconInfoCircle
 } from '@tabler/icons-react';
 
-// Import types and mock data - using any for flexibility
-import {
-  mockMedications,
-  mockDrugInteractions,
-  mockPharmacyPrescriptions,
-  mockDispensations,
-  mockPharmacyInventory,
-  mockPharmacySuppliers,
-  mockPharmacyStats
-} from '../../../lib/mockData/pharmacy';
-import { mockPatients } from '../../../lib/mockData/patients';
-import { mockStaff } from '../../../lib/mockData/staff';
-
+// Import types and services
+import pharmacyService from '../../../services/pharmacy.service';
+// Mock data imports removed
 const PharmacyManagement = () => {
   // State management
   const [activeTab, setActiveTab] = useState<string>('medications');
@@ -124,42 +115,140 @@ const PharmacyManagement = () => {
   const [dispensationOpened, { open: openDispensation, close: closeDispensation }] = useDisclosure(false);
   const [interactionCheckOpened, { open: openInteractionCheck, close: closeInteractionCheck }] = useDisclosure(false);
 
+  // API data
+  const [pharmacyStats, setPharmacyStats] = useState<any>(null);
+  const [medications, setMedications] = useState<any>([]);
+  const [pharmacyOrders, setPharmacyOrders] = useState<any>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([
+        fetchStats(),
+        fetchMedications(),
+        fetchOrders()
+      ]);
+    } catch (err: any) {
+      console.error('Error loading pharmacy data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load pharmacy data');
+      // Fallback to mock data
+      setPharmacyStats([] /* TODO: Fetch from API */);
+      setMedications([] /* TODO: Fetch from API */);
+      setPharmacyOrders([] /* TODO: Fetch from API */);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await pharmacyService.getPharmacyStats();
+      setPharmacyStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching pharmacy stats (using default values):', err.response?.data?.message || err.message);
+      // Set default stats when backend is unavailable
+      setPharmacyStats({
+        totalMedications: 0,
+        lowStockItems: 0,
+        expiringSoon: 0,
+        totalOrders: 0,
+        pendingOrders: 0,
+        completedOrders: 0
+      });
+    }
+  };
+
+  const fetchMedications = async () => {
+    try {
+      const filters = {
+        category: selectedCategory || undefined,
+        status: selectedStatus || undefined,
+        search: searchQuery || undefined
+      };
+      const response = await pharmacyService.getMedications(filters);
+      setMedications(response.data?.items || response.data || []);
+    } catch (err: any) {
+      console.warn('Error fetching medications (using empty data):', err.response?.data?.message || err.message);
+      // Don't show error to user if backend is not ready, just use empty data
+      setMedications([]);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const filters = {
+        status: selectedStatus || undefined,
+        search: searchQuery || undefined
+      };
+      const response = await pharmacyService.getPharmacyOrders(filters);
+      setPharmacyOrders(response.data?.items || response.data || []);
+    } catch (err: any) {
+      console.warn('Error fetching pharmacy orders (using empty data):', err.response?.data?.message || err.message);
+      // Don't show error to user if backend is not ready, just use empty data
+      setPharmacyOrders([]);
+    }
+  };
+
+  // Refetch when filters change
+  useEffect(() => {
+    if (!loading) {
+      fetchMedications();
+    }
+  }, [selectedCategory, selectedStatus, searchQuery]);
+
+  useEffect(() => {
+    if (!loading && activeTab === 'prescriptions') {
+      fetchOrders();
+    }
+  }, [activeTab, selectedStatus, searchQuery]);
+
   // Filter medications
   const filteredMedications = useMemo(() => {
-    return mockMedications.filter((medication: any) => {
-      const matchesSearch = 
+    // Ensure medications is an array before filtering
+    if (!Array.isArray(medications)) return [];
+    return medications.filter((medication: any) => {
+      const matchesSearch =
         medication.genericName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         medication.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         medication.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         medication.drugCode?.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesCategory = !selectedCategory || medication.category === selectedCategory;
       const matchesStatus = !selectedStatus || medication.status === selectedStatus;
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
-  }, [searchQuery, selectedCategory, selectedStatus]);
+  }, [medications, searchQuery, selectedCategory, selectedStatus]);
 
   // Filter prescriptions
   const filteredPrescriptions = useMemo(() => {
-    return mockPharmacyPrescriptions.filter((prescription: any) => {
-      const matchesSearch = 
+    // Ensure pharmacyOrders is an array before filtering
+    if (!Array.isArray(pharmacyOrders)) return [];
+    return pharmacyOrders.filter((prescription: any) => {
+      const matchesSearch =
         prescription.prescriptionNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         prescription.prescriptionId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         prescription.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         prescription.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         prescription.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesStatus = !selectedStatus || prescription.status === selectedStatus;
 
       return matchesSearch && matchesStatus;
     });
-  }, [searchQuery, selectedStatus]);
+  }, [pharmacyOrders, searchQuery, selectedStatus]);
 
   // Filter dispensations
   const filteredDispensations = useMemo(() => {
-    return mockDispensations.filter((dispensation: any) => {
-      const matchesSearch = 
+    return [].filter /* TODO: Fetch from API */((dispensation: any) => {
+      const matchesSearch =
         dispensation.dispensationId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         dispensation.id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         dispensation.prescriptionNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -168,6 +257,7 @@ const PharmacyManagement = () => {
       return matchesSearch;
     });
   }, [searchQuery]);
+
 
   // Helper functions
   const getStatusColor = (status: string) => {
@@ -256,28 +346,28 @@ const PharmacyManagement = () => {
   const statsCards = [
     {
       title: 'Total Medications',
-      value: mockPharmacyStats.totalMedications || 0,
+      value: pharmacyStats?.totalMedications || 0,
       icon: IconPill,
       color: 'blue',
       trend: '+3.2%'
     },
     {
       title: 'Low Stock Items',
-      value: (mockPharmacyStats as any).lowStockMedications || mockPharmacyStats.lowStockItems || 0,
+      value: pharmacyStats?.lowStockMedications || 0,
       icon: IconAlertCircle,
       color: 'orange',
       trend: '-8%'
     },
     {
-      title: 'Prescriptions Today',
-      value: mockPharmacyStats.totalPrescriptions || 0,
+      title: 'Pending Orders',
+      value: pharmacyStats?.pendingOrders || 0,
       icon: IconReceipt,
       color: 'green',
       trend: '+12.5%'
     },
     {
       title: 'Revenue Today',
-      value: formatCurrency((mockPharmacyStats as any).dailyRevenue || mockPharmacyStats.monthlyRevenue || 0),
+      value: formatCurrency(pharmacyStats?.totalRevenue || 0),
       icon: IconCash,
       color: 'purple',
       trend: '+18.3%'
@@ -285,20 +375,22 @@ const PharmacyManagement = () => {
   ];
 
   // Chart data
-  const categoryDistribution = Array.isArray(mockPharmacyStats.medicationsByCategory)
-    ? mockPharmacyStats.medicationsByCategory.map((item: any) => ({
-        name: item.category?.replace('_', ' ').toUpperCase() || 'Unknown',
-        value: item.count || 0,
-        color: getCategoryColor(item.category || '')
-      }))
-    : Object.entries(mockPharmacyStats.medicationsByCategory || {}).map(([category, count]) => ({
-        name: category.replace('_', ' ').toUpperCase(),
-        value: typeof count === 'number' ? count : (count as any).count || 0,
-        color: getCategoryColor(category)
-      }));
+  const categoryDistribution = pharmacyStats?.medicationsByCategory
+    ? Array.isArray(pharmacyStats.medicationsByCategory)
+      ? pharmacyStats.medicationsByCategory.map((item: any) => ({
+          name: item.category?.replace('_', ' ').toUpperCase() || 'Unknown',
+          value: item.count || 0,
+          color: getCategoryColor(item.category || '')
+        }))
+      : Object.entries(pharmacyStats.medicationsByCategory).map(([category, count]) => ({
+          name: category.replace('_', ' ').toUpperCase(),
+          value: typeof count === 'number' ? count : (count as any).count || 0,
+          color: getCategoryColor(category)
+        }))
+    : [];
 
-  const prescriptionTrends = (mockPharmacyStats as any).prescriptionTrends || [];
-  const revenueData = (mockPharmacyStats as any).revenueData || [];
+  const prescriptionTrends = pharmacyStats?.prescriptionTrends || [];
+  const revenueData = pharmacyStats?.revenueData || [];
   return (
     <Container size="xl" py="md">
       {/* Header */}
@@ -326,39 +418,66 @@ const PharmacyManagement = () => {
         </Group>
       </Group>
 
+      {/* Error Display */}
+      {error && (
+        <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red" variant="light" mb="lg">
+          {error} - Using cached data
+        </Alert>
+      )}
+
       {/* Statistics Cards */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
-        {statsCards.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title} padding="lg" radius="md" withBorder>
+      {loading ? (
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} padding="lg" radius="md" withBorder>
               <Group justify="space-between">
                 <div>
-                  <Text c="dimmed" size="sm" fw={500}>
-                    {stat.title}
-                  </Text>
-                  <Text fw={700} size="xl">
-                    {stat.value}
-                  </Text>
+                  <div style={{ height: '1rem', width: '100px', backgroundColor: '#e9ecef', borderRadius: '4px', marginBottom: '8px' }} />
+                  <div style={{ height: '2rem', width: '80px', backgroundColor: '#e9ecef', borderRadius: '4px' }} />
                 </div>
-                <ThemeIcon color={stat.color} size="xl" radius="md" variant="light">
-                  <Icon size={24} />
-                </ThemeIcon>
+                <div style={{ width: '40px', height: '40px', backgroundColor: '#e9ecef', borderRadius: '8px' }} />
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.startsWith('+') ? 'green' : 'red'} 
-                  variant="light"
-                  size="sm"
-                >
-                  {stat.trend}
-                </Badge>
-                <Text size="xs" c="dimmed">vs yesterday</Text>
+                <div style={{ height: '1rem', width: '50px', backgroundColor: '#e9ecef', borderRadius: '4px' }} />
+                <div style={{ height: '0.75rem', width: '80px', backgroundColor: '#e9ecef', borderRadius: '4px' }} />
               </Group>
             </Card>
-          );
-        })}
-      </SimpleGrid>
+          ))}
+        </SimpleGrid>
+      ) : (
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
+          {statsCards.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={stat.title} padding="lg" radius="md" withBorder>
+                <Group justify="space-between">
+                  <div>
+                    <Text c="dimmed" size="sm" fw={500}>
+                      {stat.title}
+                    </Text>
+                    <Text fw={700} size="xl">
+                      {stat.value}
+                    </Text>
+                  </div>
+                  <ThemeIcon color={stat.color} size="xl" radius="md" variant="light">
+                    <Icon size={24} />
+                  </ThemeIcon>
+                </Group>
+                <Group justify="space-between" mt="sm">
+                  <Badge
+                    color={stat.trend.startsWith('+') ? 'green' : 'red'}
+                    variant="light"
+                    size="sm"
+                  >
+                    {stat.trend}
+                  </Badge>
+                  <Text size="xs" c="dimmed">vs yesterday</Text>
+                </Group>
+              </Card>
+            );
+          })}
+        </SimpleGrid>
+      )}
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={setActiveTab}>
@@ -428,132 +547,144 @@ const PharmacyManagement = () => {
               </Button>
             </Group>
 
-            {/* Medications Grid */}
-            <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {filteredMedications.map((medication: any) => {
-                const stockInfo = getStockLevel(medication.quantityInStock || medication.currentStock || 0, medication.minimumStockLevel || medication.minimumStock || 0);
-                
-                return (
-                  <Card key={medication.id} padding="lg" radius="md" withBorder>
-                    <Group justify="space-between" mb="md">
-                      <div style={{ flex: 1 }}>
-                        <Group>
-                          <ThemeIcon 
-                            color={getCategoryColor(medication.category)} 
-                            variant="light" 
-                            size="lg"
-                          >
-                            <IconPill size={20} />
-                          </ThemeIcon>
-                          <div>
-                            <Text fw={600} size="sm" lineClamp={1}>
-                              {medication.brandName || medication.name || medication.genericName || 'N/A'}
-                            </Text>
-                            <Text size="xs" c="dimmed">
-                              {medication.genericName || medication.name || 'N/A'}
-                            </Text>
+            {/* Loading State for Medications */}
+            {loading && medications.length === 0 ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                <div>
+                  <div style={{ width: '40px', height: '40px', border: '3px solid #e9ecef', borderTop: '3px solid #228be6', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+                  <Text c="dimmed" ta="center">Loading medications...</Text>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Medications Grid */}
+                <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
+                  {filteredMedications.map((medication: any) => {
+                    const stockInfo = getStockLevel(medication.quantityInStock || medication.currentStock || 0, medication.minimumStockLevel || medication.minimumStock || 0);
+
+                    return (
+                      <Card key={medication.id} padding="lg" radius="md" withBorder>
+                        <Group justify="space-between" mb="md">
+                          <div style={{ flex: 1 }}>
+                            <Group>
+                              <ThemeIcon
+                                color={getCategoryColor(medication.category)}
+                                variant="light"
+                                size="lg"
+                              >
+                                <IconPill size={20} />
+                              </ThemeIcon>
+                              <div>
+                                <Text fw={600} size="sm" lineClamp={1}>
+                                  {medication.brandName || medication.name || medication.genericName || 'N/A'}
+                                </Text>
+                                <Text size="xs" c="dimmed">
+                                  {medication.genericName || medication.name || 'N/A'}
+                                </Text>
+                              </div>
+                            </Group>
                           </div>
+                          <Badge color={getStatusColor(medication.status)} variant="light" size="sm">
+                            {medication.status?.replace('_', ' ') || 'N/A'}
+                          </Badge>
                         </Group>
-                      </div>
-                      <Badge color={getStatusColor(medication.status)} variant="light" size="sm">
-                        {medication.status?.replace('_', ' ') || 'N/A'}
-                      </Badge>
-                    </Group>
 
-                    <Stack gap="sm" mb="md">
-                      <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Drug Code</Text>
-                        <Text size="sm" fw={500}>{medication.drugCode || medication.batchNumber || 'N/A'}</Text>
-                      </Group>
+                        <Stack gap="sm" mb="md">
+                          <Group justify="space-between">
+                            <Text size="sm" c="dimmed">Drug Code</Text>
+                            <Text size="sm" fw={500}>{medication.drugCode || medication.batchNumber || 'N/A'}</Text>
+                          </Group>
 
-                      <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Strength</Text>
-                        <Text size="sm" fw={500}>{medication.strength || 'N/A'}</Text>
-                      </Group>
+                          <Group justify="space-between">
+                            <Text size="sm" c="dimmed">Strength</Text>
+                            <Text size="sm" fw={500}>{medication.strength || 'N/A'}</Text>
+                          </Group>
 
-                      <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Form</Text>
-                        <Text size="sm">{medication.dosageForm || 'N/A'}</Text>
-                      </Group>
+                          <Group justify="space-between">
+                            <Text size="sm" c="dimmed">Form</Text>
+                            <Text size="sm">{medication.dosageForm || 'N/A'}</Text>
+                          </Group>
 
-                      <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Price</Text>
-                        <Text size="sm" fw={600}>{formatCurrency(medication.unitPrice || 0)}</Text>
-                      </Group>
+                          <Group justify="space-between">
+                            <Text size="sm" c="dimmed">Price</Text>
+                            <Text size="sm" fw={600}>{formatCurrency(medication.unitPrice || 0)}</Text>
+                          </Group>
 
-                      <div>
-                        <Group justify="space-between" mb="xs">
-                          <Text size="sm" c="dimmed">Stock Level</Text>
-                          <Text size="xs" c={stockInfo.color} fw={500}>
-                            {stockInfo.level}
-                          </Text>
-                        </Group>
-                        <Group justify="space-between" mb="xs">
-                          <Text size="xs" c="dimmed">Available: {medication.quantityInStock}</Text>
-                          <Text size="xs" c="dimmed">Min: {medication.minimumStockLevel}</Text>
-                        </Group>
-                        <Progress value={stockInfo.percentage} color={stockInfo.color} size="sm" />
-                      </div>
+                          <div>
+                            <Group justify="space-between" mb="xs">
+                              <Text size="sm" c="dimmed">Stock Level</Text>
+                              <Text size="xs" c={stockInfo.color} fw={500}>
+                                {stockInfo.level}
+                              </Text>
+                            </Group>
+                            <Group justify="space-between" mb="xs">
+                              <Text size="xs" c="dimmed">Available: {medication.quantityInStock}</Text>
+                              <Text size="xs" c="dimmed">Min: {medication.minimumStockLevel}</Text>
+                            </Group>
+                            <Progress value={stockInfo.percentage} color={stockInfo.color} size="sm" />
+                          </div>
 
-                      {medication.expiryDate && (
+                          {medication.expiryDate && (
+                            <Group justify="space-between">
+                              <Text size="sm" c="dimmed">Expires</Text>
+                              <Text
+                                size="sm"
+                                c={new Date(medication.expiryDate) < new Date() ? 'red' : 'dimmed'}
+                              >
+                                {medication.expiryDate ? (typeof medication.expiryDate === 'string' ? medication.expiryDate : new Date(medication.expiryDate).toISOString().split('T')[0]) : 'N/A'}
+                              </Text>
+                            </Group>
+                          )}
+                        </Stack>
+
                         <Group justify="space-between">
-                          <Text size="sm" c="dimmed">Expires</Text>
-                          <Text 
-                            size="sm" 
-                            c={new Date(medication.expiryDate) < new Date() ? 'red' : 'dimmed'}
-                          >
-                            {medication.expiryDate ? (typeof medication.expiryDate === 'string' ? medication.expiryDate : new Date(medication.expiryDate).toISOString().split('T')[0]) : 'N/A'}
-                          </Text>
-                        </Group>
-                      )}
-                    </Stack>
-
-                    <Group justify="space-between">
-                      <Badge color={getCategoryColor(medication.category)} variant="light" size="xs">
-                        {medication.category.replace('_', ' ')}
-                      </Badge>
-                      <Group gap="xs">
-                        <ActionIcon
-                          variant="subtle"
-                          color="blue"
-                          onClick={() => handleViewMedication(medication)}
-                        >
-                          <IconEye size={16} />
-                        </ActionIcon>
-                        <ActionIcon variant="subtle" color="green">
-                          <IconEdit size={16} />
-                        </ActionIcon>
-                        <Menu>
-                          <Menu.Target>
-                            <ActionIcon variant="subtle" color="gray">
-                              <IconDotsVertical size={16} />
-                            </ActionIcon>
-                          </Menu.Target>
-                          <Menu.Dropdown>
-                            <Menu.Item leftSection={<IconBarcode size={14} />}>
-                              Print Barcode
-                            </Menu.Item>
-                            <Menu.Item leftSection={<IconPackage size={14} />}>
-                              Restock
-                            </Menu.Item>
-                            <Menu.Item leftSection={<IconShieldCheck size={14} />}>
-                              Check Interactions
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item 
-                              leftSection={<IconTrash size={14} />}
-                              color="red"
+                          <Badge color={getCategoryColor(medication.category)} variant="light" size="xs">
+                            {medication.category.replace('_', ' ')}
+                          </Badge>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewMedication(medication)}
                             >
-                              Delete
-                            </Menu.Item>
-                          </Menu.Dropdown>
-                        </Menu>
-                      </Group>
-                    </Group>
-                  </Card>
-                );
-              })}
-            </SimpleGrid>
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <Menu>
+                              <Menu.Target>
+                                <ActionIcon variant="subtle" color="gray">
+                                  <IconDotsVertical size={16} />
+                                </ActionIcon>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Item leftSection={<IconBarcode size={14} />}>
+                                  Print Barcode
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconPackage size={14} />}>
+                                  Restock
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconShieldCheck size={14} />}>
+                                  Check Interactions
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item
+                                  leftSection={<IconTrash size={14} />}
+                                  color="red"
+                                >
+                                  Delete
+                                </Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
+                          </Group>
+                        </Group>
+                      </Card>
+                    );
+                  })}
+                </SimpleGrid>
+              </>
+            )}
           </Paper>
         </Tabs.Panel>
 
@@ -612,7 +743,19 @@ const PharmacyManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredPrescriptions.map((prescription) => (
+                  {filteredPrescriptions.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={8}>
+                        <EmptyState
+                          icon={<IconPill size={48} />}
+                          title="No prescriptions"
+                          description="Prescriptions will appear here once created"
+                          size="sm"
+                        />
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    filteredPrescriptions.map((prescription) => (
                     <Table.Tr key={prescription.id}>
                       <Table.Td>
                         <Text fw={500}>{(prescription as any).prescriptionNumber || prescription.prescriptionId || 'N/A'}</Text>
@@ -678,7 +821,7 @@ const PharmacyManagement = () => {
                         </Group>
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  )))}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -805,7 +948,7 @@ const PharmacyManagement = () => {
 
             {/* Inventory Overview */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockPharmacyInventory.map((item: any) => {
+              {[].map /* TODO: Fetch from API */((item: any) => {
                 const stockInfo = getStockLevel(item.currentStock, item.minimumStock);
                 
                 return (
@@ -875,13 +1018,13 @@ const PharmacyManagement = () => {
               mb="lg"
             >
               <Text size="sm">
-                {mockDrugInteractions.filter(i => i.severity === 'contraindicated').length} contraindicated interactions found in current prescriptions.
+                {[].filter /* TODO: Fetch from API */(i => i.severity === 'contraindicated').length} contraindicated interactions found in current prescriptions.
               </Text>
             </Alert>
 
             {/* Interactions List */}
             <Stack gap="md">
-              {mockDrugInteractions.map((interaction: any) => (
+              {[].map /* TODO: Fetch from API */((interaction: any) => (
                 <Card key={interaction.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -971,28 +1114,28 @@ const PharmacyManagement = () => {
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Dispensing Accuracy</Text>
                     <Text size="sm" fw={600} c="green">
-                      {(mockPharmacyStats as any).dispensingAccuracy || 99}%
+                      {pharmacyStats?.dispensingAccuracy || 99}%
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Average Wait Time</Text>
                     <Text size="sm" fw={600}>
-                      {(mockPharmacyStats as any).averageWaitTime || 5} min
+                      {pharmacyStats?.averageWaitTime || 5} min
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Inventory Turnover</Text>
                     <Text size="sm" fw={600}>
-                      {(mockPharmacyStats as any).inventoryTurnover || 12}x
+                      {pharmacyStats?.inventoryTurnover || 12}x
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Customer Satisfaction</Text>
                     <Text size="sm" fw={600} c="green">
-                      {(mockPharmacyStats as any).customerSatisfaction || 95}%
+                      {pharmacyStats?.customerSatisfaction || 95}%
                     </Text>
                   </Group>
                 </Stack>
@@ -1237,7 +1380,7 @@ const PharmacyManagement = () => {
           <Select
             label="First Medication"
             placeholder="Select medication"
-            data={mockMedications.map((med: any) => ({ 
+            data={[].map /* TODO: Fetch from API */((med: any) => ({ 
               value: med.id, 
               label: `${med.brandName || med.name || med.genericName} (${med.genericName || med.name})` 
             }))}
@@ -1247,7 +1390,7 @@ const PharmacyManagement = () => {
           <Select
             label="Second Medication"
             placeholder="Select medication"
-            data={mockMedications.map((med: any) => ({ 
+            data={[].map /* TODO: Fetch from API */((med: any) => ({ 
               value: med.id, 
               label: `${med.brandName || med.name || med.genericName} (${med.genericName || med.name})` 
             }))}

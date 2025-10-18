@@ -1,49 +1,27 @@
-import { PrismaClient, Role } from '@prisma/client';
-import { hash } from 'bcryptjs';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/**
+ * Clean Database Seed Script
+ * 
+ * This script is intentionally empty to ensure a fresh, clean system.
+ * No demo data, test users, or sample records will be created.
+ * 
+ * For initial setup:
+ * 1. Run migrations: npm run prisma:migrate
+ * 2. Use the application's admin registration feature to create your first user
+ * 3. Configure your tenant through the application UI
+ */
 async function main() {
-  console.log('🌱 Starting database seeding...');
-
-  // Create a default tenant
-  const tenant = await prisma.tenant.upsert({
-    where: { id: 'default-tenant' },
-    update: {},
-    create: {
-      id: 'default-tenant',
-      name: 'Default Tenant',
-      slug: 'default',
-      isActive: true,
-    },
-  });
-
-  // Create an admin user
-  const hashedPassword = await hash('admin123', 12);
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@example.com' },
-    update: {},
-    create: {
-      email: 'admin@example.com',
-      passwordHash: hashedPassword,
-      firstName: 'Admin',
-      lastName: 'User',
-      role: Role.ADMIN,
-      isActive: true,
-      tenant: {
-        connect: { id: tenant.id },
-      },
-    },
-  });
-
-  console.log('✅ Database seeded successfully!');
-  console.log(`👤 Admin user created with email: ${admin.email}`);
-  console.log(`🔑 Password: admin123`);
+  console.log('✅ Database is clean and ready for production use.');
+  console.log('📝 No seed data has been inserted.');
+  console.log('🚀 Create your first admin user through the application registration.');
 }
 
 main()
   .catch((e) => {
-    console.error('Error seeding database:', e);
+    console.error('Error during seed script:', e);
     process.exit(1);
   })
   .finally(async () => {

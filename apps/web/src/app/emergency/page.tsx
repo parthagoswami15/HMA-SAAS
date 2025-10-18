@@ -664,7 +664,7 @@ const EmergencyPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#ef4444', marginBottom: '0.5rem' }}>🚨</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#dc2626' }}>
-                {mockAlerts.filter(a => a.status === 'ACTIVE').length}
+                {[].filter /* TODO: API */(a => a.status === 'ACTIVE').length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#dc2626' }}>Active Alerts</div>
             </div>
@@ -673,7 +673,7 @@ const EmergencyPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#10b981', marginBottom: '0.5rem' }}>🛏️</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockBeds.filter(b => b.status === 'AVAILABLE').length}
+                {[].filter /* TODO: API */(b => b.status === 'AVAILABLE').length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Available Beds</div>
             </div>
@@ -682,7 +682,7 @@ const EmergencyPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#f59e0b', marginBottom: '0.5rem' }}>👥</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockCriticalPatients.filter(p => p.severity === 'CRITICAL').length}
+                {[].filter /* TODO: API */(p => p.severity === 'CRITICAL').length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Critical Patients</div>
             </div>
@@ -691,7 +691,7 @@ const EmergencyPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#3b82f6', marginBottom: '0.5rem' }}>📞</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockContacts.filter(c => c.isOnDuty).length}
+                {[].filter /* TODO: API */(c => c.isOnDuty).length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>On-Duty Staff</div>
             </div>
@@ -742,7 +742,7 @@ const EmergencyPage = () => {
                 Recent Emergency Alerts
               </h3>
               <div style={{ display: 'grid', gap: '1rem' }}>
-                {mockAlerts.slice(0, 3).map(alert => (
+                {[].slice /* TODO: API */(0, 3).map(alert => (
                   <div key={alert.id} style={{
                     padding: '1rem',
                     border: '1px solid #e5e7eb',
@@ -798,7 +798,7 @@ const EmergencyPage = () => {
                 Critical Patients
               </h3>
               <div style={{ display: 'grid', gap: '1rem' }}>
-                {mockCriticalPatients.map(patient => (
+                {[].map /* TODO: API */(patient => (
                   <div key={patient.id} style={{
                     padding: '1rem',
                     border: '1px solid #e5e7eb',
@@ -872,7 +872,7 @@ const EmergencyPage = () => {
 
             {/* Alerts List */}
             <div style={{ display: 'grid', gap: '1rem' }}>
-              {mockAlerts.map(alert => (
+              {[].map /* TODO: API */(alert => (
                 <Card key={alert.id} style={{
                   cursor: 'pointer',
                   border: alert.severity === 'CRITICAL' ? '2px solid #ef4444' : '1px solid #e5e7eb'
@@ -955,7 +955,7 @@ const EmergencyPage = () => {
         {/* Bed Status Tab */}
         {currentTab === 'beds' && (
           <div style={{ display: 'grid', gap: '1rem' }}>
-            {mockBeds.map(bed => (
+            {[].map /* TODO: API */(bed => (
               <Card key={bed.id}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>

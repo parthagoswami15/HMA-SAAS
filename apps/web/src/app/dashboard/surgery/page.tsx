@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -34,8 +34,10 @@ import {
   List
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import surgeryService from '../../../services/surgery.service';
 import {
   IconPlus,
   IconSearch,
@@ -95,24 +97,14 @@ import {
   IconPill,
   IconBolt,
   IconZoom,
-  IconTools
+  IconTools,
+  IconScale
 } from '@tabler/icons-react';
 import { DatePickerInput } from '@mantine/dates';
 
 // Import types and mock data
 // Types will be defined inline since they don't exist yet
-import {
-  mockSurgeries,
-  mockOperatingRooms,
-  mockSurgicalEquipment,
-  mockPreOpAssessments,
-  mockPostOpAssessments,
-  mockAnesthesiaRecords,
-  mockSurgicalTeams,
-  mockSurgeryStats
-} from '../../../lib/mockData/surgery';
-import { mockPatients } from '../../../lib/mockData/patients';
-import { mockStaff } from '../../../lib/mockData/staff';
+// Mock data removed - using API data only
 
 const SurgeryManagement = () => {
   // State management
@@ -125,6 +117,86 @@ const SurgeryManagement = () => {
   const [selectedSurgery, setSelectedSurgery] = useState<any>(null);
   const [selectedOR, setSelectedOR] = useState<any>(null);
 
+  // API data state
+  const [surgeries, setSurgeries] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
+  const [theaters, setTheaters] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([
+        fetchSurgeries(),
+        fetchStats(),
+        fetchTheaters()
+      ]);
+    } catch (err: any) {
+      console.error('Error loading surgery data:', err);
+      setError(err.response?.data?.message || 'Failed to load surgery data');
+      setSurgeries([] /* TODO: Fetch from API */);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSurgeries = async () => {
+    try {
+      const filters = {
+        status: selectedStatus || undefined,
+        priority: selectedPriority || undefined
+      };
+      const response = await surgeryService.getSurgeries(filters);
+      // Handle different response structures
+      const surgeriesData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.items || []);
+      setSurgeries(surgeriesData);
+    } catch (err: any) {
+      console.warn('Error fetching surgeries (using empty data):', err.response?.data?.message || err.message);
+      setSurgeries([]);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await surgeryService.getStats();
+      setStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching surgery stats (using default values):', err.response?.data?.message || err.message);
+      setStats({
+        totalSurgeries: 0,
+        scheduledSurgeries: 0,
+        completedSurgeries: 0,
+        cancelledSurgeries: 0,
+        upcomingSurgeries: 0,
+        availableTheaters: 0
+      });
+    }
+  };
+
+  const fetchTheaters = async () => {
+    try {
+      const response = await surgeryService.getAvailableTheaters();
+      setTheaters(response.data || []);
+    } catch (err: any) {
+      console.warn('Error fetching theaters (using empty data):', err.response?.data?.message || err.message);
+      setTheaters([]);
+    }
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      fetchSurgeries();
+    }
+  }, [searchQuery, selectedType, selectedStatus, selectedPriority]);
+
   // Modal states
   const [surgeryDetailOpened, { open: openSurgeryDetail, close: closeSurgeryDetail }] = useDisclosure(false);
   const [addSurgeryOpened, { open: openAddSurgery, close: closeAddSurgery }] = useDisclosure(false);
@@ -134,7 +206,9 @@ const SurgeryManagement = () => {
 
   // Filter surgeries
   const filteredSurgeries = useMemo(() => {
-    return mockSurgeries.filter((surgery: any) => {
+    // Ensure surgeries is an array before filtering
+    if (!Array.isArray(surgeries)) return [];
+    return surgeries.filter((surgery: any) => {
       const matchesSearch = 
         surgery.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         surgery.surgeryId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -150,7 +224,9 @@ const SurgeryManagement = () => {
 
   // Filter operating rooms
   const filteredORs = useMemo(() => {
-    return mockOperatingRooms.filter((or: any) => {
+    // Ensure theaters is an array before filtering
+    if (!Array.isArray(theaters)) return [];
+    return theaters.filter((or: any) => {
       const matchesSearch = 
         or.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         or.roomName?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -240,44 +316,44 @@ const SurgeryManagement = () => {
   const statsCards = [
     {
       title: 'Total Surgeries',
-      value: mockSurgeryStats.totalSurgeries,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconScissors,
       color: 'blue',
-      trend: '+8.5%'
+      trend: '+0%'
     },
     {
       title: 'Today\'s Surgeries',
-      value: 12,
+      value: 0,
       icon: IconCalendar,
       color: 'green',
-      trend: '+3'
+      trend: '+0'
     },
     {
       title: 'Active ORs',
-      value: `${mockSurgeryStats.activeORs}/${mockSurgeryStats.totalORs}`,
+      value: `${0 /* TODO: Fetch from API */}/${0 /* TODO: Fetch from API */}`,
       icon: IconBed,
       color: 'orange',
-      trend: '85% utilization'
+      trend: '0% utilization'
     },
     {
       title: 'Average Duration',
-      value: `${mockSurgeryStats.averageDuration}min`,
+      value: `${0 /* TODO: Fetch from API */}min`,
       icon: IconClock,
       color: 'purple',
-      trend: '-15min'
+      trend: '0min'
     }
   ];
 
   // Chart data
-  const surgeryTypeData = Object.entries(mockSurgeryStats.surgeryByType || {})
+  const surgeryTypeData = Object.entries(0 /* TODO: Fetch from API */ || {})
     .map(([type, count]) => ({
       name: type.replace('_', ' ').toUpperCase(),
       value: typeof count === 'number' ? count : 0,
       color: getSurgeryTypeColor(type)
     }));
 
-  const monthlyVolume = mockSurgeryStats.monthlySurgeryVolume;
-  const orUtilization = mockSurgeryStats.orUtilization;
+  const monthlyVolume = [];
+  const orUtilization = [];
 
   return (
     <Container size="xl" py="md">
@@ -436,117 +512,130 @@ const SurgeryManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredSurgeries.map((surgery: any) => (
-                    <Table.Tr key={surgery.id}>
-                      <Table.Td>
-                        <Text fw={500}>{surgery.surgeryId}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group>
-                          <Avatar color="blue" radius="xl" size="sm">
-                            {surgery.patientName?.[0] || 'P'}
-                          </Avatar>
-                          <div>
-                            <Text size="sm" fw={500}>
-                              {surgery.patientName || 'N/A'}
-                            </Text>
-                            <Text size="xs" c="dimmed">
-                              ID: {(surgery as any).patientId || 'N/A'}
-                            </Text>
-                          </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500} lineClamp={1}>
-                            {surgery.procedure}
-                          </Text>
-                          <Badge color={getSurgeryTypeColor((surgery as any).surgeryType || 'general')} variant="light" size="xs">
-                            {(surgery as any).surgeryType || 'General'}
-                          </Badge>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {surgery.surgeon || 'N/A'}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {(surgery as any).department || 'N/A'}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {surgery.date || 'N/A'}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {surgery.time || 'N/A'}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">
-                          {surgery.duration || 0} min
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color="cyan" variant="light">
-                          {surgery.operatingRoom || 'N/A'}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getPriorityColor((surgery as any).priority || 'routine')} variant="light" size="xs">
-                          {((surgery as any).priority || 'routine').toUpperCase()}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(surgery.status)} variant="light">
-                          {surgery.status.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewSurgery(surgery)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <Menu>
-                            <Menu.Target>
-                              <ActionIcon variant="subtle" color="gray">
-                                <IconDotsVertical size={16} />
-                              </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Menu.Item leftSection={<IconClipboardList size={14} />}>
-                                Pre-Op Checklist
-                              </Menu.Item>
-                              <Menu.Item leftSection={<IconReportMedical size={14} />}>
-                                Post-Op Notes
-                              </Menu.Item>
-                              <Menu.Item leftSection={<IconDownload size={14} />}>
-                                Download Report
-                              </Menu.Item>
-                              <Menu.Divider />
-                              <Menu.Item 
-                                leftSection={<IconX size={14} />}
-                                color="red"
-                              >
-                                Cancel Surgery
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
-                        </Group>
+                  {filteredSurgeries.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={10}>
+                        <EmptyState
+                          icon={<IconScale size={48} />}
+                          title="No surgeries scheduled"
+                          description="Schedule your first surgery"
+                          size="sm"
+                        />
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  ) : (
+                    filteredSurgeries.map((surgery: any) => (
+                      <Table.Tr key={surgery.id}>
+                        <Table.Td>
+                          <Text fw={500}>{surgery.surgeryId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group>
+                            <Avatar color="blue" radius="xl" size="sm">
+                              {surgery.patientName?.[0] || 'P'}
+                            </Avatar>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {surgery.patientName || 'N/A'}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                ID: {(surgery as any).patientId || 'N/A'}
+                              </Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500} lineClamp={1}>
+                              {surgery.procedure}
+                            </Text>
+                            <Badge color={getSurgeryTypeColor((surgery as any).surgeryType || 'general')} variant="light" size="xs">
+                              {(surgery as any).surgeryType || 'General'}
+                            </Badge>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {surgery.surgeon || 'N/A'}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {(surgery as any).department || 'N/A'}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {surgery.date || 'N/A'}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {surgery.time || 'N/A'}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">
+                            {surgery.duration || 0} min
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color="cyan" variant="light">
+                            {surgery.operatingRoom || 'N/A'}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getPriorityColor((surgery as any).priority || 'routine')} variant="light" size="xs">
+                            {((surgery as any).priority || 'routine').toUpperCase()}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(surgery.status)} variant="light">
+                            {surgery.status.replace('_', ' ')}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewSurgery(surgery)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <Menu>
+                              <Menu.Target>
+                                <ActionIcon variant="subtle" color="gray">
+                                  <IconDotsVertical size={16} />
+                                </ActionIcon>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Item leftSection={<IconClipboardList size={14} />}>
+                                  Pre-Op Checklist
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconReportMedical size={14} />}>
+                                  Post-Op Notes
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconDownload size={14} />}>
+                                  Download Report
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item 
+                                  leftSection={<IconX size={14} />}
+                                  color="red"
+                                >
+                                  Cancel Surgery
+                                </Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -676,7 +765,7 @@ const SurgeryManagement = () => {
 
             {/* Equipment Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockSurgicalEquipment.map((equipment) => (
+              {[].map /* TODO: Fetch from API */((equipment) => (
                 <Card key={equipment.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -766,7 +855,7 @@ const SurgeryManagement = () => {
 
             {/* Surgical Teams Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockSurgicalTeams.map((team) => (
+              {[].map /* TODO: Fetch from API */((team) => (
                 <Card key={team.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -888,28 +977,28 @@ const SurgeryManagement = () => {
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Surgery Success Rate</Text>
                     <Text size="sm" fw={600} c="green">
-                      {mockSurgeryStats.successRate}%
+                      {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Average Turnover Time</Text>
                     <Text size="sm" fw={600}>
-                      {mockSurgeryStats.averageTurnoverTime}min
+                      {0 /* TODO: Fetch from API */}min
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>On-Time Start Rate</Text>
                     <Text size="sm" fw={600} c="green">
-                      {mockSurgeryStats.onTimeStartRate}%
+                      {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
                   <Group justify="space-between" p="sm" 
                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
                     <Text size="sm" fw={500}>Complication Rate</Text>
                     <Text size="sm" fw={600} c="red">
-                      {mockSurgeryStats.complicationRate}%
+                      {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
                 </Stack>
@@ -1067,7 +1156,7 @@ const SurgeryManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={mockPatients.map(patient => ({ 
+              data={[].map /* TODO: Fetch from API */(patient => ({ 
                 value: patient.id, 
                 label: `${patient.firstName} ${patient.lastName}` 
               }))}
@@ -1076,7 +1165,7 @@ const SurgeryManagement = () => {
             <Select
               label="Primary Surgeon"
               placeholder="Select surgeon"
-              data={mockStaff.filter((staff: any) => staff.role === 'Doctor' || staff.role === 'doctor').map((surgeon: any) => ({ 
+              data={[].filter /* TODO: Fetch from API */((staff: any) => staff.role === 'Doctor' || staff.role === 'doctor').map((surgeon: any) => ({ 
                 value: surgeon.staffId, 
                 label: `Dr. ${surgeon.firstName} ${surgeon.lastName}` 
               }))}
@@ -1135,7 +1224,7 @@ const SurgeryManagement = () => {
             <Select
               label="Operating Room"
               placeholder="Select OR"
-              data={mockOperatingRooms.map(or => ({ 
+              data={[].map /* TODO: Fetch from API */(or => ({ 
                 value: or.id, 
                 label: `OR ${or.roomNumber} - ${or.roomName}` 
               }))}

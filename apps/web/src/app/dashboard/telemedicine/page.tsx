@@ -57,6 +57,7 @@ import {
   Box
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { Calendar, DatePickerInput } from '@mantine/dates';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
@@ -229,16 +230,7 @@ import {
   VirtualConsultation,
   ConsultationStatus
 } from '../../../types/telemedicine';
-import {
-  mockTelemedicineSessions,
-  mockRemoteMonitoringData,
-  mockDigitalPrescriptions,
-  mockTelemedicineStats,
-  mockPatientMonitoring,
-  mockVirtualConsultations
-} from '../../../lib/mockData/telemedicine';
-import { mockDoctors } from '../../../lib/mockData/doctors';
-import { mockPatients } from '../../../lib/mockData/patients';
+import telemedicineService from '../../../services/telemedicine.service';
 
 const Telemedicine = () => {
   // State management
@@ -256,6 +248,62 @@ const Telemedicine = () => {
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+
+  // API state
+  const [consultations, setConsultations] = useState<any[]>([]);
+  const [telemedicineStats, setTelemedicineStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch data
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([fetchConsultations(), fetchStats()]);
+    } catch (err: any) {
+      console.error('Error loading telemedicine data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load telemedicine data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchConsultations = async () => {
+    try {
+      const response = await telemedicineService.getConsultations({ limit: 100 });
+      const consultationsData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.items || []);
+      setConsultations(consultationsData);
+    } catch (err: any) {
+      console.warn('Error fetching consultations (using empty data):', err.response?.data?.message || err.message);
+      setConsultations([]);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await telemedicineService.getStats();
+      setTelemedicineStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching telemedicine stats (using default values):', err.response?.data?.message || err.message);
+      setTelemedicineStats({
+        totalSessions: 0,
+        activeSessions: 0,
+        completedSessions: 0,
+        scheduledSessions: 0,
+        cancelledSessions: 0,
+        totalPatients: 0,
+        averageSessionDuration: 0,
+        patientSatisfaction: 0
+      });
+    }
+  };
 
   // Modal states
   const [sessionDetailOpened, { open: openSessionDetail, close: closeSessionDetail }] = useDisclosure(false);
@@ -278,7 +326,8 @@ const Telemedicine = () => {
 
   // Filter sessions
   const filteredSessions = useMemo(() => {
-    return mockTelemedicineSessions.filter((session) => {
+    const sessionsList = consultations.length > 0 ? consultations : [];
+    return sessionsList.filter((session: any) => {
       const matchesSearch = 
         session.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         session.doctorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -429,25 +478,25 @@ const Telemedicine = () => {
   const quickStats = [
     {
       title: 'Active Sessions',
-      value: (mockTelemedicineStats as any).activeSessions || mockTelemedicineStats.activeConnections,
+      value: (telemedicineStats as any)?.activeSessions || 0,
       icon: IconVideo,
       color: 'green'
     },
     {
       title: 'Scheduled Sessions',
-      value: (mockTelemedicineStats as any).scheduledSessions || mockTelemedicineStats.scheduledConsultations,
+      value: (telemedicineStats as any)?.scheduledSessions || 0,
       icon: IconCalendarEvent,
       color: 'blue'
     },
     {
       title: 'Monitored Patients',
-      value: (mockTelemedicineStats as any).monitoredPatients || 0,
+      value: (telemedicineStats as any)?.monitoredPatients || 0,
       icon: IconDeviceHeartMonitor,
       color: 'purple'
     },
     {
       title: 'Digital Prescriptions',
-      value: (mockTelemedicineStats as any).digitalPrescriptions || 0,
+      value: (telemedicineStats as any)?.digitalPrescriptions || 0,
       icon: IconPrescription,
       color: 'orange'
     }
@@ -539,12 +588,7 @@ const Telemedicine = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Session Statistics</Title>
               <MantineDonutChart
-                data={[
-                  { name: 'Completed', value: 45, color: 'green' },
-                  { name: 'In Progress', value: 12, color: 'blue' },
-                  { name: 'Scheduled', value: 28, color: 'orange' },
-                  { name: 'Cancelled', value: 5, color: 'red' }
-                ]}
+                data={[]}
                 size={200}
                 thickness={40}
                 withLabels
@@ -555,18 +599,9 @@ const Telemedicine = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Monitoring Alerts</Title>
               <Stack gap="sm">
-                <Alert variant="light" color="red" icon={<IconAlertTriangle size={16} />}>
-                  <Text size="sm" fw={500}>High Blood Pressure Alert</Text>
-                  <Text size="xs" c="dimmed">Patient: John Smith - 180/120 mmHg</Text>
-                </Alert>
-                <Alert variant="light" color="orange" icon={<IconHeart size={16} />}>
-                  <Text size="sm" fw={500}>Irregular Heart Rate</Text>
-                  <Text size="xs" c="dimmed">Patient: Sarah Johnson - 110 bpm</Text>
-                </Alert>
-                <Alert variant="light" color="yellow" icon={<IconThermometer size={16} />}>
-                  <Text size="sm" fw={500}>Elevated Temperature</Text>
-                  <Text size="xs" c="dimmed">Patient: Mike Wilson - 102.5°F</Text>
-                </Alert>
+                <Text size="sm" c="dimmed" ta="center" py="xl">
+                  No active alerts
+                </Text>
               </Stack>
             </Card>
 
@@ -574,7 +609,7 @@ const Telemedicine = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Today&apos;s Sessions</Title>
               <Stack gap="sm">
-                {mockTelemedicineSessions.slice(0, 4).map((session) => (
+                {[].map((session) => (
                   <Card key={session.id} padding="sm" withBorder>
                     <Group justify="space-between">
                       <div>
@@ -599,42 +634,9 @@ const Telemedicine = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">System Status</Title>
               <Stack gap="sm">
-                <Group justify="space-between">
-                  <Group gap="xs">
-                    <ThemeIcon color="green" size="sm" radius="xl">
-                      <IconCheck size={12} />
-                    </ThemeIcon>
-                    <Text size="sm">Video Platform</Text>
-                  </Group>
-                  <Badge color="green" variant="light" size="sm">Online</Badge>
-                </Group>
-                <Group justify="space-between">
-                  <Group gap="xs">
-                    <ThemeIcon color="green" size="sm" radius="xl">
-                      <IconCheck size={12} />
-                    </ThemeIcon>
-                    <Text size="sm">Monitoring Devices</Text>
-                  </Group>
-                  <Badge color="green" variant="light" size="sm">Connected</Badge>
-                </Group>
-                <Group justify="space-between">
-                  <Group gap="xs">
-                    <ThemeIcon color="orange" size="sm" radius="xl">
-                      <IconAlertTriangle size={12} />
-                    </ThemeIcon>
-                    <Text size="sm">Network Quality</Text>
-                  </Group>
-                  <Badge color="orange" variant="light" size="sm">Fair</Badge>
-                </Group>
-                <Group justify="space-between">
-                  <Group gap="xs">
-                    <ThemeIcon color="green" size="sm" radius="xl">
-                      <IconCheck size={12} />
-                    </ThemeIcon>
-                    <Text size="sm">Security</Text>
-                  </Group>
-                  <Badge color="green" variant="light" size="sm">Secure</Badge>
-                </Group>
+                <Text size="sm" c="dimmed" ta="center" py="xl">
+                  System status unavailable
+                </Text>
               </Stack>
             </Card>
           </SimpleGrid>
@@ -681,7 +683,7 @@ const Telemedicine = () => {
               />
               <Select
                 placeholder="Doctor"
-                data={mockDoctors.map(doctor => ({
+                data={[].map /* TODO: Fetch from API */(doctor => ({
                   value: doctor.id,
                   label: `Dr. ${(doctor as any).firstName || doctor.name.split(' ')[0]} ${(doctor as any).lastName || doctor.name.split(' ')[1] || ''}`
                 }))}
@@ -693,17 +695,27 @@ const Telemedicine = () => {
 
             {/* Sessions Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {filteredSessions.map((session) => (
-                <Card key={session.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{session.patientName}</Text>
-                      <Text size="sm" c="dimmed">Dr. {session.doctorName}</Text>
-                    </div>
-                    <Badge color={getStatusColor((session as any).status)} variant="light">
-                      {session.status.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                  </Group>
+              {filteredSessions.length === 0 ? (
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <EmptyState
+                    icon={<IconVideo size={48} />}
+                    title="No telemedicine sessions"
+                    description="Schedule your first virtual consultation"
+                    size="sm"
+                  />
+                </div>
+              ) : (
+                filteredSessions.map((session) => (
+                  <Card key={session.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">{session.patientName}</Text>
+                        <Text size="sm" c="dimmed">Dr. {session.doctorName}</Text>
+                      </div>
+                      <Badge color={getStatusColor((session as any).status)} variant="light">
+                        {session.status.replace('_', ' ').toUpperCase()}
+                      </Badge>
+                    </Group>
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
@@ -774,7 +786,8 @@ const Telemedicine = () => {
                     </Group>
                   </Group>
                 </Card>
-              ))}
+              )))
+              }
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -791,7 +804,7 @@ const Telemedicine = () => {
 
             {/* Monitoring Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockPatientMonitoring.map((monitoring) => (
+              {[].map /* TODO: Fetch from API */((monitoring) => (
                 <Card key={monitoring.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -929,7 +942,7 @@ const Telemedicine = () => {
 
             {/* Prescriptions Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockDigitalPrescriptions.map((prescription) => (
+              {[].map /* TODO: Fetch from API */((prescription) => (
                 <Card key={prescription.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1028,7 +1041,7 @@ const Telemedicine = () => {
 
             {/* Consultations Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockVirtualConsultations.map((consultation) => (
+              {[].map /* TODO: Fetch from API */((consultation) => (
                 <Card key={consultation.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1296,7 +1309,7 @@ const Telemedicine = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={mockPatients.map(patient => ({
+              data={[].map /* TODO: Fetch from API */(patient => ({
                 value: patient.id,
                 label: `${patient.firstName} ${patient.lastName}`
               }))}
@@ -1305,7 +1318,7 @@ const Telemedicine = () => {
             <Select
               label="Doctor"
               placeholder="Select doctor"
-              data={mockDoctors.map(doctor => ({
+              data={[].map /* TODO: Fetch from API */(doctor => ({
                 value: doctor.id,
                 label: `Dr. ${(doctor as any).firstName || doctor.name.split(' ')[0]} ${(doctor as any).lastName || doctor.name.split(' ')[1] || ''} - ${(doctor as any).specialty || doctor.specialization}`
               }))}

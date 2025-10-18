@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -34,7 +34,9 @@ import {
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
+import emrService from '../../../services/emr.service';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
@@ -86,19 +88,7 @@ import {
   Allergy,
   AllergySeverity
 } from '../../../types/medical';
-import { 
-  mockMedicalRecords,
-  mockMedicalRecordStats,
-  mockLabResults,
-  mockMedicalDocuments,
-  mockMedicalHistory,
-  mockPrescriptions,
-  mockAllergies,
-  mockVitalSigns
-} from '../../../lib/mockData/medical';
-import { mockPatients } from '../../../lib/mockData/patients';
-import { mockStaff } from '../../../lib/mockData/staff';
-
+// Mock data imports removed
 const EMRManagement = () => {
   // State management
   const [activeTab, setActiveTab] = useState<string>('records');
@@ -109,6 +99,73 @@ const EMRManagement = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedRecord, setSelectedRecord] = useState<MedicalRecord | null>(null);
 
+  // API data state
+  const [records, setRecords] = useState<MedicalRecord[]>([]);
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([fetchRecords(), fetchStats()]);
+    } catch (err: any) {
+      console.error('Error loading EMR data:', err);
+      setError(err.response?.data?.message || 'Failed to load EMR data');
+      setRecords([] /* TODO: Fetch from API */);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRecords = async () => {
+    try {
+      const filters = {
+        patientId: selectedPatient || undefined,
+        recordType: selectedRecordType || undefined
+      };
+      const response = await emrService.getRecords(filters);
+      // Handle different response structures
+      const recordsData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.records || []);
+      setRecords(recordsData as MedicalRecord[]);
+    } catch (err: any) {
+      console.warn('Error fetching EMR records (using empty data):', err.response?.data?.message || err.message);
+      // Don't show error to user if backend is not ready, just use empty data
+      setRecords([]);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await emrService.getStats();
+      setStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching EMR stats (using default values):', err.response?.data?.message || err.message);
+      // Set default stats when backend is unavailable
+      setStats({
+        totalRecords: 0,
+        recordsByType: {},
+        recordsByStatus: {},
+        commonDiagnoses: [],
+        prescriptionTrends: [],
+        recentActivity: []
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      fetchRecords();
+    }
+  }, [searchQuery, selectedPatient, selectedDoctor, selectedRecordType, selectedStatus]);
+
   // Modal states
   const [recordDetailOpened, { open: openRecordDetail, close: closeRecordDetail }] = useDisclosure(false);
   const [addRecordOpened, { open: openAddRecord, close: closeAddRecord }] = useDisclosure(false);
@@ -116,7 +173,7 @@ const EMRManagement = () => {
 
   // Filter medical records
   const filteredRecords = useMemo(() => {
-    return mockMedicalRecords.filter((record) => {
+    return records.filter((record) => {
       const matchesSearch = 
         record.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         record.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -204,50 +261,54 @@ const EMRManagement = () => {
   const statsCards = [
     {
       title: 'Total Records',
-      value: mockMedicalRecordStats.totalRecords,
+      value: 0,
       icon: IconFileText,
       color: 'blue',
-      trend: '+12%'
+      trend: '+0%'
     },
     {
       title: 'Today\'s Records',
-      value: 47,
+      value: 0,
       icon: IconCalendar,
       color: 'green',
-      trend: '+8%'
+      trend: '+0%'
     },
     {
       title: 'Pending Review',
-      value: mockMedicalRecordStats.recordsByStatus.pending_review,
+      value: 0,
       icon: IconAlertCircle,
       color: 'orange',
-      trend: '-5%'
+      trend: '0%'
     },
     {
       title: 'Lab Results',
-      value: mockLabResults.length,
+      value: 0,
       icon: IconTestPipe,
       color: 'purple',
-      trend: '+15%'
+      trend: '+0%'
     }
   ];
 
   // Chart data
-  const recordsByTypeData = Object.entries(mockMedicalRecordStats.recordsByType)
-    .filter(([_, count]) => count > 0)
-    .map(([type, count]) => ({
-      name: type.replace('_', ' ').toUpperCase(),
-      value: count,
-      color: getTypeColor(type as MedicalRecordType)
-    }));
+  const recordsByTypeData = 0
+    ? Object.entries(0 /* TODO: Fetch from API */)
+        .filter(([_, count]) => (typeof count === 'number' && count > 0))
+        .map(([type, count]) => ({
+          name: type.replace('_', ' ').toUpperCase(),
+          value: typeof count === 'number' ? count : 0,
+          color: getTypeColor(type as MedicalRecordType)
+        }))
+    : [];
 
-  const recordsByStatusData = Object.entries(mockMedicalRecordStats.recordsByStatus).map(
-    ([status, count]) => ({ status: status.replace('_', ' '), count })
-  );
+  const recordsByStatusData = 0
+    ? Object.entries(0 /* TODO: Fetch from API */).map(
+        ([status, count]) => ({ status: status.replace('_', ' '), count })
+      )
+    : [];
 
-  const commonDiagnosesData = mockMedicalRecordStats.commonDiagnoses.slice(0, 5);
-  const prescriptionTrendsData = mockMedicalRecordStats.prescriptionTrends.slice(0, 5);
-  const recentActivityData = mockMedicalRecordStats.recentActivity;
+  const commonDiagnosesData = [];
+  const prescriptionTrendsData = [];
+  const recentActivityData = [];
 
   return (
     <Container size="xl" py="md">
@@ -337,7 +398,7 @@ const EMRManagement = () => {
               />
               <Select
                 placeholder="Patient"
-                data={mockPatients.map(patient => ({ 
+                data={[].map /* TODO: Fetch from API */(patient => ({ 
                   value: patient.id, 
                   label: `${patient.firstName} ${patient.lastName}` 
                 }))}
@@ -347,7 +408,7 @@ const EMRManagement = () => {
               />
               <Select
                 placeholder="Doctor"
-                data={mockStaff.map(doctor => ({ 
+                data={[].map /* TODO: Fetch from API */(doctor => ({ 
                   value: doctor.staffId, 
                   label: `${doctor.firstName} ${doctor.lastName}` 
                 }))}
@@ -401,7 +462,19 @@ const EMRManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredRecords.map((record) => (
+                  {filteredRecords.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={7}>
+                        <EmptyState
+                          icon={<IconFileText size={48} />}
+                          title="No medical records"
+                          description="Create electronic medical records"
+                          size="sm"
+                        />
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    filteredRecords.map((record) => (
                     <Table.Tr key={record.id}>
                       <Table.Td>
                         <Group>
@@ -496,7 +569,8 @@ const EMRManagement = () => {
                         </Group>
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  )))
+                  }
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -514,7 +588,7 @@ const EMRManagement = () => {
             </Group>
 
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockLabResults.map((result) => (
+              {[].map /* TODO: Fetch from API */((result) => (
                 <Card key={result.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -586,7 +660,7 @@ const EMRManagement = () => {
             </Group>
 
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockPrescriptions.map((prescription) => (
+              {[].map /* TODO: Fetch from API */((prescription) => (
                 <Card key={prescription.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -643,7 +717,7 @@ const EMRManagement = () => {
             </Group>
 
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockMedicalDocuments.map((doc) => (
+              {[].map /* TODO: Fetch from API */((doc) => (
                 <Card key={doc.id} padding="md" radius="md" withBorder>
                   <Group justify="space-between" mb="xs">
                     <ThemeIcon color="blue" variant="light">
@@ -964,7 +1038,7 @@ const EMRManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={mockPatients.map(patient => ({ 
+              data={[].map /* TODO: Fetch from API */(patient => ({ 
                 value: patient.id, 
                 label: `${patient.firstName} ${patient.lastName}` 
               }))}

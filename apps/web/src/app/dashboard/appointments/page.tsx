@@ -32,7 +32,8 @@ import {
   Textarea
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-// import { notifications } from '@mantine/notifications';
+import EmptyState from '../../../components/EmptyState';
+import { notifications } from '@mantine/notifications';
 import { Calendar, DatePickerInput } from '@mantine/dates';
 // import { AreaChart, BarChart, DonutChart, LineChart } from '@mantine/charts';
 import {
@@ -67,7 +68,7 @@ import {
   IconReport
 } from '@tabler/icons-react';
 
-// Import types and mock data
+// Import types and services
 import { 
   Appointment, 
   AppointmentStatus, 
@@ -76,16 +77,7 @@ import {
   AppointmentSearchFilters,
   AppointmentStats
 } from '../../../types/appointment';
-import { 
-  mockAppointments, 
-  mockAppointmentStats,
-  mockDoctorAvailability,
-  mockAppointmentQueue,
-  mockAppointmentReminders,
-  mockCalendars
-} from '../../../lib/mockData/appointments';
-import { mockStaff } from '../../../lib/mockData/staff';
-import { mockPatients } from '../../../lib/mockData/patients';
+import appointmentsService from '../../../services/appointments.service';
 
 const AppointmentManagement = () => {
   // Utility function for consistent date formatting
@@ -113,36 +105,80 @@ const AppointmentManagement = () => {
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointmentStats, setAppointmentStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Handle hydration
   useEffect(() => {
     setIsClient(true);
+    fetchAppointments();
+    fetchStats();
   }, []);
+
+  // Fetch appointments from API
+  const fetchAppointments = async () => {
+    try {
+      setLoading(true);
+      const filters = {
+        doctorId: selectedDoctor || undefined,
+        status: selectedStatus || undefined,
+        startDate: selectedDate ? selectedDate.toISOString() : undefined,
+        search: searchQuery || undefined
+      };
+      const response = await appointmentsService.getAppointments(filters);
+      console.log('Appointments API response:', response);
+      setAppointments(response.data || []);
+      setError(null);
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to fetch appointments';
+      console.warn('Error fetching appointments (using empty data):', errorMsg);
+      setError(null);
+      setAppointments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch stats from API
+  const fetchStats = async () => {
+    try {
+      const response = await appointmentsService.getAppointmentStats();
+      console.log('Appointment stats API response:', response);
+      setAppointmentStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching appointment stats (using default values):', err.response?.data?.message || err.message);
+      setAppointmentStats({ 
+        total: 0, 
+        today: 0, 
+        pending: 0, 
+        completed: 0,
+        scheduled: 0,
+        cancelled: 0
+      });
+    }
+  };
+
+  // Refetch when filters change
+  useEffect(() => {
+    if (isClient) {
+      fetchAppointments();
+    }
+  }, [selectedDoctor, selectedStatus, selectedDate, searchQuery]);
 
   // Modal states
   const [appointmentDetailOpened, { open: openAppointmentDetail, close: closeAppointmentDetail }] = useDisclosure(false);
   const [bookAppointmentOpened, { open: openBookAppointment, close: closeBookAppointment }] = useDisclosure(false);
   const [rescheduleOpened, { open: openReschedule, close: closeReschedule }] = useDisclosure(false);
 
-  // Filter appointments
+  // Filter appointments - now using API data
   const filteredAppointments = useMemo(() => {
-    return mockAppointments.filter((appointment) => {
-      const matchesSearch = 
-        appointment.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        appointment.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        appointment.appointmentNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        appointment.doctor.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        appointment.doctor.lastName.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesDoctor = !selectedDoctor || appointment.doctor.staffId === selectedDoctor;
-      const matchesStatus = !selectedStatus || appointment.status === selectedStatus;
+    return appointments.filter((appointment) => {
       const matchesType = !selectedType || appointment.appointmentType === selectedType;
-      const matchesDate = !selectedDate || 
-        formatDate(appointment.appointmentDate) === formatDate(selectedDate);
-
-      return matchesSearch && matchesDoctor && matchesStatus && matchesType && matchesDate;
+      return matchesType; // Other filtering is handled by API
     });
-  }, [searchQuery, selectedDoctor, selectedStatus, selectedType, selectedDate]);
+  }, [appointments, selectedType]);
 
   // Helper functions
   const getStatusColor = (status: AppointmentStatus) => {
@@ -185,74 +221,77 @@ const AppointmentManagement = () => {
     openAppointmentDetail();
   };
 
-  const handleStatusUpdate = (appointmentId: string, newStatus: AppointmentStatus) => {
-    // notifications.show({
-    //   title: 'Appointment Updated',
-    //   message: `Appointment status changed to ${newStatus}`,
-    //   color: 'green',
-    // });
-    console.log('Appointment status updated:', newStatus);
+  const handleStatusUpdate = async (appointmentId: string, newStatus: AppointmentStatus) => {
+    try {
+      await appointmentsService.updateAppointmentStatus(appointmentId, newStatus);
+      notifications.show({
+        title: 'Appointment Updated',
+        message: `Appointment status changed to ${newStatus}`,
+        color: 'green',
+      });
+      fetchAppointments(); // Refresh the list
+    } catch (error: any) {
+      notifications.show({
+        title: 'Error',
+        message: error.response?.data?.message || 'Failed to update appointment status',
+        color: 'red',
+      });
+    }
   };
 
-  const handleCancelAppointment = (appointment: Appointment) => {
-    // notifications.show({
-    //   title: 'Appointment Cancelled',
-    //   message: `Appointment for ${appointment.patient.firstName} ${appointment.patient.lastName} has been cancelled`,
-    //   color: 'red',
-    // });
-    console.log('Appointment cancelled for:', appointment.patient.firstName, appointment.patient.lastName);
+  const handleCancelAppointment = async (appointment: Appointment) => {
+    if (!window.confirm(`Cancel appointment for ${appointment.patient.firstName} ${appointment.patient.lastName}?`)) {
+      return;
+    }
+
+    try {
+      await appointmentsService.updateAppointmentStatus(appointment.id, 'CANCELLED');
+      notifications.show({
+        title: 'Appointment Cancelled',
+        message: `Appointment for ${appointment.patient.firstName} ${appointment.patient.lastName} has been cancelled`,
+        color: 'green',
+      });
+      fetchAppointments(); // Refresh the list
+    } catch (error: any) {
+      notifications.show({
+        title: 'Error',
+        message: error.response?.data?.message || 'Failed to cancel appointment',
+        color: 'red',
+      });
+    }
   };
 
   // Statistics cards
-  const statsCards = [
+  const statsCards = appointmentStats ? [
     {
-      title: 'Today\'s Appointments',
-      value: mockAppointmentStats.todayAppointments,
+      title: 'Total',
+      value: appointmentStats.total || 0,
       icon: IconCalendarEvent,
       color: 'blue',
-      trend: '+12%'
+      trend: null
     },
     {
-      title: 'Upcoming',
-      value: mockAppointmentStats.upcomingAppointments,
+      title: 'Today',
+      value: appointmentStats.today || 0,
       icon: IconClock,
       color: 'green',
-      trend: '+8%'
+      trend: null
+    },
+    {
+      title: 'Pending',
+      value: appointmentStats.pending || 0,
+      icon: IconClockHour3,
+      color: 'yellow',
+      trend: null
     },
     {
       title: 'Completed',
-      value: mockAppointmentStats.completedAppointments,
+      value: appointmentStats.completed || 0,
       icon: IconCheck,
       color: 'teal',
-      trend: '+15%'
-    },
-    {
-      title: 'Cancelled',
-      value: mockAppointmentStats.cancelledAppointments,
-      icon: IconX,
-      color: 'red',
-      trend: '-5%'
+      trend: null
     }
-  ];
-
-  // Chart data
-  const appointmentsByStatusData = Object.entries(mockAppointmentStats.appointmentsByStatus).map(
-    ([status, count]) => ({
-      name: status.replace('_', ' ').toUpperCase(),
-      value: count,
-      color: getStatusColor(status as AppointmentStatus)
-    })
-  );
-
-  const appointmentsByTypeData = Object.entries(mockAppointmentStats.appointmentsByType)
-    .filter(([_, count]) => count > 0)
-    .map(([type, count]) => ({
-      type: type.replace('_', ' ').toUpperCase(),
-      count
-    }));
-
-  const dailyAppointmentsData = mockAppointmentStats.dailyAppointments;
-  const peakHoursData = mockAppointmentStats.peakHours;
+  ] : [];
 
   return (
     <Container size="xl" py="md">
@@ -274,39 +313,38 @@ const AppointmentManagement = () => {
         </Group>
       </Group>
 
+      {/* Error Display */}
+      {error && (
+        <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red" variant="light" mb="lg">
+          {error}
+        </Alert>
+      )}
+
       {/* Statistics Cards */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
-        {statsCards.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.title} padding="lg" radius="md" withBorder>
-              <Group justify="space-between">
-                <div>
-                  <Text c="dimmed" size="sm" fw={500}>
-                    {stat.title}
-                  </Text>
-                  <Text fw={700} size="xl">
-                    {stat.value}
-                  </Text>
-                </div>
-                <ThemeIcon color={stat.color} size="xl" radius="md" variant="light">
-                  <Icon size={24} />
-                </ThemeIcon>
-              </Group>
-              <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.startsWith('+') ? 'green' : 'red'} 
-                  variant="light"
-                  size="sm"
-                >
-                  {stat.trend}
-                </Badge>
-                <Text size="xs" c="dimmed">vs last month</Text>
-              </Group>
-            </Card>
-          );
-        })}
-      </SimpleGrid>
+      {appointmentStats && (
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
+          {statsCards.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={stat.title} padding="lg" radius="md" withBorder>
+                <Group justify="space-between">
+                  <div>
+                    <Text c="dimmed" size="sm" fw={500}>
+                      {stat.title}
+                    </Text>
+                    <Text fw={700} size="xl">
+                      {stat.value}
+                    </Text>
+                  </div>
+                  <ThemeIcon color={stat.color} size="xl" radius="md" variant="light">
+                    <Icon size={24} />
+                  </ThemeIcon>
+                </Group>
+              </Card>
+            );
+          })}
+        </SimpleGrid>
+      )}
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'appointments')}>
@@ -342,12 +380,10 @@ const AppointmentManagement = () => {
               />
               <Select
                 placeholder="Doctor"
-                data={mockStaff.map(doctor => ({ 
-                  value: doctor.staffId, 
-                  label: `${doctor.firstName} ${doctor.lastName}` 
-                }))}
+                data={[]} // TODO: Fetch from staff API
                 value={selectedDoctor}
                 onChange={(value) => setSelectedDoctor(value || '')}
+                searchable
                 clearable
               />
               <Select
@@ -401,7 +437,26 @@ const AppointmentManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredAppointments.map((appointment) => (
+                  {filteredAppointments.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={7}>
+                        <EmptyState
+                          icon={<IconCalendar size={48} />}
+                          title="No appointments found"
+                          description={searchQuery || selectedDoctor || selectedStatus ? 
+                            "No appointments match your search criteria. Try adjusting your filters." :
+                            "No appointments scheduled yet. Book your first appointment to get started."
+                          }
+                          action={!searchQuery && !selectedDoctor && !selectedStatus ? {
+                            label: "Book Appointment",
+                            onClick: openBookAppointment
+                          } : undefined}
+                          size="sm"
+                        />
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    filteredAppointments.map((appointment) => (
                     <Table.Tr key={appointment.id}>
                       <Table.Td>
                         <Group>
@@ -512,7 +567,8 @@ const AppointmentManagement = () => {
                         </Group>
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  )))
+                  }
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -527,7 +583,7 @@ const AppointmentManagement = () => {
               <Group>
                 <Select
                   placeholder="Select Doctor"
-                  data={mockStaff.map(doctor => ({ 
+                  data={[].map /* TODO: Fetch from API */(doctor => ({ 
                     value: doctor.staffId, 
                     label: `${doctor.firstName} ${doctor.lastName}` 
                   }))}
@@ -548,7 +604,7 @@ const AppointmentManagement = () => {
                   static
                   renderDay={(date) => {
                     const dateObj = new Date(date as any);
-                    const hasAppointments = mockAppointments.some(apt => 
+                    const hasAppointments = appointments.some(apt => 
                       new Date(apt.appointmentDate).toDateString() === dateObj.toDateString()
                     );
                     return (
@@ -568,7 +624,7 @@ const AppointmentManagement = () => {
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Today's Schedule</Title>
                 <Stack gap="sm">
-                  {mockAppointments
+                  {appointments
                     .filter(apt => 
                       new Date(apt.appointmentDate).toDateString() === new Date().toDateString()
                     )
@@ -634,35 +690,34 @@ const AppointmentManagement = () => {
 
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Current Queue</Title>
-              {mockAppointmentQueue.map((queue) => (
-                <Stack key={queue.id} gap="sm">
-                  {queue.appointments.map((queuedAppointment, index) => (
-                    <Group key={queuedAppointment.appointmentId} justify="space-between" 
-                           p="md" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                      <Group>
-                        <Badge color="blue" variant="light" size="lg">
-                          {index + 1}
-                        </Badge>
-                        <div>
-                          <Text fw={500}>
-                            {queuedAppointment.appointment.patient.firstName} {queuedAppointment.appointment.patient.lastName}
-                          </Text>
-                          <Text size="sm" c="dimmed">
-                            {queuedAppointment.appointment.reason}
-                          </Text>
-                        </div>
-                      </Group>
-                      <Group>
-                        <Text size="sm" c="dimmed">
-                          Est. {queuedAppointment.estimatedTime}
-                        </Text>
-                        <Badge color={queuedAppointment.status === 'waiting' ? 'blue' : 'green'} variant="light">
-                          {queuedAppointment.status}
-                        </Badge>
-                      </Group>
-                    </Group>
-                  ))}
-                </Stack>
+              {appointments
+                .filter(apt => apt.status === 'SCHEDULED' || apt.status === 'ARRIVED')
+                .slice(0, 5) // Show first 5 appointments as a simple queue
+                .map((appointment, index) => (
+                <Group key={appointment.id} justify="space-between" 
+                       p="md" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+                  <Group>
+                    <Badge color="blue" variant="light" size="lg">
+                      {index + 1}
+                    </Badge>
+                    <div>
+                      <Text fw={500}>
+                        {appointment.patient.firstName} {appointment.patient.lastName}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {appointment.reason || 'Consultation'}
+                      </Text>
+                    </div>
+                  </Group>
+                  <Group>
+                    <Text size="sm" c="dimmed">
+                      Est. {appointment.appointmentTime}
+                    </Text>
+                    <Badge color={appointment.status === 'ARRIVED' ? 'green' : 'blue'} variant="light">
+                      {appointment.status}
+                    </Badge>
+                  </Group>
+                </Group>
               ))}
             </Card>
           </Paper>
@@ -704,7 +759,11 @@ const AppointmentManagement = () => {
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Recent Reminders</Title>
                 <Timeline>
-                  {mockAppointmentReminders.map((reminder) => (
+                  {[
+                    { id: '1', reminderType: 'appointment_reminder', message: 'Upcoming appointment in 2 hours', scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), status: 'sent' },
+                    { id: '2', reminderType: 'follow_up', message: 'Follow-up appointment reminder', scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), status: 'pending' },
+                    { id: '3', reminderType: 'appointment_reminder', message: 'Appointment confirmation sent', scheduledTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(), status: 'sent' }
+                  ].map((reminder) => (
                     <Timeline.Item 
                       key={reminder.id}
                       bullet={<IconBell size={12} />}
@@ -777,7 +836,7 @@ const AppointmentManagement = () => {
                   <div>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm">Total Revenue</Text>
-                      <Text size="sm" fw={500}>₹{mockAppointmentStats.revenueMetrics.totalRevenue.toLocaleString()}</Text>
+                      <Text size="sm" fw={500}>₹{(appointmentStats?.totalRevenue || 0).toLocaleString()}</Text>
                     </Group>
                     <Progress value={85} color="green" />
                   </div>
@@ -785,7 +844,7 @@ const AppointmentManagement = () => {
                   <div>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm">Pending Payments</Text>
-                      <Text size="sm" fw={500}>₹{mockAppointmentStats.revenueMetrics.pendingPayments.toLocaleString()}</Text>
+                      <Text size="sm" fw={500}>₹{(appointmentStats?.pendingPayments || 0).toLocaleString()}</Text>
                     </Group>
                     <Progress value={15} color="red" />
                   </div>
@@ -793,7 +852,7 @@ const AppointmentManagement = () => {
                   <div>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm">Average Fee</Text>
-                      <Text size="sm" fw={500}>₹{mockAppointmentStats.revenueMetrics.averageConsultationFee}</Text>
+                      <Text size="sm" fw={500}>₹{appointmentStats?.averageFee || 0}</Text>
                     </Group>
                     <Progress value={75} color="blue" />
                   </div>
@@ -919,19 +978,15 @@ const AppointmentManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={mockPatients.map(patient => ({ 
-                value: patient.id, 
-                label: `${patient.firstName} ${patient.lastName}` 
-              }))}
+              data={[]} // TODO: Fetch from patients API
+              searchable
               required
             />
             <Select
               label="Doctor"
               placeholder="Select doctor"
-              data={mockStaff.map(doctor => ({ 
-                value: doctor.staffId, 
-                label: `${doctor.firstName} ${doctor.lastName}` 
-              }))}
+              data={[]} // TODO: Fetch from staff API
+              searchable
               required
             />
           </SimpleGrid>

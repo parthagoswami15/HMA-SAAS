@@ -370,7 +370,7 @@ const InventoryPage = () => {
     }
   ];
 
-  const filteredItems = mockInventoryItems.filter(item => {
+  const filteredItems = [].filter /* TODO: API */(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.itemCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -636,7 +636,7 @@ const InventoryPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#10b981', marginBottom: '0.5rem' }}>📦</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockInventoryItems.length}
+                {0}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Items</div>
             </div>
@@ -645,7 +645,7 @@ const InventoryPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#f59e0b', marginBottom: '0.5rem' }}>⚠️</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockInventoryItems.filter(item => item.status === 'LOW_STOCK').length}
+                {[].filter /* TODO: API */(item => item.status === 'LOW_STOCK').length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Low Stock</div>
             </div>
@@ -654,7 +654,7 @@ const InventoryPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#ef4444', marginBottom: '0.5rem' }}>🚫</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {mockInventoryItems.filter(item => item.status === 'OUT_OF_STOCK').length}
+                {[].filter /* TODO: API */(item => item.status === 'OUT_OF_STOCK').length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Out of Stock</div>
             </div>
@@ -663,7 +663,7 @@ const InventoryPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#3b82f6', marginBottom: '0.5rem' }}>💰</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                ${mockInventoryItems.reduce((sum, item) => sum + item.totalValue, 0).toLocaleString()}
+                ${[].reduce /* TODO: API */((sum, item) => sum + item.totalValue, 0).toLocaleString()}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Value</div>
             </div>

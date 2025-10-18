@@ -25,6 +25,7 @@ import {
   ThemeIcon
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { MantineDonutChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
@@ -170,7 +171,7 @@ const PharmacyManagement = () => {
 
   // Filter medications
   const filteredMedications = useMemo(() => {
-    return mockMedications.filter((med) => {
+    return [].filter /* TODO: Fetch from API */((med) => {
       const matchesSearch = med.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         med.genericName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         med.manufacturer?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -182,7 +183,7 @@ const PharmacyManagement = () => {
 
   // Filter prescriptions
   const filteredPrescriptions = useMemo(() => {
-    return mockPrescriptions.filter((prescription) => {
+    return [].filter /* TODO: Fetch from API */((prescription) => {
       const matchesSearch = prescription.prescriptionId.toLowerCase().includes(searchQuery.toLowerCase()) ||
         prescription.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         prescription.doctorName.toLowerCase().includes(searchQuery.toLowerCase());
@@ -244,42 +245,42 @@ const PharmacyManagement = () => {
   const statsCards = [
     {
       title: 'Total Medications',
-      value: mockPharmacyStats.totalMedications,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconPill,
       color: 'blue',
       trend: '+5.2%'
     },
     {
       title: 'In Stock Items',
-      value: mockPharmacyStats.inStockItems,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconPackage,
       color: 'green',
       trend: '+2.1%'
     },
     {
       title: 'Low Stock Alerts',
-      value: mockPharmacyStats.lowStockItems,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconAlertTriangle,
       color: 'orange',
       trend: '-8.5%'
     },
     {
       title: 'Out of Stock',
-      value: mockPharmacyStats.outOfStockItems,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconX,
       color: 'red',
       trend: '-15.3%'
     },
     {
       title: 'Total Prescriptions',
-      value: mockPharmacyStats.totalPrescriptions,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconFileText,
       color: 'indigo',
       trend: '+7.8%'
     },
     {
       title: 'Monthly Revenue',
-      value: `₹${(mockPharmacyStats.monthlyRevenue / 100000).toFixed(1)}L`,
+      value: `₹${(0 /* TODO: Fetch from API */ / 100000).toFixed(1)}L`,
       icon: IconCash,
       color: 'teal',
       trend: '+12.4%'
@@ -455,63 +456,76 @@ const PharmacyManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredMedications.map((medication) => (
-                    <Table.Tr key={medication.id}>
-                      <Table.Td>
-                        <Group>
-                          <ThemeIcon color={getCategoryColor(medication.category)} variant="light">
-                            <IconPill size={16} />
-                          </ThemeIcon>
-                          <div>
-                            <Text fw={500}>{medication.name}</Text>
-                            <Text size="xs" c="dimmed">{medication.manufacturer}</Text>
-                          </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>{medication.genericName || 'N/A'}</Table.Td>
-                      <Table.Td>
-                        <Badge color={getCategoryColor(medication.category)} variant="light">
-                          {medication.category}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text fw={medication.currentStock <= medication.minimumStock ? 700 : 500} 
-                              c={medication.currentStock <= medication.minimumStock ? 'red' : undefined}>
-                          {medication.currentStock}
-                        </Text>
-                        <Text size="xs" c="dimmed">Min: {medication.minimumStock}</Text>
-                      </Table.Td>
-                      <Table.Td>₹{medication.unitPrice}</Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(medication.status)} variant="light">
-                          {medication.status.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon color="blue" variant="subtle" onClick={() => handleViewMedication(medication)}>
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon color="green" variant="subtle">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <Menu>
-                            <Menu.Target>
-                              <ActionIcon color="gray" variant="subtle">
-                                <IconDotsVertical size={16} />
-                              </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Menu.Item leftSection={<IconBarcode size={14} />}>Print Barcode</Menu.Item>
-                              <Menu.Item leftSection={<IconDownload size={14} />}>Export Details</Menu.Item>
-                              <Menu.Divider />
-                              <Menu.Item leftSection={<IconTrash size={14} />} color="red">Delete</Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
-                        </Group>
+                  {filteredMedications.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={7}>
+                        <EmptyState
+                          icon={<IconPill size={48} />}
+                          title="No pharmacy records"
+                          description="Manage pharmacy operations"
+                          size="sm"
+                        />
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  ) : (
+                    filteredMedications.map((medication) => (
+                      <Table.Tr key={medication.id}>
+                        <Table.Td>
+                          <Group>
+                            <ThemeIcon color={getCategoryColor(medication.category)} variant="light">
+                              <IconPill size={16} />
+                            </ThemeIcon>
+                            <div>
+                              <Text fw={500}>{medication.name}</Text>
+                              <Text size="xs" c="dimmed">{medication.manufacturer}</Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>{medication.genericName || 'N/A'}</Table.Td>
+                        <Table.Td>
+                          <Badge color={getCategoryColor(medication.category)} variant="light">
+                            {medication.category}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text fw={medication.currentStock <= medication.minimumStock ? 700 : 500} 
+                                c={medication.currentStock <= medication.minimumStock ? 'red' : undefined}>
+                            {medication.currentStock}
+                          </Text>
+                          <Text size="xs" c="dimmed">Min: {medication.minimumStock}</Text>
+                        </Table.Td>
+                        <Table.Td>₹{medication.unitPrice}</Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(medication.status)} variant="light">
+                            {medication.status.replace('_', ' ')}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon color="blue" variant="subtle" onClick={() => handleViewMedication(medication)}>
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon color="green" variant="subtle">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <Menu>
+                              <Menu.Target>
+                                <ActionIcon color="gray" variant="subtle">
+                                  <IconDotsVertical size={16} />
+                                </ActionIcon>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Item leftSection={<IconBarcode size={14} />}>Print Barcode</Menu.Item>
+                                <Menu.Item leftSection={<IconDownload size={14} />}>Export Details</Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item leftSection={<IconTrash size={14} />} color="red">Delete</Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -701,7 +715,7 @@ const PharmacyManagement = () => {
                 <Select
                   label="First Medication"
                   placeholder="Select medication"
-                  data={mockMedications.map(med => ({
+                  data={[].map /* TODO: Fetch from API */(med => ({
                     value: med.id,
                     label: `${med.name} (${med.genericName || 'N/A'})`
                   }))}
@@ -710,7 +724,7 @@ const PharmacyManagement = () => {
                 <Select
                   label="Second Medication"
                   placeholder="Select medication"
-                  data={mockMedications.map(med => ({
+                  data={[].map /* TODO: Fetch from API */(med => ({
                     value: med.id,
                     label: `${med.name} (${med.genericName || 'N/A'})`
                   }))}
@@ -821,7 +835,7 @@ const PharmacyManagement = () => {
               <Select
                 label="Medication"
                 placeholder="Select medication"
-                data={mockMedications.map(med => ({
+                data={[].map /* TODO: Fetch from API */(med => ({
                   value: med.id,
                   label: `${med.name} (${med.genericName || 'N/A'})`
                 }))}

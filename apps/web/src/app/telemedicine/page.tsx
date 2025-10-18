@@ -231,7 +231,7 @@ const TelemedicinePage = () => {
     }
   ];
 
-  const filteredConsultations = mockConsultations.filter(consultation => {
+  const filteredConsultations = [].filter /* TODO: API */(consultation => {
     const matchesSearch = consultation.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          consultation.consultationId.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          consultation.doctorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -832,13 +832,13 @@ const TelemedicinePage = () => {
                   Virtual Waiting Room
                 </h3>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <span style={{ color: '#6b7280' }}>Patients waiting: {mockWaitingRoom.length}</span>
+                  <span style={{ color: '#6b7280' }}>Patients waiting: {0}</span>
                   <Button size="sm" variant="outline">Refresh</Button>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gap: '1rem' }}>
-                {mockWaitingRoom.map(patient => (
+                {[].map /* TODO: API */(patient => (
                   <div
                     key={patient.id}
                     style={{

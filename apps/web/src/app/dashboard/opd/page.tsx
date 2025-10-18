@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -32,7 +32,9 @@ import {
 } from '@mantine/core';
 import { DatePickerInput, TimeInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
-// import { notifications } from '@mantine/notifications';
+import { notifications } from '@mantine/notifications';
+import EmptyState from '../../../components/EmptyState';
+import opdService from '../../../services/opd.service';
 // import { LineChart, BarChart, DonutChart, AreaChart } from '@mantine/charts';
 import {
   IconPlus,
@@ -257,15 +259,80 @@ const OPDManagement = () => {
   const [selectedVisit, setSelectedVisit] = useState<OPDVisit | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
 
+  // API data state
+  const [opdVisits, setOpdVisits] = useState<OPDVisit[]>([]);
+  const [opdStats, setOpdStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   // Modal states
   const [visitDetailOpened, { open: openVisitDetail, close: closeVisitDetail }] = useDisclosure(false);
   const [newVisitOpened, { open: openNewVisit, close: closeNewVisit }] = useDisclosure(false);
   const [doctorScheduleOpened, { open: openDoctorSchedule, close: closeDoctorSchedule }] = useDisclosure(false);
   const [prescriptionOpened, { open: openPrescription, close: closePrescription }] = useDisclosure(false);
 
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([fetchVisits(), fetchStats()]);
+    } catch (err: any) {
+      console.error('Error loading OPD data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load OPD data');
+      setOpdVisits([] /* TODO: Fetch from API */);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchVisits = async () => {
+    try {
+      const filters = {
+        status: selectedStatus || undefined,
+        search: searchQuery || undefined
+      };
+      const response = await opdService.getVisits(filters);
+      // Handle different response structures
+      const visits = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.items || []);
+      setOpdVisits(visits as OPDVisit[]);
+    } catch (err: any) {
+      console.warn('Error fetching OPD visits (using empty data):', err.response?.data?.message || err.message);
+      setOpdVisits([]);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await opdService.getStats();
+      setOpdStats(response.data);
+    } catch (err: any) {
+      console.warn('Error fetching OPD stats (using default values):', err.response?.data?.message || err.message);
+      // Set default stats when backend is unavailable
+      setOpdStats({
+        totalVisits: 0,
+        todayVisits: 0,
+        completed: 0,
+        inProgress: 0,
+        averageWaitTime: 0
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      fetchVisits();
+    }
+  }, [searchQuery, selectedDepartment, selectedStatus]);
+
   // Filter visits
   const filteredVisits = useMemo(() => {
-    return mockOPDVisits.filter((visit) => {
+    return opdVisits.filter((visit) => {
       const matchesSearch = 
         visit.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         visit.visitNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -324,15 +391,13 @@ const OPDManagement = () => {
     }
   };
 
-  // Quick stats
-  const opdStats = {
-    totalVisits: mockOPDVisits.length,
-    todayVisits: mockOPDVisits.filter(v => 
-      new Date(v.appointmentTime).toDateString() === new Date().toDateString()
-    ).length,
-    completed: mockOPDVisits.filter(v => v.status === 'completed').length,
-    inProgress: mockOPDVisits.filter(v => v.status === 'in_consultation' || v.status === 'arrived').length,
-    averageWaitTime: Math.round(mockOPDVisits.reduce((acc, v) => acc + (v.waitingTime || 0), 0) / mockOPDVisits.length)
+  // Quick stats from API
+  const statsDisplay = opdStats || {
+    totalVisitsToday: 0,
+    waiting: 0,
+    inConsultation: 0,
+    completed: 0,
+    cancelled: 0
   };
 
   return (
@@ -356,12 +421,13 @@ const OPDManagement = () => {
       </Group>
 
       {/* Quick Stats */}
+      {opdStats && (
       <SimpleGrid cols={{ base: 1, sm: 2, md: 5 }} mb="lg">
         <Card padding="lg" radius="md" withBorder>
           <Group justify="space-between">
             <div>
               <Text c="dimmed" size="sm" fw={500}>Total Visits</Text>
-              <Text fw={700} size="xl">{opdStats.totalVisits}</Text>
+              <Text fw={700} size="xl">{opdStats.totalVisits || 0}</Text>
             </div>
             <ThemeIcon color="blue" size="xl" radius="md" variant="light">
               <IconUsers size={24} />
@@ -373,7 +439,7 @@ const OPDManagement = () => {
           <Group justify="space-between">
             <div>
               <Text c="dimmed" size="sm" fw={500}>Today's Visits</Text>
-              <Text fw={700} size="xl">{opdStats.todayVisits}</Text>
+              <Text fw={700} size="xl">{opdStats.todayVisits || 0}</Text>
             </div>
             <ThemeIcon color="green" size="xl" radius="md" variant="light">
               <IconCalendar size={24} />
@@ -385,7 +451,7 @@ const OPDManagement = () => {
           <Group justify="space-between">
             <div>
               <Text c="dimmed" size="sm" fw={500}>Completed</Text>
-              <Text fw={700} size="xl">{opdStats.completed}</Text>
+              <Text fw={700} size="xl">{opdStats.completed || 0}</Text>
             </div>
             <ThemeIcon color="cyan" size="xl" radius="md" variant="light">
               <IconCheck size={24} />
@@ -397,7 +463,7 @@ const OPDManagement = () => {
           <Group justify="space-between">
             <div>
               <Text c="dimmed" size="sm" fw={500}>In Progress</Text>
-              <Text fw={700} size="xl">{opdStats.inProgress}</Text>
+              <Text fw={700} size="xl">{opdStats.inProgress || 0}</Text>
             </div>
             <ThemeIcon color="orange" size="xl" radius="md" variant="light">
               <IconActivity size={24} />
@@ -409,7 +475,7 @@ const OPDManagement = () => {
           <Group justify="space-between">
             <div>
               <Text c="dimmed" size="sm" fw={500}>Avg Wait Time</Text>
-              <Text fw={700} size="xl">{opdStats.averageWaitTime}min</Text>
+              <Text fw={700} size="xl">{opdStats.averageWaitTime || 0}min</Text>
             </div>
             <ThemeIcon color="red" size="xl" radius="md" variant="light">
               <IconClock size={24} />
@@ -417,6 +483,7 @@ const OPDManagement = () => {
           </Group>
         </Card>
       </SimpleGrid>
+      )}
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={setActiveTab}>
@@ -490,7 +557,19 @@ const OPDManagement = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredVisits.map((visit) => (
+                  {filteredVisits.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={8}>
+                        <EmptyState
+                          icon={<IconStethoscope size={48} />}
+                          title="No OPD consultations"
+                          description="Register your first outpatient consultation to get started"
+                          size="sm"
+                        />
+                      </Table.Td>
+                    </Table.Tr>
+                  ) : (
+                    filteredVisits.map((visit) => (
                     <Table.Tr key={visit.id}>
                       <Table.Td>
                         <Text fw={500} size="sm">{visit.visitNumber}</Text>
@@ -558,7 +637,7 @@ const OPDManagement = () => {
                         </Group>
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  )))}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -571,7 +650,7 @@ const OPDManagement = () => {
             <Title order={3} mb="lg">Doctor Schedules & Availability</Title>
             
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockDoctors.map((doctor) => (
+              {[].map /* TODO: Fetch from API */((doctor) => (
                 <Card key={doctor.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>

@@ -39,6 +39,7 @@ import {
   Accordion
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 // Charts removed due to MantineProvider compatibility issues
 import {
@@ -127,20 +128,7 @@ import {
   SystemConnector,
   IntegrationStats
 } from '../../../types/integration';
-import {
-  mockAPIEndpoints,
-  mockDataSources,
-  mockIntegrations,
-  mockDataWarehouses,
-  mockDashboards,
-  mockReports,
-  mockPredictiveModels,
-  mockDataPipelines,
-  mockAlerts,
-  mockAPIKeys,
-  mockSystemConnectors,
-  mockIntegrationStats
-} from '../../../lib/mockData/integration';
+// Mock data imports removed
 
 const IntegrationHub = () => {
   // State management
@@ -164,7 +152,7 @@ const IntegrationHub = () => {
 
   // Filter integrations
   const filteredIntegrations = useMemo(() => {
-    return mockIntegrations.filter((integration) => {
+    return [].filter /* TODO: Fetch from API */((integration) => {
       const matchesSearch = 
         integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         integration.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -178,7 +166,7 @@ const IntegrationHub = () => {
 
   // Filter API endpoints
   const filteredEndpoints = useMemo(() => {
-    return mockAPIEndpoints.filter((endpoint) => 
+    return [].filter /* TODO: Fetch from API */((endpoint) => 
       endpoint.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
       endpoint.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -231,25 +219,25 @@ const IntegrationHub = () => {
   const quickStats = [
     {
       title: 'Active Integrations',
-      value: mockIntegrationStats.activeIntegrations,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconArrowsRightLeft,
       color: 'blue'
     },
     {
       title: 'Data Sources',
-      value: mockIntegrationStats.dataSources,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconDatabase,
       color: 'green'
     },
     {
       title: 'API Endpoints',
-      value: mockIntegrationStats.apiEndpoints,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconApi,
       color: 'violet'
     },
     {
       title: 'ML Models',
-      value: mockIntegrationStats.mlModels,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconBrain,
       color: 'orange'
     }
@@ -402,7 +390,7 @@ const IntegrationHub = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Recent Integrations</Title>
               <Timeline active={3} bulletSize={24} lineWidth={2}>
-                {mockIntegrations.slice(0, 4).map((integration) => (
+                {0 /* TODO: Fetch from API */(0, 4).map((integration) => (
                   <Timeline.Item
                     key={integration.id}
                     bullet={
@@ -479,57 +467,70 @@ const IntegrationHub = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {filteredEndpoints.map((endpoint) => (
-                    <Table.Tr key={endpoint.id}>
-                      <Table.Td>
-                        <Code>{endpoint.path}</Code>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge 
-                          color={
-                            endpoint.method === 'GET' ? 'blue' :
-                            endpoint.method === 'POST' ? 'green' :
-                            endpoint.method === 'PUT' ? 'orange' :
-                            endpoint.method === 'DELETE' ? 'red' : 'gray'
-                          }
-                        >
-                          {endpoint.method}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>{endpoint.version}</Table.Td>
-                      <Table.Td>
-                        <Text size="sm" lineClamp={2}>{endpoint.description}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group>
-                          {endpoint.requiresAuth && <IconLock size={16} />}
-                          <Text size="sm">{endpoint.authType}</Text>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(endpoint.status)} variant="light">
-                          {endpoint.status.toUpperCase()}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewEndpoint(endpoint)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="gray">
-                            <IconExternalLink size={16} />
-                          </ActionIcon>
-                        </Group>
+                  {filteredEndpoints.length === 0 ? (
+                    <Table.Tr>
+                      <Table.Td colSpan={7}>
+                        <EmptyState
+                          icon={<IconPlug size={48} />}
+                          title="No integrations"
+                          description="Connect external systems"
+                          size="sm"
+                        />
                       </Table.Td>
                     </Table.Tr>
-                  ))}
+                  ) : (
+                    filteredEndpoints.map((endpoint) => (
+                      <Table.Tr key={endpoint.id}>
+                        <Table.Td>
+                          <Code>{endpoint.path}</Code>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge 
+                            color={
+                              endpoint.method === 'GET' ? 'blue' :
+                              endpoint.method === 'POST' ? 'green' :
+                              endpoint.method === 'PUT' ? 'orange' :
+                              endpoint.method === 'DELETE' ? 'red' : 'gray'
+                            }
+                          >
+                            {endpoint.method}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>{endpoint.version}</Table.Td>
+                        <Table.Td>
+                          <Text size="sm" lineClamp={2}>{endpoint.description}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group>
+                            {endpoint.requiresAuth && <IconLock size={16} />}
+                            <Text size="sm">{endpoint.authType}</Text>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(endpoint.status)} variant="light">
+                            {endpoint.status.toUpperCase()}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewEndpoint(endpoint)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="gray">
+                              <IconExternalLink size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -668,7 +669,7 @@ const IntegrationHub = () => {
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Data Sources</Title>
                 <Stack gap="md">
-                  {mockDataSources.map((source) => (
+                  {[].map /* TODO: Fetch from API */((source) => (
                     <Group key={source.id} justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
                       <Group>
                         <ThemeIcon color={getStatusColor(source.status)} size="md" radius="xl">
@@ -691,7 +692,7 @@ const IntegrationHub = () => {
               <Card padding="lg" radius="md" withBorder>
                 <Title order={4} mb="md">Data Warehouses</Title>
                 <Stack gap="md">
-                  {mockDataWarehouses.map((warehouse) => (
+                  {[].map /* TODO: Fetch from API */((warehouse) => (
                     <Group key={warehouse.id} justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
                       <Group>
                         <ThemeIcon color="blue" size="md" radius="xl">
@@ -731,7 +732,7 @@ const IntegrationHub = () => {
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
-                    {mockDataPipelines.map((pipeline) => (
+                    {[].map /* TODO: Fetch from API */((pipeline) => (
                       <Table.Tr key={pipeline.id}>
                         <Table.Td>
                           <Text fw={500}>{pipeline.name}</Text>
@@ -790,7 +791,7 @@ const IntegrationHub = () => {
 
             {/* Dashboards Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {mockDashboards.map((dashboard) => (
+              {[].map /* TODO: Fetch from API */((dashboard) => (
                 <Card key={dashboard.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -862,7 +863,7 @@ const IntegrationHub = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {mockReports.map((report) => (
+                  {[].map /* TODO: Fetch from API */((report) => (
                     <Table.Tr key={report.id}>
                       <Table.Td>
                         <Text fw={500}>{report.name}</Text>
@@ -911,7 +912,7 @@ const IntegrationHub = () => {
 
             {/* Predictive Models */}
             <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-              {mockPredictiveModels.map((model) => (
+              {[].map /* TODO: Fetch from API */((model) => (
                 <Card key={model.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1067,7 +1068,7 @@ const IntegrationHub = () => {
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {mockAPIKeys.map((key) => (
+                {[].map /* TODO: Fetch from API */((key) => (
                   <Table.Tr key={key.id}>
                     <Table.Td>{key.name}</Table.Td>
                     <Table.Td>

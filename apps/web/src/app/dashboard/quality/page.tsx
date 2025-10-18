@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -60,6 +60,7 @@ import {
   SimpleGrid
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
@@ -314,20 +315,8 @@ type PolicyCategory = any;
 type AuditFinding = any;
 type FindingSeverity = any;
 type QualityIndicator = any;
-import {
-  mockQualityMetrics,
-  mockAudits,
-  mockAccreditations,
-  mockPolicies,
-  mockComplianceItems,
-  mockQualityIncidents,
-  mockCorrectiveActions,
-  mockQualityStats,
-  mockRiskAssessments,
-  mockAuditFindings,
-  mockQualityIndicators
-} from '../../../lib/mockData/quality';
-import { mockDoctors } from '../../../lib/mockData/doctors';
+// Mock data imports removed
+import qualityService from '../../../services/quality.service';
 
 const QualityAssurance = () => {
   // State management
@@ -344,6 +333,61 @@ const QualityAssurance = () => {
   const [selectedAccreditation, setSelectedAccreditation] = useState<Accreditation | null>(null);
   const [selectedRisk, setSelectedRisk] = useState<RiskAssessment | null>(null);
 
+  // API state
+  const [qualityMetrics, setQualityMetrics] = useState<any[]>([]);
+  const [incidents, setIncidents] = useState<any[]>([]);
+  const [qualityStats, setQualityStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch data
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([fetchMetrics(), fetchIncidents(), fetchStats()]);
+    } catch (err: any) {
+      console.error('Error loading quality data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load quality data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMetrics = async () => {
+    try {
+      const response = await qualityService.getMetrics();
+      setQualityMetrics(response.data || []);
+    } catch (err: any) {
+      console.error('Error fetching quality metrics:', err);
+      setQualityMetrics([] /* TODO: Fetch from API */);
+    }
+  };
+
+  const fetchIncidents = async () => {
+    try {
+      const response = await qualityService.getIncidents();
+      setIncidents(response.data || []);
+    } catch (err: any) {
+      console.error('Error fetching incidents:', err);
+      setIncidents([] /* TODO: Fetch from API */);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await qualityService.getStats();
+      setQualityStats(response.data);
+    } catch (err: any) {
+      console.error('Error fetching quality stats:', err);
+      setQualityStats([] /* TODO: Fetch from API */);
+    }
+  };
+
   // Modal states
   const [metricDetailOpened, { open: openMetricDetail, close: closeMetricDetail }] = useDisclosure(false);
   const [auditDetailOpened, { open: openAuditDetail, close: closeAuditDetail }] = useDisclosure(false);
@@ -357,7 +401,7 @@ const QualityAssurance = () => {
 
   // Filter functions
   const filteredMetrics = useMemo(() => {
-    return mockQualityMetrics.filter((metric) => {
+    return [].filter /* TODO: Fetch from API */((metric) => {
       const matchesSearch = 
         metric.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         metric.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -369,7 +413,7 @@ const QualityAssurance = () => {
   }, [searchQuery, selectedMetricStatus]);
 
   const filteredAudits = useMemo(() => {
-    return mockAudits.filter((audit) => {
+    return [].filter /* TODO: Fetch from API */((audit) => {
       const matchesSearch = 
         ((audit as any).auditType || (audit as any).title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         ((audit as any).auditor || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -382,7 +426,7 @@ const QualityAssurance = () => {
   }, [searchQuery, selectedAuditStatus]);
 
   const filteredPolicies = useMemo(() => {
-    return mockPolicies.filter((policy) => {
+    return [].filter /* TODO: Fetch from API */((policy) => {
       const matchesSearch = 
         policy.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         policy.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -485,25 +529,25 @@ const QualityAssurance = () => {
   const quickStats = [
     {
       title: 'Overall Compliance',
-      value: `${mockQualityStats.overallComplianceScore}%`,
+      value: `${0 /* TODO: Fetch from API */}%`,
       icon: IconShieldCheck,
       color: 'green'
     },
     {
       title: 'Active Audits',
-      value: mockQualityStats.activeAudits,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconClipboardList,
       color: 'blue'
     },
     {
       title: 'Quality Incidents',
-      value: mockQualityStats.qualityIncidents,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconAlertTriangle,
       color: 'orange'
     },
     {
       title: 'Policy Updates',
-      value: mockQualityStats.policyUpdates,
+      value: 0 /* TODO: Fetch from API */,
       icon: IconFileText,
       color: 'purple'
     }
@@ -608,12 +652,12 @@ const QualityAssurance = () => {
                   size={180}
                   thickness={16}
                   sections={[
-                    { value: mockQualityStats.overallComplianceScore, color: 'green' }
+                    { value: 0 /* TODO: Fetch from API */, color: 'green' }
                   ]}
                   label={
                     <div style={{ textAlign: 'center' }}>
                       <Text size="xl" fw={700}>
-                        {mockQualityStats.overallComplianceScore}%
+                        {0 /* TODO: Fetch from API */}%
                       </Text>
                       <Text size="sm" c="dimmed">
                         Overall Compliance
@@ -628,12 +672,7 @@ const QualityAssurance = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Quality Metrics Performance</Title>
               <MantineDonutChart
-                data={[
-                  { name: 'Excellent', value: 45, color: 'green' },
-                  { name: 'Good', value: 30, color: 'blue' },
-                  { name: 'Acceptable', value: 20, color: 'orange' },
-                  { name: 'Poor', value: 5, color: 'red' }
-                ]}
+                data={[]}
               />
             </Card>
 
@@ -641,7 +680,7 @@ const QualityAssurance = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Recent Audit Activity</Title>
               <Timeline active={3} bulletSize={24} lineWidth={2}>
-                {mockAudits.slice(0, 4).map((audit, index) => (
+                {[].map((audit, index) => (
                   <Timeline.Item
                     key={audit.id}
                     bullet={
@@ -667,7 +706,7 @@ const QualityAssurance = () => {
               <Title order={4} mb="md">Risk Assessment Status</Title>
               <Stack gap="md">
                 {['critical', 'high', 'medium', 'low'].map((level) => {
-                  const count = mockRiskAssessments.filter(r => (r as any).level === level || (r as any).riskLevel === level).length;
+                  const count = [].filter /* TODO: Fetch from API */(r => (r as any).level === level || (r as any).riskLevel === level).length;
                   return (
                     <Group key={level} justify="space-between">
                       <Group gap="xs">
@@ -691,7 +730,7 @@ const QualityAssurance = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Accreditation Status</Title>
               <Stack gap="sm">
-                {mockAccreditations.slice(0, 4).map((acc) => (
+                {[].map((acc) => (
                   <Group key={acc.id} justify="space-between">
                     <div>
                       <Text size="sm" fw={500}>{(acc as any).issuingBody || (acc as any).accreditingBody}</Text>
@@ -711,7 +750,7 @@ const QualityAssurance = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Recent Quality Incidents</Title>
               <Stack gap="sm">
-                {mockQualityIncidents.slice(0, 4).map((incident) => (
+                {[].map((incident) => (
                   <Alert
                     key={incident.id}
                     variant="light"
@@ -767,17 +806,27 @@ const QualityAssurance = () => {
 
             {/* Quality Metrics Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {filteredMetrics.map((metric) => (
-                <Card key={metric.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{metric.name}</Text>
-                      <Text size="sm" c="dimmed">{metric.category}</Text>
-                    </div>
-                    <Badge color={getStatusColor(metric.status)} variant="light">
-                      {metric.status.toUpperCase()}
-                    </Badge>
-                  </Group>
+              {filteredMetrics.length === 0 ? (
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <EmptyState
+                    icon={<IconChartBar size={48} />}
+                    title="No quality metrics"
+                    description="Quality metrics will appear here"
+                    size="sm"
+                  />
+                </div>
+              ) : (
+                filteredMetrics.map((metric) => (
+                  <Card key={metric.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">{metric.name}</Text>
+                        <Text size="sm" c="dimmed">{metric.category}</Text>
+                      </div>
+                      <Badge color={getStatusColor(metric.status)} variant="light">
+                        {metric.status.toUpperCase()}
+                      </Badge>
+                    </Group>
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
@@ -835,7 +884,8 @@ const QualityAssurance = () => {
                     </Group>
                   </Group>
                 </Card>
-              ))}
+              ))
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -1017,7 +1067,7 @@ const QualityAssurance = () => {
 
             {/* Compliance Items */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockComplianceItems.map((item) => (
+              {[].map /* TODO: Fetch from API */((item) => (
                 <Card key={item.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1096,7 +1146,7 @@ const QualityAssurance = () => {
 
             {/* Accreditations Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockAccreditations.map((accreditation) => (
+              {[].map /* TODO: Fetch from API */((accreditation) => (
                 <Card key={accreditation.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1294,7 +1344,7 @@ const QualityAssurance = () => {
 
             {/* Incidents Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockQualityIncidents.map((incident) => (
+              {[].map /* TODO: Fetch from API */((incident) => (
                 <Card key={incident.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1391,7 +1441,7 @@ const QualityAssurance = () => {
 
             {/* Risk Assessments Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {mockRiskAssessments.map((risk) => (
+              {[].map /* TODO: Fetch from API */((risk) => (
                 <Card key={risk.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
@@ -1503,7 +1553,7 @@ const QualityAssurance = () => {
             <Select
               label="Auditor"
               placeholder="Select auditor"
-              data={mockDoctors.map(doctor => ({
+              data={[].map /* TODO: Fetch from API */(doctor => ({
                 value: doctor.id,
                 label: doctor.name || `Dr. ${(doctor as any).firstName || ''} ${(doctor as any).lastName || ''}`
               }))}

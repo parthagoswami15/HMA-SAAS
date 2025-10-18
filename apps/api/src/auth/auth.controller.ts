@@ -6,7 +6,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { AuthService, RegisterUserDto, LoginDto } from './auth.service';
+import { AuthService, RegisterUserDto, LoginDto, ForgotPasswordDto, ResetPasswordDto } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
@@ -27,6 +27,16 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
   }
 
   @Get('health')
