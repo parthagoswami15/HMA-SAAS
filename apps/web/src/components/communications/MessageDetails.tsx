@@ -15,7 +15,7 @@ import {
   IconUser,
   IconClock,
   IconTrash,
-  IconReply
+  IconArrowBackUp
 } from '@tabler/icons-react';
 
 interface MessageDetailsProps {
@@ -182,7 +182,7 @@ export default function MessageDetails({
           <Group>
             {onReply && (
               <Button
-                leftSection={<IconReply size={16} />}
+                leftSection={<IconArrowBackUp size={16} />}
                 onClick={() => {
                   onReply(message);
                   onClose();

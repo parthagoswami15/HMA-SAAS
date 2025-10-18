@@ -622,7 +622,7 @@ const AppointmentManagement = () => {
               </Card>
 
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Today's Schedule</Title>
+                <Title order={4} mb="md">Today&apos;s Schedule</Title>
                 <Stack gap="sm">
                   {appointments
                     .filter(apt => 

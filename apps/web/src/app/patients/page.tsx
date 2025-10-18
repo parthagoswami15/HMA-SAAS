@@ -42,7 +42,7 @@ import { useAppStore } from '../../stores/appStore';
 import { notifications } from '@mantine/notifications';
 import { User, UserRole, TableColumn, FilterOption, Status } from '../../types/common';
 import { Patient, PatientStats, PatientListItem, CreatePatientDto, UpdatePatientDto } from '../../types/patient';
-import patientsService from '../../services';
+import { patientsService } from '../../services';
 import { formatDate, formatPhoneNumber } from '../../lib/utils';
 
 const mockUser: User = {
