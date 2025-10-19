@@ -69,7 +69,7 @@ const NotificationsPage = () => {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [showComposeModal, setShowComposeModal] = useState(false);
 
-  const mockNotifications: Notification[] = [
+  const _mockNotifications: Notification[] = [
     {
       id: '1',
       type: 'EMERGENCY',
@@ -196,7 +196,7 @@ const NotificationsPage = () => {
     }
   ];
 
-  const mockTemplates: NotificationTemplate[] = [
+  const _mockTemplates: NotificationTemplate[] = [
     {
       id: 'TPL001',
       name: 'Appointment Reminder',
@@ -232,7 +232,7 @@ const NotificationsPage = () => {
     }
   ];
 
-  const mockPreferences: NotificationPreferences = {
+  const _mockPreferences: NotificationPreferences = {
     userId: 'U001',
     userRole: 'DOCTOR',
     emailEnabled: true,
@@ -680,7 +680,7 @@ const NotificationsPage = () => {
             ].map(tab => (
               <button
                 key={tab.key}
-                onClick={() => setCurrentTab(tab.key as string)}
+                onClick={() => setCurrentTab(tab.key as 'inbox' | 'sent' | 'templates' | 'preferences' | 'analytics' | 'broadcast')}
                 style={{
                   padding: '1rem 1.5rem',
                   border: 'none',

@@ -23,7 +23,6 @@ import {
   IconUsers,
   IconUser,
   IconStethoscope,
-  IconNotes,
   IconPill,
   IconCurrency,
   IconShieldX,
@@ -32,14 +31,8 @@ import {
   IconSettings,
   IconBell,
   IconX,
-  IconChevronDown,
-  IconCamera,
-  IconBuilding,
-  IconServer,
   IconShieldCheck,
   IconFileText,
-  IconHeart,
-  IconNotes,
   IconAmbulance,
   IconMessage
 } from '@tabler/icons-react';

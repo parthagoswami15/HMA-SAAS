@@ -11,15 +11,15 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if the route is public
-  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
+  const _isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
 
   // Check if the route is protected
-  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
+  const _isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
 
   // Get token from cookies OR check if it might be in localStorage
   // Note: We can't directly access localStorage in middleware (server-side)
   // So we'll check cookies for now. The client-side will handle localStorage.
-  const token = request.cookies.get('auth_token')?.value || request.cookies.get('accessToken')?.value;
+  const _token = request.cookies.get('auth_token')?.value || request.cookies.get('accessToken')?.value;
 
   // For localStorage-based auth, we can't check here, so we disable server-side redirect
   // and let client-side handle it. Only block if we're certain there's no auth.

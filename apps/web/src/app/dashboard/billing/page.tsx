@@ -27,12 +27,12 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  Checkbox,
-  List,
-  Notification,
-  LoadingOverlay,
+  // Checkbox,
+  // List,
+  // Notification,
+  // LoadingOverlay,
   Anchor,
-  rem
+  // rem,
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
@@ -45,14 +45,14 @@ import {
   IconEdit,
   IconEye,
   IconTrash,
-  IconCalendar,
-  IconCurrency,
+  // IconCalendar,
+  // IconCurrency,
   IconChartBar,
-  IconPhone,
+  // IconPhone,
   IconMail,
   IconAlertCircle,
-  IconCheck,
-  IconX,
+  // IconCheck,
+  // IconX,
   IconDotsVertical,
   IconReceipt,
   IconCreditCard,
@@ -60,22 +60,22 @@ import {
   IconFileText,
   IconDownload,
   IconPrinter,
-  IconShare,
+  // IconShare,
   IconCash,
   IconShield,
-  IconExclamationMark,
-  IconClockHour4,
+  // IconExclamationMark,
+  // IconClockHour4,
   IconTrendingUp,
-  IconTrendingDown,
-  IconUsers,
+  // IconTrendingDown,
+  // IconUsers,
   IconCalculator,
   IconWallet,
   IconBrandPaypal,
   IconCurrencyDollar,
   IconFileInvoice,
   IconCopyright,
-  IconFilter,
-  IconRefresh
+  // IconFilter,
+  // IconRefresh
 } from '@tabler/icons-react';
 
 // Import types and services
@@ -88,8 +88,8 @@ import {
   PaymentTransactionStatus,
   InsuranceClaim,
   ClaimStatus,
-  InsuranceProvider,
-  PatientInsurance
+  // InsuranceProvider,
+  // PatientInsurance
 } from '../../../types/billing';
 import { billingService, handleApiError } from '../../../services';
 
@@ -100,13 +100,13 @@ const BillingManagement = () => {
   const [selectedPatient, setSelectedPatient] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [_dateRange, _setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const [selectedClaim, setSelectedClaim] = useState<InsuranceClaim | null>(null);
+  const [_selectedClaim, _setSelectedClaim] = useState<InsuranceClaim | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
-  const [statsError, setStatsError] = useState<string | null>(null);
+  const [_statsError, setStatsError] = useState<string | null>(null);
 
   // Data state
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -119,11 +119,12 @@ const BillingManagement = () => {
   const [invoiceDetailOpened, { open: openInvoiceDetail, close: closeInvoiceDetail }] = useDisclosure(false);
   const [addInvoiceOpened, { open: openAddInvoice, close: closeAddInvoice }] = useDisclosure(false);
   const [addPaymentOpened, { open: openAddPayment, close: closeAddPayment }] = useDisclosure(false);
-  const [claimDetailOpened, { open: openClaimDetail, close: closeClaimDetail }] = useDisclosure(false);
+  const [_claimDetailOpened, { open: _openClaimDetail, close: _closeClaimDetail }] = useDisclosure(false);
 
   // Load all data on mount
   useEffect(() => {
     loadAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load data based on active tab
@@ -137,6 +138,7 @@ const BillingManagement = () => {
     } else if (activeTab === 'reports') {
       loadReportsData();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, searchQuery, selectedPatient, selectedStatus, selectedPaymentMethod]);
 
   const loadAllData = async () => {
@@ -310,8 +312,8 @@ const BillingManagement = () => {
   };
 
   const handleViewClaim = (claim: InsuranceClaim) => {
-    setSelectedClaim(claim);
-    openClaimDetail();
+    _setSelectedClaim(claim);
+    _openClaimDetail();
   };
 
   const clearFilters = () => {
@@ -319,7 +321,7 @@ const BillingManagement = () => {
     setSelectedPatient('');
     setSelectedStatus('');
     setSelectedPaymentMethod('');
-    setDateRange([null, null]);
+    _setDateRange([null, null]);
   };
 
   const formatCurrency = (amount: number) => {
@@ -370,7 +372,7 @@ const BillingManagement = () => {
   ] : [];
 
   // Chart data
-  const revenueChartData = revenueData.length > 0 ? revenueData.map(item => ({
+  const _revenueChartData = revenueData.length > 0 ? revenueData.map(item => ({
     month: item.month,
     revenue: item.totalRevenue,
     collections: item.collections

@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { getModulesForRole, getRoleDisplayName, getRoleBadgeColor, type UserRole, type DashboardModule } from '@/lib/rbac';
+import { getModulesForRole, getRoleDisplayName, getRoleBadgeColor, type UserRole as RBACUserRole, type DashboardModule } from '@/lib/rbac';
+import { User, UserRole } from '../../types/common';
 
 export default function EnhancedDashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [stats, setStats] = useState({
     totalPatients: 0,
     todaysAppointments: 0,
@@ -42,12 +43,12 @@ export default function EnhancedDashboard() {
   // Get modules accessible to this user's role (RBAC filtering)
   const accessibleModules = useMemo(() => {
     if (!user?.role) return [];
-    const filtered = getModulesForRole(user.role as UserRole);
+    const filtered = getModulesForRole(user.role as RBACUserRole);
     console.log(`[Dashboard] Modules for ${user.role}:`, filtered.length, 'modules');
     return filtered;
   }, [user]);
 
-  const handleLogout = () => {
+  const _handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
     router.push('/login');
@@ -125,7 +126,7 @@ export default function EnhancedDashboard() {
               Welcome back, {user.firstName}! 👋
             </h1>
             <span style={{
-              background: getRoleBadgeColor(user.role as UserRole),
+              background: getRoleBadgeColor(user.role as RBACUserRole),
               color: 'white',
               padding: '0.4rem 1rem',
               borderRadius: '20px',
@@ -133,7 +134,7 @@ export default function EnhancedDashboard() {
               fontWeight: '600',
               boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
             }}>
-              {getRoleDisplayName(user.role as UserRole)}
+              {getRoleDisplayName(user.role as RBACUserRole)}
             </span>
           </div>
           <p style={{
@@ -141,7 +142,7 @@ export default function EnhancedDashboard() {
             opacity: 0.9,
             margin: 0
           }}>
-            Here&apos;s what&apos;s happening at {user.tenant?.name} today • {modules.length} modules available
+            Here&apos;s what&apos;s happening at {(user as any).tenant?.name || 'Hospital'} today • {modules.length} modules available
           </p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
   Paper,
@@ -10,211 +10,57 @@ import {
   TextInput,
   Select,
   Badge,
-  Table,
   Modal,
   Text,
   Tabs,
   Card,
-  Avatar,
   ActionIcon,
-  Menu,
   Stack,
-  Divider,
   SimpleGrid,
   ScrollArea,
   ThemeIcon,
-  Alert,
   Progress,
-  NumberInput,
   Textarea,
-  Timeline,
-  Stepper,
-  RingProgress,
-  Tooltip,
-  List,
-  Image,
-  Loader,
-  Highlight,
-  Accordion,
-  FileButton,
-  ColorSwatch,
-  Code,
-  Spoiler,
-  Mark,
-  Rating,
-  Switch,
-  Checkbox,
-  Radio,
-  PasswordInput,
-  MultiSelect,
-  Anchor,
-  Notification,
-  Indicator,
-  UnstyledButton,
-  rem,
-  Slider,
-  Center,
-  Box
+  Avatar,
+  Divider,
+  Alert,
+  NumberInput
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { DatePickerInput } from '@mantine/dates';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { Calendar, DatePickerInput } from '@mantine/dates';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import { MantineDonutChart, SimpleBarChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
-  IconEdit,
   IconEye,
-  IconTrash,
-  IconCalendar,
-  IconUsers,
-  IconUser,
   IconChartBar,
-  IconPhone,
-  IconMail,
-  IconAlertCircle,
-  IconCheck,
-  IconX,
-  IconDotsVertical,
-  IconReportMedical,
-  IconClock,
-  IconClipboardList,
-  IconFileText,
   IconDownload,
-  IconPrinter,
   IconShare,
   IconActivity,
-  IconExclamationMark,
-  IconClockHour4,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconCalculator,
   IconSettings,
-  IconRefresh,
-  IconFilter,
-  IconBarcode,
-  IconTemperature,
-  IconShieldCheck,
   IconAlertTriangle,
-  IconCircleCheck,
-  IconClipboard,
   IconLungs,
   IconHeart,
-  IconBrain,
-  IconBone,
   IconStethoscope,
-  IconMedicalCross,
-  IconPackage,
-  IconTruck,
-  IconCash,
-  IconReceipt,
-  IconNotes,
-  IconTag,
-  IconAlarm,
-  IconInfoCircle,
-  IconBed,
-  IconAmbulance,
-  IconFlask,
-  IconDroplet,
-  IconNurse,
-  IconBandage,
-  IconPill,
-  IconMask,
-  IconBolt,
-  IconZoom,
-  IconCut,
-  IconTool,
-  IconPhoto,
-  IconScan,
-  IconDeviceDesktop,
-  IconCamera,
-  IconUpload,
-  IconTarget,
-  IconFocus,
-  IconColorPicker,
-  IconRuler,
-  IconRotate,
-  IconContrast,
-  IconBrightness,
-  IconAdjustments,
-  IconMaximize,
-  IconMinimize,
-  IconPlayerPlay,
-  IconPlayerPause,
-  IconVolume,
-  IconFileUpload,
-  IconCloudUpload,
-  IconMessage,
-  IconMessageCircle,
-  IconSend,
-  IconBell,
-  IconBellRinging,
   IconVideo,
+  IconCalendarEvent,
+  IconChartLine,
+  IconThermometer,
+  IconBrandZoom,
+  IconPrescription,
+  IconDeviceHeartMonitor,
+  IconMessage,
+  IconPhoneOff,
   IconVideoOff,
   IconMicrophone,
   IconMicrophoneOff,
-  IconDeviceMobile,
-  IconDeviceTablet,
-  IconDeviceLaptop,
-  IconWifi,
-  IconWifiOff,
-  IconShield,
-  IconLock,
-  IconKey,
-  IconFingerprint,
-  IconHistory,
-  IconArchive,
-  IconFolder,
-  IconFolderOpen,
-  IconFiles,
-  IconFile,
   IconScreenShare,
   IconScreenShareOff,
-  IconPhoneCall,
-  IconPhoneOff,
-  IconVolume2,
-  IconVolumeOff,
-  IconCalendarEvent,
-  IconClockHour9,
-  IconUserCheck,
-  IconUserPlus,
-  IconUserX,
-  IconClipboardData,
-  IconReportAnalytics,
-  IconChartDots,
-  IconChartLine,
-  IconChartPie,
-  IconDatabase,
-  IconCloud,
-  IconCloudCheck,
-  IconCloudDownload,
-  IconCloudUp,
-  IconDeviceWatch,
-  IconHeartRateMonitor,
-  IconThermometer,
-  IconScale,
-  IconDroplets,
-  IconBrandZoom,
-  IconMapPin,
-  IconHome,
-  IconBuilding,
-  IconStethoscopeOff,
-  IconFirstAidKit,
-  IconEmergencyBed,
-  IconHeartHandshake,
-  IconMoodHappy,
-  IconMoodSad,
-  IconPrescription,
-  IconReport,
-  IconReportSearch,
-  IconTestPipe2,
-  IconVaccine,
-  IconWheelchair,
-  IconZodiacCancer,
-  IconAccessible,
-  IconMedicalCrossOff,
-  IconDeviceHeartMonitor
+  IconX,
+  IconCircleCheck,
+  IconUser
 } from '@tabler/icons-react';
 
 // Import types and mock data
@@ -222,12 +68,12 @@ import {
   TelemedicineSession,
   SessionStatus,
   SessionType,
-  RemoteMonitoringData,
-  VitalSigns,
+  // RemoteMonitoringData,
+  VitalSigns as _VitalSigns,
   DigitalPrescription,
-  TelemedicineStats,
+  TelemedicineStats as _TelemedicineStats,
   PatientMonitoring,
-  VirtualConsultation,
+  VirtualConsultation as _VirtualConsultation,
   ConsultationStatus
 } from '../../../types/telemedicine';
 import telemedicineService from '../../../services/telemedicine.service';
@@ -239,9 +85,9 @@ const Telemedicine = () => {
   const [selectedSessionType, setSelectedSessionType] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedDoctor, setSelectedDoctor] = useState<string>('');
-  const [selectedSession, setSelectedSession] = useState<TelemedicineSession | null>(null);
-  const [selectedPrescription, setSelectedPrescription] = useState<DigitalPrescription | null>(null);
-  const [selectedPatientMonitoring, setSelectedPatientMonitoring] = useState<PatientMonitoring | null>(null);
+  const [_selectedSession, setSelectedSession] = useState<TelemedicineSession | null>(null);
+  const [_selectedPrescription, setSelectedPrescription] = useState<DigitalPrescription | null>(null);
+  const [_selectedPatientMonitoring, setSelectedPatientMonitoring] = useState<PatientMonitoring | null>(null);
   const [isInCall, setIsInCall] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
@@ -252,12 +98,13 @@ const Telemedicine = () => {
   // API state
   const [consultations, setConsultations] = useState<any[]>([]);
   const [telemedicineStats, setTelemedicineStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_loading, setLoading] = useState(true);
+  const [_error, setError] = useState<string | null>(null);
 
   // Fetch data
   useEffect(() => {
     fetchAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
@@ -306,11 +153,11 @@ const Telemedicine = () => {
   };
 
   // Modal states
-  const [sessionDetailOpened, { open: openSessionDetail, close: closeSessionDetail }] = useDisclosure(false);
+  const [_sessionDetailOpened, { open: _openSessionDetail, close: _closeSessionDetail }] = useDisclosure(false);
   const [startSessionOpened, { open: openStartSession, close: closeStartSession }] = useDisclosure(false);
-  const [prescriptionDetailOpened, { open: openPrescriptionDetail, close: closePrescriptionDetail }] = useDisclosure(false);
-  const [monitoringDetailOpened, { open: openMonitoringDetail, close: closeMonitoringDetail }] = useDisclosure(false);
-  const [createPrescriptionOpened, { open: openCreatePrescription, close: closeCreatePrescription }] = useDisclosure(false);
+  const [_prescriptionDetailOpened, { open: _openPrescriptionDetail, close: _closePrescriptionDetail }] = useDisclosure(false);
+  const [_monitoringDetailOpened, { open: _openMonitoringDetail, close: _closeMonitoringDetail }] = useDisclosure(false);
+  const [_createPrescriptionOpened, { open: openCreatePrescription, close: _closeCreatePrescription }] = useDisclosure(false);
   const [videoCallOpened, { open: openVideoCall, close: closeVideoCall }] = useDisclosure(false);
 
   // Timer effect for call duration
@@ -339,7 +186,7 @@ const Telemedicine = () => {
 
       return matchesSearch && matchesType && matchesStatus && matchesDoctor;
     });
-  }, [searchQuery, selectedSessionType, selectedStatus, selectedDoctor]);
+  }, [searchQuery, selectedSessionType, selectedStatus, selectedDoctor, consultations]);
 
   // Helper functions
   const getStatusColor = (status: SessionStatus | ConsultationStatus) => {
@@ -366,7 +213,7 @@ const Telemedicine = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const _getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent': return 'red';
       case 'high': return 'orange';
@@ -376,22 +223,22 @@ const Telemedicine = () => {
     }
   };
 
-  const handleViewSession = (session: TelemedicineSession) => {
-    setSelectedSession(session);
-    openSessionDetail();
+  const handleViewSession = (_session: TelemedicineSession) => {
+    setSelectedSession(_session);
+    _openSessionDetail();
   };
 
-  const handleViewPrescription = (prescription: DigitalPrescription) => {
-    setSelectedPrescription(prescription);
-    openPrescriptionDetail();
+  const handleViewPrescription = (_prescription: DigitalPrescription) => {
+    setSelectedPrescription(_prescription);
+    _openPrescriptionDetail();
   };
 
-  const handleViewMonitoring = (monitoring: PatientMonitoring) => {
-    setSelectedPatientMonitoring(monitoring);
-    openMonitoringDetail();
+  const handleViewMonitoring = (_monitoring: PatientMonitoring) => {
+    setSelectedPatientMonitoring(_monitoring);
+    _openMonitoringDetail();
   };
 
-  const handleStartVideoCall = (session?: TelemedicineSession) => {
+  const handleStartVideoCall = (_session?: TelemedicineSession) => {
     setIsInCall(true);
     setCallDuration(0);
     openVideoCall();

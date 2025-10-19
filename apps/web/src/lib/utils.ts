@@ -322,7 +322,7 @@ export const createApiResponse = <T>(
   };
 };
 
-export const handleApiError = (error: unknown): AppError => {
+export const handleApiError = (error: any): AppError => {
   if (error instanceof AppError) {
     return error;
   }
@@ -388,7 +388,7 @@ export const validatePhoneNumber = (phone: string): ValidationError | null => {
 };
 
 // Export all utilities
-export default {
+const utils = {
   generateId,
   formatDate,
   formatDateTime,
@@ -420,3 +420,5 @@ export default {
   validateEmail,
   validatePhoneNumber
 };
+
+export default utils;

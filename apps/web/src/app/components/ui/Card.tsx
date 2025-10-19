@@ -76,7 +76,7 @@ const Card: React.FC<CardProps> = ({
     ...style
   };
 
-  const hoverStyles = onClick ? {
+  const _hoverStyles = onClick ? {
     ':hover': {
       transform: 'translateY(-2px)',
       boxShadow: '0 8px 25px rgba(0,0,0,0.15)'

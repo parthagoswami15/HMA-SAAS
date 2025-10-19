@@ -46,7 +46,6 @@ import type { CreateStaffDto, UpdateStaffDto, HrFilters } from '../../services/h
 
 const mockUser: User = {
   id: '1',
-  name: 'Admin User',
   username: 'admin',
   email: 'admin@hospital.com',
   firstName: 'Admin',
@@ -82,8 +81,8 @@ function HrPage() {
       setUser(mockUser);
     }
     fetchStaff();
-    fetchStats();
     fetchDepartments();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchStaff = async () => {
@@ -390,7 +389,7 @@ function HrPage() {
   ];
 
   return (
-    <Layout user={user || mockUser} notifications={0} onLogout={() => {}}>
+    <Layout user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : { id: mockUser.id, name: `${mockUser.firstName} ${mockUser.lastName}`, email: mockUser.email, role: mockUser.role }} notifications={0} onLogout={() => {}}>
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}

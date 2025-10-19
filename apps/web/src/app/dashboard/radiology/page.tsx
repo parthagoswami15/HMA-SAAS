@@ -30,18 +30,18 @@ import {
   Timeline,
   Stepper,
   RingProgress,
-  Tooltip,
-  List,
-  Image,
+  // Tooltip,
+  // List,
+  // Image,
   Loader,
-  Highlight,
-  Accordion,
-  FileButton
+  // Highlight,
+  // Accordion,
+  // FileButton
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleAreaChart, SimpleLineChart, SimpleBarChart } from '../../../components/MantineChart';
+import { MantineDonutChart, SimpleBarChart, SimpleAreaChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,

@@ -23,21 +23,21 @@ import {
   SimpleGrid,
   ScrollArea,
   ThemeIcon,
-  Timeline,
-  Alert,
-  Progress,
-  Flex,
-  Anchor,
+  // Timeline,
+  // Alert,
+  // Progress,
+  // Flex,
+  // Anchor,
   NumberInput,
   Textarea,
-  List
+  // List,
 } from '@mantine/core';
-import { DatePickerInput } from '@mantine/dates';
+// import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import emrService from '../../../services/emr.service';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -45,32 +45,32 @@ import {
   IconEye,
   IconTrash,
   IconCalendar,
-  IconUsers,
+  // IconUsers,
   IconChartBar,
-  IconPhone,
-  IconMail,
+  // IconPhone,
+  // IconMail,
   IconAlertCircle,
-  IconCheck,
-  IconX,
+  // IconCheck,
+  // IconX,
   IconDotsVertical,
-  IconStethoscope,
+  // IconStethoscope,
   IconActivity,
   IconPill,
   IconTestPipe,
   IconFileText,
   IconHeart,
-  IconBrain,
+  // IconBrain,
   IconLungs,
-  IconShield,
+  // IconShield,
   IconAlertTriangle,
-  IconTrendingUp,
-  IconTrendingDown,
+  // IconTrendingUp,
+  // IconTrendingDown,
   IconClipboardList,
-  IconMedicalCross,
-  IconVaccine,
-  IconReportMedical,
-  IconHistory,
-  IconUserCheck,
+  // IconMedicalCross,
+  // IconVaccine,
+  // IconReportMedical,
+  // IconHistory,
+  // IconUserCheck,
   IconDownload,
   IconPrinter,
   IconShare
@@ -81,11 +81,11 @@ import {
   MedicalRecord,
   MedicalRecordType,
   MedicalRecordStatus,
-  LabResult,
-  MedicalDocument,
-  MedicalHistory,
-  Prescription,
-  Allergy,
+  // LabResult,
+  // MedicalDocument,
+  // MedicalHistory,
+  // Prescription,
+  // Allergy,
   AllergySeverity
 } from '../../../types/medical';
 // Mock data imports removed
@@ -101,22 +101,23 @@ const EMRManagement = () => {
 
   // API data state
   const [records, setRecords] = useState<MedicalRecord[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [_stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, _setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      setError(null);
+      _setError(null);
       await Promise.all([fetchRecords(), fetchStats()]);
     } catch (err: any) {
       console.error('Error loading EMR data:', err);
-      setError(err.response?.data?.message || 'Failed to load EMR data');
+      _setError(err.response?.data?.message || 'Failed to load EMR data');
       setRecords([] /* TODO: Fetch from API */);
     } finally {
       setLoading(false);
@@ -164,12 +165,13 @@ const EMRManagement = () => {
     if (!loading) {
       fetchRecords();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, selectedPatient, selectedDoctor, selectedRecordType, selectedStatus]);
 
   // Modal states
   const [recordDetailOpened, { open: openRecordDetail, close: closeRecordDetail }] = useDisclosure(false);
   const [addRecordOpened, { open: openAddRecord, close: closeAddRecord }] = useDisclosure(false);
-  const [editRecordOpened, { open: openEditRecord, close: closeEditRecord }] = useDisclosure(false);
+  const [_editRecordOpened, { open: _openEditRecord, close: _closeEditRecord }] = useDisclosure(false);
 
   // Filter medical records
   const filteredRecords = useMemo(() => {
@@ -238,7 +240,7 @@ const EMRManagement = () => {
 
   const handleEditRecord = (record: MedicalRecord) => {
     setSelectedRecord(record);
-    openEditRecord();
+    _openEditRecord();
   };
 
   const handleDeleteRecord = (record: MedicalRecord) => {

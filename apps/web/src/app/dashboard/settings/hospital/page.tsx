@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { 
   Card, Title, Text, Stack, Group, Button, TextInput, 
-  Select, Textarea, Tabs, Switch, ColorInput, FileInput,
+  Select, Tabs, Switch, ColorInput, FileInput,
   NumberInput, Badge
 } from '@mantine/core';
 import { 

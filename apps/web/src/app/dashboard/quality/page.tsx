@@ -50,20 +50,20 @@ import {
   Notification,
   Indicator,
   UnstyledButton,
-  rem,
-  Slider,
+  // rem,
+  // Slider,
   Center,
-  Box,
-  FileInput,
-  JsonInput,
-  SegmentedControl,
+  // Box,
+  // FileInput,
+  // JsonInput,
+  // SegmentedControl,
   SimpleGrid
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,

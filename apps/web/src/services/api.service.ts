@@ -1,4 +1,4 @@
-import apiClient, { handleApiError, ApiResponse } from '@/lib/api-client';
+import apiClient, { handleApiError } from '@/lib/api-client';
 
 // Re-export apiClient for other services
 export { apiClient };

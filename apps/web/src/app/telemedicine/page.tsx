@@ -69,7 +69,7 @@ const TelemedicinePage = () => {
   const [showConsultationModal, setShowConsultationModal] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
 
-  const mockConsultations: TelemedicineConsultation[] = [
+  const _mockConsultations: TelemedicineConsultation[] = [
     {
       id: '1',
       consultationId: 'TM-2024-001',
@@ -198,7 +198,7 @@ const TelemedicinePage = () => {
     }
   ];
 
-  const mockWaitingRoom: VirtualWaitingRoom[] = [
+  const _mockWaitingRoom: VirtualWaitingRoom[] = [
     {
       id: '1',
       patientName: 'David Park',

@@ -1,48 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  Container,
-  Grid,
-  Paper,
-  Text,
-  Group,
-  Badge,
-  SimpleGrid,
-  Stack,
   Button,
-  Title,
   Card,
-  TextInput,
-  Select,
-  Modal,
-  Tabs,
-  ActionIcon,
-  Menu
+  TextInput
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { notifications } from '@mantine/notifications';
-import { DatePickerInput } from '@mantine/dates';
-import {
-  IconPlus,
-  IconSearch,
-  IconCalendar,
-  IconClock,
-  IconEdit,
-  IconTrash,
-  IconEye,
-  IconDotsVertical,
-  IconCheck,
-  IconX,
-  IconCalendarEvent,
-  IconStethoscope
-} from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
-import DataTable from '../../components/shared/DataTable';
-import { useAppStore } from '../../stores/appStore';
-import { User, UserRole, TableColumn, Status } from '../../types/common';
-import appointmentsService from '../../services/appointments.service';
-import type { CreateAppointmentDto, UpdateAppointmentDto, AppointmentFilters } from '../../services/appointments.service';
+import { User, TableColumn } from '../../types/common';
 
 interface Appointment {
   id: string;
@@ -141,7 +106,7 @@ const AppointmentsPage = () => {
   ]);
 
   const departments = ['Cardiology', 'Pediatrics', 'Orthopedics', 'Emergency', 'Neurology', 'Dermatology'];
-  const timeSlots = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+  const _timeSlots = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
 
   const filteredAppointments = appointments.filter(appointment => {
     const matchesSearch = 

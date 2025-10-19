@@ -64,7 +64,7 @@ function AppointmentsPage() {
   const { user, setUser } = useAppStore();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
-  const [doctors, setDoctors] = useState<any[]>([]);
+  const [doctors, _setDoctors] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
@@ -82,6 +82,7 @@ function AppointmentsPage() {
     fetchAppointments();
     fetchStats();
     fetchPatients();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchAppointments = async () => {

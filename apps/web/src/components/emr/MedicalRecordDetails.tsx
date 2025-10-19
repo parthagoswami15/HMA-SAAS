@@ -13,7 +13,6 @@ import {
 import {
   IconFileText,
   IconUser,
-  IconCalendar,
   IconEdit,
   IconTrash,
   IconStethoscope

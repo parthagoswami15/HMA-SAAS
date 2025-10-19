@@ -1,6 +1,4 @@
-import { BaseEntity } from './common';
-import { Patient } from './patient';
-import { Staff } from './staff';
+// Laboratory Types
 
 // Lab Test Management
 export interface LabTest {

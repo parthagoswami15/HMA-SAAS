@@ -10,9 +10,7 @@ import {
   Grid,
   Card,
   Table,
-  Timeline,
-  ActionIcon,
-  Menu
+  Timeline
 } from '@mantine/core';
 import {
   IconCurrencyRupee,
@@ -21,7 +19,6 @@ import {
   IconEdit,
   IconTrash,
   IconReceipt,
-  IconDotsVertical,
   IconPrinter,
   IconDownload,
   IconCash

@@ -24,7 +24,6 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import {
-  IconPlus,
   IconSearch,
   IconBedFilled,
   IconHome,
@@ -45,7 +44,7 @@ import WardDetails from '../../components/ipd/WardDetails';
 import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn } from '../../types/common';
 import ipdService from '../../services/ipd.service';
-import type { CreateWardDto, UpdateWardDto, CreateBedDto, UpdateBedStatusDto, WardFilters, BedFilters } from '../../services/ipd.service';
+import type { CreateWardDto, UpdateWardDto, CreateBedDto, WardFilters, BedFilters } from '../../services/ipd.service';
 
 const mockUser: User = {
   id: '1',
@@ -88,6 +87,7 @@ function IpdPage() {
     fetchWards();
     fetchBeds();
     fetchStats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchWards = async () => {

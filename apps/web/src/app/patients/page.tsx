@@ -15,7 +15,6 @@ import {
   Card,
   Progress,
   Avatar,
-  Modal,
   Title,
   Divider,
   Alert
@@ -25,7 +24,6 @@ import {
   IconUsers,
   IconDownload,
   IconPhone,
-  IconMail,
   IconCalendar,
   IconHeart,
   IconAlertCircle,
@@ -39,11 +37,11 @@ import PatientDetails from '../../components/patients/PatientDetails';
 import MedicalHistoryManager from '../../components/patients/MedicalHistoryManager';
 import DocumentManager from '../../components/patients/DocumentManager';
 import { useAppStore } from '../../stores/appStore';
-import { notifications } from '@mantine/notifications';
 import { User, UserRole, TableColumn, FilterOption, Status } from '../../types/common';
 import { Patient, PatientStats, PatientListItem, CreatePatientDto, UpdatePatientDto } from '../../types/patient';
 import { patientsService } from '../../services';
 import { formatDate, formatPhoneNumber } from '../../lib/utils';
+import { notifications as notificationsService } from '@mantine/notifications';
 
 const mockUser: User = {
   id: '1',
@@ -63,24 +61,27 @@ const mockUser: User = {
 };
 
 function PatientsPage() {
-  const { user, setUser, notifications } = useAppStore();
+  const { user, setUser } = useAppStore();
   const [activeTab, setActiveTab] = useState('list');
   const [patients, setPatients] = useState<Patient[]>([]);
   const [patientStats, setPatientStats] = useState<PatientStats | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState<Record<string, unknown>>({});
+  const [_searchQuery, _setSearchQuery] = useState('');
+  const [_filters, _setFilters] = useState<Record<string, unknown>>({});
   const [opened, { open, close }] = useDisclosure(false);
   const [viewModalOpened, { open: openView, close: closeView }] = useDisclosure(false);
   const [historyModalOpened, { open: openHistory, close: closeHistory }] = useDisclosure(false);
   const [documentsModalOpened, { open: openDocuments, close: closeDocuments }] = useDisclosure(false);
 
   useEffect(() => {
+    fetchPatients();
+  }, []);
+
+  useEffect(() => {
     if (!user) {
       setUser(mockUser);
     }
-    fetchPatients();
     fetchStats();
   }, [user, setUser]);
 
@@ -91,7 +92,7 @@ function PatientsPage() {
       if (response.success && response.data) {
         setPatients(response.data.patients || []);
       } else {
-        notifications.show({
+        notificationsService.show({
           title: 'Error',
           message: 'Failed to fetch patients',
           color: 'red',
@@ -99,7 +100,7 @@ function PatientsPage() {
       }
     } catch (error: any) {
       console.error('Error fetching patients:', error);
-      notifications.show({
+      notificationsService.show({
         title: 'Error',
         message: error?.message || 'Failed to fetch patients',
         color: 'red',
@@ -113,7 +114,7 @@ function PatientsPage() {
     try {
       const response = await patientsService.getPatientStats();
       if (response.success && response.data) {
-        setPatientStats(response.data);
+        setPatientStats(response.data as PatientStats);
       }
     } catch (error: any) {
       console.error('Error fetching stats:', error);
@@ -173,7 +174,7 @@ function PatientsPage() {
       try {
         const response = await patientsService.deletePatient(patient.id);
         if (response.success) {
-          notifications.show({
+          notificationsService.show({
             title: 'Success',
             message: 'Patient deleted successfully',
             color: 'green',
@@ -183,7 +184,7 @@ function PatientsPage() {
         }
       } catch (error: any) {
         console.error('Error deleting patient:', error);
-        notifications.show({
+        notificationsService.show({
           title: 'Error',
           message: error?.message || 'Failed to delete patient',
           color: 'red',
@@ -195,9 +196,14 @@ function PatientsPage() {
   // Patient CRUD operations
   const handleCreatePatient = async (data: CreatePatientDto) => {
     try {
-      const response = await patientsService.createPatient(data);
+      // Convert Date to string for API
+      const apiData = {
+        ...data,
+        dateOfBirth: data.dateOfBirth instanceof Date ? data.dateOfBirth.toISOString() : data.dateOfBirth
+      };
+      const response = await patientsService.createPatient(apiData as any);
       if (response.success) {
-        notifications.show({
+        notificationsService.show({
           title: 'Success',
           message: 'Patient created successfully',
           color: 'green',
@@ -208,7 +214,7 @@ function PatientsPage() {
       }
     } catch (error: any) {
       console.error('Error creating patient:', error);
-      notifications.show({
+      notificationsService.show({
         title: 'Error',
         message: error?.message || 'Failed to create patient',
         color: 'red',
@@ -219,9 +225,14 @@ function PatientsPage() {
 
   const handleUpdatePatient = async (data: UpdatePatientDto) => {
     try {
-      const response = await patientsService.updatePatient(data.id, data);
+      // Convert Date to string for API
+      const apiData = {
+        ...data,
+        dateOfBirth: data.dateOfBirth instanceof Date ? data.dateOfBirth.toISOString() : data.dateOfBirth
+      };
+      const response = await patientsService.updatePatient(data.id, apiData as any);
       if (response.success) {
-        notifications.show({
+        notificationsService.show({
           title: 'Success',
           message: 'Patient updated successfully',
           color: 'green',
@@ -232,7 +243,7 @@ function PatientsPage() {
       }
     } catch (error: any) {
       console.error('Error updating patient:', error);
-      notifications.show({
+      notificationsService.show({
         title: 'Error',
         message: error?.message || 'Failed to update patient',
         color: 'red',
@@ -289,7 +300,7 @@ function PatientsPage() {
     // Would navigate to appointment scheduling
   };
 
-  const handleOpenHistory = (patient: PatientListItem) => {
+  const _handleOpenHistory = (patient: PatientListItem) => {
     const fullPatient = patients.find(p => p.id === patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
@@ -297,7 +308,7 @@ function PatientsPage() {
     }
   };
 
-  const handleOpenDocuments = (patient: PatientListItem) => {
+  const _handleOpenDocuments = (patient: PatientListItem) => {
     const fullPatient = patients.find(p => p.id === patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
@@ -401,30 +412,30 @@ function PatientsPage() {
   const filterOptions: FilterOption[] = [
     {
       key: 'status',
-      title: 'Status',
+      label: 'Status',
       type: 'select',
       options: [
-        { value: 'active', title: 'Active' },
-        { value: 'inactive', title: 'Inactive' }
+        { value: 'active', label: 'Active' },
+        { value: 'inactive', label: 'Inactive' }
       ]
     },
     {
       key: 'gender',
-      title: 'Gender',
+      label: 'Gender',
       type: 'select',
       options: [
-        { value: 'male', title: 'Male' },
-        { value: 'female', title: 'Female' },
-        { value: 'other', title: 'Other' }
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+        { value: 'other', label: 'Other' }
       ]
     },
     {
       key: 'hasInsurance',
-      title: 'Insurance',
+      label: 'Insurance',
       type: 'select',
       options: [
-        { value: 'true', title: 'Insured' },
-        { value: 'false', title: 'Self Pay' }
+        { value: 'true', label: 'Insured' },
+        { value: 'false', label: 'Self Pay' }
       ]
     }
   ];
@@ -455,7 +466,7 @@ function PatientsPage() {
   );
 
   return (
-    <Layout user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : undefined} notifications={notifications.length} onLogout={() => setUser(null)}>
+    <Layout user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : undefined} notifications={0} onLogout={() => setUser(null)}>
       <Container fluid>
         <Stack gap="lg">
           {/* Header */}

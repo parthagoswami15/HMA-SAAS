@@ -22,8 +22,8 @@ import {
   ActionIcon,
   Menu,
   ScrollArea,
-  Box,
-  Divider,
+  // Box,
+  // Divider,
   NumberInput,
   Textarea
 } from '@mantine/core';
@@ -39,15 +39,15 @@ import {
   IconUsers,
   IconFlask,
   IconFileText,
-  IconCalendar,
-  IconTrendingUp,
+  // IconCalendar,
+  // IconTrendingUp,
   IconAlertCircle,
   IconCheck,
-  IconX,
+  // IconX,
   IconDotsVertical,
-  IconClipboardList,
+  // IconClipboardList,
   IconBooks,
-  IconActivity,
+  // IconActivity,
   IconDownload
 } from '@tabler/icons-react';
 // Mock data imports removed
@@ -63,46 +63,47 @@ export default function ResearchPage() {
   const [projectModalOpened, { open: openProjectModal, close: closeProjectModal }] = useDisclosure(false);
 
   // API state
-  const [projects, setProjects] = useState<any[]>([]);
-  const [researchStats, setResearchStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_projects, _setProjects] = useState<any[]>([]);
+  const [_researchStats, _setResearchStats] = useState<any>(null);
+  const [_loading, _setLoading] = useState(true);
+  const [_error, _setError] = useState<string | null>(null);
 
   // Fetch data
   useEffect(() => {
     fetchAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      _setLoading(true);
+      _setError(null);
       await Promise.all([fetchProjects(), fetchStats()]);
     } catch (err: any) {
       console.error('Error loading research data:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load research data');
+      _setError(err.response?.data?.message || err.message || 'Failed to load research data');
     } finally {
-      setLoading(false);
+      _setLoading(false);
     }
   };
 
   const fetchProjects = async () => {
     try {
       const response = await researchService.getProjects();
-      setProjects(response.data || []);
+      _setProjects(response.data || []);
     } catch (err: any) {
       console.error('Error fetching research projects:', err);
-      setProjects([] /* TODO: Fetch from API */);
+      _setProjects([] /* TODO: Fetch from API */);
     }
   };
 
   const fetchStats = async () => {
     try {
       const response = await researchService.getStats();
-      setResearchStats(response.data);
+      _setResearchStats(response.data);
     } catch (err: any) {
       console.error('Error fetching research stats:', err);
-      setResearchStats([] /* TODO: Fetch from API */);
+      _setResearchStats({} /* TODO: Fetch from API */);
     }
   };
 

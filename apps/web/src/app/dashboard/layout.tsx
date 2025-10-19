@@ -1,8 +1,7 @@
 'use client';
 
-import { ReactNode, useState, useEffect, Suspense } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import {
   AppShell,
@@ -13,7 +12,6 @@ import {
   Button,
   UnstyledButton,
   Tooltip,
-  Badge,
   Avatar,
   Menu,
   ActionIcon,
@@ -390,7 +388,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               )}
             </div>
 
-            {modules.map((module, index) => {
+            {modules.map((module) => {
               const Icon = module.icon;
               const active = isActive(module.href);
 

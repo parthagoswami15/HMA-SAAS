@@ -8,10 +8,7 @@ import {
   Button,
   Divider,
   Grid,
-  Card,
-  Avatar,
-  ActionIcon,
-  Menu
+  Card
 } from '@mantine/core';
 import {
   IconCalendar,
@@ -23,7 +20,6 @@ import {
   IconTrash,
   IconCheck,
   IconX,
-  IconDotsVertical,
   IconPhone,
   IconMail
 } from '@tabler/icons-react';

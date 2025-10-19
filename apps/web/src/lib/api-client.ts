@@ -129,23 +129,23 @@ export const apiCall = async <T = any>(
 
 // Enhanced API client with proper method signatures
 const enhancedApiClient = {
-  get: async <T = any>(url: string, params?: any) => {
+  get: async <_T = any>(url: string, params?: any) => {
     const response = await apiClient.get(url, { params });
     return response.data;
   },
-  post: async <T = any>(url: string, data?: any) => {
+  post: async <_T = any>(url: string, data?: any) => {
     const response = await apiClient.post(url, data);
     return response.data;
   },
-  patch: async <T = any>(url: string, data?: any) => {
+  patch: async <_T = any>(url: string, data?: any) => {
     const response = await apiClient.patch(url, data);
     return response.data;
   },
-  put: async <T = any>(url: string, data?: any) => {
+  put: async <_T = any>(url: string, data?: any) => {
     const response = await apiClient.put(url, data);
     return response.data;
   },
-  delete: async <T = any>(url: string) => {
+  delete: async <_T = any>(url: string) => {
     const response = await apiClient.delete(url);
     return response.data;
   },

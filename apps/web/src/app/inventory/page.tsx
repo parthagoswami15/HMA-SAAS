@@ -79,7 +79,7 @@ interface StockMovement {
   notes: string;
 }
 
-interface Supplier {
+interface _Supplier {
   id: string;
   name: string;
   contactPerson: string;
@@ -98,14 +98,14 @@ const InventoryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [locationFilter, setLocationFilter] = useState('ALL');
+  const [locationFilter, _setLocationFilter] = useState('ALL');
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<PurchaseOrder | null>(null);
+  const [_selectedOrder, _setSelectedOrder] = useState<PurchaseOrder | null>(null);
   const [showItemModal, setShowItemModal] = useState(false);
-  const [showOrderModal, setShowOrderModal] = useState(false);
-  const [showNewItemModal, setShowNewItemModal] = useState(false);
+  const [_showOrderModal, _setShowOrderModal] = useState(false);
+  const [_showNewItemModal, setShowNewItemModal] = useState(false);
 
-  const mockInventoryItems: InventoryItem[] = [
+  const _mockInventoryItems: InventoryItem[] = [
     {
       id: '1',
       itemCode: 'MED-001',
@@ -286,7 +286,7 @@ const InventoryPage = () => {
     }
   ];
 
-  const mockPurchaseOrders: PurchaseOrder[] = [
+  const _mockPurchaseOrders: PurchaseOrder[] = [
     {
       id: '1',
       orderNumber: 'PO-2024-001',
@@ -336,7 +336,7 @@ const InventoryPage = () => {
     }
   ];
 
-  const mockStockMovements: StockMovement[] = [
+  const _mockStockMovements: StockMovement[] = [
     {
       id: '1',
       itemId: '3',
@@ -683,7 +683,7 @@ const InventoryPage = () => {
             ].map(tab => (
               <button
                 key={tab.key}
-                onClick={() => setCurrentTab(tab.key as string)}
+                onClick={() => setCurrentTab(tab.key as 'inventory' | 'orders' | 'movements' | 'suppliers' | 'analytics' | 'alerts')}
                 style={{
                   padding: '1rem 1.5rem',
                   border: 'none',

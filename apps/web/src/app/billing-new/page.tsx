@@ -18,7 +18,6 @@ import {
   LoadingOverlay,
   Alert,
   Tabs,
-  Table,
   ActionIcon,
   Menu
 } from '@mantine/core';
@@ -50,7 +49,7 @@ import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn } from '../../types/common';
 import billingService from '../../services/billing.service';
 import patientsService from '../../services/patients.service';
-import type { CreateInvoiceDto, CreatePaymentDto, InvoiceFilters, PaymentFilters } from '../../services/billing.service';
+import type { CreateInvoiceDto, CreatePaymentDto, InvoiceFilters } from '../../services/billing.service';
 
 const mockUser: User = {
   id: '1',
@@ -94,6 +93,7 @@ function BillingPage() {
     fetchPayments();
     fetchStats();
     fetchPatients();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchInvoices = async () => {

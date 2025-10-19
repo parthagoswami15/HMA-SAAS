@@ -14,7 +14,6 @@ import {
   Modal,
   Text,
   Tabs,
-  Grid,
   Card,
   Avatar,
   ActionIcon,
@@ -22,18 +21,11 @@ import {
   Stack,
   Divider,
   NumberInput,
-  Textarea,
-  Switch,
   Progress,
   Alert,
-  Timeline,
   SimpleGrid,
-  RingProgress,
-  Flex,
   ScrollArea,
-  ThemeIcon,
-  List,
-  Anchor
+  ThemeIcon
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
@@ -41,7 +33,6 @@ import { notifications } from '@mantine/notifications';
 import {
   IconPlus,
   IconSearch,
-  IconFilter,
   IconEdit,
   IconEye,
   IconTrash,
@@ -49,32 +40,20 @@ import {
   IconUserPlus,
   IconCalendar,
   IconClock,
-  IconTrendingUp,
-  IconTrendingDown,
   IconPhone,
   IconMail,
-  IconMapPin,
   IconStethoscope,
-  IconCertificate,
-  IconSchool,
-  IconBriefcase,
   IconCalendarEvent,
   IconClockHour3,
   IconChartBar,
   IconUserCheck,
   IconUserX,
   IconAlertCircle,
-  IconCheck,
-  IconX,
   IconDotsVertical,
   IconBuilding,
   IconMedicalCross,
-  IconActivity,
   IconAward,
-  IconCurrencyRupee,
   IconCalendarStats,
-  IconUserCircle,
-  IconShieldCheck
 } from '@tabler/icons-react';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart } from '../../../components/MantineChart';
 
@@ -82,22 +61,22 @@ import { MantineDonutChart, SimpleAreaChart, SimpleBarChart } from '../../../com
 import staffService from '../../../services/staff.service';
 
 // Import types
-import { Staff, Department, Shift, Attendance } from '../../../types/staff';
-import { UserRole, Gender, Status } from '../../../types/common';
+import { Staff } from '../../../types/staff';
+import { UserRole, Status } from '../../../types/common';
 
 // Fallback empty data
-const mockDepartments: any[] = [];
-const mockShifts: any[] = [];
-const mockAttendance: any[] = [];
-const mockLeaveRequests: any[] = [];
-const mockTraining: any[] = [];
+const _mockDepartments: any[] = [];
+const _mockShifts: any[] = [];
+const _mockAttendance: any[] = [];
+const _mockLeaveRequests: any[] = [];
+const _mockTraining: any[] = [];
 
 const StaffManagement = () => {
   // API State
   const [staff, setStaff] = useState<any[]>([]);
   const [staffStats, setStaffStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_loading, setLoading] = useState(true);
+  const [_error, setError] = useState<string | null>(null);
   
   // State management
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,18 +86,19 @@ const StaffManagement = () => {
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedStaff, setSelectedStaff] = useState<any>(null);
-  const [staffToEdit, setStaffToEdit] = useState<any>(null);
+  const [_staffToEdit, setStaffToEdit] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<string>('list');
 
   // Modal states
   const [staffDetailOpened, { open: openStaffDetail, close: closeStaffDetail }] = useDisclosure(false);
   const [addStaffOpened, { open: openAddStaff, close: closeAddStaff }] = useDisclosure(false);
-  const [editStaffOpened, { open: openEditStaff, close: closeEditStaff }] = useDisclosure(false);
+  const [_editStaffOpened, { open: _openEditStaff, close: _closeEditStaff }] = useDisclosure(false);
 
   // Fetch staff data
   useEffect(() => {
     fetchStaff();
     fetchStats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchStaff = async () => {

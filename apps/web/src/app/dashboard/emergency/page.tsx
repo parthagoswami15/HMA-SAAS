@@ -25,11 +25,11 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  Timeline,
-  RingProgress,
-  List,
-  MultiSelect,
-  Center,
+  // Timeline,
+  // RingProgress,
+  // List,
+  // MultiSelect,
+  // Center,
   Divider,
   Stepper
 } from '@mantine/core';
@@ -42,78 +42,78 @@ import {
   IconSearch,
   IconEdit,
   IconEye,
-  IconTrash,
-  IconCalendar,
+  // IconTrash,
+  // IconCalendar,
   IconUrgent,
   IconChartBar,
-  IconPhone,
-  IconMail,
-  IconAlertCircle,
+  // IconPhone,
+  // IconMail,
+  // IconAlertCircle,
   IconCheck,
-  IconX,
-  IconDotsVertical,
+  // IconX,
+  // IconDotsVertical,
   IconAlertTriangle,
-  IconHeartbeat,
+  // IconHeartbeat,
   IconClipboardList,
-  IconFileText,
+  // IconFileText,
   IconDownload,
-  IconPrinter,
-  IconShare,
+  // IconPrinter,
+  // IconShare,
   IconActivity,
-  IconExclamationMark,
+  // IconExclamationMark,
   IconClockHour4,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconUsers,
-  IconCalculator,
+  // IconTrendingUp,
+  // IconTrendingDown,
+  // IconUsers,
+  // IconCalculator,
   IconSettings,
-  IconRefresh,
-  IconFilter,
-  IconBarcode,
-  IconTemperature,
-  IconShieldCheck,
-  IconCircleCheck,
+  // IconRefresh,
+  // IconFilter,
+  // IconBarcode,
+  // IconTemperature,
+  // IconShieldCheck,
+  // IconCircleCheck,
   IconClipboard,
-  IconReportMedical,
+  // IconReportMedical,
   IconLungs,
   IconHeart,
   IconBrain,
-  IconBone,
-  IconStethoscope,
-  IconMedicalCross,
-  IconPackage,
-  IconTruck,
-  IconCash,
-  IconReceipt,
-  IconNotes,
-  IconClock,
-  IconTag,
-  IconAlarm,
-  IconInfoCircle,
+  // IconBone,
+  // IconStethoscope,
+  // IconMedicalCross,
+  // IconPackage,
+  // IconTruck,
+  // IconCash,
+  // IconReceipt,
+  // IconNotes,
+  // IconClock,
+  // IconTag,
+  // IconAlarm,
+  // IconInfoCircle,
   IconBed,
   IconAmbulance,
   IconBell,
-  IconFlask,
-  IconDroplet,
-  IconNurse,
-  IconBandage,
-  IconPill,
+  // IconFlask,
+  // IconDroplet,
+  // IconNurse,
+  // IconBandage,
+  // IconPill,
 } from '@tabler/icons-react';
 
 // Import types and mock data
 import {
-  EmergencyCase,
-  Triage,
+  // EmergencyCase,
+  // Triage,
   TriageLevel,
   CaseStatus,
   ICUBed,
   BedStatus,
-  VitalSigns,
-  CriticalCareEquipment,
+  // VitalSigns,
+  // CriticalCareEquipment,
   EquipmentStatus,
-  EmergencyProtocol,
-  EmergencyStats,
-  EmergencyFilters
+  // EmergencyProtocol,
+  // EmergencyStats,
+  // EmergencyFilters
 } from '../../../types/emergency';
 
 // Mock data imports removed - using API data only
@@ -126,17 +126,17 @@ const EmergencyManagement = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedBedStatus, setSelectedBedStatus] = useState<string>('');
   const [selectedCase, setSelectedCase] = useState<any | null>(null);
-  const [selectedBed, setSelectedBed] = useState<ICUBed | null>(null);
+  const [_selectedBed, _setSelectedBed] = useState<ICUBed | null>(null);
 
   // Modal states
   const [caseDetailOpened, { open: openCaseDetail, close: closeCaseDetail }] = useDisclosure(false);
   const [addCaseOpened, { open: openAddCase, close: closeAddCase }] = useDisclosure(false);
-  const [bedDetailOpened, { open: openBedDetail, close: closeBedDetail }] = useDisclosure(false);
-  const [triageOpened, { open: openTriage, close: closeTriage }] = useDisclosure(false);
-  const [protocolOpened, { open: openProtocol, close: closeProtocol }] = useDisclosure(false);
+  const [_bedDetailOpened, { open: _openBedDetail, close: _closeBedDetail }] = useDisclosure(false);
+  const [_triageOpened, { open: openTriage, close: _closeTriage }] = useDisclosure(false);
+  const [_protocolOpened, { open: openProtocol, close: _closeProtocol }] = useDisclosure(false);
 
   // Filter emergency cases
-  const filteredCases = useMemo(() => {
+  const _filteredCases = useMemo(() => {
     const cases: any[] = []; // TODO: Fetch from API
     return cases.filter((emergencyCase) => {
       const matchesSearch = 
@@ -152,7 +152,7 @@ const EmergencyManagement = () => {
   }, [searchQuery, selectedTriage, selectedStatus]);
 
   // Filter ICU beds
-  const filteredBeds = useMemo(() => {
+  const _filteredBeds = useMemo(() => {
     const beds: any[] = []; // TODO: Fetch from API
     return beds.filter((bed) => {
       const matchesSearch = 
@@ -183,21 +183,14 @@ const EmergencyManagement = () => {
   };
 
   const getStatusColor = (status: CaseStatus | BedStatus | EquipmentStatus) => {
-    switch (status) {
-      case 'waiting':
-      case 'available':
-      case 'operational':
-      case 'available': return 'green';
-      case 'in_progress':
-      case 'occupied':
-      case 'maintenance': return 'orange';
-      case 'completed':
-      case 'discharged': return 'blue';
-      case 'cancelled':
-      case 'out_of_service': return 'red';
-      case 'transferred': return 'purple';
-      default: return 'gray';
-    }
+    const statusStr = status as string;
+    if (['waiting', 'available', 'operational'].includes(statusStr)) return 'green';
+    if (['in_progress', 'occupied', 'maintenance', 'in_treatment', 'observation'].includes(statusStr)) return 'orange';
+    if (['completed', 'discharged'].includes(statusStr)) return 'blue';
+    if (['cancelled', 'out_of_service'].includes(statusStr)) return 'red';
+    if (['transferred', 'admitted'].includes(statusStr)) return 'purple';
+    if (['reserved', 'in_use'].includes(statusStr)) return 'yellow';
+    return 'gray';
   };
 
   const getTriageLabel = (level: number | TriageLevel) => {
@@ -221,8 +214,8 @@ const EmergencyManagement = () => {
   };
 
   const handleViewBed = (bed: ICUBed) => {
-    setSelectedBed(bed);
-    openBedDetail();
+    _setSelectedBed(bed);
+    _openBedDetail();
   };
 
   const clearFilters = () => {
@@ -232,13 +225,13 @@ const EmergencyManagement = () => {
     setSelectedBedStatus('');
   };
 
-  const getVitalStatus = (value: number, normal: { min: number; max: number }) => {
+  const _getVitalStatus = (value: number, normal: { min: number; max: number }) => {
     if (value < normal.min || value > normal.max) return 'critical';
     if (value < normal.min * 1.1 || value > normal.max * 0.9) return 'warning';
     return 'normal';
   };
 
-  const getVitalColor = (status: string) => {
+  const _getVitalColor = (status: string) => {
     switch (status) {
       case 'critical': return 'red';
       case 'warning': return 'orange';
@@ -983,7 +976,7 @@ const EmergencyManagement = () => {
 
                   <div>
                     <Text size="sm" fw={500} mb="sm">Protocol Steps</Text>
-                    <Stepper active={-1} breakpoint="sm">
+                    <Stepper active={-1}>
                       {protocol.steps.map((step, index) => (
                         <Stepper.Step 
                           key={index} 

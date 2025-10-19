@@ -27,78 +27,43 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  Timeline,
-  Stepper,
-  RingProgress,
-  Tooltip,
-  List
+  // Timeline,
+  // RingProgress,
+  // Tooltip,
+  // List
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import { MantineDonutChart, SimpleBarChart, SimpleAreaChart } from '../../../components/MantineChart';
 import surgeryService from '../../../services/surgery.service';
 import {
   IconPlus,
   IconSearch,
   IconEdit,
   IconEye,
-  IconTrash,
-  IconCalendar,
+  // IconTrash,
   IconScissors,
   IconChartBar,
-  IconPhone,
-  IconMail,
-  IconAlertCircle,
-  IconCheck,
-  IconX,
+  // IconAlertCircle,
+  // IconCheck,
   IconDotsVertical,
   IconReportMedical,
   IconClock,
   IconClipboardList,
   IconFileText,
   IconDownload,
-  IconPrinter,
-  IconShare,
-  IconExclamationMark,
-  IconClockHour4,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconUsers,
-  IconCalculator,
-  IconSettings,
-  IconRefresh,
-  IconFilter,
-  IconBarcode,
-  IconTemperature,
-  IconShieldCheck,
-  IconAlertTriangle,
-  IconCircleCheck,
-  IconClipboard,
+  // IconShieldCheck,
+  // IconAlertTriangle,
   IconActivity,
-  IconHeart,
-  IconBrain,
-  IconBone,
-  IconStethoscope,
-  IconMedicalCross,
-  IconPackage,
-  IconTruck,
-  IconCash,
-  IconReceipt,
-  IconNotes,
-  IconTag,
-  IconAlarm,
-  IconInfoCircle,
   IconBed,
-  IconAmbulance,
-  IconFlask,
-  IconDroplet,
-  IconBandage,
-  IconPill,
-  IconBolt,
-  IconZoom,
   IconTools,
-  IconScale
+  IconScale,
+  IconMedicalCross,
+  IconCalendar,
+  IconUsers,
+  IconX,
+  IconSettings
 } from '@tabler/icons-react';
 import { DatePickerInput } from '@mantine/dates';
 
@@ -115,17 +80,18 @@ const SurgeryManagement = () => {
   const [selectedPriority, setSelectedPriority] = useState<string>('');
   const [selectedORStatus, setSelectedORStatus] = useState<string>('');
   const [selectedSurgery, setSelectedSurgery] = useState<any>(null);
-  const [selectedOR, setSelectedOR] = useState<any>(null);
+  const [_selectedOR, setSelectedOR] = useState<any>(null);
 
   // API data state
   const [surgeries, setSurgeries] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [_stats, setStats] = useState<any>(null);
   const [theaters, setTheaters] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
@@ -195,14 +161,15 @@ const SurgeryManagement = () => {
     if (!loading) {
       fetchSurgeries();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, selectedType, selectedStatus, selectedPriority]);
 
   // Modal states
   const [surgeryDetailOpened, { open: openSurgeryDetail, close: closeSurgeryDetail }] = useDisclosure(false);
   const [addSurgeryOpened, { open: openAddSurgery, close: closeAddSurgery }] = useDisclosure(false);
-  const [orDetailOpened, { open: openORDetail, close: closeORDetail }] = useDisclosure(false);
-  const [preOpOpened, { open: openPreOp, close: closePreOp }] = useDisclosure(false);
-  const [postOpOpened, { open: openPostOp, close: closePostOp }] = useDisclosure(false);
+  const [_orDetailOpened, { open: _openORDetail, close: _closeORDetail }] = useDisclosure(false);
+  const [_preOpOpened, { open: _openPreOp, close: _closePreOp }] = useDisclosure(false);
+  const [_postOpOpened, { open: _openPostOp, close: _closePostOp }] = useDisclosure(false);
 
   // Filter surgeries
   const filteredSurgeries = useMemo(() => {
@@ -220,7 +187,7 @@ const SurgeryManagement = () => {
 
       return matchesSearch && matchesType && matchesStatus && matchesPriority;
     });
-  }, [searchQuery, selectedType, selectedStatus, selectedPriority]);
+  }, [searchQuery, selectedType, selectedStatus, selectedPriority, surgeries]);
 
   // Filter operating rooms
   const filteredORs = useMemo(() => {
@@ -235,7 +202,7 @@ const SurgeryManagement = () => {
 
       return matchesSearch && matchesStatus;
     });
-  }, [searchQuery, selectedORStatus]);
+  }, [searchQuery, selectedORStatus, theaters]);
 
   // Helper functions
   const getStatusColor = (status: string) => {
@@ -299,13 +266,13 @@ const SurgeryManagement = () => {
     setSelectedORStatus('');
   };
 
-  const formatDuration = (minutes: number) => {
+  const _formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return `${hours}h ${mins}m`;
   };
 
-  const formatCurrency = (amount: number) => {
+  const _formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR'

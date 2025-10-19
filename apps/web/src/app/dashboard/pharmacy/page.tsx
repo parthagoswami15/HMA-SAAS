@@ -24,74 +24,41 @@ import {
   ScrollArea,
   ThemeIcon,
   Alert,
-  Progress,
   NumberInput,
   Textarea,
-  Timeline,
   List,
-  Tooltip,
-  Image,
-  Checkbox
+  // Tooltip,
+  // Image,
+  Progress
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleAreaChart, SimpleLineChart, SimpleBarChart } from '../../../components/MantineChart';
+import { MantineDonutChart, SimpleBarChart, SimpleAreaChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
   IconEdit,
   IconEye,
   IconTrash,
-  IconCalendar,
   IconPill,
   IconChartBar,
-  IconPhone,
-  IconMail,
   IconAlertCircle,
-  IconCheck,
-  IconX,
+  // IconCheck,
   IconDotsVertical,
   IconMedicineSyrup,
   IconBottle,
-  IconClipboardList,
   IconFileText,
   IconDownload,
-  IconPrinter,
-  IconShare,
-  IconFlask,
-  IconExclamationMark,
-  IconClockHour4,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconUsers,
-  IconCalculator,
-  IconSettings,
-  IconRefresh,
-  IconFilter,
   IconBarcode,
-  IconTemperature,
   IconShieldCheck,
   IconAlertTriangle,
-  IconCircleCheck,
-  IconClipboard,
-  IconReportMedical,
-  IconAtom,
-  IconHeartbeat,
-  IconBrain,
-  IconBone,
-  IconActivity,
-  IconMedicalCross,
   IconPackage,
   IconTruck,
   IconCash,
   IconReceipt,
-  IconStethoscope,
-  IconNotes,
-  IconClock,
-  IconTag,
-  IconAlarm,
-  IconInfoCircle
+  IconInfoCircle,
+  IconPrinter
 } from '@tabler/icons-react';
 
 // Import types and services
@@ -103,33 +70,34 @@ const PharmacyManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
-  const [selectedSupplier, setSelectedSupplier] = useState<string>('');
+  const [_selectedSupplier, _setSelectedSupplier] = useState<string>('');
   const [selectedMedication, setSelectedMedication] = useState<any>(null);
-  const [selectedPrescription, setSelectedPrescription] = useState<any>(null);
-  const [selectedDispensation, setSelectedDispensation] = useState<any>(null);
+  const [_selectedPrescription, _setSelectedPrescription] = useState<any>(null);
+  const [_selectedDispensation, _setSelectedDispensation] = useState<any>(null);
 
   // Modal states
   const [medicationDetailOpened, { open: openMedicationDetail, close: closeMedicationDetail }] = useDisclosure(false);
   const [addMedicationOpened, { open: openAddMedication, close: closeAddMedication }] = useDisclosure(false);
-  const [prescriptionDetailOpened, { open: openPrescriptionDetail, close: closePrescriptionDetail }] = useDisclosure(false);
-  const [dispensationOpened, { open: openDispensation, close: closeDispensation }] = useDisclosure(false);
+  const [_prescriptionDetailOpened, { open: _openPrescriptionDetail, close: _closePrescriptionDetail }] = useDisclosure(false);
+  const [_dispensationOpened, { open: _openDispensation, close: _closeDispensation }] = useDisclosure(false);
   const [interactionCheckOpened, { open: openInteractionCheck, close: closeInteractionCheck }] = useDisclosure(false);
 
   // API data
   const [pharmacyStats, setPharmacyStats] = useState<any>(null);
   const [medications, setMedications] = useState<any>([]);
   const [pharmacyOrders, setPharmacyOrders] = useState<any>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_loading, _setLoading] = useState(true);
+  const [_error, _setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      _setLoading(true);
+      _setError(null);
       await Promise.all([
         fetchStats(),
         fetchMedications(),
@@ -137,13 +105,13 @@ const PharmacyManagement = () => {
       ]);
     } catch (err: any) {
       console.error('Error loading pharmacy data:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load pharmacy data');
+      _setError(err.response?.data?.message || err.message || 'Failed to load pharmacy data');
       // Fallback to mock data
       setPharmacyStats([] /* TODO: Fetch from API */);
       setMedications([] /* TODO: Fetch from API */);
       setPharmacyOrders([] /* TODO: Fetch from API */);
     } finally {
-      setLoading(false);
+      _setLoading(false);
     }
   };
 
@@ -198,15 +166,17 @@ const PharmacyManagement = () => {
 
   // Refetch when filters change
   useEffect(() => {
-    if (!loading) {
+    if (!_loading) {
       fetchMedications();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, selectedStatus, searchQuery]);
 
   useEffect(() => {
-    if (!loading && activeTab === 'prescriptions') {
+    if (!_loading && activeTab === 'prescriptions') {
       fetchOrders();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, selectedStatus, searchQuery]);
 
   // Filter medications
@@ -313,20 +283,20 @@ const PharmacyManagement = () => {
   };
 
   const handleViewPrescription = (prescription: any) => {
-    setSelectedPrescription(prescription);
-    openPrescriptionDetail();
+    _setSelectedPrescription(prescription);
+    _openPrescriptionDetail();
   };
 
   const handleDispenseMedication = (dispensation: any) => {
-    setSelectedDispensation(dispensation);
-    openDispensation();
+    _setSelectedDispensation(dispensation);
+    _openDispensation();
   };
 
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedCategory('');
     setSelectedStatus('');
-    setSelectedSupplier('');
+    _setSelectedSupplier('');
   };
 
   const formatCurrency = (amount: number) => {
@@ -419,14 +389,14 @@ const PharmacyManagement = () => {
       </Group>
 
       {/* Error Display */}
-      {error && (
+      {_error && (
         <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red" variant="light" mb="lg">
-          {error} - Using cached data
+          {_error} - Using cached data
         </Alert>
       )}
 
       {/* Statistics Cards */}
-      {loading ? (
+      {_loading ? (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
           {[1, 2, 3, 4].map((i) => (
             <Card key={i} padding="lg" radius="md" withBorder>

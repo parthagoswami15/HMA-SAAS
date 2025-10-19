@@ -82,10 +82,11 @@ export const validators = {
 export interface FieldConfig {
   name: string;
   title: string;
+  label?: string;
   type: 'text' | 'email' | 'password' | 'tel' | 'number' | 'date' | 'select' | 'textarea' | 'checkbox' | 'radio';
   placeholder?: string;
   validators?: Array<(value: any) => string | null>;
-  options?: Array<{ value: string; title: string }>;
+  options?: Array<{ value: string; title: string; label?: string }>;
   rows?: number;
   disabled?: boolean;
   required?: boolean;
@@ -214,7 +215,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
               fontWeight: '600',
               color: '#374151'
             }}>
-              {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+              {field.label || field.title} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
             </label>
             <select
               value={fieldValue}
@@ -233,10 +234,10 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
                 transition: 'border-color 0.2s ease'
               }}
             >
-              <option value="">Select {field.label}</option>
+              <option value="">Select {field.label || field.title}</option>
               {field.options?.map(option => (
                 <option key={option.value} value={option.value}>
-                  {option.label}
+                  {option.label || option.title}
                 </option>
               ))}
             </select>
@@ -263,7 +264,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
               fontWeight: '600',
               color: '#374151'
             }}>
-              {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+              {field.label || field.title} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
             </label>
             <textarea
               value={fieldValue}
@@ -315,12 +316,12 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
                 onBlur={handleBlur(field.name)}
                 disabled={field.disabled}
                 style={{
-                  marginRight: '0.75rem',
+                  marginRight: '0.5rem',
                   width: '1rem',
                   height: '1rem'
                 }}
               />
-              {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+              {field.label || field.title} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
             </label>
             {fieldError && (
               <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: '#ef4444' }}>
@@ -345,7 +346,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
               fontWeight: '600',
               color: '#374151'
             }}>
-              {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+              {field.label || field.title} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {field.options?.map(option => (
@@ -366,7 +367,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
                     disabled={field.disabled}
                     style={{ marginRight: '0.5rem' }}
                   />
-                  {option.label}
+                  {option.label || option.title}
                 </label>
               ))}
             </div>
@@ -388,7 +389,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
           <div key={field.name} style={{ marginBottom: '1.5rem' }}>
             <Input
               type={field.type}
-              label={field.label}
+              label={field.label || field.title}
               placeholder={field.placeholder}
               value={fieldValue}
               onChange={handleInputChange(field.name)}
@@ -588,7 +589,7 @@ export const PatientRegistrationForm: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       console.log('Patient registered:', values);
       alert('Patient registered successfully!');
-    } catch (error) {
+    } catch (_error) {
       alert('Failed to register patient. Please try again.');
     } finally {
       setIsLoading(false);

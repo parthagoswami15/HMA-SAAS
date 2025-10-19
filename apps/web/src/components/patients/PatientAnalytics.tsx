@@ -13,18 +13,14 @@ import {
   SimpleGrid,
   Stack,
   Select,
-  SegmentedControl,
   RingProgress,
   ThemeIcon,
-  Timeline,
-  Table,
   Alert,
   Tabs,
   ActionIcon,
   Menu,
   Button,
   Center,
-  Divider,
   Modal
 } from '@mantine/core';
 import {
@@ -35,13 +31,10 @@ import {
   IconHeart,
   IconCalendar,
   IconChartBar,
-  IconChartPie,
   IconRefresh,
   IconDownload,
   IconPrinter,
   IconShare,
-  IconFilter,
-  IconEye,
   IconAlertCircle,
   IconMedicalCross,
   IconShield,
@@ -50,7 +43,6 @@ import {
   IconClock
 } from '@tabler/icons-react';
 import { PatientStats, Patient } from '../../types/patient';
-import { BloodGroup } from '../../types/common';
 import { formatDate } from '../../lib/utils';
 
 interface PatientAnalyticsProps {
@@ -81,7 +73,7 @@ export default function PatientAnalytics({ opened, onClose, patients, stats }: P
     const totalPatients = patients.length;
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
-    const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+    const _lastYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
 
     const newPatientsThisMonth = patients.filter(p => 
       new Date(p.registrationDate) >= lastMonth

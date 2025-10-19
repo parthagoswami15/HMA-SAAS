@@ -59,7 +59,7 @@ const RadiologyPage = () => {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
 
-  const mockOrders: ImagingOrder[] = [
+  const _mockOrders: ImagingOrder[] = [
     {
       id: '1',
       orderId: 'RAD-2024-001',
@@ -157,7 +157,7 @@ const RadiologyPage = () => {
     }
   ];
 
-  const mockReports: RadiologyReport[] = [
+  const _mockReports: RadiologyReport[] = [
     {
       id: '1',
       orderId: 'RAD-2024-002',

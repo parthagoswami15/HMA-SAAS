@@ -11,20 +11,13 @@ import {
   Select,
   Button,
   Paper,
-  Title,
   Badge,
   ActionIcon,
   Grid,
   Alert,
   Tabs,
-  FileInput,
-  Progress,
-  Image,
-  Card,
-  Spotlight,
   Menu,
-  ThemeIcon,
-  Table
+  ThemeIcon
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE, PDF_MIME_TYPE } from '@mantine/dropzone';
@@ -39,20 +32,15 @@ import {
   IconShare,
   IconFileUpload,
   IconCalendar,
-  IconPlus,
   IconDeviceFloppy,
   IconX,
   IconPhoto,
-  // IconFilePdf, // not available
+  IconSearch,
   IconFileWord,
   IconFile,
   IconLock,
   IconShield,
   IconWorld,
-  IconCheck,
-  IconExternalLink,
-  IconSearch,
-  IconFilter,
   IconSortAscending,
   IconDotsVertical
 } from '@tabler/icons-react';
@@ -178,7 +166,8 @@ export default function DocumentManager({
       });
 
       handleUploadModalClose();
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Upload Failed',
         message: 'Failed to upload documents. Please try again.',
@@ -200,7 +189,8 @@ export default function DocumentManager({
         color: 'green'
       });
       handleEditModalClose();
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Update Failed',
         message: 'Failed to update document. Please try again.',
@@ -218,7 +208,8 @@ export default function DocumentManager({
           message: 'Document has been deleted successfully.',
           color: 'green'
         });
-      } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_error) {
         notifications.show({
           title: 'Delete Failed',
           message: 'Failed to delete document. Please try again.',

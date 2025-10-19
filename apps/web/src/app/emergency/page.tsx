@@ -114,14 +114,14 @@ const EmergencyPage = () => {
   const [currentTab, setCurrentTab] = useState<'dashboard' | 'alerts' | 'beds' | 'contacts' | 'patients' | 'triage'>('dashboard');
   const [searchTerm, setSearchTerm] = useState('');
   const [alertFilter, setAlertFilter] = useState('ALL');
-  const [bedFilter, setBedFilter] = useState('ALL');
+  const [_bedFilter, _setBedFilter] = useState('ALL');
   const [selectedAlert, setSelectedAlert] = useState<EmergencyAlert | null>(null);
-  const [selectedPatient, setSelectedPatient] = useState<CriticalPatient | null>(null);
+  const [_selectedPatient, _setSelectedPatient] = useState<CriticalPatient | null>(null);
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [showPatientModal, setShowPatientModal] = useState(false);
-  const [showNewAlertModal, setShowNewAlertModal] = useState(false);
+  const [_showPatientModal, _setShowPatientModal] = useState(false);
+  const [_showNewAlertModal, setShowNewAlertModal] = useState(false);
 
-  const mockAlerts: EmergencyAlert[] = [
+  const _mockAlerts: EmergencyAlert[] = [
     {
       id: '1',
       alertId: 'EA-2024-001',
@@ -180,7 +180,7 @@ const EmergencyPage = () => {
     }
   ];
 
-  const mockBeds: BedAvailability[] = [
+  const _mockBeds: BedAvailability[] = [
     {
       id: '1',
       wardName: 'ICU',
@@ -215,7 +215,7 @@ const EmergencyPage = () => {
       bedNumber: 'ED-101',
       bedType: 'EMERGENCY',
       status: 'RESERVED',
-      priority: 'CRITICAL',
+      priority: 'HIGH',
       equipmentAvailable: ['Cardiac Monitor', 'Defibrillator', 'Oxygen'],
       lastCleaned: '2024-12-05T14:00:00',
       nurseAssigned: 'RN Patricia Davis'
@@ -233,7 +233,7 @@ const EmergencyPage = () => {
     }
   ];
 
-  const mockContacts: EmergencyContact[] = [
+  const _mockContacts: EmergencyContact[] = [
     {
       id: '1',
       name: 'Dr. Sarah Mitchell',
@@ -285,7 +285,7 @@ const EmergencyPage = () => {
     }
   ];
 
-  const mockCriticalPatients: CriticalPatient[] = [
+  const _mockCriticalPatients: CriticalPatient[] = [
     {
       id: '1',
       patientId: 'P001',
@@ -338,7 +338,7 @@ const EmergencyPage = () => {
     }
   ];
 
-  const mockTriageEntries: TriageEntry[] = [
+  const _mockTriageEntries: TriageEntry[] = [
     {
       id: '1',
       patientName: 'Jane Smith',
@@ -418,7 +418,7 @@ const EmergencyPage = () => {
     return colors[status as keyof typeof colors] || '#6b7280';
   };
 
-  const getTriageLevelColor = (level: number) => {
+  const _getTriageLevelColor = (level: number) => {
     const colors = {
       1: '#dc2626', // Resuscitation - Red
       2: '#ea580c', // Emergent - Orange  
@@ -711,7 +711,7 @@ const EmergencyPage = () => {
             ].map(tab => (
               <button
                 key={tab.key}
-                onClick={() => setCurrentTab(tab.key as string)}
+                onClick={() => setCurrentTab(tab.key as 'dashboard' | 'alerts' | 'beds' | 'contacts' | 'patients' | 'triage')}
                 style={{
                   padding: '1rem 1.5rem',
                   border: 'none',

@@ -66,7 +66,7 @@ const Input: React.FC<InputProps> = ({
     ...style
   };
 
-  const focusStyles = {
+  const _focusStyles = {
     ':focus': {
       borderColor: '#667eea',
       boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)'

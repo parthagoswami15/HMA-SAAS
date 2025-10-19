@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { tenantsService, Tenant as TenantType } from '@/services/tenants.service';
+import { tenantsService } from '@/services/tenants.service';
 import { 
   Card, Title, Text, Stack, Badge, Group, Button, Table, 
   TextInput, Select, Modal, Tabs, Progress, ActionIcon 
@@ -46,6 +46,7 @@ export default function TenantsManagementPage() {
   // Fetch tenants from API
   useEffect(() => {
     fetchTenants();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter]);
 
   const fetchTenants = async () => {
@@ -154,8 +155,7 @@ export default function TenantsManagementPage() {
   const filteredTenants = displayTenants.filter(tenant => {
     const matchesSearch = tenant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          tenant.slug.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || tenant.status === statusFilter || 
-                         (statusFilter === 'ACTIVE' && tenant.isActive);
+    const matchesStatus = statusFilter === 'all' || tenant.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 

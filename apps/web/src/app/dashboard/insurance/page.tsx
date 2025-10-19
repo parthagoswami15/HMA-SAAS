@@ -24,19 +24,19 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  Switch,
+  // Switch,
   Divider,
-  Alert,
+  // Alert,
   Timeline,
-  List,
+  // List,
   Indicator,
-  RingProgress,
-  Stepper
+  // RingProgress,
+  // Stepper
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { DatePickerInput } from '@mantine/dates';
+// import { DatePickerInput } from '@mantine/dates';
 import insuranceService from '../../../services/insurance.service';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
@@ -44,65 +44,65 @@ import {
   IconSearch,
   IconEdit,
   IconEye,
-  IconTrash,
+  // IconTrash,
   IconShield,
   IconUser,
   IconUsers,
   IconCalendar,
-  IconClock,
-  IconStethoscope,
-  IconHeart,
-  IconActivity,
+  // IconClock,
+  // IconStethoscope,
+  // IconHeart,
+  // IconActivity,
   IconChartBar,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconMedicalCross,
-  IconNurse,
-  IconPill,
-  IconDroplet,
-  IconThermometer,
-  IconLungs,
+  // IconTrendingUp,
+  // IconTrendingDown,
+  // IconMedicalCross,
+  // IconNurse,
+  // IconPill,
+  // IconDroplet,
+  // IconThermometer,
+  // IconLungs,
   IconFileText,
   IconPrinter,
-  IconDownload,
+  // IconDownload,
   IconRefresh,
-  IconUserCheck,
-  IconBedFilled,
+  // IconUserCheck,
+  // IconBedFilled,
   IconClipboard,
-  IconReport,
-  IconCalendarEvent,
-  IconPhone,
-  IconMail,
-  IconMapPin,
+  // IconReport,
+  // IconCalendarEvent,
+  // IconPhone,
+  // IconMail,
+  // IconMapPin,
   IconCash,
   IconCreditCard,
-  IconReceipt,
+  // IconReceipt,
   IconCheck,
   IconX,
-  IconAlertCircle,
-  IconArrowUp,
-  IconArrowDown,
-  IconHome,
-  IconTransfer,
-  IconEmergencyBed,
+  // IconAlertCircle,
+  // IconArrowUp,
+  // IconArrowDown,
+  // IconHome,
+  // IconTransfer,
+  // IconEmergencyBed,
   IconBuildingBank,
   IconFileUpload,
   IconClockHour4,
-  IconCheckbox,
-  IconAlertTriangle,
-  IconPhotoCheck,
-  IconNotes,
-  IconFilter,
-  IconSortDescending,
+  // IconCheckbox,
+  // IconAlertTriangle,
+  // IconPhotoCheck,
+  // IconNotes,
+  // IconFilter,
+  // IconSortDescending,
   IconExternalLink,
-  IconCalendarStats,
-  IconCurrency,
+  // IconCalendarStats,
+  // IconCurrency,
   IconPercentage,
-  IconShieldCheck,
-  IconShieldX,
-  IconClockPause,
-  IconFileCheck,
-  IconFileX,
+  // IconShieldCheck,
+  // IconShieldX,
+  // IconClockPause,
+  // IconFileCheck,
+  // IconFileX,
   IconAlarm
 } from '@tabler/icons-react';
 
@@ -426,25 +426,26 @@ const InsuranceManagement = () => {
   const [selectedPolicy, setSelectedPolicy] = useState<PolicyDetails | null>(null);
 
   // API data state
-  const [claims, setClaims] = useState<InsuranceClaim[]>([]);
-  const [stats, setStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_claims, _setClaims] = useState<InsuranceClaim[]>([]);
+  const [_stats, _setStats] = useState<any>(null);
+  const [_loading, _setLoading] = useState(true);
+  const [_error, _setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      _setLoading(true);
+      _setError(null);
       await Promise.all([fetchClaims(), fetchStats()]);
     } catch (err: any) {
       console.error('Error loading insurance data:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load insurance data');
+      _setError(err.response?.data?.message || err.message || 'Failed to load insurance data');
     } finally {
-      setLoading(false);
+      _setLoading(false);
     }
   };
 
@@ -460,20 +461,20 @@ const InsuranceManagement = () => {
       const claimsData = Array.isArray(response.data) 
         ? response.data 
         : (response.data?.items || []);
-      setClaims(claimsData as InsuranceClaim[]);
+      _setClaims(claimsData as InsuranceClaim[]);
     } catch (err: any) {
       console.warn('Error fetching claims (using empty data):', err.response?.data?.message || err.message);
-      setClaims([]);
+      _setClaims([]);
     }
   };
 
   const fetchStats = async () => {
     try {
       const response = await insuranceService.getStats();
-      setStats(response.data);
+      _setStats(response.data);
     } catch (err: any) {
       console.warn('Error fetching insurance stats (using default values):', err.response?.data?.message || err.message);
-      setStats({
+      _setStats({
         totalClaims: 0,
         pendingClaims: 0,
         approvedClaims: 0,
@@ -485,9 +486,10 @@ const InsuranceManagement = () => {
   };
 
   useEffect(() => {
-    if (!loading) {
+    if (!_loading) {
       fetchClaims();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, selectedProvider, selectedStatus]);
 
   // Modal states

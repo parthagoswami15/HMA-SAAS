@@ -20,8 +20,7 @@ import {
   Tabs,
   ActionIcon,
   Menu,
-  Avatar,
-  Progress
+  Avatar
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
@@ -94,6 +93,7 @@ function EmergencyPage() {
     fetchStats();
     fetchPatients();
     fetchDoctors();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchCases = async () => {

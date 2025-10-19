@@ -13,17 +13,17 @@
 
 import { withRBAC, Permission } from '@/lib/rbac/RBACProvider';
 import { usePatients } from '@/lib/api/hooks';
-import { 
-  TableSkeleton, 
-  EmptyState, 
-  ErrorState,
-  LoadingSpinner 
-} from '@/components/shared/LoadingStates';
+// import { 
+//   TableSkeleton, 
+//   EmptyState, 
+//   ErrorState
+// } from '@/components/shared/LoadingStates';
+// import { LoadingSpinner } from '../components/LoadingSpinner';
 import { Button, Table, Paper, Group, Title } from '@mantine/core';
 import { useState } from 'react';
 
 function ExampleProtectedPage() {
-  const [filters, setFilters] = useState({});
+  const [filters, _setFilters] = useState({});
   
   // Use custom hook for data fetching with automatic caching
   const { data: patients, isLoading, error, refetch } = usePatients(filters);
@@ -33,7 +33,7 @@ function ExampleProtectedPage() {
     return (
       <div style={{ padding: '2rem' }}>
         <Title order={2} mb="xl">Patients</Title>
-        <TableSkeleton rows={10} columns={5} />
+        <div>Loading patients...</div>
       </div>
     );
   }
@@ -42,26 +42,24 @@ function ExampleProtectedPage() {
   if (error) {
     return (
       <div style={{ padding: '2rem' }}>
-        <ErrorState
-          title="Failed to load patients"
-          message={error.message || 'An error occurred while fetching data'}
-          actionLabel="Retry"
-          onAction={refetch}
-        />
+        <div>
+          <h3>Failed to load patients</h3>
+          <p>{(error as any).message || 'An error occurred while fetching data'}</p>
+          <Button onClick={refetch}>Retry</Button>
+        </div>
       </div>
     );
   }
 
   // Empty state
-  if (!patients || patients.length === 0) {
+  if (!patients || (patients as any[]).length === 0) {
     return (
       <div style={{ padding: '2rem' }}>
-        <EmptyState
-          title="No patients found"
-          message="Start by adding your first patient to the system"
-          actionLabel="Add Patient"
-          onAction={() => console.log('Open add patient modal')}
-        />
+        <div>
+          <h3>No patients found</h3>
+          <p>Start by adding your first patient to the system</p>
+          <Button onClick={() => console.log('Open add patient modal')}>Add Patient</Button>
+        </div>
       </div>
     );
   }
@@ -70,7 +68,7 @@ function ExampleProtectedPage() {
   return (
     <div style={{ padding: '2rem' }}>
       <Group justify="space-between" mb="xl">
-        <Title order={2}>Patients ({patients.length})</Title>
+        <Title order={2}>Patients ({(patients as any[]).length})</Title>
         <Button onClick={() => console.log('Open add patient modal')}>
           Add Patient
         </Button>
@@ -88,7 +86,7 @@ function ExampleProtectedPage() {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {patients.map((patient: any) => (
+            {(patients as any[]).map((patient: any) => (
               <Table.Tr key={patient.id}>
                 <Table.Td>{patient.id}</Table.Td>
                 <Table.Td>{patient.name}</Table.Td>

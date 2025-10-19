@@ -10,39 +10,24 @@ import {
   TextInput,
   Select,
   Badge,
-  Table,
   Modal,
   Text,
   Tabs,
   Card,
-  Avatar,
   ActionIcon,
   Stack,
   SimpleGrid,
   ScrollArea,
   ThemeIcon,
   Progress,
-  NumberInput,
   Textarea,
-  Switch,
   Divider,
   Alert,
-  Timeline,
-  List,
-  Indicator,
-  RingProgress,
-  Stepper,
-  Chip,
-  MultiSelect,
-  JsonInput,
-  Code,
-  Notification,
   Loader,
-  Anchor,
   Accordion,
-  Tooltip,
   Rating,
-  Spoiler
+  Spoiler,
+  Chip
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
@@ -52,122 +37,31 @@ import { notifications } from '@mantine/notifications';
 import {
   IconPlus,
   IconSearch,
-  IconEdit,
   IconEye,
-  IconTrash,
-  IconMessage,
-  IconUser,
-  IconUsers,
-  IconCalendar,
-  IconClock,
   IconStethoscope,
-  IconHeart,
-  IconActivity,
   IconChartBar,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconMedicalCross,
-  IconNurse,
-  IconPill,
-  IconDroplet,
-  IconThermometer,
-  IconLungs,
   IconFileText,
-  IconPrinter,
-  IconDownload,
   IconRefresh,
-  IconUserCheck,
-  IconBedFilled,
-  IconClipboard,
-  IconReport,
-  IconCalendarEvent,
-  IconPhone,
-  IconMail,
-  IconMapPin,
-  IconCash,
-  IconCreditCard,
-  IconReceipt,
-  IconCheck,
   IconX,
-  IconAlertCircle,
-  IconArrowUp,
-  IconArrowDown,
-  IconHome,
-  IconTransfer,
-  IconEmergencyBed,
-  IconBuildingBank,
-  IconFileUpload,
-  IconClockHour4,
-  IconCheckbox,
-  IconAlertTriangle,
-  IconPhotoCheck,
-  IconNotes,
-  IconFilter,
-  IconSortDescending,
-  IconExternalLink,
-  IconCalendarStats,
-  IconCurrency,
-  IconPercentage,
-  IconShieldCheck,
-  IconShieldX,
-  IconClockPause,
-  IconFileCheck,
-  IconFileX,
-  IconAlarm,
   IconSend,
-  IconMessageCircle,
-  IconBrandWhatsapp,
-  IconDeviceMobile,
-  IconBell,
-  IconSettings,
-  IconTemplate,
   IconBulb,
   IconRobot,
-  IconMicrophone,
-  IconVideo,
-  IconPhoneCall,
-  IconMessageDots,
-  IconMailForward,
-  IconBrandTelegram,
-  IconVolume,
-  IconHistory,
   IconTarget,
-  IconUsersGroup,
-  IconCalendarTime,
-  IconCloudUpload,
-  IconApi,
-  IconDatabase,
-  IconBrandFacebook,
-  IconBrandInstagram,
-  IconBrandTwitter,
-  IconShare,
-  IconLink,
   IconStar,
   IconBookmark,
   IconBrain,
-  IconMoodSmile,
-  IconFlask,
-  IconDna,
-  IconMicroscope,
-  IconRadiation,
-  IconHeartbeat,
-  IconBone,
-  IconVaccine,
-  IconPrescription,
-  IconPills,
-  IconAmbulance,
-  IconFirstAidKit,
-  IconMoodCheck,
-  IconZoom,
   IconQuestionMark,
   IconInfoCircle,
-  IconShield,
-  IconChartDots,
   IconSparkles,
-  IconWand,
-  IconCpu,
-  IconCircuitSwitchOpen,
-  IconNetwork
+  IconMedicalCross,
+  IconPill,
+  IconShield,
+  IconAlertTriangle,
+  IconMessageCircle,
+  IconClockHour4,
+  IconCheck,
+  IconMoodCheck,
+  IconShare
 } from '@tabler/icons-react';
 
 // Types
@@ -260,7 +154,7 @@ interface DrugInteraction {
   documentation: 'excellent' | 'good' | 'fair' | 'poor';
 }
 
-interface MedicalKnowledgeBase {
+interface _MedicalKnowledgeBase {
   id: string;
   title: string;
   category: 'disease' | 'symptom' | 'procedure' | 'medication' | 'anatomy';
@@ -277,7 +171,7 @@ interface MedicalKnowledgeBase {
 }
 
 // Mock data
-const mockAIInsights: AIInsight[] = [
+const _mockAIInsights: AIInsight[] = [
   {
     id: '1',
     type: 'diagnosis',
@@ -425,7 +319,7 @@ const mockAIInsights: AIInsight[] = [
   }
 ];
 
-const mockAIQueries: AIQuery[] = [
+const _mockAIQueries: AIQuery[] = [
   {
     id: '1',
     question: 'What are the differential diagnoses for chest pain in a 45-year-old male with diabetes?',
@@ -479,7 +373,7 @@ const mockAIQueries: AIQuery[] = [
   }
 ];
 
-const mockClinicalGuidelines: ClinicalGuideline[] = [
+const _mockClinicalGuidelines: ClinicalGuideline[] = [
   {
     id: '1',
     title: 'Management of Acute Coronary Syndromes',
@@ -538,7 +432,7 @@ const mockClinicalGuidelines: ClinicalGuideline[] = [
   }
 ];
 
-const mockDrugInteractions: DrugInteraction[] = [
+const _mockDrugInteractions: DrugInteraction[] = [
   {
     id: '1',
     drug1: 'Warfarin',
@@ -587,15 +481,15 @@ const AIAssistant = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedSeverity, setSelectedSeverity] = useState<string>('');
   const [selectedInsight, setSelectedInsight] = useState<AIInsight | null>(null);
-  const [selectedQuery, setSelectedQuery] = useState<AIQuery | null>(null);
+  const [_selectedQuery, setSelectedQuery] = useState<AIQuery | null>(null);
   const [newQuery, setNewQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   // Modal states
   const [insightDetailOpened, { open: openInsightDetail, close: closeInsightDetail }] = useDisclosure(false);
-  const [queryDetailOpened, { open: openQueryDetail, close: closeQueryDetail }] = useDisclosure(false);
+  const [_queryDetailOpened, { open: _openQueryDetail, close: _closeQueryDetail }] = useDisclosure(false);
   const [askAIOpened, { open: openAskAI, close: closeAskAI }] = useDisclosure(false);
-  const [guidelineOpened, { open: openGuideline, close: closeGuideline }] = useDisclosure(false);
+  const [_guidelineOpened, { open: _openGuideline, close: _closeGuideline }] = useDisclosure(false);
 
   // Filter insights
   const filteredInsights = useMemo(() => {
@@ -628,9 +522,9 @@ const AIAssistant = () => {
     openInsightDetail();
   };
 
-  const handleViewQuery = (query: AIQuery) => {
-    setSelectedQuery(query);
-    openQueryDetail();
+  const handleViewQuery = (_query: AIQuery) => {
+    setSelectedQuery(_query);
+    _openQueryDetail();
   };
 
   const handleAskAI = async () => {

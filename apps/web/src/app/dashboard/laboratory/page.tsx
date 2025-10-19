@@ -24,84 +24,48 @@ import {
   ScrollArea,
   ThemeIcon,
   Alert,
-  Progress,
   NumberInput,
-  Textarea,
-  Timeline,
-  Stepper,
-  Checkbox
+  Textarea
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleAreaChart, SimpleLineChart, SimpleBarChart } from '../../../components/MantineChart';
+import { MantineDonutChart, SimpleBarChart, SimpleAreaChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
   IconEdit,
   IconEye,
   IconTrash,
-  IconCalendar,
   IconTestPipe,
   IconChartBar,
-  IconPhone,
-  IconMail,
   IconAlertCircle,
   IconCheck,
-  IconX,
   IconDotsVertical,
   IconFlask,
   IconMicroscope,
   IconClipboardList,
   IconFileText,
   IconDownload,
-  IconPrinter,
-  IconShare,
   IconDroplet,
   IconDna,
-  IconExclamationMark,
-  IconClockHour4,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconUsers,
-  IconCalculator,
-  IconSettings,
-  IconRefresh,
-  IconFilter,
+  // IconClockHour4,
   IconBarcode,
   IconTemperature,
   IconShieldCheck,
   IconAlertTriangle,
-  IconCircleCheck,
   IconClipboard,
   IconReportMedical,
   IconAtom,
-  IconHeartbeat,
-  IconBrain,
-  IconBone,
-  IconActivity,
-  IconMedicalCross
+  IconSettings
 } from '@tabler/icons-react';
 
 // Import types, services and mock data
 import {
   LabTest,
-  TestStatus,
-  TestType,
   TestCategory,
   LabOrder,
-  OrderStatus,
-  LabResult,
-  TestParameter,
-  Sample,
-  SampleStatus,
-  SampleType,
-  LabEquipment,
-  EquipmentStatus as LabEquipmentStatus,
-  QualityControl,
-  QCStatus,
-  LabStats,
-  LabFilters
+  Sample
 } from '../../../types/laboratory';
 import laboratoryService from '../../../services/laboratory.service';
 // Mock data imports removed
@@ -114,25 +78,26 @@ const LaboratoryManagement = () => {
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedPatient, setSelectedPatient] = useState<string>('');
   const [selectedTest, setSelectedTest] = useState<LabTest | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<LabOrder | null>(null);
-  const [selectedSample, setSelectedSample] = useState<Sample | null>(null);
+  const [_selectedOrder, setSelectedOrder] = useState<LabOrder | null>(null);
+  const [_selectedSample, setSelectedSample] = useState<Sample | null>(null);
 
   // API data state
   const [labTests, setLabTests] = useState<LabTest[]>([]);
   const [labOrders, setLabOrders] = useState<LabOrder[]>([]);
   const [labStats, setLabStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_loading, _setLoading] = useState(true);
+  const [_error, _setError] = useState<string | null>(null);
 
   // Modal states
   const [testDetailOpened, { open: openTestDetail, close: closeTestDetail }] = useDisclosure(false);
   const [addTestOpened, { open: openAddTest, close: closeAddTest }] = useDisclosure(false);
-  const [orderDetailOpened, { open: openOrderDetail, close: closeOrderDetail }] = useDisclosure(false);
-  const [addOrderOpened, { open: openAddOrder, close: closeAddOrder }] = useDisclosure(false);
-  const [sampleDetailOpened, { open: openSampleDetail, close: closeSampleDetail }] = useDisclosure(false);
+  const [_orderDetailOpened, { open: _openOrderDetail, close: _closeOrderDetail }] = useDisclosure(false);
+  const [_addOrderOpened, { open: _openAddOrder, close: _closeAddOrder }] = useDisclosure(false);
+  const [_sampleDetailOpened, { open: _openSampleDetail, close: _closeSampleDetail }] = useDisclosure(false);
 
   useEffect(() => {
     fetchAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
@@ -203,13 +168,14 @@ const LaboratoryManagement = () => {
 
   // Refetch when filters change
   useEffect(() => {
-    if (!loading) {
+    if (!_loading) {
       if (activeTab === 'tests') {
         fetchLabTests();
       } else if (activeTab === 'orders') {
         fetchLabOrders();
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, searchQuery, selectedCategory, selectedStatus, selectedPatient]);
 
   // Filter lab tests
@@ -225,7 +191,7 @@ const LaboratoryManagement = () => {
 
       return matchesSearch && matchesCategory && matchesStatus && matchesType;
     });
-  }, [searchQuery, selectedCategory, selectedStatus, selectedType]);
+  }, [searchQuery, selectedCategory, selectedStatus, selectedType, labTests]);
 
   // Filter lab orders
   const filteredOrders = useMemo(() => {
@@ -240,7 +206,7 @@ const LaboratoryManagement = () => {
 
       return matchesSearch && matchesStatus && matchesPatient;
     });
-  }, [searchQuery, selectedStatus, selectedPatient]);
+  }, [searchQuery, selectedStatus, selectedPatient, labOrders]);
 
   // Filter samples
   const filteredSamples = useMemo(() => {

@@ -15,14 +15,9 @@ import {
   Title,
   Divider,
   Alert,
-  Tabs,
   FileInput,
-  Checkbox,
   NumberInput,
-  Badge,
   ActionIcon,
-  Tooltip,
-  Switch,
   TagsInput,
   Stepper,
   LoadingOverlay,
@@ -34,17 +29,14 @@ import { DatePickerInput } from '@mantine/dates';
 import {
   IconUsers,
   IconCheck,
-  IconX,
   IconAlertCircle,
   IconPhone,
   IconMail,
   IconMapPin,
   IconShieldX,
   IconFileText,
-  IconPlus,
   IconTrash,
   IconCloudUpload,
-  IconEye,
   IconCalendar,
   IconUpload
 } from '@tabler/icons-react';
@@ -52,17 +44,14 @@ import { notifications } from '@mantine/notifications';
 import { 
   CreatePatientDto, 
   UpdatePatientDto, 
-  Patient, 
-  InsuranceInfo 
+  Patient
 } from '../../types/patient';
 import { 
   Gender, 
   BloodGroup, 
-  MaritalStatus, 
-  ContactInfo, 
-  Address 
+  MaritalStatus
 } from '../../types/common';
-import { formatPhoneNumber, isValidEmail, isValidPhoneNumber } from '../../lib/utils';
+import { isValidEmail } from '../../lib/utils';
 
 interface PatientFormProps {
   opened: boolean;
@@ -86,9 +75,9 @@ const steps: FormStep[] = [
   { label: 'Review & Submit', description: 'Review and submit' }
 ];
 
-function PatientForm({ opened, onClose, patient, onSubmit, loading = false }: PatientFormProps) {
+function PatientForm({ opened, onClose, patient, onSubmit, loading: _loading = false }: PatientFormProps) {
   const [activeStep, setActiveStep] = useState(0);
-  const [uploading, setUploading] = useState(false);
+  const [_uploading, setUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [formLoading, { open: startLoading, close: stopLoading }] = useDisclosure(false);
 
@@ -210,7 +199,8 @@ function PatientForm({ opened, onClose, patient, onSubmit, loading = false }: Pa
       });
       
       handleClose();
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Error',
         message: `Failed to ${patient ? 'update' : 'create'} patient. Please try again.`,
@@ -356,7 +346,8 @@ function PatientForm({ opened, onClose, patient, onSubmit, loading = false }: Pa
         message: `${fileArray.length} file(s) uploaded successfully.`,
         color: 'green'
       });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Upload Failed',
         message: 'Failed to upload files. Please try again.',
@@ -794,7 +785,7 @@ function PatientForm({ opened, onClose, patient, onSubmit, loading = false }: Pa
         </Group>
       </Alert>
     </Stack>
-  ), [uploadedFiles, uploading]);
+  ), [uploadedFiles]);
   // Step 5: Review & Submit
   const ReviewSubmitStep = React.useMemo(() => (
     <Stack gap="lg">

@@ -14,8 +14,8 @@ import {
   Divider,
   Card
 } from '@mantine/core';
-import { IconAlertTriangle, IconUser, IconActivity } from '@tabler/icons-react';
-import type { CreateEmergencyCaseDto, UpdateEmergencyCaseDto, VitalSigns } from '../../services/emergency.service';
+import { IconAlertTriangle, IconUser } from '@tabler/icons-react';
+import type { CreateEmergencyCaseDto, UpdateEmergencyCaseDto } from '../../services/emergency.service';
 
 interface EmergencyCaseFormProps {
   opened: boolean;

@@ -11,18 +11,12 @@ import {
   Select,
   Button,
   Paper,
-  Title,
   Badge,
   ActionIcon,
   Grid,
   Alert,
-  Divider,
-  Timeline,
-  Card,
   Tabs,
-  Switch,
-  NumberInput,
-  TagsInput
+  Switch
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DatePickerInput } from '@mantine/dates';
@@ -38,8 +32,6 @@ import {
   IconEdit,
   IconTrash,
   IconCheck,
-  IconX,
-  IconNotes,
   IconVaccine
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
@@ -75,7 +67,7 @@ interface HistoryFormData {
 export default function MedicalHistoryManager({
   opened,
   onClose,
-  patientId,
+  patientId: _patientId,
   patientName,
   medicalHistory,
   onSave,
@@ -129,7 +121,8 @@ export default function MedicalHistoryManager({
       }
       
       handleFormClose();
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Error',
         message: `Failed to ${editingHistory ? 'update' : 'save'} medical history. Please try again.`,
@@ -167,7 +160,8 @@ export default function MedicalHistoryManager({
         message: 'Medical history entry has been deleted successfully.',
         color: 'green'
       });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to delete medical history. Please try again.',

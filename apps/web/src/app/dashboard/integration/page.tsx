@@ -30,13 +30,13 @@ import {
   Code,
   CopyButton,
   Tooltip,
-  JsonInput,
+  // JsonInput,
   Divider,
   Timeline,
-  List,
-  RingProgress,
-  Center,
-  Accordion
+  // List,
+  // RingProgress,
+  // Center,
+  // Accordion
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
@@ -391,7 +391,7 @@ const IntegrationHub = () => {
             <Card padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">Recent Integrations</Title>
               <Timeline active={3} bulletSize={24} lineWidth={2}>
-                {0 /* TODO: Fetch from API */(0, 4).map((integration) => (
+                {[].slice(0, 4).map((integration) => (
                   <Timeline.Item
                     key={integration.id}
                     bullet={

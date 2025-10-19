@@ -10,24 +10,14 @@ import {
   Paper,
   Title,
   Grid,
-  Card,
   Badge,
   Switch,
-  TextInput,
   Alert,
   Tabs,
   Timeline,
   Table,
-  ActionIcon,
-  Menu,
-  Progress,
-  ThemeIcon,
   Avatar,
-  Divider,
-  Select,
-  PasswordInput,
-  Checkbox,
-  NumberInput
+  Select
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
@@ -44,18 +34,8 @@ import {
   IconShield,
   IconAlertCircle,
   IconCheck,
-  IconX,
   IconEye,
-  IconEdit,
-  IconTrash,
-  IconSend,
-  IconLock,
-  IconUnlock,
-  IconRefresh,
-  IconClock,
   IconBell,
-  IconDeviceMobile,
-  IconWorld,
   IconActivity,
   IconHistory
 } from '@tabler/icons-react';
@@ -107,6 +87,7 @@ export default function PatientPortalAccess({
     if (portalAccess?.preferences) {
       preferencesForm.setValues(portalAccess.preferences);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [portalAccess]);
 
   const handleEnableAccess = async () => {
@@ -122,7 +103,8 @@ export default function PatientPortalAccess({
         color: 'green',
         icon: <IconCheck size="1rem" />
       });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to enable portal access. Please try again.',
@@ -147,7 +129,8 @@ export default function PatientPortalAccess({
         color: 'orange',
         icon: <IconCheck size="1rem" />
       });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to disable portal access. Please try again.',
@@ -172,7 +155,8 @@ export default function PatientPortalAccess({
         color: 'green',
         icon: <IconCheck size="1rem" />
       });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to update preferences. Please try again.',
@@ -197,7 +181,8 @@ export default function PatientPortalAccess({
         color: 'green',
         icon: <IconCheck size="1rem" />
       });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to reset password. Please try again.',
@@ -222,7 +207,8 @@ export default function PatientPortalAccess({
         color: 'green',
         icon: <IconCheck size="1rem" />
       });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Error',
         message: `Failed to send credentials via ${method.toUpperCase()}. Please try again.`,

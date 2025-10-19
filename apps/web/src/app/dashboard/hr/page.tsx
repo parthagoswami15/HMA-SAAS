@@ -31,20 +31,20 @@ import {
   RingProgress,
   Tooltip,
   List,
-  Image,
-  Loader,
-  Highlight,
+  // Image,
+  // Loader,
+  // Highlight,
   Accordion,
-  FileButton,
-  ColorSwatch,
-  Code,
-  Spoiler,
-  Mark,
+  // FileButton,
+  // ColorSwatch,
+  // Code,
+  // Spoiler,
+  // Mark,
   Rating,
-  Switch,
-  Checkbox,
-  Radio,
-  PasswordInput,
+  // Switch,
+  // Checkbox,
+  // Radio,
+  // PasswordInput,
   MultiSelect,
   SimpleGrid
 } from '@mantine/core';
@@ -52,7 +52,7 @@ import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
-import { Calendar, DatePickerInput } from '@mantine/dates';
+// import { Calendar, DatePickerInput } from '@mantine/dates';
 import {
   IconPlus,
   IconSearch,
@@ -62,8 +62,8 @@ import {
   IconCalendar,
   IconUsers,
   IconChartBar,
-  IconPhone,
-  IconAlertCircle,
+  // IconPhone,
+  // IconAlertCircle,
   IconCheck,
   IconX,
   IconDotsVertical,
@@ -71,7 +71,7 @@ import {
   IconFileText,
   IconDownload,
   IconCalculator,
-  IconFilter,
+  // IconFilter,
   IconUser,
   IconUserPlus,
   IconUserCheck,
@@ -82,14 +82,14 @@ import {
   IconCalendarEvent,
   IconCalendarTime,
   IconCurrencyDollar,
-  IconWallet,
-  IconCreditCard,
-  IconBuildingBank,
+  // IconWallet,
+  // IconCreditCard,
+  // IconBuildingBank,
   IconTrophy,
-  IconLock,
-  IconClipboardCheck,
-  IconUserCircle,
-  IconBuilding,
+  // IconLock,
+  // IconClipboardCheck,
+  // IconUserCircle,
+  // IconBuilding,
   IconCertificate,
   IconSend,
   IconBriefcase
@@ -99,23 +99,23 @@ import {
 import {
   Employee,
   EmployeeStatus,
-  Department,
-  Role,
+  // Department,
+  // Role,
   Shift,
   ShiftStatus,
-  Payroll,
-  PayrollStatus,
+  // Payroll,
+  // PayrollStatus,
   PerformanceReview,
   ReviewStatus,
   LeaveRequest,
   LeaveStatus,
   LeaveType,
-  Training,
-  TrainingStatus,
-  Attendance,
-  AttendanceStatus,
-  HRStats,
-  HRFilters
+  // Training,
+  // TrainingStatus,
+  // Attendance,
+  // AttendanceStatus,
+  // HRStats,
+  // HRFilters
 } from '../../../types/hr';
 // Mock data imports removed
 
@@ -139,9 +139,9 @@ const HRManagement = () => {
   const [shiftDetailOpened, { open: openShiftDetail, close: closeShiftDetail }] = useDisclosure(false);
   const [reviewDetailOpened, { open: openReviewDetail, close: closeReviewDetail }] = useDisclosure(false);
   const [leaveDetailOpened, { open: openLeaveDetail, close: closeLeaveDetail }] = useDisclosure(false);
-  const [payrollDetailOpened, { open: openPayrollDetail, close: closePayrollDetail }] = useDisclosure(false);
-  const [addShiftOpened, { open: openAddShift, close: closeAddShift }] = useDisclosure(false);
-  const [createReviewOpened, { open: openCreateReview, close: closeCreateReview }] = useDisclosure(false);
+  const [_payrollDetailOpened, { open: _openPayrollDetail, close: _closePayrollDetail }] = useDisclosure(false);
+  const [_addShiftOpened, { open: _openAddShift, close: _closeAddShift }] = useDisclosure(false);
+  const [_createReviewOpened, { open: _openCreateReview, close: _closeCreateReview }] = useDisclosure(false);
 
   // Filter employees
   const filteredEmployees = useMemo(() => {

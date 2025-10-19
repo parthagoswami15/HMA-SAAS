@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Modal,
-  TextInput,
   Textarea,
   Button,
   Group,
@@ -9,11 +8,10 @@ import {
   Select,
   Grid,
   Text,
-  Badge,
   Alert,
   LoadingOverlay
 } from '@mantine/core';
-import { DatePickerInput, TimeInput } from '@mantine/dates';
+import { DatePickerInput } from '@mantine/dates';
 import { IconCalendar, IconClock, IconAlertCircle, IconCheck } from '@tabler/icons-react';
 import type { CreateAppointmentDto, UpdateAppointmentDto } from '../../services/appointments.service';
 
@@ -36,7 +34,16 @@ export default function AppointmentForm({
   patients = [],
   doctors = []
 }: AppointmentFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    patientId: string;
+    doctorId: string;
+    departmentId: string;
+    appointmentDate: Date | null;
+    appointmentTime: string;
+    reason: string;
+    notes: string;
+    status: string;
+  }>({
     patientId: '',
     doctorId: '',
     departmentId: '',
@@ -48,7 +55,7 @@ export default function AppointmentForm({
   });
 
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
-  const [checkingAvailability, setCheckingAvailability] = useState(false);
+  const [_checkingAvailability, _setCheckingAvailability] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {

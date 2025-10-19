@@ -4,6 +4,21 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   
+  // ESLint configuration
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: false,
+    dirs: ['src'],
+  },
+  
+  // TypeScript configuration
+  typescript: {
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    ignoreBuildErrors: false,
+  },
+  
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],

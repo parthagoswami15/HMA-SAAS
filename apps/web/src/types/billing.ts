@@ -1,6 +1,5 @@
 import { BaseEntity } from './common';
 import { Patient } from './patient';
-import { Staff } from './staff';
 import { Appointment } from './appointment';
 
 // Billing and Invoice Management

@@ -106,7 +106,8 @@ const ProfilePage = () => {
       
       setIsEditing(false);
       alert('Profile updated successfully!');
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       alert('Failed to update profile. Please try again.');
     } finally {
       setIsLoading(false);
@@ -138,7 +139,8 @@ const ProfilePage = () => {
       
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
       alert('Password updated successfully!');
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       alert('Failed to update password. Please try again.');
     } finally {
       setIsLoading(false);
@@ -151,7 +153,8 @@ const ProfilePage = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
       alert('Notification preferences saved!');
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       alert('Failed to save preferences. Please try again.');
     } finally {
       setIsLoading(false);

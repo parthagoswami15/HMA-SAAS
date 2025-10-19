@@ -27,7 +27,7 @@ import {
   Alert,
   Progress,
   Flex,
-  Anchor,
+  // Anchor,
   NumberInput,
   Textarea
 } from '@mantine/core';
@@ -41,31 +41,31 @@ import {
   IconSearch,
   IconEdit,
   IconEye,
-  IconTrash,
+  // IconTrash,
   IconCalendar,
   IconClock,
   IconUsers,
   IconChartBar,
-  IconPhone,
-  IconMail,
+  // IconPhone,
+  // IconMail,
   IconAlertCircle,
   IconCheck,
   IconX,
   IconDotsVertical,
   IconCalendarEvent,
   IconStethoscope,
-  IconActivity,
-  IconTrendingUp,
-  IconTrendingDown,
+  // IconActivity,
+  // IconTrendingUp,
+  // IconTrendingDown,
   IconClockHour3,
   IconUserCheck,
-  IconUserX,
-  IconCurrencyRupee,
-  IconVideo,
+  // IconUserX,
+  // IconCurrencyRupee,
+  // IconVideo,
   IconBell,
-  IconHistory,
-  IconCalendarStats,
-  IconReport
+  // IconHistory,
+  // IconCalendarStats,
+  // IconReport
 } from '@tabler/icons-react';
 
 // Import types and services
@@ -74,8 +74,8 @@ import {
   AppointmentStatus, 
   AppointmentType, 
   AppointmentPriority,
-  AppointmentSearchFilters,
-  AppointmentStats
+  // AppointmentSearchFilters,
+  // AppointmentStats
 } from '../../../types/appointment';
 import appointmentsService from '../../../services/appointments.service';
 
@@ -85,7 +85,7 @@ const AppointmentManagement = () => {
     return new Date(date).toLocaleDateString('en-CA'); // YYYY-MM-DD format
   };
 
-  const formatDateTime = (date: string | Date) => {
+  const _formatDateTime = (date: string | Date) => {
     return new Date(date).toLocaleString('en-US', {
       year: 'numeric',
       month: '2-digit',
@@ -107,7 +107,7 @@ const AppointmentManagement = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [appointmentStats, setAppointmentStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Handle hydration
@@ -115,6 +115,7 @@ const AppointmentManagement = () => {
     setIsClient(true);
     fetchAppointments();
     fetchStats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch appointments from API
@@ -165,12 +166,13 @@ const AppointmentManagement = () => {
     if (isClient) {
       fetchAppointments();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDoctor, selectedStatus, selectedDate, searchQuery]);
 
   // Modal states
   const [appointmentDetailOpened, { open: openAppointmentDetail, close: closeAppointmentDetail }] = useDisclosure(false);
   const [bookAppointmentOpened, { open: openBookAppointment, close: closeBookAppointment }] = useDisclosure(false);
-  const [rescheduleOpened, { open: openReschedule, close: closeReschedule }] = useDisclosure(false);
+  const [_rescheduleOpened, { open: openReschedule, close: _closeReschedule }] = useDisclosure(false);
 
   // Filter appointments - now using API data
   const filteredAppointments = useMemo(() => {

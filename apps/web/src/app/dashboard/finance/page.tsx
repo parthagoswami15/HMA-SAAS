@@ -30,28 +30,28 @@ import {
   Timeline,
   Stepper,
   RingProgress,
-  Tooltip,
-  List,
-  Image,
-  Loader,
-  Highlight,
-  Accordion,
-  FileButton,
-  ColorSwatch,
-  Code,
-  Spoiler,
-  Mark,
-  Rating,
-  Switch,
-  Checkbox,
-  Radio,
-  PasswordInput,
+  // Tooltip,
+  // List,
+  // Image,
+  // Loader,
+  // Highlight,
+  // Accordion,
+  // FileButton,
+  // ColorSwatch,
+  // Code,
+  // Spoiler,
+  // Mark,
+  // Rating,
+  // Switch,
+  // Checkbox,
+  // Radio,
+  // PasswordInput,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
 import EmptyState from '../../../components/EmptyState';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import { MantineDonutChart, SimpleAreaChart, SimpleBarChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -65,14 +65,14 @@ import {
   IconReportAnalytics,
   IconTrendingUp,
   IconTrendingDown,
-  IconArrowUp,
-  IconArrowDown,
+  // IconArrowUp,
+  // IconArrowDown,
   IconCash,
-  IconCashBanknote,
+  // IconCashBanknote,
   IconFileSpreadsheet,
-  IconPercentage,
-  IconChartLine,
-  IconChartPie,
+  // IconPercentage,
+  // IconChartLine,
+  // IconChartPie,
   IconShare,
   IconWallet,
   IconBriefcase
@@ -81,18 +81,18 @@ import {
   Transaction,
   TransactionType,
   TransactionStatus,
-  Account,
+  // Account,
   AccountType,
   Budget,
   BudgetStatus,
   Invoice,
   InvoiceStatus,
-  PaymentMethod,
+  // PaymentMethod,
   ExpenseCategory,
   FinancialReport,
-  ReportType,
-  FinancialStats,
-  FinancialFilters
+  // ReportType,
+  // FinancialStats,
+  // FinancialFilters
 } from '../../../types/finance';
 // Mock data imports removed
 const FinanceManagement = () => {
@@ -102,7 +102,7 @@ const FinanceManagement = () => {
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedAccount, setSelectedAccount] = useState<string>('');
+  const [_selectedAccount, _setSelectedAccount] = useState<string>('');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -114,8 +114,8 @@ const FinanceManagement = () => {
   const [budgetDetailOpened, { open: openBudgetDetail, close: closeBudgetDetail }] = useDisclosure(false);
   const [invoiceDetailOpened, { open: openInvoiceDetail, close: closeInvoiceDetail }] = useDisclosure(false);
   const [reportDetailOpened, { open: openReportDetail, close: closeReportDetail }] = useDisclosure(false);
-  const [addBudgetOpened, { open: openAddBudget, close: closeAddBudget }] = useDisclosure(false);
-  const [createInvoiceOpened, { open: openCreateInvoice, close: closeCreateInvoice }] = useDisclosure(false);
+  const [_addBudgetOpened, { open: _openAddBudget, close: _closeAddBudget }] = useDisclosure(false);
+  const [_createInvoiceOpened, { open: _openCreateInvoice, close: _closeCreateInvoice }] = useDisclosure(false);
 
   // Filter transactions
   const filteredTransactions = useMemo(() => {
@@ -128,11 +128,11 @@ const FinanceManagement = () => {
       const matchesType = !selectedType || transaction.type === selectedType;
       const matchesStatus = !selectedStatus || transaction.status === selectedStatus;
       const matchesCategory = !selectedCategory || transaction.category === selectedCategory;
-      const matchesAccount = !selectedAccount || transaction.account.name === selectedAccount;
+      const matchesAccount = !_selectedAccount || transaction.account.name === _selectedAccount;
 
       return matchesSearch && matchesType && matchesStatus && matchesCategory && matchesAccount;
     });
-  }, [searchQuery, selectedType, selectedStatus, selectedCategory, selectedAccount]);
+  }, [searchQuery, selectedType, selectedStatus, selectedCategory, _selectedAccount]);
 
   // Helper functions
   const getTransactionTypeColor = (type: TransactionType) => {
@@ -211,7 +211,7 @@ const FinanceManagement = () => {
     setSelectedType('');
     setSelectedStatus('');
     setSelectedCategory('');
-    setSelectedAccount('');
+    _setSelectedAccount('');
   };
 
   const formatCurrency = (amount: number) => {
@@ -300,7 +300,7 @@ const FinanceManagement = () => {
             variant="light"
             leftSection={<IconFileInvoice size={16} />}
             color="green"
-            onClick={openCreateInvoice}
+            onClick={_openCreateInvoice}
           >
             Create Invoice
           </Button>
@@ -713,7 +713,7 @@ const FinanceManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Budget Management</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={openAddBudget}>
+                <Button leftSection={<IconPlus size={16} />} onClick={_openAddBudget}>
                   Create Budget
                 </Button>
                 <Button variant="light" leftSection={<IconReportAnalytics size={16} />}>
@@ -813,7 +813,7 @@ const FinanceManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Invoice Management</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={openCreateInvoice}>
+                <Button leftSection={<IconPlus size={16} />} onClick={_openCreateInvoice}>
                   Create Invoice
                 </Button>
                 <Button variant="light" leftSection={<IconDownload size={16} />}>
@@ -1193,8 +1193,8 @@ const FinanceManagement = () => {
 
       {/* Create Invoice Modal */}
       <Modal
-        opened={createInvoiceOpened}
-        onClose={closeCreateInvoice}
+        opened={_createInvoiceOpened}
+        onClose={_closeCreateInvoice}
         title="Create New Invoice"
         size="lg"
       >
@@ -1289,7 +1289,7 @@ const FinanceManagement = () => {
           />
           
           <Group justify="flex-end">
-            <Button variant="light" onClick={closeCreateInvoice}>
+            <Button variant="light" onClick={_closeCreateInvoice}>
               Cancel
             </Button>
             <Button onClick={() => {
@@ -1298,7 +1298,7 @@ const FinanceManagement = () => {
                 message: 'Invoice has been successfully created',
                 color: 'green',
               });
-              closeCreateInvoice();
+              _closeCreateInvoice();
             }}>
               Create Invoice
             </Button>

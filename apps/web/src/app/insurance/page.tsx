@@ -78,6 +78,7 @@ function InsurancePage() {
     }
     fetchClaims();
     fetchStats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchClaims = async () => {
@@ -385,16 +386,8 @@ function InsurancePage() {
     }
   ];
 
-  const layoutUser = user || [];
-  const userForLayout = {
-    id: layoutUser.id,
-    name: `${layoutUser.firstName} ${layoutUser.lastName}`,
-    email: layoutUser.email,
-    role: layoutUser.role,
-  };
-
   return (
-    <Layout user={userForLayout} notifications={0} onLogout={() => {}}>
+    <Layout user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : { id: mockUser.id, name: `${mockUser.firstName} ${mockUser.lastName}`, email: mockUser.email, role: mockUser.role }} notifications={0} onLogout={() => {}}>
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}

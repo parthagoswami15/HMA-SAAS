@@ -11,25 +11,17 @@ import {
   Button,
   Paper,
   Grid,
-  DateInput,
   NumberInput,
-  Switch,
-  Checkbox,
-  Badge,
   Accordion,
-  Collapse,
   ActionIcon,
-  Tooltip,
-  MultiSelect,
-  RangeSlider,
-  SegmentedControl
+  SegmentedControl,
+  Checkbox
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DatePickerInput } from '@mantine/dates';
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import {
   IconSearch,
-  IconFilter,
   IconX,
   IconRefresh,
   IconDeviceFloppy,
@@ -37,14 +29,9 @@ import {
   IconUser,
   IconPhone,
   IconMail,
-  IconMapPin,
-  IconHeart,
   IconShield,
   IconStethoscope,
-  IconAlertCircle,
-  IconChevronDown,
-  IconBookmark,
-  IconSettings
+  IconBookmark
 } from '@tabler/icons-react';
 import { PatientSearchCriteria } from '../../types/patient';
 import { Gender, BloodGroup, Status } from '../../types/common';
@@ -104,6 +91,7 @@ export default function PatientSearch({
     if (debouncedSearchTerm) {
       handleQuickSearch();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm]);
 
   const handleQuickSearch = () => {
@@ -149,11 +137,11 @@ export default function PatientSearch({
     }).length;
   };
 
-  const toggleSection = (section: string) => {
+  const _toggleSection = (_section: string) => {
     setExpandedSections(prev => 
-      prev.includes(section) 
-        ? prev.filter(s => s !== section)
-        : [...prev, section]
+      prev.includes(_section) 
+        ? prev.filter(s => s !== _section)
+        : [...prev, _section]
     );
   };
 

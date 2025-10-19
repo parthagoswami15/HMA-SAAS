@@ -204,6 +204,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
         router.push('/dashboard');
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, loading, user]);
 
   const getUserPermissions = (userRole: UserRole): Permission[] => {

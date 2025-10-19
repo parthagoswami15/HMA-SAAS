@@ -24,14 +24,14 @@ import {
   Progress,
   MultiSelect,
   Divider,
-  Alert,
-  Timeline,
-  Switch,
-  NumberInput
+  // Alert,
+  // Timeline,
+  // Switch,
+  // NumberInput
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { DatePickerInput } from '@mantine/dates';
+// import { DatePickerInput } from '@mantine/dates';
 import EmptyState from '../../../components/EmptyState';
 import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
 import {
@@ -39,7 +39,7 @@ import {
   IconSearch,
   IconEdit,
   IconEye,
-  IconTrash,
+  // IconTrash,
   IconDownload,
   IconChartBar,
   IconReportAnalytics,
@@ -48,27 +48,27 @@ import {
   IconCalendar,
   IconUsers,
   IconCurrencyDollar,
-  IconBed,
+  // IconBed,
   IconStethoscope,
   IconActivity,
   IconTrendingUp,
   IconTrendingDown,
   IconClipboard,
-  IconPrinter,
+  // IconPrinter,
   IconShare,
-  IconFilter,
+  // IconFilter,
   IconRefresh,
   IconFileSpreadsheet,
   IconFileTypePdf,
-  IconMail,
-  IconClock,
+  // IconMail,
+  // IconClock,
   IconCheck,
-  IconX,
+  // IconX,
   IconAlertCircle,
-  IconChartLine,
+  // IconChartLine,
   IconChartPie,
-  IconDatabase,
-  IconSettings,
+  // IconDatabase,
+  // IconSettings,
   IconCalendarEvent,
   IconTarget,
   IconDeviceAnalytics

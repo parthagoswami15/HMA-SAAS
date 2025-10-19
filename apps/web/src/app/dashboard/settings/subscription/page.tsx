@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { 
   Card, Title, Text, Stack, Group, Button, Badge, 
-  Progress, Table, Tabs, Alert, Timeline
+  Progress, Table, Tabs, Alert
 } from '@mantine/core';
 import { 
   IconCreditCard, IconReceipt, IconTrendingUp, IconAlertCircle,
-  IconCheck, IconX, IconClock, IconDownload
+  IconCheck, IconDownload
 } from '@tabler/icons-react';
 
 export default function SubscriptionManagementPage() {

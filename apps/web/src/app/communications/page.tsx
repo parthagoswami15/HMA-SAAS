@@ -1,42 +1,42 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useDisclosure } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
 import {
   Container,
-  Grid,
-  Paper,
-  Text,
-  Group,
-  Badge,
-  SimpleGrid,
   Stack,
   Button,
   Title,
   Card,
-  TextInput,
-  Select,
-  LoadingOverlay,
-  Alert,
   Tabs,
   ActionIcon,
+  Group,
+  Text,
+  Badge,
+  SimpleGrid,
+  Paper,
+  LoadingOverlay,
+  Alert,
+  TextInput,
+  Select,
+  Avatar,
   Menu,
-  Avatar
+  Grid
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { notifications } from '@mantine/notifications';
 import {
   IconPlus,
-  IconSearch,
   IconMail,
   IconBell,
-  IconSend,
-  IconInbox,
-  IconEye,
   IconTrash,
-  IconDotsVertical,
-  IconAlertCircle,
   IconMailOpened,
-  IconCheck
+  IconEye,
+  IconCheck,
+  IconDotsVertical,
+  IconInbox,
+  IconSend,
+  IconSearch,
+  IconAlertCircle
 } from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
@@ -45,7 +45,7 @@ import MessageDetails from '../../components/communications/MessageDetails';
 import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn } from '../../types/common';
 import communicationsService from '../../services/communications.service';
-import type { CreateMessageDto, MessageFilters, NotificationFilters } from '../../services/communications.service';
+import type { CreateMessageDto, MessageFilters } from '../../services/communications.service';
 
 const mockUser: User = {
   id: '1',
@@ -87,6 +87,7 @@ function CommunicationsPage() {
     fetchNotifications();
     fetchStats();
     fetchUsers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchMessages = async () => {
@@ -268,7 +269,7 @@ function CommunicationsPage() {
     }
   };
 
-  const handleReplyMessage = (message: any) => {
+  const handleReplyMessage = (_message: any) => {
     // Set recipient to sender of original message
     openMessageForm();
   };
@@ -479,8 +480,16 @@ function CommunicationsPage() {
     }
   ];
 
+  const layoutUser = user || mockUser;
+  const userForLayout = {
+    id: layoutUser.id,
+    name: `${layoutUser.firstName} ${layoutUser.lastName}`,
+    email: layoutUser.email,
+    role: layoutUser.role,
+  };
+
   return (
-    <Layout user={user || mockUser} notifications={0} onLogout={() => {}}>
+    <Layout user={userForLayout} notifications={0} onLogout={() => {}}>
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -587,9 +596,9 @@ function CommunicationsPage() {
                     <Select
                       placeholder="Filter by status"
                       data={[
-                        { value: '', title: 'All Messages' },
-                        { value: 'unread', title: 'Unread' },
-                        { value: 'read', title: 'Read' }
+                        { value: '', label: 'All Messages' },
+                        { value: 'unread', label: 'Unread' },
+                        { value: 'read', label: 'Read' }
                       ]}
                       value={statusFilter}
                       onChange={(value) => setStatusFilter(value || '')}

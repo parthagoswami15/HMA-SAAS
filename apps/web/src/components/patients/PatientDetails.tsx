@@ -15,17 +15,12 @@ import {
   Grid,
   Card,
   ActionIcon,
-  Tooltip,
   Button,
   Timeline,
   Alert,
-  Table,
-  Spoiler,
   ScrollArea,
-  Progress,
   ThemeIcon,
-  List,
-  Anchor
+  List
 } from '@mantine/core';
 import {
   IconUser,
@@ -43,15 +38,10 @@ import {
   IconEdit,
   IconDownload,
   IconPrinter,
-  IconShare,
   IconEye,
   IconCloudUpload,
-  IconClock,
   IconActivity,
-  IconTrendingUp,
-  IconMedicalCross,
-  IconTestTube,
-  IconX
+  IconMedicalCross
 } from '@tabler/icons-react';
 import { 
   Patient, 
@@ -326,7 +316,7 @@ function PatientDetails({
         </Paper>
       ) : (
         <Timeline active={visits.length} bulletSize={24} lineWidth={2}>
-          {visits.map((visit, index) => (
+          {visits.map((visit) => (
             <Timeline.Item
               key={visit.id}
               bullet={<IconStethoscope size="1rem" />}

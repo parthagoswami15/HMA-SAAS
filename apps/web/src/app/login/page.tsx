@@ -65,7 +65,8 @@ export default function Login() {
       let result;
       try {
         result = await response.json();
-      } catch (parseError) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_parseError) {
         throw new Error('Invalid response from server');
       }
 

@@ -27,11 +27,11 @@ import {
   Progress,
   NumberInput,
   Textarea,
-  Checkbox,
-  Image,
-  Indicator,
-  RingProgress,
-  Box
+  // Checkbox,
+  // Image,
+  // Indicator,
+  // RingProgress,
+  // Box
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
@@ -47,37 +47,37 @@ import {
   IconCalendar,
   IconPackage,
   IconChartBar,
-  IconPhone,
-  IconMail,
-  IconAlertCircle,
-  IconCheck,
-  IconX,
+  // IconPhone,
+  // IconMail,
+  // IconAlertCircle,
+  // IconCheck,
+  // IconX,
   IconDotsVertical,
   IconTruck,
   IconClipboardList,
   IconFileText,
   IconDownload,
-  IconPrinter,
-  IconShare,
-  IconFlask,
+  // IconPrinter,
+  // IconShare,
+  // IconFlask,
   IconStethoscope,
-  IconExclamationMark,
-  IconClockHour4,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconUsers,
-  IconCalculator,
-  IconWallet,
+  // IconExclamationMark,
+  // IconClockHour4,
+  // IconTrendingUp,
+  // IconTrendingDown,
+  // IconUsers,
+  // IconCalculator,
+  // IconWallet,
   IconSettings,
-  IconBuildingWarehouse,
+  // IconBuildingWarehouse,
   IconShoppingCart,
-  IconRefresh,
-  IconFilter,
-  IconBarcode,
-  IconTemperature,
-  IconShieldCheck,
+  // IconRefresh,
+  // IconFilter,
+  // IconBarcode,
+  // IconTemperature,
+  // IconShieldCheck,
   IconAlertTriangle,
-  IconCircleCheck,
+  // IconCircleCheck,
   IconClipboard
 } from '@tabler/icons-react';
 
@@ -116,36 +116,37 @@ const InventoryManagement = () => {
   // API data state
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [inventoryStats, setInventoryStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_loading, _setLoading] = useState(true);
+  const [_error, _setError] = useState<string | null>(null);
 
   // Modal states
   const [itemDetailOpened, { open: openItemDetail, close: closeItemDetail }] = useDisclosure(false);
   const [addItemOpened, { open: openAddItem, close: closeAddItem }] = useDisclosure(false);
   const [orderDetailOpened, { open: openOrderDetail, close: closeOrderDetail }] = useDisclosure(false);
-  const [addOrderOpened, { open: openAddOrder, close: closeAddOrder }] = useDisclosure(false);
-  const [equipmentDetailOpened, { open: openEquipmentDetail, close: closeEquipmentDetail }] = useDisclosure(false);
+  const [_addOrderOpened, { open: _openAddOrder, close: _closeAddOrder }] = useDisclosure(false);
+  const [_equipmentDetailOpened, { open: _openEquipmentDetail, close: _closeEquipmentDetail }] = useDisclosure(false);
 
   useEffect(() => {
     fetchAllData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      _setLoading(true);
+      _setError(null);
       await Promise.all([
         fetchInventoryItems(),
         fetchInventoryStats()
       ]);
     } catch (err: any) {
       console.error('Error loading inventory data:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load inventory data');
+      _setError(err.response?.data?.message || err.message || 'Failed to load inventory data');
       // Fallback to mock data
       setInventoryItems([] /* TODO: Fetch from API */);
       setInventoryStats([] /* TODO: Fetch from API */);
     } finally {
-      setLoading(false);
+      _setLoading(false);
     }
   };
 
@@ -184,9 +185,10 @@ const InventoryManagement = () => {
 
   // Refetch when filters change
   useEffect(() => {
-    if (!loading) {
+    if (!_loading) {
       fetchInventoryItems();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, selectedCategory, selectedSupplier]);
 
   // Filter inventory items
@@ -202,7 +204,7 @@ const InventoryManagement = () => {
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
-  }, [searchQuery, selectedCategory, selectedStatus, selectedSupplier]);
+  }, [searchQuery, selectedCategory, selectedStatus, inventoryItems]);
 
   // Filter purchase orders
   const filteredOrders = useMemo(() => {

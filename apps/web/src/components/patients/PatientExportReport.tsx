@@ -6,7 +6,6 @@ import {
   Stack,
   Group,
   Text,
-  Select,
   Button,
   Paper,
   Title,
@@ -18,14 +17,6 @@ import {
   Badge,
   Card,
   Divider,
-  MultiSelect,
-  DateInput,
-  Switch,
-  TextInput,
-  Textarea,
-  ActionIcon,
-  Menu,
-  List,
   Timeline,
   ThemeIcon
 } from '@mantine/core';
@@ -37,14 +28,9 @@ import {
   IconFileExport,
   // IconFilePdf, // not available
   IconFileSpreadsheet,
-  IconPrinter,
-  IconMail,
   IconShare,
   IconCalendar,
-  IconFilter,
-  IconSettings,
   IconCheck,
-  IconClock,
   IconFileText,
   IconChartBar,
   IconUser,
@@ -54,7 +40,7 @@ import {
   IconAlertCircle,
   IconReportAnalytics
 } from '@tabler/icons-react';
-import { PatientExportOptions, PatientReport, PatientSearchCriteria } from '../../types/patient';
+import { PatientExportOptions, PatientReport } from '../../types/patient';
 
 interface PatientExportReportProps {
   opened: boolean;
@@ -201,7 +187,8 @@ export default function PatientExportReport({
         onClose();
       }, 1000);
 
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Export Failed',
         message: 'Failed to export patient data. Please try again.',
@@ -228,7 +215,8 @@ export default function PatientExportReport({
       // In a real application, this would typically open or download the report
       console.log('Generated report:', report);
 
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       notifications.show({
         title: 'Report Generation Failed',
         message: 'Failed to generate report. Please try again.',
@@ -318,7 +306,6 @@ export default function PatientExportReport({
             {availableFields.map((group) => {
               const groupFields = group.fields.map(f => f.value);
               const allSelected = groupFields.every(field => exportForm.values.includeFields.includes(field));
-              const someSelected = groupFields.some(field => exportForm.values.includeFields.includes(field));
               
               return (
                 <div key={group.group}>

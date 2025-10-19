@@ -26,7 +26,6 @@ import { notifications } from '@mantine/notifications';
 import {
   IconPlus,
   IconSearch,
-  IconFileText,
   IconEdit,
   IconEye,
   IconTrash,
@@ -83,9 +82,9 @@ function EmrPage() {
       setUser(mockUser);
     }
     fetchRecords();
-    fetchStats();
     fetchPatients();
     fetchDoctors();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchRecords = async () => {

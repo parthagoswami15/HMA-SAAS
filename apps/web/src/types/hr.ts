@@ -1,5 +1,4 @@
 import { BaseEntity } from './common';
-import { Staff } from './staff';
 
 // HR Management Types
 export interface Employee extends BaseEntity {

@@ -218,7 +218,7 @@ export const EmptyState: React.FC<{
 };
 
 // Export all components
-export default {
+const LoadingStates = {
   PageLoader,
   CardSkeleton,
   TableSkeleton,
@@ -229,3 +229,5 @@ export default {
   InlineLoader,
   EmptyState,
 };
+
+export default LoadingStates;

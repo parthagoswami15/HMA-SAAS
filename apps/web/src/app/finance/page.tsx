@@ -20,11 +20,9 @@ import {
   Tabs,
   ActionIcon,
   Menu,
-  Progress
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { DatePickerInput } from '@mantine/dates';
 import {
   IconPlus,
   IconSearch,
@@ -38,7 +36,6 @@ import {
   IconAlertCircle,
   IconReceipt,
   IconCash,
-  IconCalendar,
   IconReport
 } from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
@@ -48,11 +45,10 @@ import FinanceTransactionDetails from '../../components/finance/FinanceTransacti
 import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn } from '../../types/common';
 import financeService from '../../services/finance.service';
-import type { CreateTransactionDto, UpdateTransactionDto, FinanceFilters } from '../../services/finance.service';
+import type { CreateTransactionDto, UpdateTransactionDto } from '../../services/finance.service';
 
 const mockUser: User = {
   id: '1',
-  name: 'Admin User',
   username: 'admin',
   email: 'admin@hospital.com',
   firstName: 'Admin',
@@ -72,15 +68,15 @@ function FinancePage() {
   const { user, setUser } = useAppStore();
   const [activeTab, setActiveTab] = useState('transactions');
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [invoices, setInvoices] = useState<any[]>([]);
-  const [payments, setPayments] = useState<any[]>([]);
+  const [_invoices, _setInvoices] = useState<any[]>([]);
+  const [_payments, _setPayments] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [_dateRange, _setDateRange] = useState<[Date | null, Date | null]>([null, null]);
 
   const [transactionFormOpened, { open: openTransactionForm, close: closeTransactionForm }] = useDisclosure(false);
   const [detailsOpened, { open: openDetails, close: closeDetails }] = useDisclosure(false);
@@ -482,7 +478,7 @@ function FinancePage() {
   const netProfit = totalIncome - totalExpenses;
 
   return (
-    <Layout user={user || mockUser} notifications={0} onLogout={() => {}}>
+    <Layout user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : { id: mockUser.id, name: `${mockUser.firstName} ${mockUser.lastName}`, email: mockUser.email, role: mockUser.role }} notifications={0} onLogout={() => {}}>
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}

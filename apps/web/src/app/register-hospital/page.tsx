@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { 
   Stepper, Card, Title, Text, Stack, Group, Button, 
-  TextInput, Select, Textarea, Radio, Checkbox 
+  TextInput, Select, Radio, Checkbox 
 } from '@mantine/core';
 import { 
   IconBuilding, IconUser, IconCreditCard, IconCheck 

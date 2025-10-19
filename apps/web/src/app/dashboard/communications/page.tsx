@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Container,
   Paper,
@@ -10,135 +10,58 @@ import {
   TextInput,
   Select,
   Badge,
-  Table,
   Modal,
   Text,
   Tabs,
   Card,
-  Avatar,
   ActionIcon,
   Stack,
   SimpleGrid,
   ScrollArea,
   ThemeIcon,
   Progress,
-  NumberInput,
   Textarea,
-
+  Table,
   Switch,
-  Divider,
+  NumberInput,
   Alert,
   Timeline,
-  List,
-  Indicator,
-  RingProgress,
-  Stepper,
-  Chip,
   MultiSelect,
-  JsonInput,
-  Code,
-  Notification
+  Indicator
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
-import communicationsService from '../../../services/communications.service';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import { MantineDonutChart, SimpleLineChart, SimpleAreaChart } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
-  IconEdit,
   IconEye,
-  IconTrash,
   IconMessage,
-  IconUser,
-  IconUsers,
-  IconCalendar,
-  IconClock,
-  IconStethoscope,
-  IconHeart,
-  IconActivity,
-  IconChartBar,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconMedicalCross,
-  IconNurse,
-  IconPill,
-  IconDroplet,
-  IconTemperature as IconThermometer,
-  IconLungs,
-  IconFileText,
-  IconPrinter,
-  IconDownload,
   IconRefresh,
-  IconUserCheck,
-  IconBedFilled,
-  IconClipboard,
-  IconReport,
-  IconCalendarEvent,
-  IconPhone,
-  IconMail,
-  IconMapPin,
-  IconCash,
-  IconCreditCard,
-  IconReceipt,
-  IconCheckbox as IconCheck,
-  IconX,
-  IconAlertCircle,
-  IconArrowUp,
-  IconArrowDown,
-  IconHome,
-  IconTransfer,
-  IconEmergencyBed,
-  IconBuildingBank,
-  IconFileUpload,
-  IconClockHour4,
-  IconCheckbox,
-  IconAlertTriangle,
-  IconPhotoCheck,
-  IconNotes,
-  IconFilter,
-  IconSortDescending,
-  IconExternalLink,
-  IconCalendarStats,
-  IconCurrency,
-  IconPercentage,
-  IconShieldCheck,
-  IconShieldX,
-  IconClockPause,
-  IconFileCheck,
-  IconFileX,
-  IconAlarm,
   IconSend,
-  IconMessageCircle,
-  IconBrandWhatsapp,
-  IconDeviceMobile,
+  // IconMessageCircle,
   IconBell,
-  IconSettings,
-  IconTemplate,
-  IconBulb,
-  IconRobot,
-  IconMicrophone,
-  IconVideo,
-  IconPhoneCall,
-  IconMessageDots,
-  IconBrandTelegram,
-  IconVolume,
-  IconHistory,
   IconTarget,
-  IconUsersGroup,
-  IconCalendarTime,
-  IconCloudUpload,
-  IconApi,
-  IconDatabase,
-  IconBrandFacebook,
-  IconBrandInstagram,
-  IconBrandTwitter,
-  IconShare,
-  IconLink,
-  IconStar,
-  IconBookmark
+  // IconStar,
+  IconDeviceMobile,
+  IconBrandWhatsapp,
+  IconMail,
+  IconPhoneCall,
+  IconClockHour4,
+  IconX,
+  IconTemplate,
+  IconCheckbox,
+  IconActivity,
+  IconSettings,
+  IconChartBar,
+  IconTrash,
+  IconEdit,
+  IconClockPause,
+  IconAlertCircle,
+  IconCalendar,
+  IconCheck
 } from '@tabler/icons-react';
 
 // Types
@@ -214,7 +137,7 @@ interface CommunicationCampaign {
   createdDate: string;
 }
 
-interface NotificationSettings {
+interface _NotificationSettings {
   id: string;
   userId: string;
   userType: 'patient' | 'doctor' | 'admin' | 'staff';
@@ -242,7 +165,7 @@ interface NotificationSettings {
 }
 
 // Mock data
-const mockTemplates: CommunicationTemplate[] = [
+const _mockTemplates: CommunicationTemplate[] = [
   {
     id: '1',
     name: 'Appointment Reminder',
@@ -311,7 +234,7 @@ const mockTemplates: CommunicationTemplate[] = [
   }
 ];
 
-const mockMessages: CommunicationMessage[] = [
+const _mockMessages: CommunicationMessage[] = [
   {
     id: '1',
     templateId: '1',
@@ -424,7 +347,7 @@ const mockMessages: CommunicationMessage[] = [
   }
 ];
 
-const mockCampaigns: CommunicationCampaign[] = [
+const _mockCampaigns: CommunicationCampaign[] = [
   {
     id: '1',
     name: 'Health Checkup Reminder Campaign',
@@ -505,17 +428,17 @@ const CommunicationsManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
-  const [selectedTemplate, setSelectedTemplate] = useState<CommunicationTemplate | null>(null);
+  const [_selectedTemplate, _setSelectedTemplate] = useState<CommunicationTemplate | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<CommunicationMessage | null>(null);
-  const [selectedCampaign, setSelectedCampaign] = useState<CommunicationCampaign | null>(null);
+  const [_selectedCampaign, _setSelectedCampaign] = useState<CommunicationCampaign | null>(null);
 
   // Modal states
   const [messageDetailOpened, { open: openMessageDetail, close: closeMessageDetail }] = useDisclosure(false);
   const [newMessageOpened, { open: openNewMessage, close: closeNewMessage }] = useDisclosure(false);
-  const [templateDetailOpened, { open: openTemplateDetail, close: closeTemplateDetail }] = useDisclosure(false);
-  const [newTemplateOpened, { open: openNewTemplate, close: closeNewTemplate }] = useDisclosure(false);
-  const [campaignDetailOpened, { open: openCampaignDetail, close: closeCampaignDetail }] = useDisclosure(false);
-  const [newCampaignOpened, { open: openNewCampaign, close: closeNewCampaign }] = useDisclosure(false);
+  const [_templateDetailOpened, { open: _openTemplateDetail, close: _closeTemplateDetail }] = useDisclosure(false);
+  const [_newTemplateOpened, { open: _openNewTemplate, close: _closeNewTemplate }] = useDisclosure(false);
+  const [_campaignDetailOpened, { open: _openCampaignDetail, close: _closeCampaignDetail }] = useDisclosure(false);
+  const [_newCampaignOpened, { open: _openNewCampaign, close: _closeNewCampaign }] = useDisclosure(false);
 
   // Filter messages
   const filteredMessages = useMemo(() => {
@@ -552,13 +475,13 @@ const CommunicationsManagement = () => {
   };
 
   const handleViewTemplate = (template: CommunicationTemplate) => {
-    setSelectedTemplate(template);
-    openTemplateDetail();
+    _setSelectedTemplate(template);
+    _openTemplateDetail();
   };
 
   const handleViewCampaign = (campaign: CommunicationCampaign) => {
-    setSelectedCampaign(campaign);
-    openCampaignDetail();
+    _setSelectedCampaign(campaign);
+    _openCampaignDetail();
   };
 
   const formatDate = (dateString: string) => {
@@ -922,7 +845,7 @@ const CommunicationsManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Message Templates</Title>
-              <Button leftSection={<IconPlus size={16} />} onClick={openNewTemplate}>
+              <Button leftSection={<IconPlus size={16} />} onClick={_openNewTemplate}>
                 New Template
               </Button>
             </Group>
@@ -998,7 +921,7 @@ const CommunicationsManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Communication Campaigns</Title>
-              <Button leftSection={<IconPlus size={16} />} onClick={openNewCampaign}>
+              <Button leftSection={<IconPlus size={16} />} onClick={_openNewCampaign}>
                 New Campaign
               </Button>
             </Group>
