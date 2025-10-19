@@ -401,30 +401,30 @@ function PatientsPage() {
   const filterOptions: FilterOption[] = [
     {
       key: 'status',
-      label: 'Status',
+      title: 'Status',
       type: 'select',
       options: [
-        { value: 'active', label: 'Active' },
-        { value: 'inactive', label: 'Inactive' }
+        { value: 'active', title: 'Active' },
+        { value: 'inactive', title: 'Inactive' }
       ]
     },
     {
       key: 'gender',
-      label: 'Gender',
+      title: 'Gender',
       type: 'select',
       options: [
-        { value: 'male', label: 'Male' },
-        { value: 'female', label: 'Female' },
-        { value: 'other', label: 'Other' }
+        { value: 'male', title: 'Male' },
+        { value: 'female', title: 'Female' },
+        { value: 'other', title: 'Other' }
       ]
     },
     {
       key: 'hasInsurance',
-      label: 'Insurance',
+      title: 'Insurance',
       type: 'select',
       options: [
-        { value: 'true', label: 'Insured' },
-        { value: 'false', label: 'Self Pay' }
+        { value: 'true', title: 'Insured' },
+        { value: 'false', title: 'Self Pay' }
       ]
     }
   ];

@@ -260,7 +260,7 @@ function EmrPage() {
   const recordColumns: TableColumn[] = [
     {
       key: 'recordType',
-      label: 'Type',
+      title: 'Type',
       sortable: true,
       render: (record: any) => (
         <Badge color={getRecordTypeColor(record.recordType)}>
@@ -270,7 +270,7 @@ function EmrPage() {
     },
     {
       key: 'patient',
-      label: 'Patient',
+      title: 'Patient',
       sortable: true,
       render: (record: any) => (
         <Group gap="xs">
@@ -290,7 +290,7 @@ function EmrPage() {
     },
     {
       key: 'title',
-      label: 'Title',
+      title: 'Title',
       sortable: true,
       render: (record: any) => (
         <Text fw={500}>{record.title}</Text>
@@ -298,14 +298,14 @@ function EmrPage() {
     },
     {
       key: 'description',
-      label: 'Description',
+      title: 'Description',
       render: (record: any) => (
         <Text lineClamp={2}>{record.description}</Text>
       )
     },
     {
       key: 'doctor',
-      label: 'Doctor',
+      title: 'Doctor',
       render: (record: any) => (
         record.doctor ? (
           <Text size="sm">
@@ -318,7 +318,7 @@ function EmrPage() {
     },
     {
       key: 'date',
-      label: 'Date',
+      title: 'Date',
       sortable: true,
       render: (record: any) => (
         <Text size="sm">{formatDate(record.date)}</Text>
@@ -326,7 +326,7 @@ function EmrPage() {
     },
     {
       key: 'actions',
-      label: 'Actions',
+      title: 'Actions',
       render: (record: any) => (
         <Group gap="xs">
           <ActionIcon
@@ -458,10 +458,10 @@ function EmrPage() {
                 <Select
                   placeholder="Filter by patient"
                   data={[
-                    { value: '', label: 'All Patients' },
+                    { value: '', title: 'All Patients' },
                     ...patients.map(p => ({
                       value: p.id,
-                      label: `${p.firstName} ${p.lastName}`
+                      title: `${p.firstName} ${p.lastName}`
                     }))
                   ]}
                   value={patientFilter}
@@ -474,15 +474,15 @@ function EmrPage() {
                 <Select
                   placeholder="Filter by type"
                   data={[
-                    { value: '', label: 'All Types' },
-                    { value: 'CONSULTATION', label: 'Consultation' },
-                    { value: 'DIAGNOSIS', label: 'Diagnosis' },
-                    { value: 'PRESCRIPTION', label: 'Prescription' },
-                    { value: 'LAB_RESULT', label: 'Lab Result' },
-                    { value: 'IMAGING', label: 'Imaging' },
-                    { value: 'PROCEDURE', label: 'Procedure' },
-                    { value: 'VACCINATION', label: 'Vaccination' },
-                    { value: 'ALLERGY', label: 'Allergy' }
+                    { value: '', title: 'All Types' },
+                    { value: 'CONSULTATION', title: 'Consultation' },
+                    { value: 'DIAGNOSIS', title: 'Diagnosis' },
+                    { value: 'PRESCRIPTION', title: 'Prescription' },
+                    { value: 'LAB_RESULT', title: 'Lab Result' },
+                    { value: 'IMAGING', title: 'Imaging' },
+                    { value: 'PROCEDURE', title: 'Procedure' },
+                    { value: 'VACCINATION', title: 'Vaccination' },
+                    { value: 'ALLERGY', title: 'Allergy' }
                   ]}
                   value={recordTypeFilter}
                   onChange={(value) => setRecordTypeFilter(value || '')}

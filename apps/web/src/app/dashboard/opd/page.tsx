@@ -438,7 +438,7 @@ const OPDManagement = () => {
         <Card padding="lg" radius="md" withBorder>
           <Group justify="space-between">
             <div>
-              <Text c="dimmed" size="sm" fw={500}>Today's Visits</Text>
+              <Text c="dimmed" size="sm" fw={500}>Today&apos;s Visits</Text>
               <Text fw={700} size="xl">{opdStats.todayVisits || 0}</Text>
             </div>
             <ThemeIcon color="green" size="xl" radius="md" variant="light">
@@ -679,8 +679,8 @@ const OPDManagement = () => {
                   </Stack>
 
                   <div style={{ marginBottom: 'var(--mantine-spacing-md)' }}>
-                    <Text size="sm" c="dimmed" mb="xs">Today's Load</Text>
-                    <Progress 
+                    <Text size="sm" c="dimmed" mb="xs">Today&apos;s Load</Text>
+                    <Progress
                       value={(doctor.currentPatients / doctor.maxPatientsPerDay) * 100} 
                       size="lg" 
                       color={doctor.currentPatients > doctor.maxPatientsPerDay * 0.8 ? 'red' : 'blue'}

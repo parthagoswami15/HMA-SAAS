@@ -199,7 +199,7 @@ export default function InvoiceForm({
   const calculateTotals = () => {
     let subTotal = 0;
     let totalTax = 0;
-    let totalDiscount = formData.discountAmount || 0;
+    const totalDiscount = formData.discountAmount || 0;
 
     items.forEach(item => {
       const itemSubtotal = item.quantity * item.unitPrice;

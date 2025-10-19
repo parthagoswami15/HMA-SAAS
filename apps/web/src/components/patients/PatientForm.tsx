@@ -850,7 +850,7 @@ function PatientForm({ opened, onClose, patient, onSubmit, loading = false }: Pa
         <Group>
           <IconCheck size="1rem" />
           <Text size="sm">
-            Ready to submit! Click "Create Patient" to complete the registration process.
+            Ready to submit! Click &quot;Create Patient&quot; to complete the registration process.
           </Text>
         </Group>
       </Alert>

@@ -108,7 +108,8 @@ import {
   IconDeviceDesktopAnalytics,
   IconLink,
   IconUserCircle,
-  IconClock
+  IconClock,
+  IconPlug
 } from '@tabler/icons-react';
 
 // Import types and mock data

@@ -305,7 +305,7 @@ function EmergencyPage() {
   const caseColumns: TableColumn[] = [
     {
       key: 'triageLevel',
-      label: 'Triage',
+      title: 'Triage',
       sortable: true,
       render: (emergencyCase: any) => (
         <Badge color={getTriageColor(emergencyCase.triageLevel)} size="lg">
@@ -315,7 +315,7 @@ function EmergencyPage() {
     },
     {
       key: 'patient',
-      label: 'Patient',
+      title: 'Patient',
       sortable: true,
       render: (emergencyCase: any) => (
         <Group gap="xs">
@@ -335,14 +335,14 @@ function EmergencyPage() {
     },
     {
       key: 'chiefComplaint',
-      label: 'Chief Complaint',
+      title: 'Chief Complaint',
       render: (emergencyCase: any) => (
         <Text lineClamp={2}>{emergencyCase.chiefComplaint}</Text>
       )
     },
     {
       key: 'status',
-      label: 'Status',
+      title: 'Status',
       sortable: true,
       render: (emergencyCase: any) => (
         <Badge color={getStatusColor(emergencyCase.status)}>
@@ -352,7 +352,7 @@ function EmergencyPage() {
     },
     {
       key: 'arrivalTime',
-      label: 'Arrival',
+      title: 'Arrival',
       sortable: true,
       render: (emergencyCase: any) => (
         <div>
@@ -365,7 +365,7 @@ function EmergencyPage() {
     },
     {
       key: 'assignedDoctor',
-      label: 'Doctor',
+      title: 'Doctor',
       render: (emergencyCase: any) => (
         emergencyCase.assignedDoctor ? (
           <Text size="sm">
@@ -378,7 +378,7 @@ function EmergencyPage() {
     },
     {
       key: 'actions',
-      label: 'Actions',
+      title: 'Actions',
       render: (emergencyCase: any) => (
         <Group gap="xs">
           <ActionIcon
@@ -534,11 +534,11 @@ function EmergencyPage() {
                     <Select
                       placeholder="Filter by status"
                       data={[
-                        { value: '', label: 'All Statuses' },
-                        { value: 'WAITING', label: 'Waiting' },
-                        { value: 'IN_TREATMENT', label: 'In Treatment' },
-                        { value: 'DISCHARGED', label: 'Discharged' },
-                        { value: 'ADMITTED', label: 'Admitted' }
+                        { value: '', title: 'All Statuses' },
+                        { value: 'WAITING', title: 'Waiting' },
+                        { value: 'IN_TREATMENT', title: 'In Treatment' },
+                        { value: 'DISCHARGED', title: 'Discharged' },
+                        { value: 'ADMITTED', title: 'Admitted' }
                       ]}
                       value={statusFilter}
                       onChange={(value) => setStatusFilter(value || '')}
@@ -548,11 +548,11 @@ function EmergencyPage() {
                     <Select
                       placeholder="Filter by triage"
                       data={[
-                        { value: '', label: 'All Levels' },
-                        { value: 'CRITICAL', label: 'Critical' },
-                        { value: 'URGENT', label: 'Urgent' },
-                        { value: 'SEMI_URGENT', label: 'Semi-Urgent' },
-                        { value: 'NON_URGENT', label: 'Non-Urgent' }
+                        { value: '', title: 'All Levels' },
+                        { value: 'CRITICAL', title: 'Critical' },
+                        { value: 'URGENT', title: 'Urgent' },
+                        { value: 'SEMI_URGENT', title: 'Semi-Urgent' },
+                        { value: 'NON_URGENT', title: 'Non-Urgent' }
                       ]}
                       value={triageFilter}
                       onChange={(value) => setTriageFilter(value || '')}

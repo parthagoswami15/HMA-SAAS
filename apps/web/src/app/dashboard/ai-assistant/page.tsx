@@ -149,7 +149,7 @@ import {
   IconFlask,
   IconDna,
   IconMicroscope,
-  IconRadioactive,
+  IconRadiation,
   IconHeartbeat,
   IconBone,
   IconVaccine,

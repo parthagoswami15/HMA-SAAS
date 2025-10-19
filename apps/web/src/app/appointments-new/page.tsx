@@ -30,7 +30,6 @@ import {
   IconTrash,
   IconEye,
   IconCalendarEvent,
-  IconStethoscope,
   IconCheck,
   IconAlertCircle
 } from '@tabler/icons-react';
@@ -39,7 +38,7 @@ import DataTable from '../../components/shared/DataTable';
 import AppointmentForm from '../../components/appointments/AppointmentForm';
 import AppointmentDetails from '../../components/appointments/AppointmentDetails';
 import { useAppStore } from '../../stores/appStore';
-import { User, UserRole, TableColumn, Status } from '../../types/common';
+import { User, UserRole, TableColumn } from '../../types/common';
 import appointmentsService from '../../services/appointments.service';
 import patientsService from '../../services/patients.service';
 import type { CreateAppointmentDto, UpdateAppointmentDto, AppointmentFilters } from '../../services/appointments.service';
@@ -273,7 +272,7 @@ function AppointmentsPage() {
   const columns: TableColumn[] = [
     {
       key: 'patient',
-      label: 'Patient',
+      title: 'Patient',
       sortable: true,
       render: (appointment: any) => (
         <div>
@@ -288,7 +287,7 @@ function AppointmentsPage() {
     },
     {
       key: 'doctor',
-      label: 'Doctor',
+      title: 'Doctor',
       sortable: true,
       render: (appointment: any) => (
         <Text>
@@ -298,7 +297,7 @@ function AppointmentsPage() {
     },
     {
       key: 'dateTime',
-      label: 'Date & Time',
+      title: 'Date & Time',
       sortable: true,
       render: (appointment: any) => {
         const { date, time } = formatDateTime(appointment.startTime);
@@ -312,14 +311,14 @@ function AppointmentsPage() {
     },
     {
       key: 'reason',
-      label: 'Reason',
+      title: 'Reason',
       render: (appointment: any) => (
         <Text lineClamp={2}>{appointment.reason}</Text>
       )
     },
     {
       key: 'status',
-      label: 'Status',
+      title: 'Status',
       sortable: true,
       render: (appointment: any) => (
         <Badge color={getStatusColor(appointment.status)}>
@@ -329,7 +328,7 @@ function AppointmentsPage() {
     },
     {
       key: 'actions',
-      label: 'Actions',
+      title: 'Actions',
       render: (appointment: any) => (
         <Group gap="xs">
           <Button
@@ -363,7 +362,19 @@ function AppointmentsPage() {
   ];
 
   return (
-    <Layout user={user || mockUser} notifications={0} onLogout={() => {}}>
+    <Layout user={user ? { 
+      id: user.id, 
+      name: `${user.firstName} ${user.lastName}`, 
+      email: user.email, 
+      role: user.role,
+      avatar: undefined 
+    } : mockUser ? {
+      id: mockUser.id,
+      name: `${mockUser.firstName} ${mockUser.lastName}`,
+      email: mockUser.email,
+      role: mockUser.role,
+      avatar: undefined
+    } : undefined} notifications={0} onLogout={() => {}}>
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -474,7 +485,7 @@ function AppointmentsPage() {
                   placeholder="Filter by date"
                   leftSection={<IconCalendar size={16} />}
                   value={dateFilter}
-                  onChange={setDateFilter}
+                  onChange={(value) => setDateFilter(value as unknown as Date | null)}
                   clearable
                 />
               </Grid.Col>

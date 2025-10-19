@@ -301,7 +301,7 @@ function BillingPage() {
   const invoiceColumns: TableColumn[] = [
     {
       key: 'invoiceNumber',
-      label: 'Invoice #',
+      title: 'Invoice #',
       sortable: true,
       render: (invoice: any) => (
         <Text fw={600}>{invoice.invoiceNumber}</Text>
@@ -309,7 +309,7 @@ function BillingPage() {
     },
     {
       key: 'patient',
-      label: 'Patient',
+      title: 'Patient',
       sortable: true,
       render: (invoice: any) => (
         <div>
@@ -324,7 +324,7 @@ function BillingPage() {
     },
     {
       key: 'date',
-      label: 'Date',
+      title: 'Date',
       sortable: true,
       render: (invoice: any) => (
         <Text>{formatDate(invoice.date)}</Text>
@@ -332,7 +332,7 @@ function BillingPage() {
     },
     {
       key: 'dueDate',
-      label: 'Due Date',
+      title: 'Due Date',
       sortable: true,
       render: (invoice: any) => (
         <Text>{formatDate(invoice.dueDate)}</Text>
@@ -340,7 +340,7 @@ function BillingPage() {
     },
     {
       key: 'totalAmount',
-      label: 'Amount',
+      title: 'Amount',
       sortable: true,
       render: (invoice: any) => (
         <Text fw={600}>{formatCurrency(invoice.totalAmount)}</Text>
@@ -348,7 +348,7 @@ function BillingPage() {
     },
     {
       key: 'status',
-      label: 'Status',
+      title: 'Status',
       sortable: true,
       render: (invoice: any) => (
         <Badge color={getStatusColor(invoice.status)}>
@@ -358,7 +358,7 @@ function BillingPage() {
     },
     {
       key: 'actions',
-      label: 'Actions',
+      title: 'Actions',
       render: (invoice: any) => (
         <Group gap="xs">
           <ActionIcon
@@ -433,7 +433,7 @@ function BillingPage() {
   const paymentColumns: TableColumn[] = [
     {
       key: 'paymentNumber',
-      label: 'Payment #',
+      title: 'Payment #',
       sortable: true,
       render: (payment: any) => (
         <Text fw={600}>{payment.paymentNumber}</Text>
@@ -441,14 +441,14 @@ function BillingPage() {
     },
     {
       key: 'invoice',
-      label: 'Invoice',
+      title: 'Invoice',
       render: (payment: any) => (
         <Text>{payment.invoice?.invoiceNumber}</Text>
       )
     },
     {
       key: 'patient',
-      label: 'Patient',
+      title: 'Patient',
       render: (payment: any) => (
         <Text>
           {payment.invoice?.patient?.firstName} {payment.invoice?.patient?.lastName}
@@ -457,7 +457,7 @@ function BillingPage() {
     },
     {
       key: 'amount',
-      label: 'Amount',
+      title: 'Amount',
       sortable: true,
       render: (payment: any) => (
         <Text fw={600}>{formatCurrency(payment.amount)}</Text>
@@ -465,14 +465,14 @@ function BillingPage() {
     },
     {
       key: 'paymentMethod',
-      label: 'Method',
+      title: 'Method',
       render: (payment: any) => (
         <Badge variant="light">{payment.paymentMethod}</Badge>
       )
     },
     {
       key: 'paymentDate',
-      label: 'Date',
+      title: 'Date',
       sortable: true,
       render: (payment: any) => (
         <Text>{formatDate(payment.paymentDate)}</Text>
@@ -480,7 +480,7 @@ function BillingPage() {
     },
     {
       key: 'status',
-      label: 'Status',
+      title: 'Status',
       render: (payment: any) => (
         <Badge color={payment.status === 'COMPLETED' ? 'green' : 'gray'}>
           {payment.status}
@@ -489,8 +489,14 @@ function BillingPage() {
     }
   ];
 
+  const currentUser = user || mockUser;
+  const userForLayout = {
+    ...currentUser,
+    name: `${currentUser.firstName} ${currentUser.lastName}`,
+  };
+
   return (
-    <Layout user={user || mockUser} notifications={0} onLogout={() => {}}>
+    <Layout user={userForLayout} notifications={0} onLogout={() => {}}>
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -616,7 +622,7 @@ function BillingPage() {
                       placeholder="Filter by date"
                       leftSection={<IconCalendar size={16} />}
                       value={dateFilter}
-                      onChange={setDateFilter}
+                      onChange={(value) => setDateFilter(value as unknown as Date | null)}
                       clearable
                     />
                   </Grid.Col>

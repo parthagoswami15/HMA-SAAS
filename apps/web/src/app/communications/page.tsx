@@ -304,7 +304,7 @@ function CommunicationsPage() {
   const messageColumns: TableColumn[] = [
     {
       key: 'read',
-      label: '',
+      title: '',
       render: (message: any) => (
         <ActionIcon
           size="sm"
@@ -317,7 +317,7 @@ function CommunicationsPage() {
     },
     {
       key: 'sender',
-      label: 'From',
+      title: 'From',
       sortable: true,
       render: (message: any) => (
         <Group gap="xs">
@@ -335,7 +335,7 @@ function CommunicationsPage() {
     },
     {
       key: 'subject',
-      label: 'Subject',
+      title: 'Subject',
       sortable: true,
       render: (message: any) => (
         <Text fw={message.read ? 400 : 600} lineClamp={1}>
@@ -345,7 +345,7 @@ function CommunicationsPage() {
     },
     {
       key: 'priority',
-      label: 'Priority',
+      title: 'Priority',
       sortable: true,
       render: (message: any) => (
         <Badge size="sm" color={getPriorityColor(message.priority)}>
@@ -355,7 +355,7 @@ function CommunicationsPage() {
     },
     {
       key: 'createdAt',
-      label: 'Date',
+      title: 'Date',
       sortable: true,
       render: (message: any) => (
         <Text size="sm">{formatDate(message.createdAt)}</Text>
@@ -363,7 +363,7 @@ function CommunicationsPage() {
     },
     {
       key: 'actions',
-      label: 'Actions',
+      title: 'Actions',
       render: (message: any) => (
         <Group gap="xs">
           <ActionIcon
@@ -420,7 +420,7 @@ function CommunicationsPage() {
   const notificationColumns: TableColumn[] = [
     {
       key: 'title',
-      label: 'Title',
+      title: 'Title',
       sortable: true,
       render: (notification: any) => (
         <Text fw={notification.read ? 400 : 600}>
@@ -430,14 +430,14 @@ function CommunicationsPage() {
     },
     {
       key: 'message',
-      label: 'Message',
+      title: 'Message',
       render: (notification: any) => (
         <Text lineClamp={2}>{notification.message}</Text>
       )
     },
     {
       key: 'type',
-      label: 'Type',
+      title: 'Type',
       sortable: true,
       render: (notification: any) => (
         <Badge size="sm" color={getNotificationColor(notification.type)}>
@@ -447,7 +447,7 @@ function CommunicationsPage() {
     },
     {
       key: 'createdAt',
-      label: 'Date',
+      title: 'Date',
       sortable: true,
       render: (notification: any) => (
         <Text size="sm">{formatDate(notification.createdAt)}</Text>
@@ -455,7 +455,7 @@ function CommunicationsPage() {
     },
     {
       key: 'actions',
-      label: 'Actions',
+      title: 'Actions',
       render: (notification: any) => (
         <Group gap="xs">
           {!notification.read && (
@@ -587,9 +587,9 @@ function CommunicationsPage() {
                     <Select
                       placeholder="Filter by status"
                       data={[
-                        { value: '', label: 'All Messages' },
-                        { value: 'unread', label: 'Unread' },
-                        { value: 'read', label: 'Read' }
+                        { value: '', title: 'All Messages' },
+                        { value: 'unread', title: 'Unread' },
+                        { value: 'read', title: 'Read' }
                       ]}
                       value={statusFilter}
                       onChange={(value) => setStatusFilter(value || '')}

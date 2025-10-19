@@ -81,11 +81,11 @@ export const validators = {
 // Form field configuration interface
 export interface FieldConfig {
   name: string;
-  label: string;
+  title: string;
   type: 'text' | 'email' | 'password' | 'tel' | 'number' | 'date' | 'select' | 'textarea' | 'checkbox' | 'radio';
   placeholder?: string;
   validators?: Array<(value: any) => string | null>;
-  options?: Array<{ value: string; label: string }>;
+  options?: Array<{ value: string; title: string }>;
   rows?: number;
   disabled?: boolean;
   required?: boolean;
@@ -475,7 +475,7 @@ export const PatientRegistrationForm: React.FC = () => {
   const patientFields: FieldConfig[] = [
     {
       name: 'firstName',
-      label: 'First Name',
+      title: 'First Name',
       type: 'text',
       placeholder: 'Enter first name',
       validators: [validators.required, validators.minLength(2)],
@@ -484,7 +484,7 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'lastName',
-      label: 'Last Name',
+      title: 'Last Name',
       type: 'text',
       placeholder: 'Enter last name',
       validators: [validators.required, validators.minLength(2)],
@@ -493,7 +493,7 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'email',
-      label: 'Email',
+      title: 'Email',
       type: 'email',
       placeholder: 'Enter email address',
       validators: [validators.required, validators.email],
@@ -502,7 +502,7 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'phone',
-      label: 'Phone Number',
+      title: 'Phone Number',
       type: 'tel',
       placeholder: 'Enter phone number',
       validators: [validators.required, validators.phone],
@@ -511,7 +511,7 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'dateOfBirth',
-      label: 'Date of Birth',
+      title: 'Date of Birth',
       type: 'date',
       validators: [validators.required, validators.pastDate],
       required: true,
@@ -519,19 +519,19 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'gender',
-      label: 'Gender',
+      title: 'Gender',
       type: 'select',
       options: [
-        { value: 'MALE', label: 'Male' },
-        { value: 'FEMALE', label: 'Female' },
-        { value: 'OTHER', label: 'Other' }
+        { value: 'MALE', title: 'Male' },
+        { value: 'FEMALE', title: 'Female' },
+        { value: 'OTHER', title: 'Other' }
       ],
       validators: [validators.required],
       required: true
     },
     {
       name: 'address',
-      label: 'Address',
+      title: 'Address',
       type: 'textarea',
       placeholder: 'Enter full address',
       rows: 3,
@@ -540,7 +540,7 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'emergencyContactName',
-      label: 'Emergency Contact Name',
+      title: 'Emergency Contact Name',
       type: 'text',
       placeholder: 'Enter emergency contact name',
       validators: [validators.required],
@@ -549,7 +549,7 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'emergencyContactPhone',
-      label: 'Emergency Contact Phone',
+      title: 'Emergency Contact Phone',
       type: 'tel',
       placeholder: 'Enter emergency contact phone',
       validators: [validators.required, validators.phone],
@@ -558,7 +558,7 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'insuranceNumber',
-      label: 'Insurance Number',
+      title: 'Insurance Number',
       type: 'text',
       placeholder: 'Enter insurance number (optional)',
       validators: [validators.alphanumeric],
@@ -566,7 +566,7 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'allergies',
-      label: 'Known Allergies',
+      title: 'Known Allergies',
       type: 'textarea',
       placeholder: 'List any known allergies',
       rows: 2,
@@ -574,7 +574,7 @@ export const PatientRegistrationForm: React.FC = () => {
     },
     {
       name: 'consentToTreatment',
-      label: 'I consent to medical treatment',
+      title: 'I consent to medical treatment',
       type: 'checkbox',
       validators: [validators.required],
       required: true

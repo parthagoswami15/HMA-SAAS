@@ -141,7 +141,7 @@ export default function EnhancedDashboard() {
             opacity: 0.9,
             margin: 0
           }}>
-            Here's what's happening at {user.tenant?.name} today • {modules.length} modules available
+            Here&apos;s what&apos;s happening at {user.tenant?.name} today • {modules.length} modules available
           </p>
         </div>
       </div>
