@@ -42,7 +42,14 @@ interface Payment {
   patientName: string;
   amount: number;
   paymentDate: string;
-  paymentMethod: 'CASH' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'UPI' | 'NET_BANKING' | 'CHEQUE' | 'BANK_TRANSFER';
+  paymentMethod:
+    | 'CASH'
+    | 'CREDIT_CARD'
+    | 'DEBIT_CARD'
+    | 'UPI'
+    | 'NET_BANKING'
+    | 'CHEQUE'
+    | 'BANK_TRANSFER';
   referenceNumber?: string;
   status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED' | 'CANCELLED';
   notes?: string;
@@ -79,7 +86,7 @@ const BillingPage = () => {
           unitPrice: 2000,
           discount: 0,
           taxRate: 18,
-          totalAmount: 2360
+          totalAmount: 2360,
         },
         {
           id: '2',
@@ -90,9 +97,9 @@ const BillingPage = () => {
           unitPrice: 1500,
           discount: 300,
           taxRate: 18,
-          totalAmount: 1416
-        }
-      ]
+          totalAmount: 1416,
+        },
+      ],
     },
     {
       id: '2',
@@ -118,9 +125,9 @@ const BillingPage = () => {
           unitPrice: 3500,
           discount: 200,
           taxRate: 18,
-          totalAmount: 3930
-        }
-      ]
+          totalAmount: 3930,
+        },
+      ],
     },
     {
       id: '3',
@@ -146,7 +153,7 @@ const BillingPage = () => {
           unitPrice: 6000,
           discount: 600,
           taxRate: 18,
-          totalAmount: 6372
+          totalAmount: 6372,
         },
         {
           id: '5',
@@ -157,10 +164,10 @@ const BillingPage = () => {
           unitPrice: 2000,
           discount: 200,
           taxRate: 18,
-          totalAmount: 2268
-        }
-      ]
-    }
+          totalAmount: 2268,
+        },
+      ],
+    },
   ]);
 
   const [payments] = useState<Payment[]>([
@@ -175,7 +182,7 @@ const BillingPage = () => {
       paymentMethod: 'UPI',
       referenceNumber: 'UPI123456789',
       status: 'COMPLETED',
-      notes: 'Full payment received'
+      notes: 'Full payment received',
     },
     {
       id: '2',
@@ -188,7 +195,7 @@ const BillingPage = () => {
       paymentMethod: 'CREDIT_CARD',
       referenceNumber: 'CC987654321',
       status: 'COMPLETED',
-      notes: 'Partial payment - surgery advance'
+      notes: 'Partial payment - surgery advance',
     },
     {
       id: '3',
@@ -199,70 +206,89 @@ const BillingPage = () => {
       amount: 3930,
       paymentDate: '2024-12-05',
       paymentMethod: 'CASH',
-      status: 'PENDING'
-    }
+      status: 'PENDING',
+    },
   ]);
 
-  const filteredInvoices = invoices.filter(invoice => {
-    const matchesSearch = 
+  const filteredInvoices = invoices.filter((invoice) => {
+    const matchesSearch =
       invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.patientName.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = filterStatus === 'all' || invoice.status === filterStatus;
-    
-    const matchesDate = dateRange === 'all' || 
-      (dateRange === 'today' && new Date(invoice.date).toDateString() === new Date().toDateString()) ||
-      (dateRange === 'week' && new Date(invoice.date) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) ||
-      (dateRange === 'month' && new Date(invoice.date) >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
-    
+
+    const matchesDate =
+      dateRange === 'all' ||
+      (dateRange === 'today' &&
+        new Date(invoice.date).toDateString() === new Date().toDateString()) ||
+      (dateRange === 'week' &&
+        new Date(invoice.date) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) ||
+      (dateRange === 'month' &&
+        new Date(invoice.date) >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+
     return matchesSearch && matchesStatus && matchesDate;
   });
 
-  const filteredPayments = payments.filter(payment => {
-    const matchesSearch = 
+  const filteredPayments = payments.filter((payment) => {
+    const matchesSearch =
       payment.paymentNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payment.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = filterStatus === 'all' || payment.status === filterStatus;
-    
+
     return matchesSearch && matchesStatus;
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PAID':
-      case 'COMPLETED': return '#10b981';
-      case 'PENDING': return '#f59e0b';
-      case 'PARTIALLY_PAID': return '#3b82f6';
-      case 'DRAFT': return '#6b7280';
+      case 'COMPLETED':
+        return '#10b981';
+      case 'PENDING':
+        return '#f59e0b';
+      case 'PARTIALLY_PAID':
+        return '#3b82f6';
+      case 'DRAFT':
+        return '#6b7280';
       case 'CANCELLED':
-      case 'FAILED': return '#ef4444';
-      case 'REFUNDED': return '#8b5cf6';
-      default: return '#6b7280';
+      case 'FAILED':
+        return '#ef4444';
+      case 'REFUNDED':
+        return '#8b5cf6';
+      default:
+        return '#6b7280';
     }
   };
 
   const getPaymentMethodIcon = (method: string) => {
     switch (method) {
-      case 'CASH': return '💵';
-      case 'CREDIT_CARD': return '💳';
-      case 'DEBIT_CARD': return '💳';
-      case 'UPI': return '📱';
-      case 'NET_BANKING': return '🏦';
-      case 'CHEQUE': return '📄';
-      case 'BANK_TRANSFER': return '🏛️';
-      default: return '💰';
+      case 'CASH':
+        return '💵';
+      case 'CREDIT_CARD':
+        return '💳';
+      case 'DEBIT_CARD':
+        return '💳';
+      case 'UPI':
+        return '📱';
+      case 'NET_BANKING':
+        return '🏦';
+      case 'CHEQUE':
+        return '📄';
+      case 'BANK_TRANSFER':
+        return '🏛️';
+      default:
+        return '💰';
     }
   };
 
   // Financial calculations
   const totalRevenue = invoices.reduce((sum, invoice) => sum + invoice.amountPaid, 0);
   const pendingAmount = invoices
-    .filter(i => i.status === 'PENDING' || i.status === 'PARTIALLY_PAID')
+    .filter((i) => i.status === 'PENDING' || i.status === 'PARTIALLY_PAID')
     .reduce((sum, invoice) => sum + (invoice.totalAmount - invoice.amountPaid), 0);
   const totalInvoices = invoices.length;
-  const paidInvoices = invoices.filter(i => i.status === 'PAID').length;
+  const paidInvoices = invoices.filter((i) => i.status === 'PAID').length;
 
   const InvoiceCard = ({ invoice }: { invoice: Invoice }) => (
     <Card variant="elevated" style={{ marginBottom: '1rem' }}>
@@ -270,32 +296,43 @@ const BillingPage = () => {
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem' }}>
             <div>
-              <h3 style={{ 
-                margin: '0 0 0.25rem 0', 
-                fontSize: '1.25rem', 
-                fontWeight: '600', 
-                color: '#1f2937' 
-              }}>
+              <h3
+                style={{
+                  margin: '0 0 0.25rem 0',
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                }}
+              >
                 {invoice.invoiceNumber}
               </h3>
               <p style={{ margin: '0', fontSize: '1rem', color: '#6b7280' }}>
                 {invoice.patientName}
               </p>
             </div>
-            <span style={{
-              marginLeft: '1rem',
-              padding: '0.25rem 0.75rem',
-              borderRadius: '12px',
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              backgroundColor: `${getStatusColor(invoice.status)}15`,
-              color: getStatusColor(invoice.status)
-            }}>
+            <span
+              style={{
+                marginLeft: '1rem',
+                padding: '0.25rem 0.75rem',
+                borderRadius: '12px',
+                fontSize: '0.75rem',
+                fontWeight: '600',
+                backgroundColor: `${getStatusColor(invoice.status)}15`,
+                color: getStatusColor(invoice.status),
+              }}
+            >
               {invoice.status.replace('_', ' ')}
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '1rem',
+              marginBottom: '1rem',
+            }}
+          >
             <div>
               <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
                 <strong>Date:</strong> {new Date(invoice.date).toLocaleDateString()}
@@ -307,7 +344,7 @@ const BillingPage = () => {
                 <strong>Items:</strong> {invoice.items.length}
               </p>
             </div>
-            
+
             <div>
               <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
                 <strong>Subtotal:</strong> ₹{invoice.subTotal.toLocaleString()}
@@ -319,9 +356,16 @@ const BillingPage = () => {
                 <strong>Discount:</strong> ₹{invoice.discountAmount.toLocaleString()}
               </p>
             </div>
-            
+
             <div>
-              <p style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', color: '#1f2937', fontWeight: '600' }}>
+              <p
+                style={{
+                  margin: '0 0 0.25rem 0',
+                  fontSize: '1rem',
+                  color: '#1f2937',
+                  fontWeight: '600',
+                }}
+              >
                 <strong>Total:</strong> ₹{invoice.totalAmount.toLocaleString()}
               </p>
               <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#10b981' }}>
@@ -329,35 +373,54 @@ const BillingPage = () => {
               </p>
               {invoice.totalAmount > invoice.amountPaid && (
                 <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#ef4444' }}>
-                  <strong>Pending:</strong> ₹{(invoice.totalAmount - invoice.amountPaid).toLocaleString()}
+                  <strong>Pending:</strong> ₹
+                  {(invoice.totalAmount - invoice.amountPaid).toLocaleString()}
                 </p>
               )}
             </div>
           </div>
 
           {invoice.notes && (
-            <div style={{ 
-              padding: '0.75rem', 
-              background: '#f8fafc', 
-              borderRadius: '6px',
-              marginBottom: '0.5rem'
-            }}>
+            <div
+              style={{
+                padding: '0.75rem',
+                background: '#f8fafc',
+                borderRadius: '6px',
+                marginBottom: '0.5rem',
+              }}
+            >
               <p style={{ margin: '0', fontSize: '0.875rem', color: '#6b7280' }}>
                 <strong>Notes:</strong> {invoice.notes}
               </p>
             </div>
           )}
         </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginLeft: '1rem' }}>
-          <Button size="sm" variant="outline" onClick={() => window.location.href = `/billing/invoices/${invoice.id}`}>
+
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginLeft: '1rem' }}
+        >
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => (window.location.href = `/billing/invoices/${invoice.id}`)}
+          >
             View Invoice
           </Button>
-          <Button size="sm" variant="primary" onClick={() => window.location.href = `/billing/invoices/${invoice.id}/edit`}>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => (window.location.href = `/billing/invoices/${invoice.id}/edit`)}
+          >
             Edit
           </Button>
           {invoice.status !== 'PAID' && (
-            <Button size="sm" variant="success" onClick={() => window.location.href = `/billing/payments/new?invoiceId=${invoice.id}`}>
+            <Button
+              size="sm"
+              variant="success"
+              onClick={() =>
+                (window.location.href = `/billing/payments/new?invoiceId=${invoice.id}`)
+              }
+            >
               Add Payment
             </Button>
           )}
@@ -375,32 +438,42 @@ const BillingPage = () => {
               {getPaymentMethodIcon(payment.paymentMethod)}
             </span>
             <div>
-              <h3 style={{ 
-                margin: '0 0 0.25rem 0', 
-                fontSize: '1.25rem', 
-                fontWeight: '600', 
-                color: '#1f2937' 
-              }}>
+              <h3
+                style={{
+                  margin: '0 0 0.25rem 0',
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                }}
+              >
                 {payment.paymentNumber}
               </h3>
               <p style={{ margin: '0', fontSize: '1rem', color: '#6b7280' }}>
                 {payment.patientName}
               </p>
             </div>
-            <span style={{
-              marginLeft: '1rem',
-              padding: '0.25rem 0.75rem',
-              borderRadius: '12px',
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              backgroundColor: `${getStatusColor(payment.status)}15`,
-              color: getStatusColor(payment.status)
-            }}>
+            <span
+              style={{
+                marginLeft: '1rem',
+                padding: '0.25rem 0.75rem',
+                borderRadius: '12px',
+                fontSize: '0.75rem',
+                fontWeight: '600',
+                backgroundColor: `${getStatusColor(payment.status)}15`,
+                color: getStatusColor(payment.status),
+              }}
+            >
               {payment.status}
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '1rem',
+            }}
+          >
             <div>
               <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
                 <strong>Invoice:</strong> {payment.invoiceNumber}
@@ -412,9 +485,16 @@ const BillingPage = () => {
                 <strong>Method:</strong> {payment.paymentMethod.replace('_', ' ')}
               </p>
             </div>
-            
+
             <div>
-              <p style={{ margin: '0 0 0.25rem 0', fontSize: '1.25rem', color: '#10b981', fontWeight: 'bold' }}>
+              <p
+                style={{
+                  margin: '0 0 0.25rem 0',
+                  fontSize: '1.25rem',
+                  color: '#10b981',
+                  fontWeight: 'bold',
+                }}
+              >
                 ₹{payment.amount.toLocaleString()}
               </p>
               {payment.referenceNumber && (
@@ -430,13 +510,23 @@ const BillingPage = () => {
             </div>
           </div>
         </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginLeft: '1rem' }}>
-          <Button size="sm" variant="outline" onClick={() => window.location.href = `/billing/payments/${payment.id}`}>
+
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginLeft: '1rem' }}
+        >
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => (window.location.href = `/billing/payments/${payment.id}`)}
+          >
             View Receipt
           </Button>
           {payment.status === 'PENDING' && (
-            <Button size="sm" variant="primary" onClick={() => window.location.href = `/billing/payments/${payment.id}/edit`}>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => (window.location.href = `/billing/payments/${payment.id}/edit`)}
+            >
               Update Status
             </Button>
           )}
@@ -449,14 +539,23 @@ const BillingPage = () => {
     <Layout>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '2rem' 
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '2rem',
+          }}
+        >
           <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '0.5rem' }}>
+            <h1
+              style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                color: '#1f2937',
+                marginBottom: '0.5rem',
+              }}
+            >
               Billing & Finance
             </h1>
             <p style={{ color: '#6b7280', fontSize: '1rem' }}>
@@ -464,23 +563,31 @@ const BillingPage = () => {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Button variant="secondary" onClick={() => window.location.href = '/billing/reports'}>
+            <Button variant="secondary" onClick={() => (window.location.href = '/billing/reports')}>
               📊 Financial Reports
             </Button>
-            <Button onClick={() => window.location.href = '/billing/invoices/new'}>
+            <Button onClick={() => (window.location.href = '/billing/invoices/new')}>
               + New Invoice
             </Button>
           </div>
         </div>
 
         {/* Financial Overview */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-          gap: '1.5rem',
-          marginBottom: '2rem'
-        }}>
-          <Card variant="elevated" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '1.5rem',
+            marginBottom: '2rem',
+          }}
+        >
+          <Card
+            variant="elevated"
+            style={{
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+            }}
+          >
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                 ₹{totalRevenue.toLocaleString()}
@@ -491,8 +598,14 @@ const BillingPage = () => {
               </div>
             </div>
           </Card>
-          
-          <Card variant="elevated" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white' }}>
+
+          <Card
+            variant="elevated"
+            style={{
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              color: 'white',
+            }}
+          >
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                 ₹{pendingAmount.toLocaleString()}
@@ -503,8 +616,14 @@ const BillingPage = () => {
               </div>
             </div>
           </Card>
-          
-          <Card variant="elevated" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)', color: 'white' }}>
+
+          <Card
+            variant="elevated"
+            style={{
+              background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+              color: 'white',
+            }}
+          >
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                 {totalInvoices}
@@ -515,8 +634,14 @@ const BillingPage = () => {
               </div>
             </div>
           </Card>
-          
-          <Card variant="elevated" style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)', color: 'white' }}>
+
+          <Card
+            variant="elevated"
+            style={{
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+              color: 'white',
+            }}
+          >
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                 {Math.round((paidInvoices / totalInvoices) * 100)}%
@@ -535,8 +660,8 @@ const BillingPage = () => {
             {[
               { key: 'invoices', label: '📄 Invoices', count: invoices.length },
               { key: 'payments', label: '💳 Payments', count: payments.length },
-              { key: 'reports', label: '📊 Reports', count: null }
-            ].map(tab => (
+              { key: 'reports', label: '📊 Reports', count: null },
+            ].map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setCurrentTab(tab.key as any)}
@@ -547,22 +672,25 @@ const BillingPage = () => {
                   fontSize: '1rem',
                   fontWeight: '500',
                   color: currentTab === tab.key ? '#667eea' : '#6b7280',
-                  borderBottom: currentTab === tab.key ? '2px solid #667eea' : '2px solid transparent',
+                  borderBottom:
+                    currentTab === tab.key ? '2px solid #667eea' : '2px solid transparent',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
                 }}
               >
                 {tab.label}
                 {tab.count && (
-                  <span style={{
-                    marginLeft: '0.5rem',
-                    padding: '0.25rem 0.5rem',
-                    backgroundColor: currentTab === tab.key ? '#667eea' : '#e5e7eb',
-                    color: currentTab === tab.key ? 'white' : '#6b7280',
-                    borderRadius: '12px',
-                    fontSize: '0.75rem',
-                    fontWeight: '600'
-                  }}>
+                  <span
+                    style={{
+                      marginLeft: '0.5rem',
+                      padding: '0.25rem 0.5rem',
+                      backgroundColor: currentTab === tab.key ? '#667eea' : '#e5e7eb',
+                      color: currentTab === tab.key ? 'white' : '#6b7280',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                    }}
+                  >
                     {tab.count}
                   </span>
                 )}
@@ -573,12 +701,14 @@ const BillingPage = () => {
 
         {/* Filters */}
         <Card style={{ marginBottom: '2rem' }}>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-            gap: '1rem',
-            alignItems: 'end'
-          }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '1rem',
+              alignItems: 'end',
+            }}
+          >
             <Input
               placeholder="Search..."
               value={searchTerm}
@@ -586,15 +716,17 @@ const BillingPage = () => {
               icon="🔍"
               label="Search"
             />
-            
+
             <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                fontSize: '0.875rem', 
-                fontWeight: '600', 
-                color: '#374151' 
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Status Filter
               </label>
               <select
@@ -607,7 +739,7 @@ const BillingPage = () => {
                   borderRadius: '8px',
                   fontSize: '1rem',
                   backgroundColor: 'white',
-                  color: '#374151'
+                  color: '#374151',
                 }}
               >
                 <option value="all">All Status</option>
@@ -629,15 +761,17 @@ const BillingPage = () => {
                 )}
               </select>
             </div>
-            
+
             <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                fontSize: '0.875rem', 
-                fontWeight: '600', 
-                color: '#374151' 
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Date Range
               </label>
               <select
@@ -650,7 +784,7 @@ const BillingPage = () => {
                   borderRadius: '8px',
                   fontSize: '1rem',
                   backgroundColor: 'white',
-                  color: '#374151'
+                  color: '#374151',
                 }}
               >
                 <option value="all">All Time</option>
@@ -665,12 +799,14 @@ const BillingPage = () => {
         {/* Content */}
         {currentTab === 'invoices' && (
           <div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              marginBottom: '1rem' 
-            }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem',
+              }}
+            >
               <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937' }}>
                 Invoices ({filteredInvoices.length})
               </h2>
@@ -678,27 +814,36 @@ const BillingPage = () => {
                 <Button variant="secondary" size="sm">
                   Export
                 </Button>
-                <Button variant="primary" size="sm" onClick={() => window.location.href = '/billing/invoices/new'}>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => (window.location.href = '/billing/invoices/new')}
+                >
                   + New Invoice
                 </Button>
               </div>
             </div>
-            
+
             {filteredInvoices.length > 0 ? (
-              filteredInvoices.map(invoice => (
-                <InvoiceCard key={invoice.id} invoice={invoice} />
-              ))
+              filteredInvoices.map((invoice) => <InvoiceCard key={invoice.id} invoice={invoice} />)
             ) : (
               <Card>
                 <div style={{ textAlign: 'center', padding: '2rem' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📄</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     No invoices found
                   </h3>
                   <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
                     No invoices match your current search criteria.
                   </p>
-                  <Button onClick={() => window.location.href = '/billing/invoices/new'}>
+                  <Button onClick={() => (window.location.href = '/billing/invoices/new')}>
                     Create New Invoice
                   </Button>
                 </div>
@@ -709,12 +854,14 @@ const BillingPage = () => {
 
         {currentTab === 'payments' && (
           <div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              marginBottom: '1rem' 
-            }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem',
+              }}
+            >
               <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937' }}>
                 Payments ({filteredPayments.length})
               </h2>
@@ -722,27 +869,36 @@ const BillingPage = () => {
                 <Button variant="secondary" size="sm">
                   Export
                 </Button>
-                <Button variant="primary" size="sm" onClick={() => window.location.href = '/billing/payments/new'}>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => (window.location.href = '/billing/payments/new')}
+                >
                   + Record Payment
                 </Button>
               </div>
             </div>
-            
+
             {filteredPayments.length > 0 ? (
-              filteredPayments.map(payment => (
-                <PaymentCard key={payment.id} payment={payment} />
-              ))
+              filteredPayments.map((payment) => <PaymentCard key={payment.id} payment={payment} />)
             ) : (
               <Card>
                 <div style={{ textAlign: 'center', padding: '2rem' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💳</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     No payments found
                   </h3>
                   <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
                     No payments match your current search criteria.
                   </p>
-                  <Button onClick={() => window.location.href = '/billing/payments/new'}>
+                  <Button onClick={() => (window.location.href = '/billing/payments/new')}>
                     Record New Payment
                   </Button>
                 </div>
@@ -754,25 +910,40 @@ const BillingPage = () => {
         {currentTab === 'reports' && (
           <div>
             <Card title="Financial Reports" style={{ marginBottom: '2rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                <div style={{
-                  padding: '2rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                  gap: '2rem',
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#667eea';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}>
+              >
+                <div
+                  style={{
+                    padding: '2rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '12px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#667eea';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
                   <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📊</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Revenue Report
                   </h3>
                   <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
@@ -783,24 +954,33 @@ const BillingPage = () => {
                   </Button>
                 </div>
 
-                <div style={{
-                  padding: '2rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#667eea';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}>
+                <div
+                  style={{
+                    padding: '2rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '12px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#667eea';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
                   <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>💰</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Outstanding Report
                   </h3>
                   <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
@@ -811,24 +991,33 @@ const BillingPage = () => {
                   </Button>
                 </div>
 
-                <div style={{
-                  padding: '2rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#667eea';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}>
+                <div
+                  style={{
+                    padding: '2rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '12px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#667eea';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
                   <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📈</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Payment Analytics
                   </h3>
                   <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
@@ -839,24 +1028,33 @@ const BillingPage = () => {
                   </Button>
                 </div>
 
-                <div style={{
-                  padding: '2rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#667eea';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}>
+                <div
+                  style={{
+                    padding: '2rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '12px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#667eea';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
                   <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🏥</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Department Revenue
                   </h3>
                   <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
@@ -867,24 +1065,33 @@ const BillingPage = () => {
                   </Button>
                 </div>
 
-                <div style={{
-                  padding: '2rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#667eea';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}>
+                <div
+                  style={{
+                    padding: '2rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '12px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#667eea';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
                   <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📋</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Tax Report
                   </h3>
                   <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
@@ -895,24 +1102,33 @@ const BillingPage = () => {
                   </Button>
                 </div>
 
-                <div style={{
-                  padding: '2rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#667eea';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#e5e7eb';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}>
+                <div
+                  style={{
+                    padding: '2rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '12px',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#667eea';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
                   <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📊</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Custom Report
                   </h3>
                   <p style={{ color: '#6b7280', marginBottom: '1rem' }}>

@@ -201,7 +201,7 @@ export interface PharmacyStatsResponse {
 
 const pharmacyService = {
   // ==================== MEDICATIONS ====================
-  
+
   /**
    * Create new medication
    */
@@ -249,7 +249,9 @@ const pharmacyService = {
   /**
    * Get all pharmacy orders with filters
    */
-  getPharmacyOrders: async (filters?: PharmacyOrderFilters): Promise<PharmacyOrdersListResponse> => {
+  getPharmacyOrders: async (
+    filters?: PharmacyOrderFilters
+  ): Promise<PharmacyOrdersListResponse> => {
     return enhancedApiClient.get('/pharmacy/orders', filters);
   },
 
@@ -263,14 +265,21 @@ const pharmacyService = {
   /**
    * Update pharmacy order
    */
-  updatePharmacyOrder: async (id: string, data: UpdatePharmacyOrderDto): Promise<PharmacyOrderResponse> => {
+  updatePharmacyOrder: async (
+    id: string,
+    data: UpdatePharmacyOrderDto
+  ): Promise<PharmacyOrderResponse> => {
     return enhancedApiClient.patch(`/pharmacy/orders/${id}`, data);
   },
 
   /**
    * Update order item status (dispensing)
    */
-  updateOrderItem: async (orderId: string, itemId: string, data: UpdateOrderItemDto): Promise<PharmacyOrderResponse> => {
+  updateOrderItem: async (
+    orderId: string,
+    itemId: string,
+    data: UpdateOrderItemDto
+  ): Promise<PharmacyOrderResponse> => {
     return enhancedApiClient.patch(`/pharmacy/orders/${orderId}/items/${itemId}`, data);
   },
 

@@ -26,41 +26,35 @@ export * from './api.service';
 // Re-export types
 export type { CreatePatientDto, PatientFilters } from './patients.service';
 export type { CreateStaffDto, StaffFilters } from './staff.service';
-export type { 
-  CreateLabTestDto, 
-  CreateLabOrderDto, 
+export type {
+  CreateLabTestDto,
+  CreateLabOrderDto,
   UpdateLabOrderDto,
   UpdateTestResultDto,
   LabTestFilters,
-  LabOrderFilters 
+  LabOrderFilters,
 } from './laboratory.service';
-export type { 
-  CreateMedicationDto, 
-  CreatePharmacyOrderDto, 
+export type {
+  CreateMedicationDto,
+  CreatePharmacyOrderDto,
   UpdatePharmacyOrderDto,
   UpdateOrderItemDto,
   MedicationFilters,
-  PharmacyOrderFilters 
+  PharmacyOrderFilters,
 } from './pharmacy.service';
-export type { 
-  CreateInvoiceDto, 
+export type {
+  CreateInvoiceDto,
   CreatePaymentDto,
   InvoiceFilters,
-  PaymentFilters 
+  PaymentFilters,
 } from './billing.service';
 export type {
   CreateAppointmentDto,
   UpdateAppointmentDto,
-  AppointmentFilters
+  AppointmentFilters,
 } from './appointments.service';
 export type {
   CreateInventoryItemDto,
   UpdateInventoryItemDto,
   InventoryFilters,
-  CreatePurchaseOrderDto,
-  UpdatePurchaseOrderDto,
-  PurchaseOrderFilters,
-  CreateEquipmentDto,
-  UpdateEquipmentDto,
-  EquipmentFilters
 } from './inventory.service';

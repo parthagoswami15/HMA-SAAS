@@ -3,7 +3,7 @@
 /**
  * EXAMPLE PROTECTED PAGE
  * This demonstrates how to implement RBAC, API calls, and loading states
- * 
+ *
  * To use this pattern in your existing pages:
  * 1. Import the necessary components and hooks
  * 2. Wrap your page component with withRBAC HOC
@@ -13,9 +13,9 @@
 
 import { withRBAC, Permission } from '@/lib/rbac/RBACProvider';
 import { usePatients } from '@/lib/api/hooks';
-// import { 
-//   TableSkeleton, 
-//   EmptyState, 
+// import {
+//   TableSkeleton,
+//   EmptyState,
 //   ErrorState
 // } from '@/components/shared/LoadingStates';
 // import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -24,7 +24,7 @@ import { useState } from 'react';
 
 function ExampleProtectedPage() {
   const [filters, _setFilters] = useState({});
-  
+
   // Use custom hook for data fetching with automatic caching
   const { data: patients, isLoading, error, refetch } = usePatients(filters);
 
@@ -32,7 +32,9 @@ function ExampleProtectedPage() {
   if (isLoading) {
     return (
       <div style={{ padding: '2rem' }}>
-        <Title order={2} mb="xl">Patients</Title>
+        <Title order={2} mb="xl">
+          Patients
+        </Title>
         <div>Loading patients...</div>
       </div>
     );
@@ -69,9 +71,7 @@ function ExampleProtectedPage() {
     <div style={{ padding: '2rem' }}>
       <Group justify="space-between" mb="xl">
         <Title order={2}>Patients ({(patients as any[]).length})</Title>
-        <Button onClick={() => console.log('Open add patient modal')}>
-          Add Patient
-        </Button>
+        <Button onClick={() => console.log('Open add patient modal')}>Add Patient</Button>
       </Group>
 
       <Paper shadow="sm" p="md" withBorder>
@@ -93,7 +93,9 @@ function ExampleProtectedPage() {
                 <Table.Td>{patient.email}</Table.Td>
                 <Table.Td>{patient.phone}</Table.Td>
                 <Table.Td>
-                  <Button size="xs" variant="light">View</Button>
+                  <Button size="xs" variant="light">
+                    View
+                  </Button>
                 </Table.Td>
               </Table.Tr>
             ))}

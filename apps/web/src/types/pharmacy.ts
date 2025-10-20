@@ -121,9 +121,30 @@ export interface PharmacyStats {
   dispensedToday: number;
 }
 
-export type DosageForm = 'tablet' | 'capsule' | 'syrup' | 'injection' | 'cream' | 'ointment' | 'drops' | 'inhaler';
-export type AdministrationRoute = 'oral' | 'injection' | 'topical' | 'inhalation' | 'nasal' | 'ophthalmic' | 'otic';
-export type DrugCategory = 'antibiotic' | 'analgesic' | 'antihypertensive' | 'antidiabetic' | 'cardiac' | 'respiratory';
+export type DosageForm =
+  | 'tablet'
+  | 'capsule'
+  | 'syrup'
+  | 'injection'
+  | 'cream'
+  | 'ointment'
+  | 'drops'
+  | 'inhaler';
+export type AdministrationRoute =
+  | 'oral'
+  | 'injection'
+  | 'topical'
+  | 'inhalation'
+  | 'nasal'
+  | 'ophthalmic'
+  | 'otic';
+export type DrugCategory =
+  | 'antibiotic'
+  | 'analgesic'
+  | 'antihypertensive'
+  | 'antidiabetic'
+  | 'cardiac'
+  | 'respiratory';
 export type InteractionSeverity = 'minor' | 'moderate' | 'major' | 'contraindicated';
 export type PrescriptionStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded' | 'cancelled';

@@ -25,17 +25,20 @@ npm run lint
 ## 📊 WHAT WILL HAPPEN:
 
 ### Step 1: `npm run lint -- --fix`
+
 - ⏱️ Takes 2-3 minutes
 - ✅ Removes ~400 unused imports automatically
 - ✅ Fixes code formatting
 - ✅ Safe - only fixes what ESLint knows is safe
 
 ### Step 2: `npm run build`
+
 - ⏱️ Takes 3-5 minutes
 - ✅ Verifies everything still works
 - ✅ Should complete successfully
 
 ### Step 3: `npm run lint`
+
 - ⏱️ Takes 30 seconds
 - ℹ️ Shows remaining warnings (~80-100)
 - ℹ️ These are React Hooks warnings (safe to ignore for now)
@@ -72,6 +75,7 @@ npx eslint src/app/dashboard/ai-assistant/page.tsx --fix
 ## 🚨 IF YOU GET ERRORS:
 
 ### PowerShell Execution Policy Error?
+
 ```powershell
 # Enable script execution (run as Administrator)
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
@@ -81,6 +85,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 ### OR just use npm directly (no admin needed):
+
 ```powershell
 npm run lint -- --fix
 ```
@@ -94,6 +99,7 @@ npm run lint -- --fix && npm run build
 ```
 
 This single command will:
+
 - ✅ Fix all auto-fixable warnings
 - ✅ Verify build works
 - ✅ Take 5 minutes total

@@ -16,48 +16,48 @@ export interface Appointment extends BaseEntity {
   notes?: string;
   status: AppointmentStatus;
   priority: AppointmentPriority;
-  
+
   // Scheduling details
   scheduledBy: string;
   scheduledDate: Date;
   confirmedBy?: string;
   confirmedDate?: Date;
-  
+
   // Visit details
   checkInTime?: Date;
   checkOutTime?: Date;
   waitingTime?: number;
   consultationTime?: number;
-  
+
   // Follow-up
   followUpRequired: boolean;
   followUpDate?: Date;
   followUpNotes?: string;
-  
+
   // Payment
   consultationFee: number;
   isPaid: boolean;
   paymentMethod?: string;
   paymentReference?: string;
-  
+
   // Communication
   reminderSent: boolean;
   reminderDate?: Date;
   patientNotified: boolean;
   notificationPreference: NotificationPreference;
-  
+
   // Cancellation
   cancelledBy?: string;
   cancellationDate?: Date;
   cancellationReason?: string;
   cancellationFee?: number;
-  
+
   // Rescheduling
   rescheduledFrom?: string; // Original appointment ID
   rescheduledTo?: string; // New appointment ID
   rescheduledBy?: string;
   reschedulingReason?: string;
-  
+
   metadata?: {
     referredBy?: string;
     insurance?: {
@@ -78,7 +78,7 @@ export interface Appointment extends BaseEntity {
   };
 }
 
-export type AppointmentType = 
+export type AppointmentType =
   | 'consultation'
   | 'follow_up'
   | 'emergency'
@@ -90,7 +90,7 @@ export type AppointmentType =
   | 'second_opinion'
   | 'telemedicine';
 
-export type AppointmentStatus = 
+export type AppointmentStatus =
   | 'SCHEDULED'
   | 'ARRIVED'
   | 'IN_PROGRESS'
@@ -99,19 +99,9 @@ export type AppointmentStatus =
   | 'NO_SHOW'
   | 'RESCHEDULED';
 
-export type AppointmentPriority = 
-  | 'low'
-  | 'normal'
-  | 'high'
-  | 'urgent'
-  | 'emergency';
+export type AppointmentPriority = 'low' | 'normal' | 'high' | 'urgent' | 'emergency';
 
-export type NotificationPreference = 
-  | 'sms'
-  | 'email'
-  | 'phone'
-  | 'push_notification'
-  | 'none';
+export type NotificationPreference = 'sms' | 'email' | 'phone' | 'push_notification' | 'none';
 
 // Doctor availability and scheduling
 export interface DoctorAvailability extends BaseEntity {
@@ -139,12 +129,7 @@ export interface TimeSlot {
   currentBookings?: number;
 }
 
-export type SlotType = 
-  | 'consultation'
-  | 'procedure'
-  | 'emergency'
-  | 'break'
-  | 'blocked';
+export type SlotType = 'consultation' | 'procedure' | 'emergency' | 'break' | 'blocked';
 
 export interface BreakTime {
   id: string;
@@ -154,12 +139,7 @@ export interface BreakTime {
   description?: string;
 }
 
-export type BreakType = 
-  | 'lunch'
-  | 'tea'
-  | 'surgery'
-  | 'emergency'
-  | 'personal';
+export type BreakType = 'lunch' | 'tea' | 'surgery' | 'emergency' | 'personal';
 
 // Appointment booking and management
 
@@ -219,12 +199,7 @@ export interface QueuedAppointment {
   priority: number;
 }
 
-export type QueueStatus = 
-  | 'waiting'
-  | 'called'
-  | 'in_consultation'
-  | 'completed'
-  | 'skipped';
+export type QueueStatus = 'waiting' | 'called' | 'in_consultation' | 'completed' | 'skipped';
 
 // Search and filtering
 export interface AppointmentSearchFilters {
@@ -247,7 +222,7 @@ export interface AppointmentStats {
   completedAppointments: number;
   cancelledAppointments: number;
   noShowAppointments: number;
-  
+
   appointmentsByType: Record<AppointmentType, number>;
   appointmentsByStatus: Record<AppointmentStatus, number>;
   appointmentsByDepartment: Record<string, number>;
@@ -257,11 +232,11 @@ export interface AppointmentStats {
     appointmentCount: number;
     completionRate: number;
   }>;
-  
+
   averageWaitTime: number;
   averageConsultationTime: number;
   patientSatisfactionScore: number;
-  
+
   dailyAppointments: Array<{
     date: string;
     scheduled: number;
@@ -269,19 +244,19 @@ export interface AppointmentStats {
     cancelled: number;
     noShow: number;
   }>;
-  
+
   monthlyTrends: Array<{
     month: string;
     appointments: number;
     revenue: number;
     completionRate: number;
   }>;
-  
+
   peakHours: Array<{
     hour: number;
     appointmentCount: number;
   }>;
-  
+
   revenueMetrics: {
     totalRevenue: number;
     pendingPayments: number;
@@ -305,19 +280,9 @@ export interface AppointmentReminder {
   response?: string;
 }
 
-export type ReminderType = 
-  | 'confirmation'
-  | '24_hour'
-  | '2_hour'
-  | '30_minute'
-  | 'follow_up';
+export type ReminderType = 'confirmation' | '24_hour' | '2_hour' | '30_minute' | 'follow_up';
 
-export type ReminderStatus = 
-  | 'scheduled'
-  | 'sent'
-  | 'delivered'
-  | 'failed'
-  | 'cancelled';
+export type ReminderStatus = 'scheduled' | 'sent' | 'delivered' | 'failed' | 'cancelled';
 
 // Telemedicine integration
 export interface TelemedicineAppointment {
@@ -333,9 +298,4 @@ export interface TelemedicineAppointment {
   sessionNotes?: string;
 }
 
-export type ConnectionStatus = 
-  | 'pending'
-  | 'connected'
-  | 'disconnected'
-  | 'failed'
-  | 'completed';
+export type ConnectionStatus = 'pending' | 'connected' | 'disconnected' | 'failed' | 'completed';

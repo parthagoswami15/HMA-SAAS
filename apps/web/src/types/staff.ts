@@ -10,11 +10,11 @@ export interface Staff extends BaseEntity {
   dateOfBirth: Date;
   age: number;
   gender: Gender;
-  
+
   // Contact Information
   contactInfo: ContactInfo;
   address: Address;
-  
+
   // Professional Information
   role: UserRole;
   department: Department;
@@ -22,29 +22,29 @@ export interface Staff extends BaseEntity {
   qualifications: Qualification[];
   experience: number; // years of experience
   joiningDate: Date;
-  
+
   // Employment Details
   employmentType: 'full_time' | 'part_time' | 'contract' | 'consultant' | 'locum';
   status: Status;
   isActive: boolean;
-  
+
   // Medical Registration (for doctors)
   medicalRegistration?: MedicalRegistration;
-  
+
   // Privileges and Permissions
   privileges: Privilege[];
   permissions: string[];
-  
+
   // Schedule Information
   workingHours: WorkingHours;
   shifts: Shift[];
-  
+
   // Performance Metrics
   performanceMetrics?: PerformanceMetrics;
-  
+
   // Financial Information
   salaryInfo?: SalaryInfo;
-  
+
   // Additional Information
   emergencyContact?: {
     name: string;
@@ -149,31 +149,31 @@ export interface PerformanceMetrics {
   averagePatientRating: number;
   patientComplaintCount: number;
   patientComplimentCount: number;
-  
+
   // Productivity Metrics
   averageConsultationTime: number; // in minutes
   proceduresPerformed: number;
   revenueGenerated?: number;
-  
+
   // Quality Metrics
   diagnosisAccuracy?: number; // percentage
   treatmentSuccessRate?: number; // percentage
   complicationRate?: number; // percentage
-  
+
   // Professional Development
   trainingHoursCompleted: number;
   certificationsEarned: number;
   researchPapersPublished?: number;
-  
+
   // Attendance & Punctuality
   attendancePercentage: number;
   punctualityScore: number;
   leaveDaysTaken: number;
-  
+
   // Peer & Supervisor Ratings
   peerRating?: number;
   supervisorRating?: number;
-  
+
   // Period Information
   evaluationPeriod: {
     startDate: Date;
@@ -314,13 +314,13 @@ export interface StaffStats {
   staffOnLeave: number;
   newHiresThisMonth: number;
   averageExperience: number;
-  
+
   // Role Distribution
   roleDistribution: Record<UserRole, number>;
-  
+
   // Department Distribution
   departmentDistribution: Record<string, number>;
-  
+
   // Employment Type Distribution
   employmentTypeDistribution: {
     full_time: number;
@@ -329,7 +329,7 @@ export interface StaffStats {
     consultant: number;
     locum: number;
   };
-  
+
   // Attendance Metrics
   attendanceMetrics: {
     presentToday: number;
@@ -338,14 +338,14 @@ export interface StaffStats {
     onLeaveToday: number;
     averageAttendance: number;
   };
-  
+
   // Performance Metrics
   performanceMetrics: {
     averageRating: number;
     topPerformers: string[];
     trainingCompletionRate: number;
   };
-  
+
   // Trends
   hiringTrends: {
     month: string;

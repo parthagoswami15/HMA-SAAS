@@ -3,14 +3,16 @@
 ## ✅ Fully Integrated Modules
 
 These modules are fully integrated with backend APIs and include:
+
 - Real-time data fetching from backend
 - Loading states
 - Error handling with fallback to mock data
 - Auto-refresh on filter changes
 
 ### 1. **Patients Module** (`/dashboard/patients`)
+
 - **Service**: `patientsService`
-- **Endpoints**: 
+- **Endpoints**:
   - `GET /patients` - List all patients
   - `GET /patients/:id` - Get patient details
   - `POST /patients` - Create new patient
@@ -19,6 +21,7 @@ These modules are fully integrated with backend APIs and include:
 - **Features**: Search, filter by status, pagination
 
 ### 2. **Staff Module** (`/dashboard/staff`)
+
 - **Service**: `staffService`
 - **Endpoints**:
   - `GET /staff` - List all staff
@@ -29,6 +32,7 @@ These modules are fully integrated with backend APIs and include:
 - **Features**: Search, filter by role and department
 
 ### 3. **Laboratory Module** (`/dashboard/laboratory`)
+
 - **Service**: `laboratoryService`
 - **Endpoints**:
   - `GET /laboratory/tests` - List lab tests
@@ -40,6 +44,7 @@ These modules are fully integrated with backend APIs and include:
 - **Features**: Separate tabs for tests and orders, status filtering
 
 ### 4. **Pharmacy Module** (`/dashboard/pharmacy`)
+
 - **Service**: `pharmacyService`
 - **Endpoints**:
   - `GET /pharmacy/medications` - List medications
@@ -51,6 +56,7 @@ These modules are fully integrated with backend APIs and include:
 - **Features**: Medication inventory, prescription management
 
 ### 5. **Billing Module** (`/dashboard/billing`)
+
 - **Service**: `billingService`
 - **Endpoints**:
   - `GET /billing/invoices` - List invoices
@@ -61,6 +67,7 @@ These modules are fully integrated with backend APIs and include:
 - **Features**: Invoice management, payment tracking, insurance claims (mock)
 
 ### 6. **Appointments Module** (`/dashboard/appointments`)
+
 - **Service**: `appointmentsService`
 - **Endpoints**:
   - `GET /appointments` - List appointments
@@ -75,6 +82,7 @@ These modules are fully integrated with backend APIs and include:
 - **Features**: Doctor filtering, status tracking, calendar view, statistics
 
 ### 7. **Inventory Module** (`/dashboard/inventory`)
+
 - **Service**: `inventoryService`
 - **Endpoints**:
   - `GET /inventory` - List inventory items
@@ -98,31 +106,37 @@ These modules are fully integrated with backend APIs and include:
 These modules currently use mock data. Backend APIs need to be created for full integration:
 
 ### 8. **IPD Module** (`/dashboard/ipd`)
+
 - **Status**: Mock data only
 - **Required Endpoints**: Patient admissions, bed management, ward management
 - **Priority**: High
 
 ### 9. **OPD Module** (`/dashboard/opd`)
+
 - **Status**: Mock data only
 - **Required Endpoints**: OPD visits, queue management, consultation records
 - **Priority**: High
 
 ### 10. **Emergency Module** (`/dashboard/emergency`)
+
 - **Status**: Mock data only
 - **Required Endpoints**: Emergency cases, triage, ICU beds, critical equipment
 - **Priority**: High
 
 ### 11. **Radiology Module** (`/dashboard/radiology`)
+
 - **Status**: Mock data only
 - **Required Endpoints**: Imaging requests, reports, equipment, studies
 - **Priority**: Medium
 
 ### 12. **Pathology Module** (`/dashboard/pathology`)
+
 - **Status**: Mock data only
 - **Required Endpoints**: Specimens, reports, tests, slides
 - **Priority**: Medium
 
 ### 13. **Other Modules**
+
 - Surgery (`/dashboard/surgery`) - Mock data
 - Telemedicine (`/dashboard/telemedicine`) - Mock data
 - HR (`/dashboard/hr`) - Mock data
@@ -148,13 +162,13 @@ import apiClient from './api-client';
 
 class ModuleService {
   private baseUrl = '/module';
-  
+
   async getItems(filters?: Filters) {
     // Build query params
     // Call API
     // Return typed response
   }
-  
+
   async getItemById(id: string) { ... }
   async createItem(data: CreateDto) { ... }
   async updateItem(id: string, data: UpdateDto) { ... }
@@ -176,11 +190,11 @@ const ModulePage = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     loadData();
   }, [filters]);
-  
+
   const loadData = async () => {
     try {
       setLoading(true);
@@ -196,7 +210,7 @@ const ModulePage = () => {
       setLoading(false);
     }
   };
-  
+
   // Rest of component...
 };
 ```

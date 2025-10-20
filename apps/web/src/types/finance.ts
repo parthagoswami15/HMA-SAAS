@@ -6,20 +6,20 @@ export type AccountType = 'checking' | 'savings' | 'revenue' | 'expense' | 'asse
 export type BudgetStatus = 'active' | 'expired' | 'draft';
 export type InvoiceStatus = 'draft' | 'pending' | 'paid' | 'overdue' | 'cancelled';
 export type PaymentMethod = 'cash' | 'card' | 'bank_transfer' | 'upi' | 'cheque' | 'online';
-export type ExpenseCategory = 
-  | 'medical_supplies' 
-  | 'equipment' 
-  | 'salaries' 
-  | 'utilities' 
-  | 'maintenance' 
-  | 'marketing' 
-  | 'insurance' 
+export type ExpenseCategory =
+  | 'medical_supplies'
+  | 'equipment'
+  | 'salaries'
+  | 'utilities'
+  | 'maintenance'
+  | 'marketing'
+  | 'insurance'
   | 'other';
-export type ReportType = 
-  | 'income_statement' 
-  | 'balance_sheet' 
-  | 'cash_flow' 
-  | 'budget_variance' 
+export type ReportType =
+  | 'income_statement'
+  | 'balance_sheet'
+  | 'cash_flow'
+  | 'budget_variance'
   | 'expense_analysis';
 
 export interface Account {

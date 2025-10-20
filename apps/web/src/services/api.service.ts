@@ -1,4 +1,4 @@
-import apiClient, { handleApiError } from '@/lib/api-client';
+import apiClient, { handleApiError } from '../lib/api-client';
 
 // Re-export apiClient for other services
 export { apiClient };
@@ -308,7 +308,10 @@ export const laboratoryApi = {
 
   updateTestResult: async (orderId: string, testId: string, data: any) => {
     try {
-      const response = await apiClient.patch(`/laboratory/orders/${orderId}/tests/${testId}/result`, data);
+      const response = await apiClient.patch(
+        `/laboratory/orders/${orderId}/tests/${testId}/result`,
+        data
+      );
       return response.data;
     } catch (error) {
       throw new Error(handleApiError(error));

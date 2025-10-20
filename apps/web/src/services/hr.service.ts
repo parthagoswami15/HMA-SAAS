@@ -191,7 +191,10 @@ const hrService = {
   /**
    * Get all departments
    */
-  getDepartments: async (filters?: { page?: number; limit?: number }): Promise<DepartmentResponse> => {
+  getDepartments: async (filters?: {
+    page?: number;
+    limit?: number;
+  }): Promise<DepartmentResponse> => {
     return enhancedApiClient.get('/hr/departments', filters);
   },
 

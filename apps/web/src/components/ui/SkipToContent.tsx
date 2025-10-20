@@ -2,8 +2,8 @@
 
 export default function SkipToContent() {
   return (
-    <a 
-      href="#main-content" 
+    <a
+      href="#main-content"
       style={{
         position: 'absolute',
         left: '-9999px',
@@ -13,7 +13,7 @@ export default function SkipToContent() {
         color: 'white',
         textDecoration: 'none',
         borderRadius: '4px',
-        transition: 'left 0.2s'
+        transition: 'left 0.2s',
       }}
       onFocus={(e) => {
         e.currentTarget.style.left = '10px';

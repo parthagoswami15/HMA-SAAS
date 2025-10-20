@@ -41,7 +41,11 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleBarChart, SimpleAreaChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleBarChart,
+  SimpleAreaChart,
+} from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -126,7 +130,7 @@ import {
   IconPlayerPause,
   IconVolume,
   IconFileUpload,
-  IconCloudUpload
+  IconCloudUpload,
 } from '@tabler/icons-react';
 
 // Import types and mock data - using any for now due to type mismatches
@@ -142,14 +146,14 @@ const RadiologyManagement = () => {
   const [selectedPriority, setSelectedPriority] = useState<string>('');
   const [selectedEquipmentStatus, setSelectedEquipmentStatus] = useState<string>('');
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
-  const [selectedReport, setSelectedReport] = useState<any>(null);
-  const [selectedEquipment, setSelectedEquipment] = useState<any>(null);
+  const [_selectedReport, _setSelectedReport] = useState<any>(null);
+  const [_selectedEquipment, _setSelectedEquipment] = useState<any>(null);
   const [selectedStudy, setSelectedStudy] = useState<any>(null);
 
   // API state
-  const [studies, setStudies] = useState<any[]>([]);
-  const [reports, setReports] = useState<any[]>([]);
-  const [orders, setOrders] = useState<any[]>([]);
+  const [_studies, _setStudies] = useState<any[]>([]);
+  const [_reports, _setReports] = useState<any[]>([]);
+  const [_orders, _setOrders] = useState<any[]>([]);
   const [radiologyStats, setRadiologyStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -161,12 +165,15 @@ const RadiologyManagement = () => {
       setError(null);
       const response = await radiologyService.getStudies({ limit: 100 });
       if (response.success) {
-        setStudies(response.data.items);
+        _setStudies(response.data.items);
       }
     } catch (err: any) {
-      console.warn('Error fetching studies (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching studies (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setError(null);
-      setStudies([]);
+      _setStudies([]);
     } finally {
       setLoading(false);
     }
@@ -179,12 +186,15 @@ const RadiologyManagement = () => {
       setError(null);
       const response = await radiologyService.getReports({ limit: 100 });
       if (response.success) {
-        setReports(response.data.items);
+        _setReports(response.data.items);
       }
     } catch (err: any) {
-      console.warn('Error fetching reports (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching reports (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setError(null);
-      setReports([]);
+      _setReports([]);
     } finally {
       setLoading(false);
     }
@@ -197,12 +207,15 @@ const RadiologyManagement = () => {
       setError(null);
       const response = await radiologyService.getOrders({ limit: 100 });
       if (response.success) {
-        setOrders(response.data.items);
+        _setOrders(response.data.items);
       }
     } catch (err: any) {
-      console.warn('Error fetching orders (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching orders (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setError(null);
-      setOrders([]);
+      _setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -216,14 +229,17 @@ const RadiologyManagement = () => {
         setRadiologyStats(response.data);
       }
     } catch (err: any) {
-      console.warn('Error fetching radiology stats (using default values):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching radiology stats (using default values):',
+        err.response?.data?.message || err.message
+      );
       setRadiologyStats({
         totalStudies: 0,
         pendingStudies: 0,
         completedStudies: 0,
         totalReports: 0,
         pendingReports: 0,
-        completedReports: 0
+        completedReports: 0,
       });
     }
   };
@@ -234,47 +250,61 @@ const RadiologyManagement = () => {
     fetchReports();
     fetchOrders();
     fetchRadiologyStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Modal states
-  const [requestDetailOpened, { open: openRequestDetail, close: closeRequestDetail }] = useDisclosure(false);
+  const [requestDetailOpened, { open: openRequestDetail, close: closeRequestDetail }] =
+    useDisclosure(false);
   const [addRequestOpened, { open: openAddRequest, close: closeAddRequest }] = useDisclosure(false);
-  const [reportDetailOpened, { open: openReportDetail, close: closeReportDetail }] = useDisclosure(false);
-  const [equipmentDetailOpened, { open: openEquipmentDetail, close: closeEquipmentDetail }] = useDisclosure(false);
-  const [studyViewerOpened, { open: openStudyViewer, close: closeStudyViewer }] = useDisclosure(false);
-  const [createReportOpened, { open: openCreateReport, close: closeCreateReport }] = useDisclosure(false);
+  const [_reportDetailOpened, { open: _openReportDetail, close: _closeReportDetail }] =
+    useDisclosure(false);
+  const [_equipmentDetailOpened, { open: _openEquipmentDetail, close: _closeEquipmentDetail }] =
+    useDisclosure(false);
+  const [studyViewerOpened, { open: openStudyViewer, close: closeStudyViewer }] =
+    useDisclosure(false);
+  const [_createReportOpened, { open: _openCreateReport, close: _closeCreateReport }] =
+    useDisclosure(false);
 
   // Filter imaging requests
   const filteredRequests = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((request: any) => {
-      const matchesSearch = 
-        request.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        request.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        request.requestId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        request.appointmentId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        request.examType?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        request.modality?.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesType = !selectedType || request.imagingType === selectedType || request.modality === selectedType;
-      const matchesStatus = !selectedStatus || request.status === selectedStatus;
-      const matchesPriority = !selectedPriority || request.priority === selectedPriority;
+    return [].filter(
+      /* TODO: Fetch from API */ (request: any) => {
+        const matchesSearch =
+          request.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          request.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          request.requestId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          request.appointmentId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          request.examType?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          request.modality?.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesType && matchesStatus && matchesPriority;
-    });
+        const matchesType =
+          !selectedType ||
+          request.imagingType === selectedType ||
+          request.modality === selectedType;
+        const matchesStatus = !selectedStatus || request.status === selectedStatus;
+        const matchesPriority = !selectedPriority || request.priority === selectedPriority;
+
+        return matchesSearch && matchesType && matchesStatus && matchesPriority;
+      }
+    );
   }, [searchQuery, selectedType, selectedStatus, selectedPriority]);
 
   // Filter equipment
   const filteredEquipment = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((equipment: any) => {
-      const matchesSearch = 
-        equipment.equipmentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        equipment.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        equipment.manufacturer.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedEquipmentStatus || equipment.status === selectedEquipmentStatus;
+    return [].filter(
+      /* TODO: Fetch from API */ (equipment: any) => {
+        const matchesSearch =
+          equipment.equipmentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          equipment.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          equipment.manufacturer.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesStatus;
-    });
+        const matchesStatus =
+          !selectedEquipmentStatus || equipment.status === selectedEquipmentStatus;
+
+        return matchesSearch && matchesStatus;
+      }
+    );
   }, [searchQuery, selectedEquipmentStatus]);
 
   // Helper functions
@@ -283,44 +313,64 @@ const RadiologyManagement = () => {
       case 'pending':
       case 'scheduled':
       case 'draft':
-      case 'operational': return 'blue';
+      case 'operational':
+        return 'blue';
       case 'in_progress':
       case 'scanning':
       case 'reviewing':
-      case 'in_use': return 'orange';
+      case 'in_use':
+        return 'orange';
       case 'completed':
       case 'finalized':
-      case 'available': return 'green';
+      case 'available':
+        return 'green';
       case 'cancelled':
       case 'rejected':
-      case 'out_of_service': return 'red';
+      case 'out_of_service':
+        return 'red';
       case 'on_hold':
-      case 'maintenance': return 'yellow';
-      default: return 'gray';
+      case 'maintenance':
+        return 'yellow';
+      default:
+        return 'gray';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'emergency': return 'red';
-      case 'urgent': return 'orange';
-      case 'routine': return 'blue';
-      case 'elective': return 'green';
-      default: return 'gray';
+      case 'emergency':
+        return 'red';
+      case 'urgent':
+        return 'orange';
+      case 'routine':
+        return 'blue';
+      case 'elective':
+        return 'green';
+      default:
+        return 'gray';
     }
   };
 
   const getImagingTypeColor = (type: string) => {
     switch (type) {
-      case 'xray': return 'blue';
-      case 'ct': return 'green';
-      case 'mri': return 'purple';
-      case 'ultrasound': return 'cyan';
-      case 'mammography': return 'pink';
-      case 'nuclear_medicine': return 'orange';
-      case 'fluoroscopy': return 'indigo';
-      case 'pet': return 'red';
-      default: return 'gray';
+      case 'xray':
+        return 'blue';
+      case 'ct':
+        return 'green';
+      case 'mri':
+        return 'purple';
+      case 'ultrasound':
+        return 'cyan';
+      case 'mammography':
+        return 'pink';
+      case 'nuclear_medicine':
+        return 'orange';
+      case 'fluoroscopy':
+        return 'indigo';
+      case 'pet':
+        return 'red';
+      default:
+        return 'gray';
     }
   };
 
@@ -329,14 +379,14 @@ const RadiologyManagement = () => {
     openRequestDetail();
   };
 
-  const handleViewReport = (report: any) => {
-    setSelectedReport(report);
-    openReportDetail();
+  const _handleViewReport = (report: any) => {
+    _setSelectedReport(report);
+    _openReportDetail();
   };
 
-  const handleViewEquipment = (equipment: any) => {
-    setSelectedEquipment(equipment);
-    openEquipmentDetail();
+  const _handleViewEquipment = (equipment: any) => {
+    _setSelectedEquipment(equipment);
+    _openEquipmentDetail();
   };
 
   const handleViewStudy = (study: any) => {
@@ -352,10 +402,10 @@ const RadiologyManagement = () => {
     setSelectedEquipmentStatus('');
   };
 
-  const formatCurrency = (amount: number) => {
+  const _formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
@@ -366,29 +416,29 @@ const RadiologyManagement = () => {
       value: radiologyStats?.totalStudies || 0,
       icon: IconClipboardList,
       color: 'blue',
-      trend: '+0%'
+      trend: '+0%',
     },
     {
       title: 'Completed Studies',
       value: radiologyStats?.completedStudies || 0,
       icon: IconScan,
       color: 'green',
-      trend: '+0'
+      trend: '+0',
     },
     {
       title: 'Pending Reports',
       value: radiologyStats?.totalReports || 0,
       icon: IconReportMedical,
       color: 'orange',
-      trend: '0'
+      trend: '0',
     },
     {
       title: 'Pending Orders',
       value: radiologyStats?.pendingOrders || 0,
       icon: IconDeviceDesktop,
       color: 'purple',
-      trend: '0% uptime'
-    }
+      trend: '0% uptime',
+    },
   ];
 
   // Chart data
@@ -409,18 +459,10 @@ const RadiologyManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openAddRequest}
-            color="blue"
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddRequest} color="blue">
             New Request
           </Button>
-          <Button
-            variant="light"
-            leftSection={<IconRadioactive size={16} />}
-            color="red"
-          >
+          <Button variant="light" leftSection={<IconRadioactive size={16} />} color="red">
             Emergency Scan
           </Button>
         </Group>
@@ -446,14 +488,18 @@ const RadiologyManagement = () => {
                 </ThemeIcon>
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'} 
+                <Badge
+                  color={
+                    stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'
+                  }
                   variant="light"
                   size="sm"
                 >
                   {stat.trend}
                 </Badge>
-                <Text size="xs" c="dimmed">vs last month</Text>
+                <Text size="xs" c="dimmed">
+                  vs last month
+                </Text>
               </Group>
             </Card>
           );
@@ -489,11 +535,19 @@ const RadiologyManagement = () => {
             {loading && (
               <Group justify="center" mb="md">
                 <Loader size="sm" />
-                <Text size="sm" c="dimmed">Loading radiology data...</Text>
+                <Text size="sm" c="dimmed">
+                  Loading radiology data...
+                </Text>
               </Group>
             )}
             {error && (
-              <Alert icon={<IconAlertCircle size={16} />} color="red" mb="md" onClose={() => setError(null)} withCloseButton>
+              <Alert
+                icon={<IconAlertCircle size={16} />}
+                color="red"
+                mb="md"
+                onClose={() => setError(null)}
+                withCloseButton
+              >
                 {error}
               </Alert>
             )}
@@ -516,7 +570,7 @@ const RadiologyManagement = () => {
                   { value: 'mammography', label: 'Mammography' },
                   { value: 'nuclear_medicine', label: 'Nuclear Medicine' },
                   { value: 'fluoroscopy', label: 'Fluoroscopy' },
-                  { value: 'pet', label: 'PET Scan' }
+                  { value: 'pet', label: 'PET Scan' },
                 ]}
                 value={selectedType}
                 onChange={setSelectedType}
@@ -529,7 +583,7 @@ const RadiologyManagement = () => {
                   { value: 'scheduled', label: 'Scheduled' },
                   { value: 'in_progress', label: 'In Progress' },
                   { value: 'completed', label: 'Completed' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -541,7 +595,7 @@ const RadiologyManagement = () => {
                   { value: 'emergency', label: 'Emergency' },
                   { value: 'urgent', label: 'Urgent' },
                   { value: 'routine', label: 'Routine' },
-                  { value: 'elective', label: 'Elective' }
+                  { value: 'elective', label: 'Elective' },
                 ]}
                 value={selectedPriority}
                 onChange={setSelectedPriority}
@@ -584,19 +638,24 @@ const RadiologyManagement = () => {
                     filteredRequests.map((request) => (
                       <Table.Tr key={request.id}>
                         <Table.Td>
-                          <Text fw={500}>{(request as any).requestId || (request as any).appointmentId || 'N/A'}</Text>
+                          <Text fw={500}>
+                            {(request as any).requestId || (request as any).appointmentId || 'N/A'}
+                          </Text>
                         </Table.Td>
                         <Table.Td>
                           <Group>
                             <Avatar color="blue" radius="xl" size="sm">
-                              {request.patient.firstName[0]}{request.patient.lastName[0]}
+                              {request.patient.firstName[0]}
+                              {request.patient.lastName[0]}
                             </Avatar>
                             <div>
                               <Text size="sm" fw={500}>
                                 {request.patient.firstName} {request.patient.lastName}
                               </Text>
                               <Text size="xs" c="dimmed">
-                                {(request.patient as any).medicalRecordNumber ? `MRN: ${(request.patient as any).medicalRecordNumber}` : request.patient.id}
+                                {(request.patient as any).medicalRecordNumber
+                                  ? `MRN: ${(request.patient as any).medicalRecordNumber}`
+                                  : request.patient.id}
                               </Text>
                             </div>
                           </Group>
@@ -607,19 +666,30 @@ const RadiologyManagement = () => {
                               {(request as any).examType || (request as any).modality || 'N/A'}
                             </Text>
                             {(request as any).bodyPart && (
-                              <Text size="xs" c="dimmed">{(request as any).bodyPart}</Text>
+                              <Text size="xs" c="dimmed">
+                                {(request as any).bodyPart}
+                              </Text>
                             )}
                           </div>
                         </Table.Td>
                         <Table.Td>
-                          <Badge color={getImagingTypeColor((request as any).imagingType || (request as any).modality)} variant="light">
-                            {((request as any).imagingType || (request as any).modality)?.replace('_', ' ').toUpperCase() || 'N/A'}
+                          <Badge
+                            color={getImagingTypeColor(
+                              (request as any).imagingType || (request as any).modality
+                            )}
+                            variant="light"
+                          >
+                            {((request as any).imagingType || (request as any).modality)
+                              ?.replace('_', ' ')
+                              .toUpperCase() || 'N/A'}
                           </Badge>
                         </Table.Td>
                         <Table.Td>
                           <div>
                             <Text size="sm" fw={500}>
-                              {(request as any).orderingPhysician?.lastName ? `Dr. ${(request as any).orderingPhysician.lastName}` : 'N/A'}
+                              {(request as any).orderingPhysician?.lastName
+                                ? `Dr. ${(request as any).orderingPhysician.lastName}`
+                                : 'N/A'}
                             </Text>
                             <Text size="xs" c="dimmed">
                               {(request as any).orderingPhysician?.department?.name || 'N/A'}
@@ -629,17 +699,26 @@ const RadiologyManagement = () => {
                         <Table.Td>
                           <div>
                             <Text size="sm" fw={500}>
-                              {request.scheduledDate ? (typeof request.scheduledDate === 'string' ? request.scheduledDate : new Date(request.scheduledDate).toISOString().split('T')[0]) : 'Not scheduled'}
+                              {request.scheduledDate
+                                ? typeof request.scheduledDate === 'string'
+                                  ? request.scheduledDate
+                                  : new Date(request.scheduledDate).toISOString().split('T')[0]
+                                : 'Not scheduled'}
                             </Text>
                             {request.scheduledDate && (
                               <Text size="xs" c="dimmed">
-                                {typeof request.scheduledDate === 'string' ? '' : new Date(request.scheduledDate).toLocaleTimeString()}
+                                {typeof request.scheduledDate === 'string'
+                                  ? ''
+                                  : new Date(request.scheduledDate).toLocaleTimeString()}
                               </Text>
                             )}
                           </div>
                         </Table.Td>
                         <Table.Td>
-                          <Badge color={getPriorityColor((request as any).priority)} variant="light">
+                          <Badge
+                            color={getPriorityColor((request as any).priority)}
+                            variant="light"
+                          >
                             {(request as any).priority?.toUpperCase() || 'ROUTINE'}
                           </Badge>
                         </Table.Td>
@@ -677,10 +756,7 @@ const RadiologyManagement = () => {
                                   Create Report
                                 </Menu.Item>
                                 <Menu.Divider />
-                                <Menu.Item 
-                                  leftSection={<IconX size={14} />}
-                                  color="red"
-                                >
+                                <Menu.Item leftSection={<IconX size={14} />} color="red">
                                   Cancel Request
                                 </Menu.Item>
                               </Menu.Dropdown>
@@ -702,7 +778,7 @@ const RadiologyManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Radiology Reports</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={openCreateReport}>
+                <Button leftSection={<IconPlus size={16} />} onClick={_openCreateReport}>
                   Create Report
                 </Button>
                 <Button variant="light" leftSection={<IconDownload size={16} />}>
@@ -713,76 +789,102 @@ const RadiologyManagement = () => {
 
             {/* Reports Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((report) => (
-                <Card key={report.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{report.reportId}</Text>
-                      <Text size="sm" c="dimmed">{(report as any).examType || report.modality || 'N/A'}</Text>
-                    </div>
-                    <Badge color={getStatusColor(report.status)} variant="light">
-                      {report.status}
-                    </Badge>
-                  </Group>
+              {[].map(
+                /* TODO: Fetch from API */ (report) => (
+                  <Card key={report.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {report.reportId}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {(report as any).examType || report.modality || 'N/A'}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(report.status)} variant="light">
+                        {report.status}
+                      </Badge>
+                    </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Patient</Text>
-                      <Text size="sm" fw={500}>
-                        {report.patient.firstName} {report.patient.lastName}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Radiologist</Text>
-                      <Text size="sm" fw={500}>
-                        {(report as any).radiologist?.lastName ? `Dr. ${(report as any).radiologist.lastName}` : 'N/A'}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Exam Date</Text>
-                      <Text size="sm">
-                        {(report as any).examDate ? (typeof (report as any).examDate === 'string' ? (report as any).examDate : new Date((report as any).examDate).toISOString().split('T')[0]) : 'N/A'}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Report Date</Text>
-                      <Text size="sm">
-                        {report.reportDate ? (typeof report.reportDate === 'string' ? report.reportDate : new Date(report.reportDate).toISOString().split('T')[0]) : 'Pending'}
-                      </Text>
-                    </Group>
-                  </Stack>
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Patient
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {report.patient.firstName} {report.patient.lastName}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Radiologist
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(report as any).radiologist?.lastName
+                            ? `Dr. ${(report as any).radiologist.lastName}`
+                            : 'N/A'}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Exam Date
+                        </Text>
+                        <Text size="sm">
+                          {(report as any).examDate
+                            ? typeof (report as any).examDate === 'string'
+                              ? (report as any).examDate
+                              : new Date((report as any).examDate).toISOString().split('T')[0]
+                            : 'N/A'}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Report Date
+                        </Text>
+                        <Text size="sm">
+                          {report.reportDate
+                            ? typeof report.reportDate === 'string'
+                              ? report.reportDate
+                              : new Date(report.reportDate).toISOString().split('T')[0]
+                            : 'Pending'}
+                        </Text>
+                      </Group>
+                    </Stack>
 
-                  {report.findings && (
-                    <div>
-                      <Text size="sm" fw={500} mb="xs">Findings</Text>
-                      <Text size="sm" fw={500}>
-                        {(report as any).numberOfImages || 0}
-                      </Text>
-                    </div>
-                  )}
+                    {report.findings && (
+                      <div>
+                        <Text size="sm" fw={500} mb="xs">
+                          Findings
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(report as any).numberOfImages || 0}
+                        </Text>
+                      </div>
+                    )}
 
-                  <Group justify="space-between" mt="md">
-                    <Text size="xs" c="dimmed">
-                      Priority: {(report as any).priority?.toUpperCase() || 'ROUTINE'}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewReport(report)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
+                    <Group justify="space-between" mt="md">
+                      <Text size="xs" c="dimmed">
+                        Priority: {(report as any).priority?.toUpperCase() || 'ROUTINE'}
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => _handleViewReport(report)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -793,9 +895,7 @@ const RadiologyManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Image Studies</Title>
               <Group>
-                <Button leftSection={<IconUpload size={16} />}>
-                  Upload Images
-                </Button>
+                <Button leftSection={<IconUpload size={16} />}>Upload Images</Button>
                 <Button variant="light" leftSection={<IconPhoto size={16} />}>
                   Image Viewer
                 </Button>
@@ -804,82 +904,112 @@ const RadiologyManagement = () => {
 
             {/* Studies Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((study) => (
-                <Card key={study.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{(study as any).studyId || study.reportId || 'N/A'}</Text>
-                      <Text size="sm" c="dimmed">{(study as any).studyDescription || (study as any).modality || 'N/A'}</Text>
-                    </div>
-                    <Badge color={getStatusColor(study.status)} variant="light">
-                      {study.status}
-                    </Badge>
-                  </Group>
-
-                  {/* Study Thumbnail */}
-                  <div
-                    style={{
-                      height: '120px',
-                      backgroundColor: '#f1f3f4',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '1rem'
-                    }}
-                  >
-                    <IconPhoto size={48} color="#868e96" />
-                  </div>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm">{(study as any).studySize || 'N/A'}</Text>
-                      <Text size="sm" fw={500}>{(study as any).model || 'N/A'}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Location</Text>
-                      <Text size="sm">{(study as any).location || 'N/A'}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Study Date</Text>
-                      <Text size="sm">
-                        {(study as any).studyDate ? (typeof (study as any).studyDate === 'string' ? (study as any).studyDate : new Date((study as any).studyDate).toISOString().split('T')[0]) : 'N/A'}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Modality</Text>
-                      <Badge color={getImagingTypeColor((study as any).modality)} variant="light" size="sm">
-                        {((study as any).modality || 'N/A').toUpperCase()}
+              {[].map(
+                /* TODO: Fetch from API */ (study) => (
+                  <Card key={study.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {(study as any).studyId || study.reportId || 'N/A'}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {(study as any).studyDescription || (study as any).modality || 'N/A'}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(study.status)} variant="light">
+                        {study.status}
                       </Badge>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Images</Text>
-                      <Text size="sm" fw={500}>{(study as any).numberOfImages || 0}</Text>
-                    </Group>
-                  </Stack>
 
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Size: {((study as any).studySize ? ((study as any).studySize / (1024 * 1024)).toFixed(1) : '0')} MB
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewStudy(study)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconShare size={16} />
-                      </ActionIcon>
+                    {/* Study Thumbnail */}
+                    <div
+                      style={{
+                        height: '120px',
+                        backgroundColor: '#f1f3f4',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '1rem',
+                      }}
+                    >
+                      <IconPhoto size={48} color="#868e96" />
+                    </div>
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm">{(study as any).studySize || 'N/A'}</Text>
+                        <Text size="sm" fw={500}>
+                          {(study as any).model || 'N/A'}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Location
+                        </Text>
+                        <Text size="sm">{(study as any).location || 'N/A'}</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Study Date
+                        </Text>
+                        <Text size="sm">
+                          {(study as any).studyDate
+                            ? typeof (study as any).studyDate === 'string'
+                              ? (study as any).studyDate
+                              : new Date((study as any).studyDate).toISOString().split('T')[0]
+                            : 'N/A'}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Modality
+                        </Text>
+                        <Badge
+                          color={getImagingTypeColor((study as any).modality)}
+                          variant="light"
+                          size="sm"
+                        >
+                          {((study as any).modality || 'N/A').toUpperCase()}
+                        </Badge>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Images
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(study as any).numberOfImages || 0}
+                        </Text>
+                      </Group>
+                    </Stack>
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Size:{' '}
+                        {(study as any).studySize
+                          ? ((study as any).studySize / (1024 * 1024)).toFixed(1)
+                          : '0'}{' '}
+                        MB
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewStudy(study)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconShare size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -890,9 +1020,7 @@ const RadiologyManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Imaging Equipment</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />}>
-                  Add Equipment
-                </Button>
+                <Button leftSection={<IconPlus size={16} />}>Add Equipment</Button>
                 <Button variant="light" leftSection={<IconSettings size={16} />}>
                   Maintenance Schedule
                 </Button>
@@ -914,7 +1042,7 @@ const RadiologyManagement = () => {
                   { value: 'operational', label: 'Operational' },
                   { value: 'maintenance', label: 'Maintenance' },
                   { value: 'in_use', label: 'In Use' },
-                  { value: 'out_of_service', label: 'Out of Service' }
+                  { value: 'out_of_service', label: 'Out of Service' },
                 ]}
                 value={selectedEquipmentStatus}
                 onChange={setSelectedEquipmentStatus}
@@ -928,8 +1056,12 @@ const RadiologyManagement = () => {
                 <Card key={equipment.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
-                      <Text fw={600} size="lg">{equipment.equipmentName}</Text>
-                      <Text size="sm" c="dimmed">{equipment.manufacturer}</Text>
+                      <Text fw={600} size="lg">
+                        {equipment.equipmentName}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {equipment.manufacturer}
+                      </Text>
                     </div>
                     <Badge color={getStatusColor(equipment.status)} variant="light">
                       {equipment.status.replace('_', ' ')}
@@ -938,23 +1070,41 @@ const RadiologyManagement = () => {
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Model</Text>
-                      <Text size="sm" fw={500}>{equipment.model}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Location</Text>
-                      <Text size="sm">{(equipment as any).location || 'N/A'}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Installed</Text>
-                      <Text size="sm">
-                        {(equipment as any).installationDate ? (typeof (equipment as any).installationDate === 'string' ? (equipment as any).installationDate : new Date((equipment as any).installationDate).toISOString().split('T')[0]) : 'N/A'}
+                      <Text size="sm" c="dimmed">
+                        Model
+                      </Text>
+                      <Text size="sm" fw={500}>
+                        {equipment.model}
                       </Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Last Maintenance</Text>
+                      <Text size="sm" c="dimmed">
+                        Location
+                      </Text>
+                      <Text size="sm">{(equipment as any).location || 'N/A'}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        Installed
+                      </Text>
                       <Text size="sm">
-                        {equipment.lastMaintenance || (equipment as any).lastMaintenanceDate || 'N/A'}
+                        {(equipment as any).installationDate
+                          ? typeof (equipment as any).installationDate === 'string'
+                            ? (equipment as any).installationDate
+                            : new Date((equipment as any).installationDate)
+                                .toISOString()
+                                .split('T')[0]
+                          : 'N/A'}
+                      </Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        Last Maintenance
+                      </Text>
+                      <Text size="sm">
+                        {equipment.lastMaintenance ||
+                          (equipment as any).lastMaintenanceDate ||
+                          'N/A'}
                       </Text>
                     </Group>
                   </Stack>
@@ -962,13 +1112,23 @@ const RadiologyManagement = () => {
                   {(equipment as any).utilizationRate && (
                     <div>
                       <Group justify="space-between" mb="xs">
-                        <Text size="sm" c="dimmed">Utilization</Text>
-                        <Text size="sm" fw={500}>{(equipment as any).utilizationRate}%</Text>
+                        <Text size="sm" c="dimmed">
+                          Utilization
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(equipment as any).utilizationRate}%
+                        </Text>
                       </Group>
-                      <Progress 
-                        value={(equipment as any).utilizationRate} 
-                        size="sm" 
-                        color={(equipment as any).utilizationRate > 80 ? 'red' : (equipment as any).utilizationRate > 60 ? 'yellow' : 'green'}
+                      <Progress
+                        value={(equipment as any).utilizationRate}
+                        size="sm"
+                        color={
+                          (equipment as any).utilizationRate > 80
+                            ? 'red'
+                            : (equipment as any).utilizationRate > 60
+                              ? 'yellow'
+                              : 'green'
+                        }
                       />
                     </div>
                   )}
@@ -981,7 +1141,7 @@ const RadiologyManagement = () => {
                       <ActionIcon
                         variant="subtle"
                         color="blue"
-                        onClick={() => handleViewEquipment(equipment)}
+                        onClick={() => _handleViewEquipment(equipment)}
                       >
                         <IconEye size={16} />
                       </ActionIcon>
@@ -1004,83 +1164,101 @@ const RadiologyManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Radiologists</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Add Radiologist
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Add Radiologist</Button>
             </Group>
 
             {/* Radiologists Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((radiologist) => (
-                <Card key={radiologist.id} padding="lg" radius="md" withBorder>
-                  <Group mb="md">
-                    <Avatar size="lg" color="blue" radius="xl">
-                      {((radiologist as any).firstName || radiologist.name || 'R')[0]}{((radiologist as any).lastName || '')[0] || 'R'}
-                    </Avatar>
+              {[].map(
+                /* TODO: Fetch from API */ (radiologist) => (
+                  <Card key={radiologist.id} padding="lg" radius="md" withBorder>
+                    <Group mb="md">
+                      <Avatar size="lg" color="blue" radius="xl">
+                        {((radiologist as any).firstName || radiologist.name || 'R')[0]}
+                        {((radiologist as any).lastName || '')[0] || 'R'}
+                      </Avatar>
+                      <div>
+                        <Text fw={600} size="lg">
+                          {radiologist.name ||
+                            `Dr. ${(radiologist as any).firstName || ''} ${(radiologist as any).lastName || ''}`}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {(radiologist as any).specialization || 'Radiology'}
+                        </Text>
+                        <Badge
+                          color={(radiologist as any).isAvailable ? 'green' : 'red'}
+                          variant="light"
+                          size="sm"
+                        >
+                          {(radiologist as any).isAvailable ? 'Available' : 'Busy'}
+                        </Badge>
+                      </div>
+                    </Group>
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          License
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(radiologist as any).licenseNumber || 'N/A'}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Experience
+                        </Text>
+                        <Text size="sm">{(radiologist as any).yearsOfExperience || 0} years</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Reports (Month)
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(radiologist as any).reportsThisMonth || 0}
+                        </Text>
+                      </Group>
+                    </Stack>
+
                     <div>
-                      <Text fw={600} size="lg">
-                        {radiologist.name || `Dr. ${(radiologist as any).firstName || ''} ${(radiologist as any).lastName || ''}`}
+                      <Text size="sm" fw={500} mb="xs">
+                        Specialties
                       </Text>
-                      <Text size="sm" c="dimmed">{(radiologist as any).specialization || 'Radiology'}</Text>
-                      <Badge 
-                        color={(radiologist as any).isAvailable ? 'green' : 'red'} 
-                        variant="light" 
-                        size="sm"
-                      >
-                        {(radiologist as any).isAvailable ? 'Available' : 'Busy'}
-                      </Badge>
+                      <Group gap="xs">
+                        {((radiologist as any).subspecialties || [])
+                          .slice(0, 3)
+                          .map((specialty: string) => (
+                            <Badge key={specialty} size="xs" variant="light">
+                              {specialty}
+                            </Badge>
+                          ))}
+                        {((radiologist as any).subspecialties || []).length > 3 && (
+                          <Badge size="xs" variant="light" color="gray">
+                            +{((radiologist as any).subspecialties || []).length - 3}
+                          </Badge>
+                        )}
+                      </Group>
                     </div>
-                  </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">License</Text>
-                      <Text size="sm" fw={500}>{(radiologist as any).licenseNumber || 'N/A'}</Text>
+                    <Group justify="space-between" mt="md">
+                      <Text size="xs" c="dimmed">
+                        Avg Turnaround: {(radiologist as any).averageTurnaroundTime || 0}h
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconMail size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconPhone size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Experience</Text>
-                      <Text size="sm">{(radiologist as any).yearsOfExperience || 0} years</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Reports (Month)</Text>
-                      <Text size="sm" fw={500}>{(radiologist as any).reportsThisMonth || 0}</Text>
-                    </Group>
-                  </Stack>
-
-                  <div>
-                    <Text size="sm" fw={500} mb="xs">Specialties</Text>
-                    <Group gap="xs">
-                      {((radiologist as any).subspecialties || []).slice(0, 3).map((specialty: string) => (
-                        <Badge key={specialty} size="xs" variant="light">
-                          {specialty}
-                        </Badge>
-                      ))}
-                      {((radiologist as any).subspecialties || []).length > 3 && (
-                        <Badge size="xs" variant="light" color="gray">
-                          +{((radiologist as any).subspecialties || []).length - 3}
-                        </Badge>
-                      )}
-                    </Group>
-                  </div>
-
-                  <Group justify="space-between" mt="md">
-                    <Text size="xs" c="dimmed">
-                      Avg Turnaround: {(radiologist as any).averageTurnaroundTime || 0}h
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconMail size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconPhone size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -1088,57 +1266,60 @@ const RadiologyManagement = () => {
         {/* Analytics Tab */}
         <Tabs.Panel value="analytics">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Radiology Analytics</Title>
-            
+            <Title order={3} mb="lg">
+              Radiology Analytics
+            </Title>
+
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Imaging Types Distribution */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Requests by Imaging Type</Title>
-                <MantineDonutChart
-                  data={imagingTypeData}
-                  size={160}
-                  thickness={30}
-                  withLabels
-                />
+                <Title order={4} mb="md">
+                  Requests by Imaging Type
+                </Title>
+                <MantineDonutChart data={imagingTypeData} size={160} thickness={30} withLabels />
               </Card>
-              
+
               {/* Monthly Volume */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Monthly Imaging Volume</Title>
+                <Title order={4} mb="md">
+                  Monthly Imaging Volume
+                </Title>
                 <SimpleAreaChart
                   data={monthlyVolume}
                   dataKey="month"
                   series={[{ name: 'volume', color: 'blue.6' }]}
                 />
               </Card>
-              
+
               {/* Turnaround Times */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Average Turnaround Times</Title>
+                <Title order={4} mb="md">
+                  Average Turnaround Times
+                </Title>
                 <SimpleBarChart
                   data={turnaroundTimes}
                   dataKey="type"
-                  series={[
-                    { name: 'hours', color: 'orange.6' }
-                  ]}
+                  series={[{ name: 'hours', color: 'orange.6' }]}
                 />
               </Card>
-              
+
               {/* Equipment Utilization */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Equipment Utilization</Title>
+                <Title order={4} mb="md">
+                  Equipment Utilization
+                </Title>
                 <SimpleBarChart
                   data={equipmentUtilization}
                   dataKey="equipment"
-                  series={[
-                    { name: 'utilization', color: 'green.6' }
-                  ]}
+                  series={[{ name: 'utilization', color: 'green.6' }]}
                 />
               </Card>
-              
+
               {/* Key Metrics */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
-                <Title order={4} mb="md">Key Performance Indicators</Title>
+                <Title order={4} mb="md">
+                  Key Performance Indicators
+                </Title>
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
@@ -1151,9 +1332,11 @@ const RadiologyManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Report Completion Rate</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Report Completion Rate
+                    </Text>
                   </div>
-                  
+
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
                       size={120}
@@ -1165,9 +1348,11 @@ const RadiologyManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Avg Report Time</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Avg Report Time
+                    </Text>
                   </div>
-                  
+
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
                       size={120}
@@ -1179,9 +1364,11 @@ const RadiologyManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Equipment Uptime</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Equipment Uptime
+                    </Text>
                   </div>
-                  
+
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
                       size={120}
@@ -1193,7 +1380,9 @@ const RadiologyManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Patient Satisfaction</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Patient Satisfaction
+                    </Text>
                   </div>
                 </SimpleGrid>
               </Card>
@@ -1229,50 +1418,70 @@ const RadiologyManagement = () => {
 
               <SimpleGrid cols={2}>
                 <div>
-                  <Text size="sm" fw={500}>Patient</Text>
+                  <Text size="sm" fw={500}>
+                    Patient
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {selectedRequest.patient.firstName} {selectedRequest.patient.lastName}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Medical Record Number</Text>
-                  <Text size="sm" c="dimmed">{selectedRequest.patient.medicalRecordNumber}</Text>
+                  <Text size="sm" fw={500}>
+                    Medical Record Number
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedRequest.patient.medicalRecordNumber}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Imaging Type</Text>
+                  <Text size="sm" fw={500}>
+                    Imaging Type
+                  </Text>
                   <Badge color={getImagingTypeColor(selectedRequest.imagingType)} variant="light">
                     {selectedRequest.imagingType.replace('_', ' ').toUpperCase()}
                   </Badge>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Body Part</Text>
-                  <Text size="sm" c="dimmed">{selectedRequest.bodyPart || 'N/A'}</Text>
-                </div>
-                <div>
-                  <Text size="sm" fw={500}>Ordering Physician</Text>
+                  <Text size="sm" fw={500}>
+                    Body Part
+                  </Text>
                   <Text size="sm" c="dimmed">
-                    Dr. {selectedRequest.orderingPhysician.firstName} {selectedRequest.orderingPhysician.lastName}
+                    {selectedRequest.bodyPart || 'N/A'}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Priority</Text>
+                  <Text size="sm" fw={500}>
+                    Ordering Physician
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    Dr. {selectedRequest.orderingPhysician.firstName}{' '}
+                    {selectedRequest.orderingPhysician.lastName}
+                  </Text>
+                </div>
+                <div>
+                  <Text size="sm" fw={500}>
+                    Priority
+                  </Text>
                   <Badge color={getPriorityColor(selectedRequest.priority)} variant="light">
                     {selectedRequest.priority.toUpperCase()}
                   </Badge>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Request Date</Text>
+                  <Text size="sm" fw={500}>
+                    Request Date
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {new Date(selectedRequest.requestDate).toLocaleString()}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Scheduled Date</Text>
+                  <Text size="sm" fw={500}>
+                    Scheduled Date
+                  </Text>
                   <Text size="sm" c="dimmed">
-                    {selectedRequest.scheduledDate ? 
-                      new Date(selectedRequest.scheduledDate).toLocaleString() : 
-                      'Not scheduled'
-                    }
+                    {selectedRequest.scheduledDate
+                      ? new Date(selectedRequest.scheduledDate).toLocaleString()
+                      : 'Not scheduled'}
                   </Text>
                 </div>
               </SimpleGrid>
@@ -1281,7 +1490,9 @@ const RadiologyManagement = () => {
                 <>
                   <Divider />
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Clinical History</Text>
+                    <Text size="sm" fw={500} mb="sm">
+                      Clinical History
+                    </Text>
                     <Text size="sm">{selectedRequest.clinicalHistory}</Text>
                   </div>
                 </>
@@ -1291,7 +1502,9 @@ const RadiologyManagement = () => {
                 <>
                   <Divider />
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Special Instructions</Text>
+                    <Text size="sm" fw={500} mb="sm">
+                      Special Instructions
+                    </Text>
                     <Text size="sm">{selectedRequest.specialInstructions}</Text>
                   </div>
                 </>
@@ -1301,12 +1514,8 @@ const RadiologyManagement = () => {
                 <Button variant="light" onClick={closeRequestDetail}>
                   Close
                 </Button>
-                <Button leftSection={<IconCalendar size={16} />}>
-                  Schedule Exam
-                </Button>
-                <Button leftSection={<IconEdit size={16} />}>
-                  Edit Request
-                </Button>
+                <Button leftSection={<IconCalendar size={16} />}>Schedule Exam</Button>
+                <Button leftSection={<IconEdit size={16} />}>Edit Request</Button>
               </Group>
             </Stack>
           </ScrollArea>
@@ -1325,29 +1534,32 @@ const RadiologyManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={[].map /* TODO: Fetch from API */(patient => ({ 
-                value: patient.id, 
-                label: `${patient.firstName} ${patient.lastName}` 
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (patient) => ({
+                  value: patient.id,
+                  label: `${patient.firstName} ${patient.lastName}`,
+                })
+              )}
               required
             />
             <Select
               label="Ordering Physician"
               placeholder="Select physician"
-              data={[].filter /* TODO: Fetch from API */((staff: any) => staff.role === 'Doctor' || staff.role === 'doctor').map((doctor: any) => ({ 
-                value: doctor.staffId, 
-                label: `Dr. ${doctor.firstName} ${doctor.lastName}` 
-              }))}
+              data={[]
+                .filter(
+                  /* TODO: Fetch from API */ (staff: any) =>
+                    staff.role === 'Doctor' || staff.role === 'doctor'
+                )
+                .map((doctor: any) => ({
+                  value: doctor.staffId,
+                  label: `Dr. ${doctor.firstName} ${doctor.lastName}`,
+                }))}
               required
             />
           </SimpleGrid>
-          
-          <TextInput
-            label="Exam Type"
-            placeholder="Enter exam type"
-            required
-          />
-          
+
+          <TextInput label="Exam Type" placeholder="Enter exam type" required />
+
           <SimpleGrid cols={2}>
             <Select
               label="Imaging Type"
@@ -1360,7 +1572,7 @@ const RadiologyManagement = () => {
                 { value: 'mammography', label: 'Mammography' },
                 { value: 'nuclear_medicine', label: 'Nuclear Medicine' },
                 { value: 'fluoroscopy', label: 'Fluoroscopy' },
-                { value: 'pet', label: 'PET Scan' }
+                { value: 'pet', label: 'PET Scan' },
               ]}
               required
             />
@@ -1371,42 +1583,41 @@ const RadiologyManagement = () => {
                 { value: 'emergency', label: 'Emergency' },
                 { value: 'urgent', label: 'Urgent' },
                 { value: 'routine', label: 'Routine' },
-                { value: 'elective', label: 'Elective' }
+                { value: 'elective', label: 'Elective' },
               ]}
               required
             />
           </SimpleGrid>
-          
-          <TextInput
-            label="Body Part"
-            placeholder="Enter body part to be imaged"
-          />
-          
+
+          <TextInput label="Body Part" placeholder="Enter body part to be imaged" />
+
           <Textarea
             label="Clinical History"
             placeholder="Enter clinical history"
             rows={3}
             required
           />
-          
+
           <Textarea
             label="Special Instructions"
             placeholder="Enter any special instructions"
             rows={2}
           />
-          
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddRequest}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Request Created',
-                message: 'Imaging request has been successfully created',
-                color: 'green',
-              });
-              closeAddRequest();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Request Created',
+                  message: 'Imaging request has been successfully created',
+                  color: 'green',
+                });
+                closeAddRequest();
+              }}
+            >
               Create Request
             </Button>
           </Group>
@@ -1425,9 +1636,12 @@ const RadiologyManagement = () => {
           <div style={{ height: 'calc(100vh - 120px)' }}>
             <Group justify="space-between" mb="md">
               <div>
-                <Text fw={600} size="lg">{selectedStudy.studyId}</Text>
+                <Text fw={600} size="lg">
+                  {selectedStudy.studyId}
+                </Text>
                 <Text size="sm" c="dimmed">
-                  {selectedStudy.patient.firstName} {selectedStudy.patient.lastName} - {selectedStudy.studyDescription}
+                  {selectedStudy.patient.firstName} {selectedStudy.patient.lastName} -{' '}
+                  {selectedStudy.studyDescription}
                 </Text>
               </div>
               <Group>
@@ -1445,7 +1659,7 @@ const RadiologyManagement = () => {
                 </Button>
               </Group>
             </Group>
-            
+
             <div
               style={{
                 height: 'calc(100% - 60px)',
@@ -1454,17 +1668,19 @@ const RadiologyManagement = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                position: 'relative'
+                position: 'relative',
               }}
             >
               <div style={{ textAlign: 'center', color: '#868e96' }}>
                 <IconPhoto size={120} />
-                <Text size="lg" mt="md">Medical Image Viewer</Text>
+                <Text size="lg" mt="md">
+                  Medical Image Viewer
+                </Text>
                 <Text size="sm" c="dimmed">
                   {selectedStudy.numberOfImages} images available
                 </Text>
               </div>
-              
+
               {/* Image viewer controls */}
               <div
                 style={{
@@ -1473,7 +1689,7 @@ const RadiologyManagement = () => {
                   left: '50%',
                   transform: 'translateX(-50%)',
                   display: 'flex',
-                  gap: '10px'
+                  gap: '10px',
                 }}
               >
                 <ActionIcon color="white" variant="filled">

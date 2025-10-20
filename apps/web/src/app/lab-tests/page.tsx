@@ -19,7 +19,13 @@ interface LabTest {
   completedDate?: string;
   status: 'ORDERED' | 'COLLECTED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   priority: 'ROUTINE' | 'URGENT' | 'STAT';
-  category: 'HEMATOLOGY' | 'BIOCHEMISTRY' | 'MICROBIOLOGY' | 'IMMUNOLOGY' | 'PATHOLOGY' | 'MOLECULAR';
+  category:
+    | 'HEMATOLOGY'
+    | 'BIOCHEMISTRY'
+    | 'MICROBIOLOGY'
+    | 'IMMUNOLOGY'
+    | 'PATHOLOGY'
+    | 'MOLECULAR';
   tests: Array<{
     id: string;
     code: string;
@@ -73,7 +79,7 @@ const LabTestsPage = () => {
           referenceRange: '< 200',
           unit: 'mg/dL',
           flag: 'HIGH',
-          status: 'COMPLETED'
+          status: 'COMPLETED',
         },
         {
           id: '2',
@@ -83,7 +89,7 @@ const LabTestsPage = () => {
           referenceRange: '< 150',
           unit: 'mg/dL',
           flag: 'HIGH',
-          status: 'COMPLETED'
+          status: 'COMPLETED',
         },
         {
           id: '3',
@@ -93,10 +99,10 @@ const LabTestsPage = () => {
           referenceRange: '> 40',
           unit: 'mg/dL',
           flag: 'LOW',
-          status: 'COMPLETED'
-        }
+          status: 'COMPLETED',
+        },
       ],
-      notes: 'Fasting sample collected'
+      notes: 'Fasting sample collected',
     },
     {
       id: '2',
@@ -120,7 +126,7 @@ const LabTestsPage = () => {
           name: 'Complete Blood Count',
           referenceRange: 'Various',
           unit: 'Various',
-          status: 'PENDING'
+          status: 'PENDING',
         },
         {
           id: '5',
@@ -130,9 +136,9 @@ const LabTestsPage = () => {
           referenceRange: '< 20',
           unit: 'mm/hr',
           flag: 'HIGH',
-          status: 'COMPLETED'
-        }
-      ]
+          status: 'COMPLETED',
+        },
+      ],
     },
     {
       id: '3',
@@ -155,7 +161,7 @@ const LabTestsPage = () => {
           name: 'Blood Culture',
           referenceRange: 'Negative',
           unit: 'Qualitative',
-          status: 'PENDING'
+          status: 'PENDING',
         },
         {
           id: '7',
@@ -163,52 +169,67 @@ const LabTestsPage = () => {
           name: 'Urine Analysis',
           referenceRange: 'Normal',
           unit: 'Various',
-          status: 'PENDING'
-        }
+          status: 'PENDING',
+        },
       ],
-      notes: 'Pre-operative workup'
-    }
+      notes: 'Pre-operative workup',
+    },
   ]);
 
-  const filteredTests = labTests.filter(test => {
-    const matchesSearch = 
+  const filteredTests = labTests.filter((test) => {
+    const matchesSearch =
       test.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       test.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       test.doctorName.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = filterStatus === 'all' || test.status === filterStatus;
     const matchesCategory = filterCategory === 'all' || test.category === filterCategory;
-    
+
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED': return '#10b981';
-      case 'IN_PROGRESS': return '#3b82f6';
-      case 'COLLECTED': return '#8b5cf6';
-      case 'ORDERED': return '#f59e0b';
-      case 'CANCELLED': return '#ef4444';
-      default: return '#6b7280';
+      case 'COMPLETED':
+        return '#10b981';
+      case 'IN_PROGRESS':
+        return '#3b82f6';
+      case 'COLLECTED':
+        return '#8b5cf6';
+      case 'ORDERED':
+        return '#f59e0b';
+      case 'CANCELLED':
+        return '#ef4444';
+      default:
+        return '#6b7280';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'STAT': return '#dc2626';
-      case 'URGENT': return '#f59e0b';
-      case 'ROUTINE': return '#10b981';
-      default: return '#6b7280';
+      case 'STAT':
+        return '#dc2626';
+      case 'URGENT':
+        return '#f59e0b';
+      case 'ROUTINE':
+        return '#10b981';
+      default:
+        return '#6b7280';
     }
   };
 
   const getFlagColor = (flag?: string) => {
     switch (flag) {
-      case 'CRITICAL': return '#dc2626';
-      case 'HIGH': return '#f59e0b';
-      case 'LOW': return '#3b82f6';
-      case 'ABNORMAL': return '#8b5cf6';
-      default: return '#10b981';
+      case 'CRITICAL':
+        return '#dc2626';
+      case 'HIGH':
+        return '#f59e0b';
+      case 'LOW':
+        return '#3b82f6';
+      case 'ABNORMAL':
+        return '#8b5cf6';
+      default:
+        return '#10b981';
     }
   };
 
@@ -218,12 +239,14 @@ const LabTestsPage = () => {
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem' }}>
             <div>
-              <h3 style={{ 
-                margin: '0 0 0.25rem 0', 
-                fontSize: '1.25rem', 
-                fontWeight: '600', 
-                color: '#1f2937' 
-              }}>
+              <h3
+                style={{
+                  margin: '0 0 0.25rem 0',
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                }}
+              >
                 {test.orderNumber}
               </h3>
               <p style={{ margin: '0', fontSize: '0.875rem', color: '#6b7280' }}>
@@ -231,30 +254,41 @@ const LabTestsPage = () => {
               </p>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
-              <span style={{
-                padding: '0.25rem 0.75rem',
-                borderRadius: '12px',
-                fontSize: '0.75rem',
-                fontWeight: '600',
-                backgroundColor: `${getStatusColor(test.status)}15`,
-                color: getStatusColor(test.status)
-              }}>
+              <span
+                style={{
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '12px',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  backgroundColor: `${getStatusColor(test.status)}15`,
+                  color: getStatusColor(test.status),
+                }}
+              >
                 {test.status.replace('_', ' ')}
               </span>
-              <span style={{
-                padding: '0.25rem 0.75rem',
-                borderRadius: '12px',
-                fontSize: '0.75rem',
-                fontWeight: '600',
-                backgroundColor: `${getPriorityColor(test.priority)}15`,
-                color: getPriorityColor(test.priority)
-              }}>
+              <span
+                style={{
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '12px',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  backgroundColor: `${getPriorityColor(test.priority)}15`,
+                  color: getPriorityColor(test.priority),
+                }}
+              >
                 {test.priority}
               </span>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '1rem',
+              marginBottom: '1rem',
+            }}
+          >
             <div>
               <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
                 <strong>Order Date:</strong> {new Date(test.orderDate).toLocaleDateString()}
@@ -268,7 +302,7 @@ const LabTestsPage = () => {
                 </p>
               )}
             </div>
-            
+
             <div>
               <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
                 <strong>Doctor:</strong> {test.doctorName}
@@ -291,29 +325,49 @@ const LabTestsPage = () => {
           </div>
 
           {/* Test Summary */}
-          <div style={{ 
-            padding: '0.75rem', 
-            background: '#f8fafc', 
-            borderRadius: '6px',
-            marginBottom: '0.5rem'
-          }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>
+          <div
+            style={{
+              padding: '0.75rem',
+              background: '#f8fafc',
+              borderRadius: '6px',
+              marginBottom: '0.5rem',
+            }}
+          >
+            <h4
+              style={{
+                margin: '0 0 0.5rem 0',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#374151',
+              }}
+            >
               Tests ({test.tests.length})
             </h4>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem' }}>
-              {test.tests.slice(0, 3).map(t => (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                gap: '0.5rem',
+              }}
+            >
+              {test.tests.slice(0, 3).map((t) => (
                 <div key={t.id} style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span><strong>{t.code}:</strong> {t.name.slice(0, 20)}{t.name.length > 20 ? '...' : ''}</span>
+                    <span>
+                      <strong>{t.code}:</strong> {t.name.slice(0, 20)}
+                      {t.name.length > 20 ? '...' : ''}
+                    </span>
                     {t.flag && (
-                      <span style={{
-                        padding: '0.125rem 0.25rem',
-                        borderRadius: '4px',
-                        fontSize: '0.625rem',
-                        fontWeight: '600',
-                        backgroundColor: `${getFlagColor(t.flag)}15`,
-                        color: getFlagColor(t.flag)
-                      }}>
+                      <span
+                        style={{
+                          padding: '0.125rem 0.25rem',
+                          borderRadius: '4px',
+                          fontSize: '0.625rem',
+                          fontWeight: '600',
+                          backgroundColor: `${getFlagColor(t.flag)}15`,
+                          color: getFlagColor(t.flag),
+                        }}
+                      >
                         {t.flag}
                       </span>
                     )}
@@ -333,11 +387,13 @@ const LabTestsPage = () => {
             </div>
           </div>
         </div>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginLeft: '1rem' }}>
-          <Button 
-            size="sm" 
-            variant="outline" 
+
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginLeft: '1rem' }}
+        >
+          <Button
+            size="sm"
+            variant="outline"
             onClick={() => {
               setSelectedTest(test);
               setShowTestModal(true);
@@ -356,44 +412,47 @@ const LabTestsPage = () => {
     </Card>
   );
 
-  const TestResultModal = () => (
-    showTestModal && selectedTest && (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1rem'
-      }}>
-        <div style={{
-          backgroundColor: 'white',
-          borderRadius: '12px',
-          maxWidth: '900px',
-          width: '100%',
-          maxHeight: '90vh',
-          overflow: 'auto'
-        }}>
-          <div style={{
-            padding: '1.5rem',
-            borderBottom: '1px solid #e5e7eb',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
+  const TestResultModal = () =>
+    showTestModal &&
+    selectedTest && (
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem',
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            maxWidth: '900px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflow: 'auto',
+          }}
+        >
+          <div
+            style={{
+              padding: '1.5rem',
+              borderBottom: '1px solid #e5e7eb',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#1f2937', margin: 0 }}>
               Lab Test Results - {selectedTest.orderNumber}
             </h2>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowTestModal(false)}
-            >
+            <Button variant="outline" size="sm" onClick={() => setShowTestModal(false)}>
               ✕
             </Button>
           </div>
@@ -401,43 +460,66 @@ const LabTestsPage = () => {
           <div style={{ padding: '1.5rem' }}>
             {/* Patient & Order Info */}
             <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>
+              <h3
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  marginBottom: '1rem',
+                }}
+              >
                 Order Information
               </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '1rem',
+                }}
+              >
                 <div>
-                  <strong>Patient:</strong> {selectedTest.patientName}<br />
-                  <strong>Age:</strong> {selectedTest.patientAge}<br />
-                  <strong>Order Date:</strong> {new Date(selectedTest.orderDate).toLocaleDateString()}
+                  <strong>Patient:</strong> {selectedTest.patientName}
+                  <br />
+                  <strong>Age:</strong> {selectedTest.patientAge}
+                  <br />
+                  <strong>Order Date:</strong>{' '}
+                  {new Date(selectedTest.orderDate).toLocaleDateString()}
                 </div>
                 <div>
-                  <strong>Doctor:</strong> {selectedTest.doctorName}<br />
-                  <strong>Department:</strong> {selectedTest.department}<br />
-                  <strong>Priority:</strong> 
-                  <span style={{
-                    marginLeft: '0.5rem',
-                    padding: '0.25rem 0.5rem',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    fontWeight: '600',
-                    backgroundColor: `${getPriorityColor(selectedTest.priority)}15`,
-                    color: getPriorityColor(selectedTest.priority)
-                  }}>
+                  <strong>Doctor:</strong> {selectedTest.doctorName}
+                  <br />
+                  <strong>Department:</strong> {selectedTest.department}
+                  <br />
+                  <strong>Priority:</strong>
+                  <span
+                    style={{
+                      marginLeft: '0.5rem',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '4px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      backgroundColor: `${getPriorityColor(selectedTest.priority)}15`,
+                      color: getPriorityColor(selectedTest.priority),
+                    }}
+                  >
                     {selectedTest.priority}
                   </span>
                 </div>
                 <div>
-                  <strong>Category:</strong> {selectedTest.category}<br />
-                  <strong>Status:</strong> 
-                  <span style={{
-                    marginLeft: '0.5rem',
-                    padding: '0.25rem 0.5rem',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    fontWeight: '600',
-                    backgroundColor: `${getStatusColor(selectedTest.status)}15`,
-                    color: getStatusColor(selectedTest.status)
-                  }}>
+                  <strong>Category:</strong> {selectedTest.category}
+                  <br />
+                  <strong>Status:</strong>
+                  <span
+                    style={{
+                      marginLeft: '0.5rem',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '4px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      backgroundColor: `${getStatusColor(selectedTest.status)}15`,
+                      color: getStatusColor(selectedTest.status),
+                    }}
+                  >
                     {selectedTest.status}
                   </span>
                   {selectedTest.technician && (
@@ -452,104 +534,127 @@ const LabTestsPage = () => {
 
             {/* Test Results */}
             <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>
+              <h3
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  marginBottom: '1rem',
+                }}
+              >
                 Test Results
               </h3>
               <div style={{ overflowX: 'auto' }}>
-                <table style={{ 
-                  width: '100%', 
-                  borderCollapse: 'collapse',
-                  border: '1px solid #e5e7eb'
-                }}>
+                <table
+                  style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    border: '1px solid #e5e7eb',
+                  }}
+                >
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc' }}>
-                      <th style={{ 
-                        padding: '0.75rem', 
-                        textAlign: 'left', 
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
-                        color: '#374151'
-                      }}>
+                      <th
+                        style={{
+                          padding: '0.75rem',
+                          textAlign: 'left',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          color: '#374151',
+                        }}
+                      >
                         Test Code
                       </th>
-                      <th style={{ 
-                        padding: '0.75rem', 
-                        textAlign: 'left', 
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
-                        color: '#374151'
-                      }}>
+                      <th
+                        style={{
+                          padding: '0.75rem',
+                          textAlign: 'left',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          color: '#374151',
+                        }}
+                      >
                         Test Name
                       </th>
-                      <th style={{ 
-                        padding: '0.75rem', 
-                        textAlign: 'left', 
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
-                        color: '#374151'
-                      }}>
+                      <th
+                        style={{
+                          padding: '0.75rem',
+                          textAlign: 'left',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          color: '#374151',
+                        }}
+                      >
                         Result
                       </th>
-                      <th style={{ 
-                        padding: '0.75rem', 
-                        textAlign: 'left', 
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
-                        color: '#374151'
-                      }}>
+                      <th
+                        style={{
+                          padding: '0.75rem',
+                          textAlign: 'left',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          color: '#374151',
+                        }}
+                      >
                         Reference Range
                       </th>
-                      <th style={{ 
-                        padding: '0.75rem', 
-                        textAlign: 'left', 
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
-                        color: '#374151'
-                      }}>
+                      <th
+                        style={{
+                          padding: '0.75rem',
+                          textAlign: 'left',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          color: '#374151',
+                        }}
+                      >
                         Unit
                       </th>
-                      <th style={{ 
-                        padding: '0.75rem', 
-                        textAlign: 'center', 
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
-                        color: '#374151'
-                      }}>
+                      <th
+                        style={{
+                          padding: '0.75rem',
+                          textAlign: 'center',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          color: '#374151',
+                        }}
+                      >
                         Flag
                       </th>
-                      <th style={{ 
-                        padding: '0.75rem', 
-                        textAlign: 'center', 
-                        borderBottom: '1px solid #e5e7eb',
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
-                        color: '#374151'
-                      }}>
+                      <th
+                        style={{
+                          padding: '0.75rem',
+                          textAlign: 'center',
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          color: '#374151',
+                        }}
+                      >
                         Status
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedTest.tests.map(test => (
+                    {selectedTest.tests.map((test) => (
                       <tr key={test.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
                         <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>
                           <strong>{test.code}</strong>
                         </td>
-                        <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>
-                          {test.name}
-                        </td>
-                        <td style={{ 
-                          padding: '0.75rem', 
-                          fontSize: '0.875rem',
-                          fontWeight: test.result ? '600' : 'normal',
-                          color: test.flag ? getFlagColor(test.flag) : '#1f2937'
-                        }}>
+                        <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>{test.name}</td>
+                        <td
+                          style={{
+                            padding: '0.75rem',
+                            fontSize: '0.875rem',
+                            fontWeight: test.result ? '600' : 'normal',
+                            color: test.flag ? getFlagColor(test.flag) : '#1f2937',
+                          }}
+                        >
                           {test.result || 'Pending'}
                         </td>
                         <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: '#6b7280' }}>
@@ -560,27 +665,32 @@ const LabTestsPage = () => {
                         </td>
                         <td style={{ padding: '0.75rem', textAlign: 'center' }}>
                           {test.flag && (
-                            <span style={{
-                              padding: '0.25rem 0.5rem',
-                              borderRadius: '12px',
-                              fontSize: '0.75rem',
-                              fontWeight: '600',
-                              backgroundColor: `${getFlagColor(test.flag)}15`,
-                              color: getFlagColor(test.flag)
-                            }}>
+                            <span
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                borderRadius: '12px',
+                                fontSize: '0.75rem',
+                                fontWeight: '600',
+                                backgroundColor: `${getFlagColor(test.flag)}15`,
+                                color: getFlagColor(test.flag),
+                              }}
+                            >
                               {test.flag}
                             </span>
                           )}
                         </td>
                         <td style={{ padding: '0.75rem', textAlign: 'center' }}>
-                          <span style={{
-                            padding: '0.25rem 0.5rem',
-                            borderRadius: '12px',
-                            fontSize: '0.75rem',
-                            fontWeight: '600',
-                            backgroundColor: test.status === 'COMPLETED' ? '#10b98115' : '#f59e0b15',
-                            color: test.status === 'COMPLETED' ? '#10b981' : '#f59e0b'
-                          }}>
+                          <span
+                            style={{
+                              padding: '0.25rem 0.5rem',
+                              borderRadius: '12px',
+                              fontSize: '0.75rem',
+                              fontWeight: '600',
+                              backgroundColor:
+                                test.status === 'COMPLETED' ? '#10b98115' : '#f59e0b15',
+                              color: test.status === 'COMPLETED' ? '#10b981' : '#f59e0b',
+                            }}
+                          >
                             {test.status}
                           </span>
                         </td>
@@ -594,50 +704,71 @@ const LabTestsPage = () => {
             {/* Notes */}
             {selectedTest.notes && (
               <div style={{ marginBottom: '2rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>
+                <h3
+                  style={{
+                    fontSize: '1.25rem',
+                    fontWeight: '600',
+                    color: '#1f2937',
+                    marginBottom: '1rem',
+                  }}
+                >
                   Notes
                 </h3>
-                <div style={{
-                  padding: '0.75rem',
-                  background: '#f8fafc',
-                  borderRadius: '6px',
-                  fontSize: '0.875rem',
-                  color: '#6b7280'
-                }}>
+                <div
+                  style={{
+                    padding: '0.75rem',
+                    background: '#f8fafc',
+                    borderRadius: '6px',
+                    fontSize: '0.875rem',
+                    color: '#6b7280',
+                  }}
+                >
                   {selectedTest.notes}
                 </div>
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                justifyContent: 'flex-end',
+                paddingTop: '1rem',
+                borderTop: '1px solid #e5e7eb',
+              }}
+            >
               <Button variant="outline" onClick={() => setShowTestModal(false)}>
                 Close
               </Button>
-              <Button variant="secondary">
-                Print Report
-              </Button>
-              <Button variant="primary">
-                Send to Doctor
-              </Button>
+              <Button variant="secondary">Print Report</Button>
+              <Button variant="primary">Send to Doctor</Button>
             </div>
           </div>
         </div>
       </div>
-    )
-  );
+    );
 
   return (
     <Layout>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '2rem' 
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '2rem',
+          }}
+        >
           <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '0.5rem' }}>
+            <h1
+              style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                color: '#1f2937',
+                marginBottom: '0.5rem',
+              }}
+            >
               Laboratory Tests
             </h1>
             <p style={{ color: '#6b7280', fontSize: '1rem' }}>
@@ -645,23 +776,27 @@ const LabTestsPage = () => {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Button variant="secondary">
-              📊 Analytics
-            </Button>
-            <Button onClick={() => setCurrentTab('orders')}>
-              + New Test Order
-            </Button>
+            <Button variant="secondary">📊 Analytics</Button>
+            <Button onClick={() => setCurrentTab('orders')}>+ New Test Order</Button>
           </div>
         </div>
 
         {/* Summary Cards */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '1rem',
-          marginBottom: '2rem'
-        }}>
-          <Card variant="elevated" style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)', color: 'white' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '1rem',
+            marginBottom: '2rem',
+          }}
+        >
+          <Card
+            variant="elevated"
+            style={{
+              background: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)',
+              color: 'white',
+            }}
+          >
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                 {labTests.length}
@@ -669,29 +804,47 @@ const LabTestsPage = () => {
               <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>Total Orders</div>
             </div>
           </Card>
-          
-          <Card variant="elevated" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: 'white' }}>
+
+          <Card
+            variant="elevated"
+            style={{
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+            }}
+          >
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                {labTests.filter(t => t.status === 'COMPLETED').length}
+                {labTests.filter((t) => t.status === 'COMPLETED').length}
               </div>
               <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>Completed</div>
             </div>
           </Card>
-          
-          <Card variant="elevated" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', color: 'white' }}>
+
+          <Card
+            variant="elevated"
+            style={{
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              color: 'white',
+            }}
+          >
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                {labTests.filter(t => t.status === 'IN_PROGRESS').length}
+                {labTests.filter((t) => t.status === 'IN_PROGRESS').length}
               </div>
               <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>In Progress</div>
             </div>
           </Card>
-          
-          <Card variant="elevated" style={{ background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)', color: 'white' }}>
+
+          <Card
+            variant="elevated"
+            style={{
+              background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+              color: 'white',
+            }}
+          >
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-                {labTests.filter(t => t.priority === 'STAT').length}
+                {labTests.filter((t) => t.priority === 'STAT').length}
               </div>
               <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>Stat Orders</div>
             </div>
@@ -703,13 +856,17 @@ const LabTestsPage = () => {
           <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid #e5e7eb' }}>
             {[
               { key: 'tests', label: '🧪 All Tests', count: labTests.length },
-              { key: 'results', label: '📋 Results', count: labTests.filter(t => t.status === 'COMPLETED').length },
+              {
+                key: 'results',
+                label: '📋 Results',
+                count: labTests.filter((t) => t.status === 'COMPLETED').length,
+              },
               { key: 'orders', label: '➕ New Order', count: null },
-              { key: 'reports', label: '📊 Reports', count: null }
-            ].map(tab => (
+              { key: 'reports', label: '📊 Reports', count: null },
+            ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setCurrentTab(tab.key as string)}
+                onClick={() => setCurrentTab(tab.key as 'tests' | 'results' | 'orders' | 'reports')}
                 style={{
                   padding: '1rem 1.5rem',
                   border: 'none',
@@ -717,22 +874,25 @@ const LabTestsPage = () => {
                   fontSize: '1rem',
                   fontWeight: '500',
                   color: currentTab === tab.key ? '#667eea' : '#6b7280',
-                  borderBottom: currentTab === tab.key ? '2px solid #667eea' : '2px solid transparent',
+                  borderBottom:
+                    currentTab === tab.key ? '2px solid #667eea' : '2px solid transparent',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
                 }}
               >
                 {tab.label}
                 {tab.count && (
-                  <span style={{
-                    marginLeft: '0.5rem',
-                    padding: '0.25rem 0.5rem',
-                    backgroundColor: currentTab === tab.key ? '#667eea' : '#e5e7eb',
-                    color: currentTab === tab.key ? 'white' : '#6b7280',
-                    borderRadius: '12px',
-                    fontSize: '0.75rem',
-                    fontWeight: '600'
-                  }}>
+                  <span
+                    style={{
+                      marginLeft: '0.5rem',
+                      padding: '0.25rem 0.5rem',
+                      backgroundColor: currentTab === tab.key ? '#667eea' : '#e5e7eb',
+                      color: currentTab === tab.key ? 'white' : '#6b7280',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                    }}
+                  >
                     {tab.count}
                   </span>
                 )}
@@ -745,12 +905,14 @@ const LabTestsPage = () => {
           <>
             {/* Filters */}
             <Card style={{ marginBottom: '2rem' }}>
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                gap: '1rem',
-                alignItems: 'end'
-              }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '1rem',
+                  alignItems: 'end',
+                }}
+              >
                 <Input
                   placeholder="Search tests, patients, or doctors..."
                   value={searchTerm}
@@ -758,15 +920,17 @@ const LabTestsPage = () => {
                   icon="🔍"
                   label="Search"
                 />
-                
+
                 <div>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '0.5rem', 
-                    fontSize: '0.875rem', 
-                    fontWeight: '600', 
-                    color: '#374151' 
-                  }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#374151',
+                    }}
+                  >
                     Status Filter
                   </label>
                   <select
@@ -779,7 +943,7 @@ const LabTestsPage = () => {
                       borderRadius: '8px',
                       fontSize: '1rem',
                       backgroundColor: 'white',
-                      color: '#374151'
+                      color: '#374151',
                     }}
                   >
                     <option value="all">All Status</option>
@@ -792,13 +956,15 @@ const LabTestsPage = () => {
                 </div>
 
                 <div>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '0.5rem', 
-                    fontSize: '0.875rem', 
-                    fontWeight: '600', 
-                    color: '#374151' 
-                  }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#374151',
+                    }}
+                  >
                     Category Filter
                   </label>
                   <select
@@ -811,7 +977,7 @@ const LabTestsPage = () => {
                       borderRadius: '8px',
                       fontSize: '1rem',
                       backgroundColor: 'white',
-                      color: '#374151'
+                      color: '#374151',
                     }}
                   >
                     <option value="all">All Categories</option>
@@ -837,34 +1003,39 @@ const LabTestsPage = () => {
 
             {/* Tests List */}
             <div>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                marginBottom: '1rem' 
-              }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '1rem',
+                }}
+              >
                 <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937' }}>
                   Lab Tests ({filteredTests.length})
                 </h2>
               </div>
-              
+
               {filteredTests.length > 0 ? (
-                filteredTests.map(test => (
-                  <TestCard key={test.id} test={test} />
-                ))
+                filteredTests.map((test) => <TestCard key={test.id} test={test} />)
               ) : (
                 <Card>
                   <div style={{ textAlign: 'center', padding: '2rem' }}>
                     <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧪</div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+                    <h3
+                      style={{
+                        fontSize: '1.25rem',
+                        fontWeight: '600',
+                        color: '#1f2937',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
                       No lab tests found
                     </h3>
                     <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
                       No tests match your current search criteria.
                     </p>
-                    <Button onClick={() => setCurrentTab('orders')}>
-                      Create New Test Order
-                    </Button>
+                    <Button onClick={() => setCurrentTab('orders')}>Create New Test Order</Button>
                   </div>
                 </Card>
               )}
@@ -876,15 +1047,21 @@ const LabTestsPage = () => {
           <Card>
             <div style={{ textAlign: 'center', padding: '2rem' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📝</div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+              <h3
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Create New Lab Test Order
               </h3>
               <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
-                Lab test order form will be implemented here with patient selection, test selection, and priority settings.
+                Lab test order form will be implemented here with patient selection, test selection,
+                and priority settings.
               </p>
-              <Button variant="primary">
-                Open Order Form
-              </Button>
+              <Button variant="primary">Open Order Form</Button>
             </div>
           </Card>
         )}
@@ -893,15 +1070,21 @@ const LabTestsPage = () => {
           <Card>
             <div style={{ textAlign: 'center', padding: '2rem' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+              <h3
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Laboratory Reports & Analytics
               </h3>
               <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
-                Comprehensive lab analytics, turnaround time reports, and quality metrics will be available here.
+                Comprehensive lab analytics, turnaround time reports, and quality metrics will be
+                available here.
               </p>
-              <Button variant="primary">
-                View Reports Dashboard
-              </Button>
+              <Button variant="primary">View Reports Dashboard</Button>
             </div>
           </Card>
         )}

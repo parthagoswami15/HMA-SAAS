@@ -67,7 +67,9 @@ interface IntegrationSettings {
 }
 
 const SettingsPage = () => {
-  const [currentTab, setCurrentTab] = useState<'general' | 'security' | 'notifications' | 'integrations' | 'backup' | 'users'>('general');
+  const [currentTab, setCurrentTab] = useState<
+    'general' | 'security' | 'notifications' | 'integrations' | 'backup' | 'users'
+  >('general');
   const [isLoading, setIsLoading] = useState(false);
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
@@ -90,7 +92,7 @@ const SettingsPage = () => {
     passwordRequireSymbols: true,
     twoFactorEnabled: false,
     backupFrequency: 'DAILY',
-    retentionPeriod: 365
+    retentionPeriod: 365,
   });
 
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
@@ -101,7 +103,7 @@ const SettingsPage = () => {
     labResultAlerts: true,
     emergencyAlerts: true,
     systemMaintenanceNotices: true,
-    billingReminders: true
+    billingReminders: true,
   });
 
   const [integrationSettings, setIntegrationSettings] = useState<IntegrationSettings>({
@@ -109,35 +111,35 @@ const SettingsPage = () => {
       enabled: false,
       provider: 'LabCorp',
       apiKey: '',
-      endpoint: 'https://api.labcorp.com/v1'
+      endpoint: 'https://api.labcorp.com/v1',
     },
     radiologyIntegration: {
       enabled: false,
       provider: 'RadiologyPartners',
       apiKey: '',
-      endpoint: 'https://api.radiologypartners.com/v1'
+      endpoint: 'https://api.radiologypartners.com/v1',
     },
     paymentGateway: {
       enabled: true,
       provider: 'Stripe',
       publicKey: 'pk_test_...',
-      secretKey: '••••••••••••'
+      secretKey: '••••••••••••',
     },
     smsGateway: {
       enabled: true,
       provider: 'Twilio',
       apiKey: '••••••••••••',
-      sender: 'HMS-ALERT'
-    }
+      sender: 'HMS-ALERT',
+    },
   });
 
   const handleSaveSettings = async (category: string) => {
     setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       alert(`${category} settings saved successfully!`);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       alert('Failed to save settings. Please try again.');
     } finally {
@@ -147,48 +149,56 @@ const SettingsPage = () => {
 
   const SettingGroup = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <div style={{ marginBottom: '2rem' }}>
-      <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>
+      <h3
+        style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}
+      >
         {title}
       </h3>
-      <div style={{ display: 'grid', gap: '1rem' }}>
-        {children}
-      </div>
+      <div style={{ display: 'grid', gap: '1rem' }}>{children}</div>
     </div>
   );
 
-  const ToggleSetting = ({ 
-    label, 
-    description, 
-    checked, 
-    onChange, 
-    disabled = false 
-  }: { 
-    label: string; 
-    description?: string; 
-    checked: boolean; 
+  const ToggleSetting = ({
+    label,
+    description,
+    checked,
+    onChange,
+    disabled = false,
+  }: {
+    label: string;
+    description?: string;
+    checked: boolean;
     onChange: (checked: boolean) => void;
     disabled?: boolean;
   }) => (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      padding: '1rem',
-      border: '1px solid #e5e7eb',
-      borderRadius: '8px',
-      backgroundColor: disabled ? '#f9fafb' : 'white'
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        padding: '1rem',
+        border: '1px solid #e5e7eb',
+        borderRadius: '8px',
+        backgroundColor: disabled ? '#f9fafb' : 'white',
+      }}
+    >
       <div style={{ flex: 1 }}>
-        <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.25rem' }}>
+        <h4
+          style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.25rem' }}
+        >
           {label}
         </h4>
         {description && (
-          <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>
-            {description}
-          </p>
+          <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>{description}</p>
         )}
       </div>
-      <label style={{ display: 'flex', alignItems: 'center', cursor: disabled ? 'not-allowed' : 'pointer' }}>
+      <label
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+        }}
+      >
         <input
           type="checkbox"
           checked={checked}
@@ -197,7 +207,7 @@ const SettingsPage = () => {
           style={{
             width: '1.5rem',
             height: '1.5rem',
-            marginLeft: '1rem'
+            marginLeft: '1rem',
           }}
         />
       </label>
@@ -208,14 +218,23 @@ const SettingsPage = () => {
     <Layout>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '2rem' 
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '2rem',
+          }}
+        >
           <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '0.5rem' }}>
+            <h1
+              style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                color: '#1f2937',
+                marginBottom: '0.5rem',
+              }}
+            >
               Settings & Configuration
             </h1>
             <p style={{ color: '#6b7280', fontSize: '1rem' }}>
@@ -223,12 +242,8 @@ const SettingsPage = () => {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Button variant="secondary">
-              📤 Export Config
-            </Button>
-            <Button variant="outline">
-              🔄 Reset to Defaults
-            </Button>
+            <Button variant="secondary">📤 Export Config</Button>
+            <Button variant="outline">🔄 Reset to Defaults</Button>
           </div>
         </div>
 
@@ -241,11 +256,11 @@ const SettingsPage = () => {
               { key: 'notifications', label: '🔔 Notifications', desc: 'Alerts & Messages' },
               { key: 'integrations', label: '🔗 Integrations', desc: 'Third-party APIs' },
               { key: 'backup', label: '💾 Backup', desc: 'Data Protection' },
-              { key: 'users', label: '👥 User Management', desc: 'Roles & Permissions' }
-            ].map(tab => (
+              { key: 'users', label: '👥 User Management', desc: 'Roles & Permissions' },
+            ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setCurrentTab(tab.key as string)}
+                onClick={() => setCurrentTab(tab.key as 'general' | 'security' | 'notifications' | 'integrations' | 'backup' | 'users')}
                 style={{
                   padding: '1rem 1.5rem',
                   border: 'none',
@@ -253,16 +268,15 @@ const SettingsPage = () => {
                   fontSize: '1rem',
                   fontWeight: '500',
                   color: currentTab === tab.key ? '#667eea' : '#6b7280',
-                  borderBottom: currentTab === tab.key ? '2px solid #667eea' : '2px solid transparent',
+                  borderBottom:
+                    currentTab === tab.key ? '2px solid #667eea' : '2px solid transparent',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  textAlign: 'left'
+                  textAlign: 'left',
                 }}
               >
                 <div>{tab.label}</div>
-                <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
-                  {tab.desc}
-                </div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>{tab.desc}</div>
               </button>
             ))}
           </div>
@@ -272,60 +286,100 @@ const SettingsPage = () => {
         {currentTab === 'general' && (
           <Card>
             <SettingGroup title="Hospital Information">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                  gap: '1rem',
+                }}
+              >
                 <Input
                   label="Hospital Name"
                   value={systemSettings.hospitalName}
-                  onChange={(e) => setSystemSettings(prev => ({ ...prev, hospitalName: e.target.value }))}
+                  onChange={(e) =>
+                    setSystemSettings((prev) => ({ ...prev, hospitalName: e.target.value }))
+                  }
                   required
                 />
                 <Input
                   label="License Number"
                   value={systemSettings.licenseNumber}
-                  onChange={(e) => setSystemSettings(prev => ({ ...prev, licenseNumber: e.target.value }))}
+                  onChange={(e) =>
+                    setSystemSettings((prev) => ({ ...prev, licenseNumber: e.target.value }))
+                  }
                   required
                 />
               </div>
-              
+
               <Input
                 label="Hospital Address"
                 value={systemSettings.hospitalAddress}
-                onChange={(e) => setSystemSettings(prev => ({ ...prev, hospitalAddress: e.target.value }))}
+                onChange={(e) =>
+                  setSystemSettings((prev) => ({ ...prev, hospitalAddress: e.target.value }))
+                }
                 required
               />
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                  gap: '1rem',
+                }}
+              >
                 <Input
                   type="tel"
                   label="Phone Number"
                   value={systemSettings.hospitalPhone}
-                  onChange={(e) => setSystemSettings(prev => ({ ...prev, hospitalPhone: e.target.value }))}
+                  onChange={(e) =>
+                    setSystemSettings((prev) => ({ ...prev, hospitalPhone: e.target.value }))
+                  }
                   required
                 />
                 <Input
                   type="email"
                   label="Email Address"
                   value={systemSettings.hospitalEmail}
-                  onChange={(e) => setSystemSettings(prev => ({ ...prev, hospitalEmail: e.target.value }))}
+                  onChange={(e) =>
+                    setSystemSettings((prev) => ({ ...prev, hospitalEmail: e.target.value }))
+                  }
                   required
                 />
                 <Input
                   label="Website"
                   value={systemSettings.hospitalWebsite}
-                  onChange={(e) => setSystemSettings(prev => ({ ...prev, hospitalWebsite: e.target.value }))}
+                  onChange={(e) =>
+                    setSystemSettings((prev) => ({ ...prev, hospitalWebsite: e.target.value }))
+                  }
                 />
               </div>
             </SettingGroup>
 
             <SettingGroup title="Regional Settings">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '1rem',
+                }}
+              >
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#374151',
+                    }}
+                  >
                     Time Zone
                   </label>
                   <select
                     value={systemSettings.timeZone}
-                    onChange={(e) => setSystemSettings(prev => ({ ...prev, timeZone: e.target.value }))}
+                    onChange={(e) =>
+                      setSystemSettings((prev) => ({ ...prev, timeZone: e.target.value }))
+                    }
                     style={{
                       width: '100%',
                       padding: '0.75rem 1rem',
@@ -333,7 +387,7 @@ const SettingsPage = () => {
                       borderRadius: '8px',
                       fontSize: '1rem',
                       backgroundColor: 'white',
-                      color: '#374151'
+                      color: '#374151',
                     }}
                   >
                     <option value="America/New_York">Eastern Time</option>
@@ -344,12 +398,22 @@ const SettingsPage = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#374151',
+                    }}
+                  >
                     Language
                   </label>
                   <select
                     value={systemSettings.language}
-                    onChange={(e) => setSystemSettings(prev => ({ ...prev, language: e.target.value }))}
+                    onChange={(e) =>
+                      setSystemSettings((prev) => ({ ...prev, language: e.target.value }))
+                    }
                     style={{
                       width: '100%',
                       padding: '0.75rem 1rem',
@@ -357,7 +421,7 @@ const SettingsPage = () => {
                       borderRadius: '8px',
                       fontSize: '1rem',
                       backgroundColor: 'white',
-                      color: '#374151'
+                      color: '#374151',
                     }}
                   >
                     <option value="English">English</option>
@@ -367,12 +431,22 @@ const SettingsPage = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#374151',
+                    }}
+                  >
                     Currency
                   </label>
                   <select
                     value={systemSettings.currency}
-                    onChange={(e) => setSystemSettings(prev => ({ ...prev, currency: e.target.value }))}
+                    onChange={(e) =>
+                      setSystemSettings((prev) => ({ ...prev, currency: e.target.value }))
+                    }
                     style={{
                       width: '100%',
                       padding: '0.75rem 1rem',
@@ -380,7 +454,7 @@ const SettingsPage = () => {
                       borderRadius: '8px',
                       fontSize: '1rem',
                       backgroundColor: 'white',
-                      color: '#374151'
+                      color: '#374151',
                     }}
                   >
                     <option value="USD">USD ($)</option>
@@ -391,12 +465,22 @@ const SettingsPage = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#374151',
+                    }}
+                  >
                     Date Format
                   </label>
                   <select
                     value={systemSettings.dateFormat}
-                    onChange={(e) => setSystemSettings(prev => ({ ...prev, dateFormat: e.target.value }))}
+                    onChange={(e) =>
+                      setSystemSettings((prev) => ({ ...prev, dateFormat: e.target.value }))
+                    }
                     style={{
                       width: '100%',
                       padding: '0.75rem 1rem',
@@ -404,7 +488,7 @@ const SettingsPage = () => {
                       borderRadius: '8px',
                       fontSize: '1rem',
                       backgroundColor: 'white',
-                      color: '#374151'
+                      color: '#374151',
                     }}
                   >
                     <option value="MM/DD/YYYY">MM/DD/YYYY</option>
@@ -420,29 +504,39 @@ const SettingsPage = () => {
                 label="Maintenance Mode"
                 description="Put the system in maintenance mode to prevent user access during updates"
                 checked={systemSettings.maintenanceMode}
-                onChange={(checked) => setSystemSettings(prev => ({ ...prev, maintenanceMode: checked }))}
+                onChange={(checked) =>
+                  setSystemSettings((prev) => ({ ...prev, maintenanceMode: checked }))
+                }
               />
-              
+
               <ToggleSetting
                 label="Allow New Registrations"
                 description="Allow new users to register accounts"
                 checked={systemSettings.allowRegistrations}
-                onChange={(checked) => setSystemSettings(prev => ({ ...prev, allowRegistrations: checked }))}
+                onChange={(checked) =>
+                  setSystemSettings((prev) => ({ ...prev, allowRegistrations: checked }))
+                }
               />
-              
+
               <ToggleSetting
                 label="Require Email Verification"
                 description="Require users to verify their email address before accessing the system"
                 checked={systemSettings.requireEmailVerification}
-                onChange={(checked) => setSystemSettings(prev => ({ ...prev, requireEmailVerification: checked }))}
+                onChange={(checked) =>
+                  setSystemSettings((prev) => ({ ...prev, requireEmailVerification: checked }))
+                }
               />
             </SettingGroup>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
-              <Button
-                onClick={() => handleSaveSettings('General')}
-                disabled={isLoading}
-              >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                paddingTop: '1rem',
+                borderTop: '1px solid #e5e7eb',
+              }}
+            >
+              <Button onClick={() => handleSaveSettings('General')} disabled={isLoading}>
                 {isLoading ? 'Saving...' : 'Save General Settings'}
               </Button>
             </div>
@@ -453,23 +547,35 @@ const SettingsPage = () => {
         {currentTab === 'security' && (
           <Card>
             <SettingGroup title="Authentication Settings">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                  gap: '1rem',
+                }}
+              >
                 <Input
                   type="number"
                   label="Session Timeout (minutes)"
                   value={systemSettings.sessionTimeout.toString()}
-                  onChange={(e) => setSystemSettings(prev => ({ ...prev, sessionTimeout: parseInt(e.target.value) }))}
-                  min={5}
-                  max={480}
+                  onChange={(e) =>
+                    setSystemSettings((prev) => ({
+                      ...prev,
+                      sessionTimeout: parseInt(e.target.value) || 0,
+                    }))
+                  }
                 />
-                
+
                 <Input
                   type="number"
                   label="Max Login Attempts"
                   value={systemSettings.maxLoginAttempts.toString()}
-                  onChange={(e) => setSystemSettings(prev => ({ ...prev, maxLoginAttempts: parseInt(e.target.value) }))}
-                  min={3}
-                  max={10}
+                  onChange={(e) =>
+                    setSystemSettings((prev) => ({
+                      ...prev,
+                      maxLoginAttempts: parseInt(e.target.value) || 0,
+                    }))
+                  }
                 />
               </div>
             </SettingGroup>
@@ -479,35 +585,51 @@ const SettingsPage = () => {
                 type="number"
                 label="Minimum Password Length"
                 value={systemSettings.passwordMinLength.toString()}
-                onChange={(e) => setSystemSettings(prev => ({ ...prev, passwordMinLength: parseInt(e.target.value) }))}
-                min={6}
-                max={20}
+                onChange={(e) =>
+                  setSystemSettings((prev) => ({
+                    ...prev,
+                    passwordMinLength: parseInt(e.target.value) || 0,
+                  }))
+                }
                 style={{ maxWidth: '200px' }}
               />
-              
+
               <ToggleSetting
                 label="Require Special Characters"
                 description="Passwords must contain at least one special character (!@#$%^&*)"
                 checked={systemSettings.passwordRequireSymbols}
-                onChange={(checked) => setSystemSettings(prev => ({ ...prev, passwordRequireSymbols: checked }))}
+                onChange={(checked) =>
+                  setSystemSettings((prev) => ({ ...prev, passwordRequireSymbols: checked }))
+                }
               />
-              
+
               <ToggleSetting
                 label="Enable Two-Factor Authentication"
                 description="Require two-factor authentication for all user accounts"
                 checked={systemSettings.twoFactorEnabled}
-                onChange={(checked) => setSystemSettings(prev => ({ ...prev, twoFactorEnabled: checked }))}
+                onChange={(checked) =>
+                  setSystemSettings((prev) => ({ ...prev, twoFactorEnabled: checked }))
+                }
               />
             </SettingGroup>
 
             <SettingGroup title="System Security">
-              <div style={{
-                padding: '1rem',
-                backgroundColor: '#fef3c7',
-                borderRadius: '8px',
-                border: '1px solid #f59e0b'
-              }}>
-                <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#92400e', marginBottom: '0.5rem' }}>
+              <div
+                style={{
+                  padding: '1rem',
+                  backgroundColor: '#fef3c7',
+                  borderRadius: '8px',
+                  border: '1px solid #f59e0b',
+                }}
+              >
+                <h4
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    color: '#92400e',
+                    marginBottom: '0.5rem',
+                  }}
+                >
                   🔒 Security Audit
                 </h4>
                 <p style={{ fontSize: '0.875rem', color: '#92400e', marginBottom: '1rem' }}>
@@ -519,11 +641,15 @@ const SettingsPage = () => {
               </div>
             </SettingGroup>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
-              <Button
-                onClick={() => handleSaveSettings('Security')}
-                disabled={isLoading}
-              >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                paddingTop: '1rem',
+                borderTop: '1px solid #e5e7eb',
+              }}
+            >
+              <Button onClick={() => handleSaveSettings('Security')} disabled={isLoading}>
                 {isLoading ? 'Saving...' : 'Save Security Settings'}
               </Button>
             </div>
@@ -538,21 +664,27 @@ const SettingsPage = () => {
                 label="Email Notifications"
                 description="Enable email notifications system-wide"
                 checked={notificationSettings.emailNotifications}
-                onChange={(checked) => setNotificationSettings(prev => ({ ...prev, emailNotifications: checked }))}
+                onChange={(checked) =>
+                  setNotificationSettings((prev) => ({ ...prev, emailNotifications: checked }))
+                }
               />
-              
+
               <ToggleSetting
                 label="SMS Notifications"
                 description="Enable SMS notifications system-wide"
                 checked={notificationSettings.smsNotifications}
-                onChange={(checked) => setNotificationSettings(prev => ({ ...prev, smsNotifications: checked }))}
+                onChange={(checked) =>
+                  setNotificationSettings((prev) => ({ ...prev, smsNotifications: checked }))
+                }
               />
-              
+
               <ToggleSetting
                 label="Push Notifications"
                 description="Enable browser push notifications"
                 checked={notificationSettings.pushNotifications}
-                onChange={(checked) => setNotificationSettings(prev => ({ ...prev, pushNotifications: checked }))}
+                onChange={(checked) =>
+                  setNotificationSettings((prev) => ({ ...prev, pushNotifications: checked }))
+                }
               />
             </SettingGroup>
 
@@ -561,46 +693,67 @@ const SettingsPage = () => {
                 label="Appointment Reminders"
                 description="Send reminders to patients about upcoming appointments"
                 checked={notificationSettings.appointmentReminders}
-                onChange={(checked) => setNotificationSettings(prev => ({ ...prev, appointmentReminders: checked }))}
-                disabled={!notificationSettings.emailNotifications && !notificationSettings.smsNotifications}
+                onChange={(checked) =>
+                  setNotificationSettings((prev) => ({ ...prev, appointmentReminders: checked }))
+                }
+                disabled={
+                  !notificationSettings.emailNotifications && !notificationSettings.smsNotifications
+                }
               />
-              
+
               <ToggleSetting
                 label="Lab Result Alerts"
                 description="Notify doctors when lab results are available"
                 checked={notificationSettings.labResultAlerts}
-                onChange={(checked) => setNotificationSettings(prev => ({ ...prev, labResultAlerts: checked }))}
+                onChange={(checked) =>
+                  setNotificationSettings((prev) => ({ ...prev, labResultAlerts: checked }))
+                }
                 disabled={!notificationSettings.emailNotifications}
               />
-              
+
               <ToggleSetting
                 label="Emergency Alerts"
                 description="Send immediate alerts for emergency situations"
                 checked={notificationSettings.emergencyAlerts}
-                onChange={(checked) => setNotificationSettings(prev => ({ ...prev, emergencyAlerts: checked }))}
+                onChange={(checked) =>
+                  setNotificationSettings((prev) => ({ ...prev, emergencyAlerts: checked }))
+                }
               />
-              
+
               <ToggleSetting
                 label="System Maintenance Notices"
                 description="Notify users about scheduled system maintenance"
                 checked={notificationSettings.systemMaintenanceNotices}
-                onChange={(checked) => setNotificationSettings(prev => ({ ...prev, systemMaintenanceNotices: checked }))}
+                onChange={(checked) =>
+                  setNotificationSettings((prev) => ({
+                    ...prev,
+                    systemMaintenanceNotices: checked,
+                  }))
+                }
               />
-              
+
               <ToggleSetting
                 label="Billing Reminders"
                 description="Send payment reminders to patients"
                 checked={notificationSettings.billingReminders}
-                onChange={(checked) => setNotificationSettings(prev => ({ ...prev, billingReminders: checked }))}
-                disabled={!notificationSettings.emailNotifications && !notificationSettings.smsNotifications}
+                onChange={(checked) =>
+                  setNotificationSettings((prev) => ({ ...prev, billingReminders: checked }))
+                }
+                disabled={
+                  !notificationSettings.emailNotifications && !notificationSettings.smsNotifications
+                }
               />
             </SettingGroup>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
-              <Button
-                onClick={() => handleSaveSettings('Notification')}
-                disabled={isLoading}
-              >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                paddingTop: '1rem',
+                borderTop: '1px solid #e5e7eb',
+              }}
+            >
+              <Button onClick={() => handleSaveSettings('Notification')} disabled={isLoading}>
                 {isLoading ? 'Saving...' : 'Save Notification Settings'}
               </Button>
             </div>
@@ -615,40 +768,54 @@ const SettingsPage = () => {
                 label="Enable Lab Integration"
                 description="Connect with external laboratory systems for test orders and results"
                 checked={integrationSettings.labIntegration.enabled}
-                onChange={(checked) => setIntegrationSettings(prev => ({
-                  ...prev,
-                  labIntegration: { ...prev.labIntegration, enabled: checked }
-                }))}
+                onChange={(checked) =>
+                  setIntegrationSettings((prev) => ({
+                    ...prev,
+                    labIntegration: { ...prev.labIntegration, enabled: checked },
+                  }))
+                }
               />
-              
+
               {integrationSettings.labIntegration.enabled && (
                 <div style={{ marginLeft: '2rem', display: 'grid', gap: '1rem' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                      gap: '1rem',
+                    }}
+                  >
                     <Input
                       label="Provider"
                       value={integrationSettings.labIntegration.provider}
-                      onChange={(e) => setIntegrationSettings(prev => ({
-                        ...prev,
-                        labIntegration: { ...prev.labIntegration, provider: e.target.value }
-                      }))}
+                      onChange={(e) =>
+                        setIntegrationSettings((prev) => ({
+                          ...prev,
+                          labIntegration: { ...prev.labIntegration, provider: e.target.value },
+                        }))
+                      }
                     />
                     <Input
                       type="password"
                       label="API Key"
                       value={integrationSettings.labIntegration.apiKey}
-                      onChange={(e) => setIntegrationSettings(prev => ({
-                        ...prev,
-                        labIntegration: { ...prev.labIntegration, apiKey: e.target.value }
-                      }))}
+                      onChange={(e) =>
+                        setIntegrationSettings((prev) => ({
+                          ...prev,
+                          labIntegration: { ...prev.labIntegration, apiKey: e.target.value },
+                        }))
+                      }
                     />
                   </div>
                   <Input
                     label="API Endpoint"
                     value={integrationSettings.labIntegration.endpoint}
-                    onChange={(e) => setIntegrationSettings(prev => ({
-                      ...prev,
-                      labIntegration: { ...prev.labIntegration, endpoint: e.target.value }
-                    }))}
+                    onChange={(e) =>
+                      setIntegrationSettings((prev) => ({
+                        ...prev,
+                        labIntegration: { ...prev.labIntegration, endpoint: e.target.value },
+                      }))
+                    }
                   />
                   <Button size="sm" variant="outline" style={{ width: 'fit-content' }}>
                     Test Connection
@@ -662,40 +829,54 @@ const SettingsPage = () => {
                 label="Enable Payment Processing"
                 description="Accept online payments from patients"
                 checked={integrationSettings.paymentGateway.enabled}
-                onChange={(checked) => setIntegrationSettings(prev => ({
-                  ...prev,
-                  paymentGateway: { ...prev.paymentGateway, enabled: checked }
-                }))}
+                onChange={(checked) =>
+                  setIntegrationSettings((prev) => ({
+                    ...prev,
+                    paymentGateway: { ...prev.paymentGateway, enabled: checked },
+                  }))
+                }
               />
-              
+
               {integrationSettings.paymentGateway.enabled && (
                 <div style={{ marginLeft: '2rem', display: 'grid', gap: '1rem' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                      gap: '1rem',
+                    }}
+                  >
                     <Input
                       label="Provider"
                       value={integrationSettings.paymentGateway.provider}
-                      onChange={(e) => setIntegrationSettings(prev => ({
-                        ...prev,
-                        paymentGateway: { ...prev.paymentGateway, provider: e.target.value }
-                      }))}
+                      onChange={(e) =>
+                        setIntegrationSettings((prev) => ({
+                          ...prev,
+                          paymentGateway: { ...prev.paymentGateway, provider: e.target.value },
+                        }))
+                      }
                     />
                     <Input
                       label="Public Key"
                       value={integrationSettings.paymentGateway.publicKey}
-                      onChange={(e) => setIntegrationSettings(prev => ({
-                        ...prev,
-                        paymentGateway: { ...prev.paymentGateway, publicKey: e.target.value }
-                      }))}
+                      onChange={(e) =>
+                        setIntegrationSettings((prev) => ({
+                          ...prev,
+                          paymentGateway: { ...prev.paymentGateway, publicKey: e.target.value },
+                        }))
+                      }
                     />
                   </div>
                   <Input
                     type="password"
                     label="Secret Key"
                     value={integrationSettings.paymentGateway.secretKey}
-                    onChange={(e) => setIntegrationSettings(prev => ({
-                      ...prev,
-                      paymentGateway: { ...prev.paymentGateway, secretKey: e.target.value }
-                    }))}
+                    onChange={(e) =>
+                      setIntegrationSettings((prev) => ({
+                        ...prev,
+                        paymentGateway: { ...prev.paymentGateway, secretKey: e.target.value },
+                      }))
+                    }
                   />
                 </div>
               )}
@@ -706,50 +887,68 @@ const SettingsPage = () => {
                 label="Enable SMS Service"
                 description="Send SMS notifications and reminders"
                 checked={integrationSettings.smsGateway.enabled}
-                onChange={(checked) => setIntegrationSettings(prev => ({
-                  ...prev,
-                  smsGateway: { ...prev.smsGateway, enabled: checked }
-                }))}
+                onChange={(checked) =>
+                  setIntegrationSettings((prev) => ({
+                    ...prev,
+                    smsGateway: { ...prev.smsGateway, enabled: checked },
+                  }))
+                }
               />
-              
+
               {integrationSettings.smsGateway.enabled && (
                 <div style={{ marginLeft: '2rem', display: 'grid', gap: '1rem' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                      gap: '1rem',
+                    }}
+                  >
                     <Input
                       label="Provider"
                       value={integrationSettings.smsGateway.provider}
-                      onChange={(e) => setIntegrationSettings(prev => ({
-                        ...prev,
-                        smsGateway: { ...prev.smsGateway, provider: e.target.value }
-                      }))}
+                      onChange={(e) =>
+                        setIntegrationSettings((prev) => ({
+                          ...prev,
+                          smsGateway: { ...prev.smsGateway, provider: e.target.value },
+                        }))
+                      }
                     />
                     <Input
                       label="Sender ID"
                       value={integrationSettings.smsGateway.sender}
-                      onChange={(e) => setIntegrationSettings(prev => ({
-                        ...prev,
-                        smsGateway: { ...prev.smsGateway, sender: e.target.value }
-                      }))}
+                      onChange={(e) =>
+                        setIntegrationSettings((prev) => ({
+                          ...prev,
+                          smsGateway: { ...prev.smsGateway, sender: e.target.value },
+                        }))
+                      }
                     />
                   </div>
                   <Input
                     type="password"
                     label="API Key"
                     value={integrationSettings.smsGateway.apiKey}
-                    onChange={(e) => setIntegrationSettings(prev => ({
-                      ...prev,
-                      smsGateway: { ...prev.smsGateway, apiKey: e.target.value }
-                    }))}
+                    onChange={(e) =>
+                      setIntegrationSettings((prev) => ({
+                        ...prev,
+                        smsGateway: { ...prev.smsGateway, apiKey: e.target.value },
+                      }))
+                    }
                   />
                 </div>
               )}
             </SettingGroup>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
-              <Button
-                onClick={() => handleSaveSettings('Integration')}
-                disabled={isLoading}
-              >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                paddingTop: '1rem',
+                borderTop: '1px solid #e5e7eb',
+              }}
+            >
+              <Button onClick={() => handleSaveSettings('Integration')} disabled={isLoading}>
                 {isLoading ? 'Saving...' : 'Save Integration Settings'}
               </Button>
             </div>
@@ -761,12 +960,25 @@ const SettingsPage = () => {
           <Card>
             <SettingGroup title="Backup Configuration">
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: '600', color: '#374151' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
                   Backup Frequency
                 </label>
                 <select
                   value={systemSettings.backupFrequency}
-                  onChange={(e) => setSystemSettings(prev => ({ ...prev, backupFrequency: e.target.value as string }))}
+                  onChange={(e) =>
+                    setSystemSettings((prev) => ({
+                      ...prev,
+                      backupFrequency: e.target.value as 'DAILY' | 'WEEKLY' | 'MONTHLY',
+                    }))
+                  }
                   style={{
                     width: '300px',
                     padding: '0.75rem 1rem',
@@ -774,7 +986,7 @@ const SettingsPage = () => {
                     borderRadius: '8px',
                     fontSize: '1rem',
                     backgroundColor: 'white',
-                    color: '#374151'
+                    color: '#374151',
                   }}
                 >
                   <option value="DAILY">Daily</option>
@@ -787,24 +999,42 @@ const SettingsPage = () => {
                 type="number"
                 label="Retention Period (days)"
                 value={systemSettings.retentionPeriod.toString()}
-                onChange={(e) => setSystemSettings(prev => ({ ...prev, retentionPeriod: parseInt(e.target.value) }))}
-                min={30}
-                max={2555}
+                onChange={(e) =>
+                  setSystemSettings((prev) => ({
+                    ...prev,
+                    retentionPeriod: parseInt(e.target.value) || 0,
+                  }))
+                }
                 style={{ maxWidth: '300px' }}
               />
             </SettingGroup>
 
             <SettingGroup title="Backup Status">
               <div style={{ display: 'grid', gap: '1rem' }}>
-                <div style={{
-                  padding: '1rem',
-                  backgroundColor: '#f0fdf4',
-                  borderRadius: '8px',
-                  border: '1px solid #bbf7d0'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  style={{
+                    padding: '1rem',
+                    backgroundColor: '#f0fdf4',
+                    borderRadius: '8px',
+                    border: '1px solid #bbf7d0',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     <div>
-                      <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#166534', marginBottom: '0.25rem' }}>
+                      <h4
+                        style={{
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          color: '#166534',
+                          marginBottom: '0.25rem',
+                        }}
+                      >
                         ✅ Last Backup Successful
                       </h4>
                       <p style={{ fontSize: '0.875rem', color: '#166534', margin: 0 }}>
@@ -817,17 +1047,50 @@ const SettingsPage = () => {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                  <div style={{ textAlign: 'center', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#10b981' }}>15</div>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '1rem',
+                  }}
+                >
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '1rem',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#10b981' }}>
+                      15
+                    </div>
                     <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Backups</div>
                   </div>
-                  <div style={{ textAlign: 'center', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#3b82f6' }}>36.2 GB</div>
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '1rem',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#3b82f6' }}>
+                      36.2 GB
+                    </div>
                     <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Size</div>
                   </div>
-                  <div style={{ textAlign: 'center', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#f59e0b' }}>99.9%</div>
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '1rem',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#f59e0b' }}>
+                      99.9%
+                    </div>
                     <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Success Rate</div>
                   </div>
                 </div>
@@ -836,23 +1099,21 @@ const SettingsPage = () => {
 
             <SettingGroup title="Manual Actions">
               <div style={{ display: 'flex', gap: '1rem' }}>
-                <Button variant="primary">
-                  🗄️ Create Backup Now
-                </Button>
-                <Button variant="outline">
-                  📤 Export Data
-                </Button>
-                <Button variant="secondary">
-                  📥 Restore from Backup
-                </Button>
+                <Button variant="primary">🗄️ Create Backup Now</Button>
+                <Button variant="outline">📤 Export Data</Button>
+                <Button variant="secondary">📥 Restore from Backup</Button>
               </div>
             </SettingGroup>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
-              <Button
-                onClick={() => handleSaveSettings('Backup')}
-                disabled={isLoading}
-              >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                paddingTop: '1rem',
+                borderTop: '1px solid #e5e7eb',
+              }}
+            >
+              <Button onClick={() => handleSaveSettings('Backup')} disabled={isLoading}>
                 {isLoading ? 'Saving...' : 'Save Backup Settings'}
               </Button>
             </div>
@@ -864,22 +1125,25 @@ const SettingsPage = () => {
           <Card>
             <div style={{ textAlign: 'center', padding: '2rem' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👥</div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>
+              <h3
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 User Management & Roles
               </h3>
               <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
-                Manage user roles, permissions, and access control settings. This advanced module allows you to configure role-based access control (RBAC) for your hospital management system.
+                Manage user roles, permissions, and access control settings. This advanced module
+                allows you to configure role-based access control (RBAC) for your hospital
+                management system.
               </p>
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                <Button variant="primary">
-                  👥 Manage Users
-                </Button>
-                <Button variant="outline">
-                  🔐 Configure Roles
-                </Button>
-                <Button variant="secondary">
-                  📋 Permission Matrix
-                </Button>
+                <Button variant="primary">👥 Manage Users</Button>
+                <Button variant="outline">🔐 Configure Roles</Button>
+                <Button variant="secondary">📋 Permission Matrix</Button>
               </div>
             </div>
           </Card>

@@ -17,7 +17,7 @@ import {
   Avatar,
   Title,
   Divider,
-  Alert
+  Alert,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -28,7 +28,7 @@ import {
   IconHeart,
   IconAlertCircle,
   IconShieldX,
-  IconUsers as IconUserPlus
+  IconUsers as IconUserPlus,
 } from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
@@ -38,7 +38,13 @@ import MedicalHistoryManager from '../../components/patients/MedicalHistoryManag
 import DocumentManager from '../../components/patients/DocumentManager';
 import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn, FilterOption, Status } from '../../types/common';
-import { Patient, PatientStats, PatientListItem, CreatePatientDto, UpdatePatientDto } from '../../types/patient';
+import {
+  Patient,
+  PatientStats,
+  PatientListItem,
+  CreatePatientDto,
+  UpdatePatientDto,
+} from '../../types/patient';
 import { patientsService } from '../../services';
 import { formatDate, formatPhoneNumber } from '../../lib/utils';
 import { notifications as notificationsService } from '@mantine/notifications';
@@ -72,7 +78,8 @@ function PatientsPage() {
   const [opened, { open, close }] = useDisclosure(false);
   const [viewModalOpened, { open: openView, close: closeView }] = useDisclosure(false);
   const [historyModalOpened, { open: openHistory, close: closeHistory }] = useDisclosure(false);
-  const [documentsModalOpened, { open: openDocuments, close: closeDocuments }] = useDisclosure(false);
+  const [documentsModalOpened, { open: openDocuments, close: closeDocuments }] =
+    useDisclosure(false);
 
   useEffect(() => {
     fetchPatients();
@@ -114,7 +121,7 @@ function PatientsPage() {
     try {
       const response = await patientsService.getPatientStats();
       if (response.success && response.data) {
-        setPatientStats(response.data as PatientStats);
+        setPatientStats(response.data as unknown as PatientStats);
       }
     } catch (error: any) {
       console.error('Error fetching stats:', error);
@@ -122,7 +129,7 @@ function PatientsPage() {
   };
 
   // Convert patients to list items for table
-  const patientListItems: PatientListItem[] = patients.map(patient => ({
+  const patientListItems: PatientListItem[] = patients.map((patient) => ({
     id: patient.id,
     patientId: (patient as any).medicalRecordNumber || patient.id,
     fullName: `${patient.firstName} ${patient.lastName}`,
@@ -133,7 +140,7 @@ function PatientsPage() {
     totalVisits: 0, // Placeholder - need to add to API
     status: (patient as any).isActive ? Status.ACTIVE : Status.INACTIVE,
     hasInsurance: false, // Placeholder - need to add to API
-    emergencyFlag: false // Placeholder
+    emergencyFlag: false, // Placeholder
   }));
 
   const calculateAge = (dateOfBirth: Date | string) => {
@@ -149,7 +156,7 @@ function PatientsPage() {
 
   // Handle patient actions
   const handleViewPatient = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
+    const fullPatient = patients.find((p) => p.id === patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
       openView();
@@ -157,7 +164,7 @@ function PatientsPage() {
   };
 
   const handleEditPatientForTable = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
+    const fullPatient = patients.find((p) => p.id === patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
       open();
@@ -199,7 +206,8 @@ function PatientsPage() {
       // Convert Date to string for API
       const apiData = {
         ...data,
-        dateOfBirth: data.dateOfBirth instanceof Date ? data.dateOfBirth.toISOString() : data.dateOfBirth
+        dateOfBirth:
+          data.dateOfBirth instanceof Date ? data.dateOfBirth.toISOString() : data.dateOfBirth,
       };
       const response = await patientsService.createPatient(apiData as any);
       if (response.success) {
@@ -228,7 +236,8 @@ function PatientsPage() {
       // Convert Date to string for API
       const apiData = {
         ...data,
-        dateOfBirth: data.dateOfBirth instanceof Date ? data.dateOfBirth.toISOString() : data.dateOfBirth
+        dateOfBirth:
+          data.dateOfBirth instanceof Date ? data.dateOfBirth.toISOString() : data.dateOfBirth,
       };
       const response = await patientsService.updatePatient(data.id, apiData as any);
       if (response.success) {
@@ -255,43 +264,43 @@ function PatientsPage() {
   // Medical history operations
   const handleSaveMedicalHistory = async (history: any): Promise<void> => {
     console.log('Saving medical history:', history);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleUpdateMedicalHistory = async (id: string, history: any): Promise<void> => {
     console.log('Updating medical history:', id, history);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleDeleteMedicalHistory = async (id: string): Promise<void> => {
     console.log('Deleting medical history:', id);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   // Document operations
   const handleUploadDocument = async (document: any, file: File): Promise<void> => {
     console.log('Uploading document:', document, file);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleUpdateDocument = async (id: string, document: any): Promise<void> => {
     console.log('Updating document:', id, document);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleDeleteDocument = async (id: string): Promise<void> => {
     console.log('Deleting document:', id);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleDownloadDocument = async (document: any): Promise<void> => {
     console.log('Downloading document:', document);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleViewDocument = async (document: any): Promise<void> => {
     console.log('Viewing document:', document);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   // Additional handlers
@@ -300,16 +309,16 @@ function PatientsPage() {
     // Would navigate to appointment scheduling
   };
 
-  const _handleOpenHistory = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
+  const __handleOpenHistory = (_patient: PatientListItem) => {
+    const fullPatient = patients.find((p) => p.id === _patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
       openHistory();
     }
   };
 
-  const _handleOpenDocuments = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
+  const __handleOpenDocuments = (_patient: PatientListItem) => {
+    const fullPatient = patients.find((p) => p.id === _patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
       openDocuments();
@@ -327,7 +336,7 @@ function PatientsPage() {
         <Text fw={500} c="blue">
           {value as string}
         </Text>
-      )
+      ),
     },
     {
       key: 'fullName',
@@ -343,7 +352,7 @@ function PatientsPage() {
             </Text>
           </div>
         </Group>
-      )
+      ),
     },
     {
       key: 'phoneNumber',
@@ -355,13 +364,13 @@ function PatientsPage() {
             <Text size="sm">{formatPhoneNumber(value as string)}</Text>
           </Group>
         </div>
-      )
+      ),
     },
     {
       key: 'lastVisitDate',
       title: 'Last Visit',
       sortable: true,
-      render: (value) => value ? formatDate(value as string | Date) : 'Never'
+      render: (value) => (value ? formatDate(value as string | Date) : 'Never'),
     },
     {
       key: 'totalVisits',
@@ -372,19 +381,16 @@ function PatientsPage() {
         <Badge variant="light" color="blue">
           {value as string}
         </Badge>
-      )
+      ),
     },
     {
       key: 'status',
       title: 'Status',
       render: (value) => (
-        <Badge
-          color={value === 'active' ? 'green' : 'red'}
-          variant="light"
-        >
+        <Badge color={value === 'active' ? 'green' : 'red'} variant="light">
           {value as string}
         </Badge>
-      )
+      ),
     },
     {
       key: 'hasInsurance',
@@ -400,12 +406,10 @@ function PatientsPage() {
               Self Pay
             </Badge>
           )}
-          {record.emergencyFlag && (
-            <IconAlertCircle size="1rem" color="red" />
-          )}
+          {record.emergencyFlag && <IconAlertCircle size="1rem" color="red" />}
         </Group>
-      )
-    }
+      ),
+    },
   ];
 
   // Filter options
@@ -416,8 +420,8 @@ function PatientsPage() {
       type: 'select',
       options: [
         { value: 'active', label: 'Active' },
-        { value: 'inactive', label: 'Inactive' }
-      ]
+        { value: 'inactive', label: 'Inactive' },
+      ],
     },
     {
       key: 'gender',
@@ -426,8 +430,8 @@ function PatientsPage() {
       options: [
         { value: 'male', label: 'Male' },
         { value: 'female', label: 'Female' },
-        { value: 'other', label: 'Other' }
-      ]
+        { value: 'other', label: 'Other' },
+      ],
     },
     {
       key: 'hasInsurance',
@@ -435,18 +439,28 @@ function PatientsPage() {
       type: 'select',
       options: [
         { value: 'true', label: 'Insured' },
-        { value: 'false', label: 'Self Pay' }
-      ]
-    }
+        { value: 'false', label: 'Self Pay' },
+      ],
+    },
   ];
 
   // Statistics cards
-  const StatCard = ({ title, value, icon, color, subtitle }: { title: string; value: string; icon: React.ReactNode; color: string; subtitle?: string }) => (
+  const StatCard = ({
+    title,
+    value,
+    icon,
+    color,
+    subtitle,
+  }: {
+    title: string;
+    value: string;
+    icon: React.ReactNode;
+    color: string;
+    subtitle?: string;
+  }) => (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Group justify="space-between" mb="md">
-        <div style={{ color: `var(--mantine-color-${color}-6)` }}>
-          {icon}
-        </div>
+        <div style={{ color: `var(--mantine-color-${color}-6)` }}>{icon}</div>
       </Group>
 
       <Text size="xl" fw={700} mb="xs">
@@ -466,7 +480,20 @@ function PatientsPage() {
   );
 
   return (
-    <Layout user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : undefined} notifications={0} onLogout={() => setUser(null)}>
+    <Layout
+      user={
+        user
+          ? {
+              id: user.id,
+              name: `${user.firstName} ${user.lastName}`,
+              email: user.email,
+              role: user.role,
+            }
+          : undefined
+      }
+      notifications={0}
+      onLogout={() => setUser(null)}
+    >
       <Container fluid>
         <Stack gap="lg">
           {/* Header */}
@@ -478,16 +505,10 @@ function PatientsPage() {
               </Text>
             </div>
             <Group>
-              <Button
-                leftSection={<IconUserPlus size="1rem" />}
-                onClick={open}
-              >
+              <Button leftSection={<IconUserPlus size="1rem" />} onClick={open}>
                 New Patient
               </Button>
-              <Button
-                variant="outline"
-                leftSection={<IconDownload size="1rem" />}
-              >
+              <Button variant="outline" leftSection={<IconDownload size="1rem" />}>
                 Export
               </Button>
             </Group>
@@ -543,19 +564,19 @@ function PatientsPage() {
                 filterable={true}
                 sortable={true}
                 filters={filterOptions}
-                onSearch={(query) => setSearchQuery(query)}
-                onFilter={(filters) => setFilters(filters)}
+                onSearch={(query) => _setSearchQuery(query)}
+                onFilter={(filters) => _setFilters(filters)}
                 pagination={{
                   page: 1,
                   limit: 10,
                   total: patientListItems.length,
                   onPageChange: (page) => console.log('Page:', page),
-                  onLimitChange: (limit) => console.log('Limit:', limit)
+                  onLimitChange: (limit) => console.log('Limit:', limit),
                 }}
                 actions={{
                   view: handleViewPatient,
                   edit: handleEditPatientForTable,
-                  delete: handleDeletePatient
+                  delete: handleDeletePatient,
                 }}
                 emptyMessage="No patients found"
               />
@@ -579,7 +600,9 @@ function PatientsPage() {
                               w={100}
                               color="blue"
                             />
-                            <Text size="sm" fw={500}>{trend.count}</Text>
+                            <Text size="sm" fw={500}>
+                              {trend.count}
+                            </Text>
                           </Group>
                         </Group>
                       )) || <Text>No data available</Text>}
@@ -596,26 +619,34 @@ function PatientsPage() {
                       <Group justify="space-between">
                         <Text size="sm">Male Patients</Text>
                         <Text size="sm" fw={500}>
-                          {patientStats ? `${patientStats.genderDistribution.male} (${Math.round((patientStats.genderDistribution.male / patientStats.totalPatients) * 100)}%)` : '0 (0%)'}
+                          {patientStats
+                            ? `${patientStats.genderDistribution.male} (${Math.round((patientStats.genderDistribution.male / patientStats.totalPatients) * 100)}%)`
+                            : '0 (0%)'}
                         </Text>
                       </Group>
                       <Group justify="space-between">
                         <Text size="sm">Female Patients</Text>
                         <Text size="sm" fw={500}>
-                          {patientStats ? `${patientStats.genderDistribution.female} (${Math.round((patientStats.genderDistribution.female / patientStats.totalPatients) * 100)}%)` : '0 (0%)'}
+                          {patientStats
+                            ? `${patientStats.genderDistribution.female} (${Math.round((patientStats.genderDistribution.female / patientStats.totalPatients) * 100)}%)`
+                            : '0 (0%)'}
                         </Text>
                       </Group>
                       <Divider />
                       <Group justify="space-between">
                         <Text size="sm">Insured Patients</Text>
                         <Text size="sm" fw={500} c="green">
-                          {patientStats ? `${patientStats.insuranceDistribution.insured} (${Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%)` : '0 (0%)'}
+                          {patientStats
+                            ? `${patientStats.insuranceDistribution.insured} (${Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%)`
+                            : '0 (0%)'}
                         </Text>
                       </Group>
                       <Group justify="space-between">
                         <Text size="sm">Self-Pay Patients</Text>
                         <Text size="sm" fw={500} c="orange">
-                          {patientStats ? `${patientStats.insuranceDistribution.uninsured} (${Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%)` : '0 (0%)'}
+                          {patientStats
+                            ? `${patientStats.insuranceDistribution.uninsured} (${Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%)`
+                            : '0 (0%)'}
                         </Text>
                       </Group>
                     </Stack>
@@ -632,20 +663,25 @@ function PatientsPage() {
                       Blood Group Distribution
                     </Text>
                     <Stack gap="sm">
-                      {patientStats?.bloodGroupDistribution && Object.entries(patientStats.bloodGroupDistribution).map(([bloodGroup, count]) => (
-                        <Group key={bloodGroup} justify="space-between">
-                          <Text size="sm">{bloodGroup}</Text>
-                          <Group gap="sm">
-                            <Progress
-                              value={(count / (patientStats.totalPatients || 1)) * 100}
-                              size="sm"
-                              w={100}
-                              color="red"
-                            />
-                            <Text size="sm" fw={500}>{count}</Text>
-                          </Group>
-                        </Group>
-                      )) || <Text>No data available</Text>}
+                      {(patientStats?.bloodGroupDistribution &&
+                        Object.entries(patientStats.bloodGroupDistribution).map(
+                          ([bloodGroup, count]) => (
+                            <Group key={bloodGroup} justify="space-between">
+                              <Text size="sm">{bloodGroup}</Text>
+                              <Group gap="sm">
+                                <Progress
+                                  value={(count / (patientStats.totalPatients || 1)) * 100}
+                                  size="sm"
+                                  w={100}
+                                  color="red"
+                                />
+                                <Text size="sm" fw={500}>
+                                  {count}
+                                </Text>
+                              </Group>
+                            </Group>
+                          )
+                        )) || <Text>No data available</Text>}
                     </Stack>
                   </Paper>
                 </Grid.Col>
@@ -656,8 +692,8 @@ function PatientsPage() {
                       Age Distribution
                     </Text>
                     <Alert icon={<IconAlertCircle size="1rem" />} color="blue">
-                      Age analytics feature will show detailed age group breakdowns,
-                      pediatric vs adult ratios, and senior citizen statistics.
+                      Age analytics feature will show detailed age group breakdowns, pediatric vs
+                      adult ratios, and senior citizen statistics.
                     </Alert>
                   </Paper>
                 </Grid.Col>
@@ -671,24 +707,36 @@ function PatientsPage() {
                 </Text>
                 <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
                   <div>
-                    <Text size="sm" c="dimmed" mb="sm">Coverage Distribution</Text>
+                    <Text size="sm" c="dimmed" mb="sm">
+                      Coverage Distribution
+                    </Text>
                     <Group gap="lg">
                       <div>
                         <Text size="xl" fw={700} c="green">
-                          {patientStats ? `${Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%` : '0%'}
+                          {patientStats
+                            ? `${Math.round((patientStats.insuranceDistribution.insured / patientStats.totalPatients) * 100)}%`
+                            : '0%'}
                         </Text>
-                        <Text size="sm" c="dimmed">Insured</Text>
+                        <Text size="sm" c="dimmed">
+                          Insured
+                        </Text>
                       </div>
                       <div>
                         <Text size="xl" fw={700} c="orange">
-                          {patientStats ? `${Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%` : '0%'}
+                          {patientStats
+                            ? `${Math.round((patientStats.insuranceDistribution.uninsured / patientStats.totalPatients) * 100)}%`
+                            : '0%'}
                         </Text>
-                        <Text size="sm" c="dimmed">Self-Pay</Text>
+                        <Text size="sm" c="dimmed">
+                          Self-Pay
+                        </Text>
                       </div>
                     </Group>
                   </div>
                   <div>
-                    <Text size="sm" c="dimmed" mb="sm">Insurance Types</Text>
+                    <Text size="sm" c="dimmed" mb="sm">
+                      Insurance Types
+                    </Text>
                     <Alert icon={<IconShieldX size="1rem" />} color="blue">
                       Government: 45% • Private: 35% • Corporate: 20%
                     </Alert>

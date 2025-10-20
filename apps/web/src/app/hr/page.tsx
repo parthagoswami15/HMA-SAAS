@@ -82,7 +82,7 @@ function HrPage() {
     }
     fetchStaff();
     fetchDepartments();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchStaff = async () => {
@@ -102,11 +102,12 @@ function HrPage() {
 
         // Apply search filter
         if (searchQuery) {
-          filteredStaff = filteredStaff.filter(s =>
-            `${s.firstName} ${s.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            s.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            s.phone.includes(searchQuery) ||
-            (s.employeeId && s.employeeId.toLowerCase().includes(searchQuery.toLowerCase()))
+          filteredStaff = filteredStaff.filter(
+            (s) =>
+              `${s.firstName} ${s.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              s.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              s.phone.includes(searchQuery) ||
+              (s.employeeId && s.employeeId.toLowerCase().includes(searchQuery.toLowerCase()))
           );
         }
 
@@ -116,7 +117,10 @@ function HrPage() {
       console.error('Error fetching staff:', error);
       notifications.show({
         title: 'Error Loading Staff',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch staff members. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to fetch staff members. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -135,7 +139,10 @@ function HrPage() {
       console.error('Error fetching stats:', error);
       notifications.show({
         title: 'Error Loading Statistics',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch HR statistics. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to fetch HR statistics. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -156,7 +163,7 @@ function HrPage() {
   const handleCreateStaff = async (data: CreateStaffDto) => {
     try {
       const response = await hrService.createStaff(data);
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -164,7 +171,7 @@ function HrPage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         closeStaffForm();
         fetchStaff();
         fetchStats();
@@ -173,7 +180,10 @@ function HrPage() {
       console.error('Error creating staff:', error);
       notifications.show({
         title: 'Error Creating Staff',
-        message: error?.response?.data?.message || error?.message || 'Failed to create staff member. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to create staff member. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -186,7 +196,7 @@ function HrPage() {
 
     try {
       const response = await hrService.updateStaff(selectedStaff.id, data);
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -194,7 +204,7 @@ function HrPage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         closeStaffForm();
         setSelectedStaff(null);
         fetchStaff();
@@ -204,7 +214,10 @@ function HrPage() {
       console.error('Error updating staff:', error);
       notifications.show({
         title: 'Error Updating Staff',
-        message: error?.response?.data?.message || error?.message || 'Failed to update staff member. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to update staff member. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -213,13 +226,17 @@ function HrPage() {
   };
 
   const handleDeleteStaff = async (staffMember: any) => {
-    if (!window.confirm(`Are you sure you want to deactivate ${staffMember.firstName} ${staffMember.lastName}?`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to deactivate ${staffMember.firstName} ${staffMember.lastName}?`
+      )
+    ) {
       return;
     }
 
     try {
       const response = await hrService.deleteStaff(staffMember.id);
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -227,7 +244,7 @@ function HrPage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         fetchStaff();
         fetchStats();
       }
@@ -235,7 +252,10 @@ function HrPage() {
       console.error('Error deleting staff:', error);
       notifications.show({
         title: 'Error Deactivating Staff',
-        message: error?.response?.data?.message || error?.message || 'Failed to deactivate staff member. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to deactivate staff member. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -258,7 +278,7 @@ function HrPage() {
   };
 
   const formatDesignation = (designation: string) => {
-    return designation.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return designation.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   const staffColumns: TableColumn[] = [
@@ -268,10 +288,8 @@ function HrPage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const staffMember = record as any;
-        return (
-          <Text fw={500}>{staffMember.employeeId || 'N/A'}</Text>
-        );
-      }
+        return <Text fw={500}>{staffMember.employeeId || 'N/A'}</Text>;
+      },
     },
     {
       key: 'name',
@@ -281,11 +299,15 @@ function HrPage() {
         const staffMember = record as any;
         return (
           <div>
-            <Text fw={600}>{staffMember.firstName} {staffMember.lastName}</Text>
-            <Text size="xs" c="dimmed">{staffMember.email}</Text>
+            <Text fw={600}>
+              {staffMember.firstName} {staffMember.lastName}
+            </Text>
+            <Text size="xs" c="dimmed">
+              {staffMember.email}
+            </Text>
           </div>
         );
-      }
+      },
     },
     {
       key: 'department',
@@ -293,10 +315,8 @@ function HrPage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const staffMember = record as any;
-        return (
-          <Text>{staffMember.department?.name || 'N/A'}</Text>
-        );
-      }
+        return <Text>{staffMember.department?.name || 'N/A'}</Text>;
+      },
     },
     {
       key: 'designation',
@@ -304,22 +324,16 @@ function HrPage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const staffMember = record as any;
-        return (
-          <Badge variant="light">
-            {formatDesignation(staffMember.designation)}
-          </Badge>
-        );
-      }
+        return <Badge variant="light">{formatDesignation(staffMember.designation)}</Badge>;
+      },
     },
     {
       key: 'phone',
       title: 'Contact',
       render: (value: unknown, record: Record<string, unknown>) => {
         const staffMember = record as any;
-        return (
-          <Text size="sm">{staffMember.phone}</Text>
-        );
-      }
+        return <Text size="sm">{staffMember.phone}</Text>;
+      },
     },
     {
       key: 'isActive',
@@ -332,7 +346,7 @@ function HrPage() {
             {staffMember.isActive ? 'Active' : 'Inactive'}
           </Badge>
         );
-      }
+      },
     },
     {
       key: 'actions',
@@ -341,16 +355,10 @@ function HrPage() {
         const staffMember = record as any;
         return (
           <Group gap="xs">
-            <ActionIcon
-              variant="subtle"
-              onClick={() => handleViewStaff(staffMember)}
-            >
+            <ActionIcon variant="subtle" onClick={() => handleViewStaff(staffMember)}>
               <IconEye size={16} />
             </ActionIcon>
-            <ActionIcon
-              variant="subtle"
-              onClick={() => handleEditStaff(staffMember)}
-            >
+            <ActionIcon variant="subtle" onClick={() => handleEditStaff(staffMember)}>
               <IconEdit size={16} />
             </ActionIcon>
             <Menu position="bottom-end">
@@ -384,12 +392,30 @@ function HrPage() {
             </Menu>
           </Group>
         );
-      }
-    }
+      },
+    },
   ];
 
   return (
-    <Layout user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : { id: mockUser.id, name: `${mockUser.firstName} ${mockUser.lastName}`, email: mockUser.email, role: mockUser.role }} notifications={0} onLogout={() => {}}>
+    <Layout
+      user={
+        user
+          ? {
+              id: user.id,
+              name: `${user.firstName} ${user.lastName}`,
+              email: user.email,
+              role: user.role,
+            }
+          : {
+              id: mockUser.id,
+              name: `${mockUser.firstName} ${mockUser.lastName}`,
+              email: mockUser.email,
+              role: mockUser.role,
+            }
+      }
+      notifications={0}
+      onLogout={() => {}}
+    >
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -400,10 +426,7 @@ function HrPage() {
                 Manage staff members, departments, and HR operations
               </Text>
             </div>
-            <Button
-              leftSection={<IconPlus size={16} />}
-              onClick={handleNewStaff}
-            >
+            <Button leftSection={<IconPlus size={16} />} onClick={handleNewStaff}>
               Add Staff Member
             </Button>
           </Group>
@@ -483,7 +506,7 @@ function HrPage() {
                   placeholder="Filter by department"
                   data={[
                     { value: '', label: 'All Departments' },
-                    ...departments.map(dept => ({
+                    ...departments.map((dept) => ({
                       value: dept.id,
                       label: dept.name,
                     })),
@@ -529,9 +552,7 @@ function HrPage() {
               </Grid.Col>
             </Grid>
             <Group justify="flex-end" mt="md">
-              <Button onClick={fetchStaff}>
-                Apply Filters
-              </Button>
+              <Button onClick={fetchStaff}>Apply Filters</Button>
             </Group>
           </Paper>
 
@@ -539,15 +560,15 @@ function HrPage() {
           <Paper withBorder>
             <LoadingOverlay visible={loading} />
             {staff.length === 0 && !loading ? (
-              <Alert icon={<IconAlertCircle size={16} />} title="No staff members found" color="blue">
+              <Alert
+                icon={<IconAlertCircle size={16} />}
+                title="No staff members found"
+                color="blue"
+              >
                 No staff members match your current filters. Try adjusting your search criteria.
               </Alert>
             ) : (
-              <DataTable
-                columns={staffColumns}
-                data={staff}
-                loading={loading}
-              />
+              <DataTable columns={staffColumns} data={staff} loading={loading} />
             )}
           </Paper>
         </Stack>

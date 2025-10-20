@@ -36,8 +36,20 @@ export interface EmergencyVitalSigns {
 }
 
 export type TriageLevel = 'immediate' | 'urgent' | 'less_urgent' | 'non_urgent';
-export type EmergencyStatus = 'waiting' | 'in_treatment' | 'observation' | 'discharged' | 'admitted' | 'transferred';
-export type Disposition = 'discharge_home' | 'admit_ward' | 'admit_icu' | 'transfer' | 'deceased' | 'left_ama';
+export type EmergencyStatus =
+  | 'waiting'
+  | 'in_treatment'
+  | 'observation'
+  | 'discharged'
+  | 'admitted'
+  | 'transferred';
+export type Disposition =
+  | 'discharge_home'
+  | 'admit_ward'
+  | 'admit_icu'
+  | 'transfer'
+  | 'deceased'
+  | 'left_ama';
 export type ConsciousnessLevel = 'alert' | 'drowsy' | 'stuporous' | 'unconscious';
 
 export interface EmergencyMedication {

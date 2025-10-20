@@ -15,7 +15,7 @@ import {
   Accordion,
   ActionIcon,
   SegmentedControl,
-  Checkbox
+  Checkbox,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DatePickerInput } from '@mantine/dates';
@@ -31,21 +31,21 @@ import {
   IconMail,
   IconShield,
   IconStethoscope,
-  IconBookmark
+  IconBookmark,
 } from '@tabler/icons-react';
-import { PatientSearchCriteria } from '../../types/patient';
+import { PatientSearchParams } from '../../types/patient';
 import { Gender, BloodGroup, Status } from '../../types/common';
 
 interface PatientSearchProps {
   opened: boolean;
   onClose: () => void;
-  onSearch: (criteria: PatientSearchCriteria) => void;
-  onSaveSearch: (name: string, criteria: PatientSearchCriteria) => void;
-  savedSearches?: Array<{ id: string; name: string; criteria: PatientSearchCriteria }>;
-  currentCriteria?: PatientSearchCriteria;
+  onSearch: (criteria: PatientSearchParams) => void;
+  onSaveSearch: (name: string, criteria: PatientSearchParams) => void;
+  savedSearches?: Array<{ id: string; name: string; criteria: PatientSearchParams }>;
+  currentCriteria?: PatientSearchParams;
 }
 
-const initialCriteria: PatientSearchCriteria = {
+const initialCriteria: PatientSearchParams = {
   searchTerm: '',
   patientId: '',
   firstName: '',
@@ -66,7 +66,7 @@ const initialCriteria: PatientSearchCriteria = {
   hasChronicDiseases: undefined,
   hasInsurance: undefined,
   doctorId: '',
-  departmentId: ''
+  departmentId: '',
 };
 
 export default function PatientSearch({
@@ -75,14 +75,14 @@ export default function PatientSearch({
   onSearch,
   onSaveSearch,
   savedSearches = [],
-  currentCriteria = initialCriteria
+  currentCriteria = initialCriteria,
 }: PatientSearchProps) {
   const [saveSearchOpened, { open: openSaveSearch, close: closeSaveSearch }] = useDisclosure(false);
   const [searchName, setSearchName] = useState('');
   const [expandedSections, setExpandedSections] = useState<string[]>(['basic']);
 
-  const form = useForm<PatientSearchCriteria>({
-    initialValues: currentCriteria
+  const form = useForm<PatientSearchParams>({
+    initialValues: currentCriteria,
   });
 
   const [debouncedSearchTerm] = useDebouncedValue(form.values.searchTerm, 300);
@@ -91,7 +91,7 @@ export default function PatientSearch({
     if (debouncedSearchTerm) {
       handleQuickSearch();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm]);
 
   const handleQuickSearch = () => {
@@ -116,13 +116,13 @@ export default function PatientSearch({
     }
   };
 
-  const loadSavedSearch = (criteria: PatientSearchCriteria) => {
+  const loadSavedSearch = (criteria: PatientSearchParams) => {
     form.setValues(criteria);
     onSearch(criteria);
   };
 
   const hasActiveFilters = () => {
-    return Object.values(form.values).some(value => {
+    return Object.values(form.values).some((value) => {
       if (value === undefined || value === null || value === '') return false;
       if (typeof value === 'boolean') return value;
       return true;
@@ -130,20 +130,13 @@ export default function PatientSearch({
   };
 
   const getActiveFiltersCount = () => {
-    return Object.values(form.values).filter(value => {
+    return Object.values(form.values).filter((value) => {
       if (value === undefined || value === null || value === '') return false;
       if (typeof value === 'boolean') return value;
       return true;
     }).length;
   };
 
-  const _toggleSection = (_section: string) => {
-    setExpandedSections(prev => 
-      prev.includes(_section) 
-        ? prev.filter(s => s !== _section)
-        : [...prev, _section]
-    );
-  };
 
   return (
     <>
@@ -169,7 +162,9 @@ export default function PatientSearch({
           {/* Quick Search */}
           <Paper p="md" withBorder>
             <Stack gap="sm">
-              <Text fw={500} size="sm">Quick Search</Text>
+              <Text fw={500} size="sm">
+                Quick Search
+              </Text>
               <TextInput
                 placeholder="Search by name, ID, phone, email..."
                 leftSection={<IconSearch size="1rem" />}
@@ -192,7 +187,9 @@ export default function PatientSearch({
           {savedSearches.length > 0 && (
             <Paper p="md" withBorder>
               <Group justify="space-between" mb="sm">
-                <Text fw={500} size="sm">Saved Searches</Text>
+                <Text fw={500} size="sm">
+                  Saved Searches
+                </Text>
                 <Button
                   variant="subtle"
                   size="xs"
@@ -218,11 +215,7 @@ export default function PatientSearch({
           )}
 
           {/* Advanced Filters */}
-          <Accordion
-            multiple
-            value={expandedSections}
-            onChange={setExpandedSections}
-          >
+          <Accordion multiple value={expandedSections} onChange={setExpandedSections}>
             {/* Basic Information */}
             <Accordion.Item value="basic">
               <Accordion.Control icon={<IconUser size="1rem" />}>
@@ -241,12 +234,15 @@ export default function PatientSearch({
                     <Select
                       label="Status"
                       placeholder="Select status"
-                      data={Object.values(Status).map(s => ({ value: s, label: s.replace('_', ' ') }))}
+                      data={Object.values(Status).map((s) => ({
+                        value: s,
+                        label: s.replace('_', ' '),
+                      }))}
                       {...form.getInputProps('status')}
                       clearable
                     />
                   </Grid.Col>
-                  
+
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     <TextInput
                       label="First Name"
@@ -266,7 +262,7 @@ export default function PatientSearch({
                     <Select
                       label="Gender"
                       placeholder="Select gender"
-                      data={Object.values(Gender).map(g => ({ value: g, label: g }))}
+                      data={Object.values(Gender).map((g) => ({ value: g, label: g }))}
                       {...form.getInputProps('gender')}
                       clearable
                     />
@@ -275,7 +271,7 @@ export default function PatientSearch({
                     <Select
                       label="Blood Group"
                       placeholder="Select blood group"
-                      data={Object.values(BloodGroup).map(bg => ({ value: bg, label: bg }))}
+                      data={Object.values(BloodGroup).map((bg) => ({ value: bg, label: bg }))}
                       {...form.getInputProps('bloodGroup')}
                       clearable
                     />
@@ -313,9 +309,7 @@ export default function PatientSearch({
 
             {/* Age Range */}
             <Accordion.Item value="age">
-              <Accordion.Control icon={<IconCalendar size="1rem" />}>
-                Age Range
-              </Accordion.Control>
+              <Accordion.Control icon={<IconCalendar size="1rem" />}>Age Range</Accordion.Control>
               <Accordion.Panel>
                 <Stack gap="md">
                   <Text size="sm" c="dimmed">
@@ -353,7 +347,9 @@ export default function PatientSearch({
               <Accordion.Panel>
                 <Stack gap="md">
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Registration Date</Text>
+                    <Text size="sm" fw={500} mb="sm">
+                      Registration Date
+                    </Text>
                     <Grid>
                       <Grid.Col span={{ base: 12, md: 6 }}>
                         <DatePickerInput
@@ -375,7 +371,9 @@ export default function PatientSearch({
                   </div>
 
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Last Visit Date</Text>
+                    <Text size="sm" fw={500} mb="sm">
+                      Last Visit Date
+                    </Text>
                     <Grid>
                       <Grid.Col span={{ base: 12, md: 6 }}>
                         <DatePickerInput
@@ -411,10 +409,14 @@ export default function PatientSearch({
                       label="Has Allergies"
                       checked={form.values.hasAllergies === true}
                       indeterminate={form.values.hasAllergies === undefined}
-                      onChange={(event) => 
-                        form.setFieldValue('hasAllergies', 
-                          event.currentTarget.checked ? true : 
-                          form.values.hasAllergies === true ? undefined : false
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          'hasAllergies',
+                          event.currentTarget.checked
+                            ? true
+                            : form.values.hasAllergies === true
+                              ? undefined
+                              : false
                         )
                       }
                     />
@@ -422,10 +424,14 @@ export default function PatientSearch({
                       label="Has Chronic Diseases"
                       checked={form.values.hasChronicDiseases === true}
                       indeterminate={form.values.hasChronicDiseases === undefined}
-                      onChange={(event) => 
-                        form.setFieldValue('hasChronicDiseases', 
-                          event.currentTarget.checked ? true : 
-                          form.values.hasChronicDiseases === true ? undefined : false
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          'hasChronicDiseases',
+                          event.currentTarget.checked
+                            ? true
+                            : form.values.hasChronicDiseases === true
+                              ? undefined
+                              : false
                         )
                       }
                     />
@@ -446,27 +452,31 @@ export default function PatientSearch({
                       data={[
                         { label: 'All', value: 'all' },
                         { label: 'Insured', value: 'true' },
-                        { label: 'Uninsured', value: 'false' }
+                        { label: 'Uninsured', value: 'false' },
                       ]}
                       value={
-                        form.values.hasInsurance === undefined ? 'all' :
-                        form.values.hasInsurance ? 'true' : 'false'
+                        form.values.hasInsurance === undefined
+                          ? 'all'
+                          : form.values.hasInsurance
+                            ? 'true'
+                            : 'false'
                       }
-                      onChange={(value) => 
-                        form.setFieldValue('hasInsurance', 
+                      onChange={(value) =>
+                        form.setFieldValue(
+                          'hasInsurance',
                           value === 'all' ? undefined : value === 'true'
                         )
                       }
                     />
                   </Group>
-                  
+
                   <Select
                     label="Insurance Type"
                     placeholder="Select insurance type"
                     data={[
                       { value: 'government', label: 'Government' },
                       { value: 'private', label: 'Private' },
-                      { value: 'corporate', label: 'Corporate' }
+                      { value: 'corporate', label: 'Corporate' },
                     ]}
                     {...form.getInputProps('insuranceType')}
                     clearable
@@ -486,7 +496,9 @@ export default function PatientSearch({
               >
                 Reset
               </Button>
-              {!savedSearches.some(s => JSON.stringify(s.criteria) === JSON.stringify(form.values)) && (
+              {!savedSearches.some(
+                (s) => JSON.stringify(s.criteria) === JSON.stringify(form.values)
+              ) && (
                 <Button
                   variant="subtle"
                   onClick={openSaveSearch}
@@ -496,15 +508,12 @@ export default function PatientSearch({
                 </Button>
               )}
             </Group>
-            
+
             <Group>
               <Button variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleAdvancedSearch}
-                leftSection={<IconSearch size="1rem" />}
-              >
+              <Button onClick={handleAdvancedSearch} leftSection={<IconSearch size="1rem" />}>
                 Search
               </Button>
             </Group>
@@ -513,12 +522,7 @@ export default function PatientSearch({
       </Modal>
 
       {/* Save Search Modal */}
-      <Modal
-        opened={saveSearchOpened}
-        onClose={closeSaveSearch}
-        title="Save Search"
-        size="sm"
-      >
+      <Modal opened={saveSearchOpened} onClose={closeSaveSearch} title="Save Search" size="sm">
         <Stack gap="md">
           <TextInput
             label="Search Name"

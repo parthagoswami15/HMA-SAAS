@@ -16,7 +16,7 @@ import {
   Grid,
   Alert,
   Tabs,
-  Switch
+  Switch,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DatePickerInput } from '@mantine/dates';
@@ -32,7 +32,7 @@ import {
   IconEdit,
   IconTrash,
   IconCheck,
-  IconVaccine
+  IconVaccine,
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { MedicalHistory } from '../../types/patient';
@@ -50,7 +50,14 @@ interface MedicalHistoryManagerProps {
 }
 
 interface HistoryFormData {
-  historyType: 'medical' | 'surgical' | 'family' | 'social' | 'allergy' | 'medication' | 'immunization';
+  historyType:
+    | 'medical'
+    | 'surgical'
+    | 'family'
+    | 'social'
+    | 'allergy'
+    | 'medication'
+    | 'immunization';
   title: string;
   description: string;
   date?: Date;
@@ -72,7 +79,7 @@ export default function MedicalHistoryManager({
   medicalHistory,
   onSave,
   onUpdate,
-  onDelete
+  onDelete,
 }: MedicalHistoryManagerProps) {
   const [activeTab, setActiveTab] = useState('all');
   const [formOpened, setFormOpened] = useState(false);
@@ -92,41 +99,42 @@ export default function MedicalHistoryManager({
       doctorName: '',
       hospitalName: '',
       notes: '',
-      isActive: true
+      isActive: true,
     },
     validate: {
       title: (value) => (value.trim().length < 2 ? 'Title must be at least 2 characters' : null),
-      description: (value) => (value.trim().length < 5 ? 'Description must be at least 5 characters' : null)
-    }
+      description: (value) =>
+        value.trim().length < 5 ? 'Description must be at least 5 characters' : null,
+    },
   });
 
   const handleSubmit = async (values: HistoryFormData) => {
     try {
       setLoading(true);
-      
+
       if (editingHistory) {
         await onUpdate(editingHistory.id, values);
         notifications.show({
           title: 'History Updated',
           message: 'Medical history entry has been updated successfully.',
-          color: 'green'
+          color: 'green',
         });
       } else {
         await onSave(values);
         notifications.show({
           title: 'History Added',
           message: 'New medical history entry has been added successfully.',
-          color: 'green'
+          color: 'green',
         });
       }
-      
+
       handleFormClose();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Error',
         message: `Failed to ${editingHistory ? 'update' : 'save'} medical history. Please try again.`,
-        color: 'red'
+        color: 'red',
       });
     } finally {
       setLoading(false);
@@ -147,7 +155,7 @@ export default function MedicalHistoryManager({
       doctorName: history.doctorName || '',
       hospitalName: history.hospitalName || '',
       notes: history.notes || '',
-      isActive: history.isActive
+      isActive: history.isActive,
     });
     setFormOpened(true);
   };
@@ -158,14 +166,14 @@ export default function MedicalHistoryManager({
       notifications.show({
         title: 'History Deleted',
         message: 'Medical history entry has been deleted successfully.',
-        color: 'green'
+        color: 'green',
       });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to delete medical history. Please try again.',
-        color: 'red'
+        color: 'red',
       });
     }
   };
@@ -178,51 +186,91 @@ export default function MedicalHistoryManager({
 
   const getHistoryIcon = (type: string) => {
     switch (type) {
-      case 'medical': return <IconMedicalCross size="1rem" />;
-      case 'surgical': return <IconStethoscope size="1rem" />;
-      case 'family': return <IconStethoscope size="1rem" />;
-      case 'social': return <IconUser size="1rem" />;
-      case 'allergy': return <IconAlertCircle size="1rem" />;
-      case 'medication': return <IconPill size="1rem" />;
-      case 'immunization': return <IconVaccine size="1rem" />;
-      default: return <IconHeartbeat size="1rem" />;
+      case 'medical':
+        return <IconMedicalCross size="1rem" />;
+      case 'surgical':
+        return <IconStethoscope size="1rem" />;
+      case 'family':
+        return <IconStethoscope size="1rem" />;
+      case 'social':
+        return <IconUser size="1rem" />;
+      case 'allergy':
+        return <IconAlertCircle size="1rem" />;
+      case 'medication':
+        return <IconPill size="1rem" />;
+      case 'immunization':
+        return <IconVaccine size="1rem" />;
+      default:
+        return <IconHeartbeat size="1rem" />;
     }
   };
 
   const getHistoryTypeColor = (type: string) => {
     switch (type) {
-      case 'medical': return 'blue';
-      case 'surgical': return 'orange';
-      case 'family': return 'purple';
-      case 'social': return 'teal';
-      case 'allergy': return 'red';
-      case 'medication': return 'green';
-      case 'immunization': return 'cyan';
-      default: return 'gray';
+      case 'medical':
+        return 'blue';
+      case 'surgical':
+        return 'orange';
+      case 'family':
+        return 'purple';
+      case 'social':
+        return 'teal';
+      case 'allergy':
+        return 'red';
+      case 'medication':
+        return 'green';
+      case 'immunization':
+        return 'cyan';
+      default:
+        return 'gray';
     }
   };
 
   const getSeverityColor = (severity?: string) => {
     switch (severity) {
-      case 'severe': return 'red';
-      case 'moderate': return 'orange';
-      case 'mild': return 'yellow';
-      default: return 'gray';
+      case 'severe':
+        return 'red';
+      case 'moderate':
+        return 'orange';
+      case 'mild':
+        return 'yellow';
+      default:
+        return 'gray';
     }
   };
 
   const filterHistoryByType = (type: string) => {
     if (type === 'all') return medicalHistory;
-    return medicalHistory.filter(history => history.historyType === type);
+    return medicalHistory.filter((history) => history.historyType === type);
   };
 
   const historyTabs = [
     { value: 'all', label: 'All History', count: medicalHistory.length },
-    { value: 'medical', label: 'Medical', count: medicalHistory.filter(h => h.historyType === 'medical').length },
-    { value: 'surgical', label: 'Surgical', count: medicalHistory.filter(h => h.historyType === 'surgical').length },
-    { value: 'allergy', label: 'Allergies', count: medicalHistory.filter(h => h.historyType === 'allergy').length },
-    { value: 'family', label: 'Family', count: medicalHistory.filter(h => h.historyType === 'family').length },
-    { value: 'medication', label: 'Medications', count: medicalHistory.filter(h => h.historyType === 'medication').length }
+    {
+      value: 'medical',
+      label: 'Medical',
+      count: medicalHistory.filter((h) => h.historyType === 'medical').length,
+    },
+    {
+      value: 'surgical',
+      label: 'Surgical',
+      count: medicalHistory.filter((h) => h.historyType === 'surgical').length,
+    },
+    {
+      value: 'allergy',
+      label: 'Allergies',
+      count: medicalHistory.filter((h) => h.historyType === 'allergy').length,
+    },
+    {
+      value: 'family',
+      label: 'Family',
+      count: medicalHistory.filter((h) => h.historyType === 'family').length,
+    },
+    {
+      value: 'medication',
+      label: 'Medications',
+      count: medicalHistory.filter((h) => h.historyType === 'medication').length,
+    },
   ];
 
   const HistoryList = ({ histories }: { histories: MedicalHistory[] }) => (
@@ -230,7 +278,9 @@ export default function MedicalHistoryManager({
       {histories.length === 0 ? (
         <Paper p="xl" withBorder style={{ textAlign: 'center' }}>
           <IconMedicalCross size="3rem" color="var(--mantine-color-gray-5)" />
-          <Text mt="md" c="dimmed">No medical history found for this category</Text>
+          <Text mt="md" c="dimmed">
+            No medical history found for this category
+          </Text>
         </Paper>
       ) : (
         <Stack gap="md">
@@ -247,22 +297,14 @@ export default function MedicalHistoryManager({
                   </Badge>
                   <Text fw={500}>{history.title}</Text>
                 </Group>
-                
+
                 <Group gap="xs">
                   {history.severity && (
-                    <Badge
-                      color={getSeverityColor(history.severity)}
-                      variant="light"
-                      size="sm"
-                    >
+                    <Badge color={getSeverityColor(history.severity)} variant="light" size="sm">
                       {history.severity}
                     </Badge>
                   )}
-                  <ActionIcon
-                    variant="subtle"
-                    size="sm"
-                    onClick={() => handleEdit(history)}
-                  >
+                  <ActionIcon variant="subtle" size="sm" onClick={() => handleEdit(history)}>
                     <IconEdit size="0.8rem" />
                   </ActionIcon>
                   <ActionIcon
@@ -276,7 +318,9 @@ export default function MedicalHistoryManager({
                 </Group>
               </Group>
 
-              <Text size="sm" mb="sm">{history.description}</Text>
+              <Text size="sm" mb="sm">
+                {history.description}
+              </Text>
 
               <Grid>
                 {history.date && (
@@ -287,7 +331,7 @@ export default function MedicalHistoryManager({
                     </Text>
                   </Grid.Col>
                 )}
-                
+
                 {history.doctorName && (
                   <Grid.Col span={6}>
                     <Text size="xs" c="dimmed">
@@ -295,7 +339,7 @@ export default function MedicalHistoryManager({
                     </Text>
                   </Grid.Col>
                 )}
-                
+
                 {history.hospitalName && (
                   <Grid.Col span={6}>
                     <Text size="xs" c="dimmed">
@@ -303,7 +347,7 @@ export default function MedicalHistoryManager({
                     </Text>
                   </Grid.Col>
                 )}
-                
+
                 {history.outcome && (
                   <Grid.Col span={6}>
                     <Text size="xs" c="dimmed">
@@ -315,27 +359,39 @@ export default function MedicalHistoryManager({
 
               {history.treatmentReceived && (
                 <div>
-                  <Text size="xs" fw={500} mt="sm" mb="xs">Treatment Received:</Text>
-                  <Text size="xs" c="dimmed">{history.treatmentReceived}</Text>
+                  <Text size="xs" fw={500} mt="sm" mb="xs">
+                    Treatment Received:
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {history.treatmentReceived}
+                  </Text>
                 </div>
               )}
 
               {history.complications && (
                 <Alert color="orange" mt="sm" p="xs">
-                  <Text size="xs" fw={500}>Complications:</Text>
+                  <Text size="xs" fw={500}>
+                    Complications:
+                  </Text>
                   <Text size="xs">{history.complications}</Text>
                 </Alert>
               )}
 
               {history.notes && (
                 <div>
-                  <Text size="xs" fw={500} mt="sm" mb="xs">Notes:</Text>
-                  <Text size="xs" c="dimmed">{history.notes}</Text>
+                  <Text size="xs" fw={500} mt="sm" mb="xs">
+                    Notes:
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {history.notes}
+                  </Text>
                 </div>
               )}
 
               {!history.isActive && (
-                <Badge color="gray" size="sm" mt="sm">Inactive</Badge>
+                <Badge color="gray" size="sm" mt="sm">
+                  Inactive
+                </Badge>
               )}
             </Paper>
           ))}
@@ -354,7 +410,9 @@ export default function MedicalHistoryManager({
             <IconMedicalCross size="1.2rem" />
             <div>
               <Text fw={600}>Medical History</Text>
-              <Text size="sm" c="dimmed">{patientName}</Text>
+              <Text size="sm" c="dimmed">
+                {patientName}
+              </Text>
             </div>
           </Group>
         }
@@ -365,10 +423,7 @@ export default function MedicalHistoryManager({
             <Text size="sm" c="dimmed">
               Total entries: {medicalHistory.length}
             </Text>
-            <Button
-              leftSection={<IconPlus size="1rem" />}
-              onClick={() => setFormOpened(true)}
-            >
+            <Button leftSection={<IconPlus size="1rem" />} onClick={() => setFormOpened(true)}>
               Add History
             </Button>
           </Group>
@@ -418,12 +473,12 @@ export default function MedicalHistoryManager({
                     { value: 'social', label: 'Social History' },
                     { value: 'allergy', label: 'Allergy' },
                     { value: 'medication', label: 'Medication History' },
-                    { value: 'immunization', label: 'Immunization' }
+                    { value: 'immunization', label: 'Immunization' },
                   ]}
                   {...form.getInputProps('historyType')}
                 />
               </Grid.Col>
-              
+
               <Grid.Col span={{ base: 12, md: 6 }}>
                 <DatePickerInput
                   label="Date"
@@ -458,13 +513,13 @@ export default function MedicalHistoryManager({
                   data={[
                     { value: 'mild', label: 'Mild' },
                     { value: 'moderate', label: 'Moderate' },
-                    { value: 'severe', label: 'Severe' }
+                    { value: 'severe', label: 'Severe' },
                   ]}
                   {...form.getInputProps('severity')}
                   clearable
                 />
               </Grid.Col>
-              
+
               <Grid.Col span={{ base: 12, md: 6 }}>
                 <TextInput
                   label="Outcome"
@@ -496,7 +551,7 @@ export default function MedicalHistoryManager({
                   {...form.getInputProps('doctorName')}
                 />
               </Grid.Col>
-              
+
               <Grid.Col span={{ base: 12, md: 6 }}>
                 <TextInput
                   label="Hospital/Clinic Name"
@@ -520,17 +575,10 @@ export default function MedicalHistoryManager({
             />
 
             <Group justify="flex-end" mt="xl">
-              <Button
-                variant="outline"
-                onClick={handleFormClose}
-              >
+              <Button variant="outline" onClick={handleFormClose}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                loading={loading}
-                leftSection={<IconCheck size="1rem" />}
-              >
+              <Button type="submit" loading={loading} leftSection={<IconCheck size="1rem" />}>
                 {editingHistory ? 'Update' : 'Save'} History
               </Button>
             </Group>

@@ -1,43 +1,39 @@
 import React from 'react';
-import { 
-  Loader, 
-  Skeleton, 
-  Stack, 
-  Card, 
-  Group, 
+import {
+  Loader,
+  Skeleton,
+  Stack,
+  Card,
+  Group,
   SimpleGrid,
   Center,
   Text,
   Box,
-  keyframes
 } from '@mantine/core';
 import { IconHeartbeat } from '@tabler/icons-react';
 
-// Keyframe animations
-const pulse = keyframes({
-  '0%, 100%': { opacity: 1 },
-  '50%': { opacity: 0.5 },
-});
+// Simple CSS animations
+const pulseAnimation = {
+  animation: 'pulse 2s ease-in-out infinite',
+};
 
-const spin = keyframes({
-  '0%': { transform: 'rotate(0deg)' },
-  '100%': { transform: 'rotate(360deg)' },
-});
+const spinAnimation = {
+  animation: 'spin 2s linear infinite',
+};
 
-const slideUp = keyframes({
-  '0%': { transform: 'translateY(20px)', opacity: 0 },
-  '100%': { transform: 'translateY(0)', opacity: 1 },
-});
+const slideUpAnimation = {
+  animation: 'slideUp 0.5s ease-out',
+};
 
 // Full Page Loader
 export const PageLoader: React.FC<{ message?: string }> = ({ message = 'Loading...' }) => {
   return (
     <Center style={{ minHeight: '80vh' }}>
       <Stack align="center" gap="md">
-        <Box style={{ animation: `${spin} 2s linear infinite` }}>
+        <Box style={spinAnimation}>
           <IconHeartbeat size={48} color="#667eea" />
         </Box>
-        <Text size="lg" fw={500} style={{ animation: `${pulse} 2s ease-in-out infinite` }}>
+        <Text size="lg" fw={500} style={pulseAnimation}>
           {message}
         </Text>
       </Stack>
@@ -62,9 +58,9 @@ export const CardSkeleton: React.FC = () => {
 };
 
 // Table Skeleton Loader
-export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({ 
-  rows = 5, 
-  columns = 6 
+export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
+  rows = 5,
+  columns = 6,
 }) => {
   return (
     <Stack gap="xs">
@@ -74,7 +70,7 @@ export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
           <Skeleton key={`header-${i}`} height={32} flex={1} radius="md" />
         ))}
       </Group>
-      
+
       {/* Rows */}
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <Group key={`row-${rowIndex}`} gap="md" wrap="nowrap">
@@ -110,7 +106,7 @@ export const StatsCardSkeleton: React.FC = () => {
 // Dashboard Skeleton Loader
 export const DashboardSkeleton: React.FC = () => {
   return (
-    <Stack gap="xl" style={{ animation: `${slideUp} 0.5s ease-out` }}>
+    <Stack gap="xl" style={slideUpAnimation}>
       {/* Header */}
       <Group justify="space-between">
         <Skeleton height={32} width={200} radius="md" />
@@ -191,15 +187,11 @@ export const InlineLoader: React.FC<{ size?: number }> = ({ size = 20 }) => {
 };
 
 // Empty State Component
-export const EmptyState: React.FC<{ 
-  message?: string; 
+export const EmptyState: React.FC<{
+  message?: string;
   description?: string;
   icon?: React.ReactNode;
-}> = ({ 
-  message = 'No data available', 
-  description = 'Add new records to get started',
-  icon 
-}) => {
+}> = ({ message = 'No data available', description = 'Add new records to get started', icon }) => {
   return (
     <Center style={{ minHeight: 300 }}>
       <Stack align="center" gap="md">

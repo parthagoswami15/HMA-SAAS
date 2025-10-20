@@ -9,29 +9,29 @@ export default function MyBillsPage() {
       id: 'INV-2024-001',
       date: '2024-03-15',
       description: 'General Consultation',
-      amount: 150.00,
-      paid: 150.00,
+      amount: 150.0,
+      paid: 150.0,
       status: 'Paid',
-      dueDate: '2024-03-20'
+      dueDate: '2024-03-20',
     },
     {
       id: 'INV-2024-002',
       date: '2024-03-18',
       description: 'Lab Tests - Complete Blood Count',
-      amount: 80.00,
+      amount: 80.0,
       paid: 0,
       status: 'Pending',
-      dueDate: '2024-03-25'
+      dueDate: '2024-03-25',
     },
     {
       id: 'INV-2024-003',
       date: '2024-03-19',
       description: 'Prescription Medicines',
-      amount: 45.50,
-      paid: 45.50,
+      amount: 45.5,
+      paid: 45.5,
       status: 'Paid',
-      dueDate: '2024-03-24'
-    }
+      dueDate: '2024-03-24',
+    },
   ];
 
   const totalAmount = bills.reduce((sum, bill) => sum + bill.amount, 0);
@@ -41,7 +41,9 @@ export default function MyBillsPage() {
   return (
     <Stack gap="xl">
       <div>
-        <Title order={2} mb="xs">My Bills</Title>
+        <Title order={2} mb="xs">
+          My Bills
+        </Title>
         <Text c="dimmed">View and manage your medical bills and payments</Text>
       </div>
 
@@ -50,7 +52,9 @@ export default function MyBillsPage() {
         <Card shadow="sm" padding="lg" radius="md" withBorder style={{ flex: 1 }}>
           <Group justify="apart">
             <div>
-              <Text size="sm" c="dimmed">Total Bills</Text>
+              <Text size="sm" c="dimmed">
+                Total Bills
+              </Text>
               <Title order={3}>${totalAmount.toFixed(2)}</Title>
             </div>
             <IconReceipt size={32} color="#667eea" />
@@ -60,8 +64,12 @@ export default function MyBillsPage() {
         <Card shadow="sm" padding="lg" radius="md" withBorder style={{ flex: 1 }}>
           <Group justify="apart">
             <div>
-              <Text size="sm" c="dimmed">Paid</Text>
-              <Title order={3} c="green">${paidAmount.toFixed(2)}</Title>
+              <Text size="sm" c="dimmed">
+                Paid
+              </Text>
+              <Title order={3} c="green">
+                ${paidAmount.toFixed(2)}
+              </Title>
             </div>
             <IconCreditCard size={32} color="#10b981" />
           </Group>
@@ -70,8 +78,12 @@ export default function MyBillsPage() {
         <Card shadow="sm" padding="lg" radius="md" withBorder style={{ flex: 1 }}>
           <Group justify="apart">
             <div>
-              <Text size="sm" c="dimmed">Pending</Text>
-              <Title order={3} c="orange">${pendingAmount.toFixed(2)}</Title>
+              <Text size="sm" c="dimmed">
+                Pending
+              </Text>
+              <Title order={3} c="orange">
+                ${pendingAmount.toFixed(2)}
+              </Title>
             </div>
             <IconAlertCircle size={32} color="#f59e0b" />
           </Group>
@@ -80,16 +92,19 @@ export default function MyBillsPage() {
 
       {/* Payment Progress */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Text size="sm" fw={500} mb="xs">Payment Progress</Text>
-        <Progress 
-          value={(paidAmount / totalAmount) * 100} 
-          size="xl" 
+        <Text size="sm" fw={500} mb="xs">
+          Payment Progress
+        </Text>
+        <Progress
+          value={(paidAmount / totalAmount) * 100}
+          size="xl"
           radius="md"
           color="green"
           mb="xs"
         />
         <Text size="xs" c="dimmed">
-          {((paidAmount / totalAmount) * 100).toFixed(1)}% paid ({bills.filter(b => b.status === 'Paid').length} of {bills.length} bills)
+          {((paidAmount / totalAmount) * 100).toFixed(1)}% paid (
+          {bills.filter((b) => b.status === 'Paid').length} of {bills.length} bills)
         </Text>
       </Card>
 
@@ -103,7 +118,8 @@ export default function MyBillsPage() {
                 You have pending payments
               </Text>
               <Text size="xs" c="dimmed">
-                ${pendingAmount.toFixed(2)} in outstanding bills. Please make payment by the due date to avoid late fees.
+                ${pendingAmount.toFixed(2)} in outstanding bills. Please make payment by the due
+                date to avoid late fees.
               </Text>
             </div>
             <Button size="sm" color="orange">
@@ -115,7 +131,9 @@ export default function MyBillsPage() {
 
       {/* Bills Table */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Title order={4} mb="md">All Bills</Title>
+        <Title order={4} mb="md">
+          All Bills
+        </Title>
         <Table highlightOnHover>
           <Table.Thead>
             <Table.Tr>
@@ -136,21 +154,14 @@ export default function MyBillsPage() {
                     {bill.id}
                   </Text>
                 </Table.Td>
-                <Table.Td>
-                  {new Date(bill.date).toLocaleDateString()}
-                </Table.Td>
+                <Table.Td>{new Date(bill.date).toLocaleDateString()}</Table.Td>
                 <Table.Td>{bill.description}</Table.Td>
                 <Table.Td>
                   <Text fw={600}>${bill.amount.toFixed(2)}</Text>
                 </Table.Td>
+                <Table.Td>{new Date(bill.dueDate).toLocaleDateString()}</Table.Td>
                 <Table.Td>
-                  {new Date(bill.dueDate).toLocaleDateString()}
-                </Table.Td>
-                <Table.Td>
-                  <Badge 
-                    color={bill.status === 'Paid' ? 'green' : 'orange'}
-                    variant="light"
-                  >
+                  <Badge color={bill.status === 'Paid' ? 'green' : 'orange'} variant="light">
                     {bill.status}
                   </Badge>
                 </Table.Td>
@@ -161,11 +172,7 @@ export default function MyBillsPage() {
                         Pay Now
                       </Button>
                     ) : (
-                      <Button 
-                        size="xs" 
-                        variant="subtle" 
-                        leftSection={<IconDownload size={14} />}
-                      >
+                      <Button size="xs" variant="subtle" leftSection={<IconDownload size={14} />}>
                         Receipt
                       </Button>
                     )}
@@ -182,23 +189,33 @@ export default function MyBillsPage() {
 
       {/* Payment Methods */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Title order={4} mb="md">Payment Methods</Title>
+        <Title order={4} mb="md">
+          Payment Methods
+        </Title>
         <Text size="sm" c="dimmed" mb="md">
           We accept the following payment methods:
         </Text>
         <Group>
-          <Badge size="lg" variant="outline" color="blue">Credit Card</Badge>
-          <Badge size="lg" variant="outline" color="blue">Debit Card</Badge>
-          <Badge size="lg" variant="outline" color="blue">Online Banking</Badge>
-          <Badge size="lg" variant="outline" color="blue">Insurance</Badge>
+          <Badge size="lg" variant="outline" color="blue">
+            Credit Card
+          </Badge>
+          <Badge size="lg" variant="outline" color="blue">
+            Debit Card
+          </Badge>
+          <Badge size="lg" variant="outline" color="blue">
+            Online Banking
+          </Badge>
+          <Badge size="lg" variant="outline" color="blue">
+            Insurance
+          </Badge>
         </Group>
       </Card>
 
       {/* Help Section */}
       <Card shadow="sm" padding="md" radius="md" withBorder bg="blue.0">
         <Text size="sm" c="dimmed">
-          <strong>Need Help?</strong> If you have any questions about your bills or payments, 
-          please contact our billing department at billing@hospital.com or call (555) 123-4567.
+          <strong>Need Help?</strong> If you have any questions about your bills or payments, please
+          contact our billing department at billing@hospital.com or call (555) 123-4567.
         </Text>
       </Card>
     </Stack>

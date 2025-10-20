@@ -79,11 +79,14 @@ export interface FinanceStatsResponse {
 
 export interface RevenueReportResponse {
   success: boolean;
-  data: Record<string, {
-    total: number;
-    count: number;
-    methods: Record<string, number>;
-  }>;
+  data: Record<
+    string,
+    {
+      total: number;
+      count: number;
+      methods: Record<string, number>;
+    }
+  >;
 }
 
 export interface OutstandingReportResponse {
@@ -133,7 +136,10 @@ const financeService = {
   /**
    * Update transaction
    */
-  updateTransaction: async (id: string, data: UpdateTransactionDto): Promise<TransactionResponse> => {
+  updateTransaction: async (
+    id: string,
+    data: UpdateTransactionDto
+  ): Promise<TransactionResponse> => {
     return enhancedApiClient.patch(`/finance/transactions/${id}`, data);
   },
 

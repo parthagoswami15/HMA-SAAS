@@ -56,7 +56,7 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
   };
 
   const formatDesignation = (designation: string) => {
-    return designation.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return designation.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   return (
@@ -74,11 +74,7 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
       <Stack gap="md">
         {/* Status Badge */}
         <Group justify="space-between">
-          <Badge
-            size="lg"
-            color={staff.isActive ? 'green' : 'red'}
-            variant="light"
-          >
+          <Badge size="lg" color={staff.isActive ? 'green' : 'red'} variant="light">
             {staff.isActive ? 'Active' : 'Inactive'}
           </Badge>
           {staff.employeeId && (
@@ -92,14 +88,20 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
 
         {/* Personal Information */}
         <Paper p="md" withBorder>
-          <Title order={5} mb="sm">Personal Information</Title>
+          <Title order={5} mb="sm">
+            Personal Information
+          </Title>
           <Grid>
             <Grid.Col span={6}>
               <Group gap="xs">
                 <IconUser size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Full Name</Text>
-                  <Text fw={500}>{staff.firstName} {staff.lastName}</Text>
+                  <Text size="xs" c="dimmed">
+                    Full Name
+                  </Text>
+                  <Text fw={500}>
+                    {staff.firstName} {staff.lastName}
+                  </Text>
                 </div>
               </Group>
             </Grid.Col>
@@ -107,7 +109,9 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
               <Group gap="xs">
                 <IconMail size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Email</Text>
+                  <Text size="xs" c="dimmed">
+                    Email
+                  </Text>
                   <Text fw={500}>{staff.email}</Text>
                 </div>
               </Group>
@@ -116,7 +120,9 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
               <Group gap="xs">
                 <IconPhone size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Phone</Text>
+                  <Text size="xs" c="dimmed">
+                    Phone
+                  </Text>
                   <Text fw={500}>{staff.phone}</Text>
                 </div>
               </Group>
@@ -126,7 +132,9 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
                 <Group gap="xs">
                   <IconAlertCircle size={16} color="gray" />
                   <div>
-                    <Text size="xs" c="dimmed">Emergency Contact</Text>
+                    <Text size="xs" c="dimmed">
+                      Emergency Contact
+                    </Text>
                     <Text fw={500}>{staff.emergencyContact}</Text>
                   </div>
                 </Group>
@@ -137,13 +145,17 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
 
         {/* Employment Information */}
         <Paper p="md" withBorder>
-          <Title order={5} mb="sm">Employment Information</Title>
+          <Title order={5} mb="sm">
+            Employment Information
+          </Title>
           <Grid>
             <Grid.Col span={6}>
               <Group gap="xs">
                 <IconBriefcase size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Department</Text>
+                  <Text size="xs" c="dimmed">
+                    Department
+                  </Text>
                   <Text fw={500}>{staff.department?.name || 'N/A'}</Text>
                 </div>
               </Group>
@@ -152,7 +164,9 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
               <Group gap="xs">
                 <IconBriefcase size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Designation</Text>
+                  <Text size="xs" c="dimmed">
+                    Designation
+                  </Text>
                   <Text fw={500}>{formatDesignation(staff.designation)}</Text>
                 </div>
               </Group>
@@ -161,7 +175,9 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
               <Group gap="xs">
                 <IconCalendar size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Date of Joining</Text>
+                  <Text size="xs" c="dimmed">
+                    Date of Joining
+                  </Text>
                   <Text fw={500}>{formatDate(staff.dateOfJoining)}</Text>
                 </div>
               </Group>
@@ -171,7 +187,9 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
                 <Group gap="xs">
                   <IconCurrencyRupee size={16} color="gray" />
                   <div>
-                    <Text size="xs" c="dimmed">Salary</Text>
+                    <Text size="xs" c="dimmed">
+                      Salary
+                    </Text>
                     <Text fw={500}>{formatCurrency(staff.salary)}</Text>
                   </div>
                 </Group>
@@ -183,14 +201,18 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
         {/* Professional Information */}
         {(staff.qualifications || staff.specialization) && (
           <Paper p="md" withBorder>
-            <Title order={5} mb="sm">Professional Information</Title>
+            <Title order={5} mb="sm">
+              Professional Information
+            </Title>
             <Grid>
               {staff.qualifications && (
                 <Grid.Col span={12}>
                   <Group gap="xs">
                     <IconSchool size={16} color="gray" />
                     <div>
-                      <Text size="xs" c="dimmed">Qualifications</Text>
+                      <Text size="xs" c="dimmed">
+                        Qualifications
+                      </Text>
                       <Text fw={500}>{staff.qualifications}</Text>
                     </div>
                   </Group>
@@ -201,7 +223,9 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
                   <Group gap="xs">
                     <IconStethoscope size={16} color="gray" />
                     <div>
-                      <Text size="xs" c="dimmed">Specialization</Text>
+                      <Text size="xs" c="dimmed">
+                        Specialization
+                      </Text>
                       <Text fw={500}>{staff.specialization}</Text>
                     </div>
                   </Group>
@@ -214,7 +238,9 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
         {/* Address */}
         {staff.address && (
           <Paper p="md" withBorder>
-            <Title order={5} mb="sm">Address</Title>
+            <Title order={5} mb="sm">
+              Address
+            </Title>
             <Group gap="xs">
               <IconMapPin size={16} color="gray" />
               <Text>{staff.address}</Text>
@@ -226,11 +252,15 @@ function StaffDetails({ opened, onClose, staff, onEdit, onDelete }: StaffDetails
         <Paper p="md" withBorder bg="gray.0">
           <Grid>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Created At</Text>
+              <Text size="xs" c="dimmed">
+                Created At
+              </Text>
               <Text size="sm">{formatDate(staff.createdAt)}</Text>
             </Grid.Col>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Last Updated</Text>
+              <Text size="xs" c="dimmed">
+                Last Updated
+              </Text>
               <Text size="sm">{formatDate(staff.updatedAt)}</Text>
             </Grid.Col>
           </Grid>

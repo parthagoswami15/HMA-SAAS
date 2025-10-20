@@ -8,7 +8,17 @@ import { enhancedApiClient } from '../lib/api-client';
 // Types
 export interface CreateIntegrationDto {
   name: string;
-  type: 'HL7' | 'FHIR' | 'PAYMENT_GATEWAY' | 'LAB_SYSTEM' | 'IMAGING_SYSTEM' | 'PHARMACY_SYSTEM' | 'EHR_SYSTEM' | 'INSURANCE' | 'API' | 'WEBHOOK';
+  type:
+    | 'HL7'
+    | 'FHIR'
+    | 'PAYMENT_GATEWAY'
+    | 'LAB_SYSTEM'
+    | 'IMAGING_SYSTEM'
+    | 'PHARMACY_SYSTEM'
+    | 'EHR_SYSTEM'
+    | 'INSURANCE'
+    | 'API'
+    | 'WEBHOOK';
   provider?: string;
   description?: string;
   endpoint?: string;
@@ -57,7 +67,17 @@ export interface IntegrationResponse {
   data: {
     id: string;
     name: string;
-    type: 'HL7' | 'FHIR' | 'PAYMENT_GATEWAY' | 'LAB_SYSTEM' | 'IMAGING_SYSTEM' | 'PHARMACY_SYSTEM' | 'EHR_SYSTEM' | 'INSURANCE' | 'API' | 'WEBHOOK';
+    type:
+      | 'HL7'
+      | 'FHIR'
+      | 'PAYMENT_GATEWAY'
+      | 'LAB_SYSTEM'
+      | 'IMAGING_SYSTEM'
+      | 'PHARMACY_SYSTEM'
+      | 'EHR_SYSTEM'
+      | 'INSURANCE'
+      | 'API'
+      | 'WEBHOOK';
     provider?: string;
     description?: string;
     endpoint?: string;
@@ -129,7 +149,10 @@ const integrationService = {
   /**
    * Update integration configuration
    */
-  updateIntegration: async (id: string, data: UpdateIntegrationDto): Promise<IntegrationResponse> => {
+  updateIntegration: async (
+    id: string,
+    data: UpdateIntegrationDto
+  ): Promise<IntegrationResponse> => {
     return enhancedApiClient.patch(`/integration/configs/${id}`, data);
   },
 

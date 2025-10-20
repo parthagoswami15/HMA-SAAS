@@ -154,7 +154,10 @@ const telemedicineService = {
   /**
    * Update consultation
    */
-  updateConsultation: async (id: string, data: UpdateConsultationDto): Promise<ConsultationResponse> => {
+  updateConsultation: async (
+    id: string,
+    data: UpdateConsultationDto
+  ): Promise<ConsultationResponse> => {
     return enhancedApiClient.patch(`/telemedicine/consultations/${id}`, data);
   },
 

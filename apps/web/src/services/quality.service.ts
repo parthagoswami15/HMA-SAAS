@@ -161,7 +161,10 @@ const qualityService = {
   /**
    * Update quality metric
    */
-  updateMetric: async (id: string, data: UpdateQualityMetricDto): Promise<QualityMetricResponse> => {
+  updateMetric: async (
+    id: string,
+    data: UpdateQualityMetricDto
+  ): Promise<QualityMetricResponse> => {
     return enhancedApiClient.patch(`/quality/metrics/${id}`, data);
   },
 

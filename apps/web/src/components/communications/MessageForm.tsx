@@ -8,7 +8,7 @@ import {
   Stack,
   Select,
   Text,
-  LoadingOverlay
+  LoadingOverlay,
 } from '@mantine/core';
 import { IconSend, IconUser } from '@tabler/icons-react';
 import type { CreateMessageDto } from '../../services/communications.service';
@@ -26,13 +26,13 @@ export default function MessageForm({
   onClose,
   onSubmit,
   loading = false,
-  users = []
+  users = [],
 }: MessageFormProps) {
   const [formData, setFormData] = useState({
     recipientId: '',
     subject: '',
     content: '',
-    priority: 'NORMAL'
+    priority: 'NORMAL',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -48,7 +48,7 @@ export default function MessageForm({
       recipientId: '',
       subject: '',
       content: '',
-      priority: 'NORMAL'
+      priority: 'NORMAL',
     });
     setErrors({});
   };
@@ -91,16 +91,16 @@ export default function MessageForm({
     onClose();
   };
 
-  const userOptions = users.map(u => ({
+  const userOptions = users.map((u) => ({
     value: u.id,
-    label: `${u.firstName} ${u.lastName} - ${u.email}`
+    label: `${u.firstName} ${u.lastName} - ${u.email}`,
   }));
 
   const priorityOptions = [
     { value: 'LOW', label: 'Low' },
     { value: 'NORMAL', label: 'Normal' },
     { value: 'HIGH', label: 'High' },
-    { value: 'URGENT', label: 'Urgent' }
+    { value: 'URGENT', label: 'Urgent' },
   ];
 
   return (
@@ -119,7 +119,7 @@ export default function MessageForm({
       padding="md"
     >
       <LoadingOverlay visible={loading} />
-      
+
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           {/* Recipient */}

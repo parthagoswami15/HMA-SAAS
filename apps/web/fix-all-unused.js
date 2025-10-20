@@ -7,11 +7,11 @@ console.log('🔧 Fixing ALL unused imports and variables...\n');
 // Get all TypeScript/TSX files
 function getAllFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
-  
-  files.forEach(file => {
+
+  files.forEach((file) => {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
-    
+
     if (stat.isDirectory()) {
       if (!file.startsWith('.') && file !== 'node_modules') {
         getAllFiles(filePath, fileList);
@@ -20,7 +20,7 @@ function getAllFiles(dir, fileList = []) {
       fileList.push(filePath);
     }
   });
-  
+
   return fileList;
 }
 
@@ -35,17 +35,17 @@ let errors = 0;
 files.forEach((file, index) => {
   try {
     const content = fs.readFileSync(file, 'utf8');
-    
+
     // Skip if file is too small
     if (content.length < 50) {
       return;
     }
-    
+
     // Run ESLint fix
     try {
-      execSync(`npx eslint "${file}" --fix --quiet`, { 
+      execSync(`npx eslint "${file}" --fix --quiet`, {
         stdio: 'pipe',
-        cwd: __dirname
+        cwd: __dirname,
       });
       fixed++;
       if ((index + 1) % 50 === 0) {
@@ -54,7 +54,6 @@ files.forEach((file, index) => {
     } catch (err) {
       // ESLint returns non-zero for warnings, which is fine
     }
-    
   } catch (error) {
     errors++;
   }

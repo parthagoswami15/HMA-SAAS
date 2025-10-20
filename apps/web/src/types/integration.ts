@@ -1,4 +1,10 @@
-export type IntegrationStatus = 'active' | 'inactive' | 'error' | 'warning' | 'pending' | 'updating';
+export type IntegrationStatus =
+  | 'active'
+  | 'inactive'
+  | 'error'
+  | 'warning'
+  | 'pending'
+  | 'updating';
 export type IntegrationType = 'ehr' | 'payment' | 'analytics' | 'lab' | 'pharmacy' | 'imaging';
 export type DataDirection = 'inbound' | 'outbound' | 'bidirectional';
 export type AuthMethod = 'api_key' | 'oauth2' | 'jwt' | 'basic';

@@ -1,22 +1,6 @@
 import React from 'react';
-import {
-  Modal,
-  Text,
-  Group,
-  Stack,
-  Badge,
-  Button,
-  Divider,
-  Card,
-  Avatar
-} from '@mantine/core';
-import {
-  IconFileText,
-  IconUser,
-  IconEdit,
-  IconTrash,
-  IconStethoscope
-} from '@tabler/icons-react';
+import { Modal, Text, Group, Stack, Badge, Button, Divider, Card, Avatar } from '@mantine/core';
+import { IconFileText, IconUser, IconEdit, IconTrash, IconStethoscope } from '@tabler/icons-react';
 
 interface MedicalRecordDetailsProps {
   opened: boolean;
@@ -31,7 +15,7 @@ export default function MedicalRecordDetails({
   onClose,
   record,
   onEdit,
-  onDelete
+  onDelete,
 }: MedicalRecordDetailsProps) {
   if (!record) return null;
 
@@ -45,7 +29,7 @@ export default function MedicalRecordDetails({
       PROCEDURE: 'orange',
       VACCINATION: 'teal',
       ALLERGY: 'pink',
-      OTHER: 'gray'
+      OTHER: 'gray',
     };
     return colors[type] || 'gray';
   };
@@ -57,7 +41,7 @@ export default function MedicalRecordDetails({
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -96,7 +80,8 @@ export default function MedicalRecordDetails({
           <Divider mb="sm" />
           <Group>
             <Avatar color="blue" radius="xl">
-              {patient.firstName?.[0]}{patient.lastName?.[0]}
+              {patient.firstName?.[0]}
+              {patient.lastName?.[0]}
             </Avatar>
             <div>
               <Text fw={500}>
@@ -121,22 +106,26 @@ export default function MedicalRecordDetails({
             <Text fw={600}>Record Information</Text>
           </Group>
           <Divider mb="sm" />
-          
+
           <Stack gap="sm">
             <div>
-              <Text size="xs" c="dimmed" mb={4}>Title:</Text>
+              <Text size="xs" c="dimmed" mb={4}>
+                Title:
+              </Text>
               <Text fw={600}>{record.title}</Text>
             </div>
-            
+
             <div>
-              <Text size="xs" c="dimmed" mb={4}>Description:</Text>
-              <Text style={{ whiteSpace: 'pre-wrap' }}>
-                {record.description}
+              <Text size="xs" c="dimmed" mb={4}>
+                Description:
               </Text>
+              <Text style={{ whiteSpace: 'pre-wrap' }}>{record.description}</Text>
             </div>
-            
+
             <div>
-              <Text size="xs" c="dimmed" mb={4}>Date:</Text>
+              <Text size="xs" c="dimmed" mb={4}>
+                Date:
+              </Text>
               <Text size="sm">{formatDate(record.date)}</Text>
             </div>
           </Stack>
@@ -152,7 +141,8 @@ export default function MedicalRecordDetails({
             <Divider mb="sm" />
             <Group>
               <Avatar color="green" radius="xl">
-                {doctor.firstName?.[0]}{doctor.lastName?.[0]}
+                {doctor.firstName?.[0]}
+                {doctor.lastName?.[0]}
               </Avatar>
               <div>
                 <Text fw={500}>
@@ -190,7 +180,7 @@ export default function MedicalRecordDetails({
               </Button>
             )}
           </Group>
-          
+
           <Group>
             {onEdit && (
               <Button

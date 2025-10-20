@@ -4,10 +4,12 @@ import { Skeleton, SimpleGrid, Card, Stack } from '@mantine/core';
 
 export default function DashboardLoading() {
   return (
-    <div style={{
-      padding: '2rem',
-      animation: 'fadeIn 0.3s ease-in-out'
-    }}>
+    <div
+      style={{
+        padding: '2rem',
+        animation: 'fadeIn 0.3s ease-in-out',
+      }}
+    >
       <Stack gap="xl">
         {/* Header Skeleton */}
         <div>
@@ -31,17 +33,17 @@ export default function DashboardLoading() {
         {/* Module Cards Grid Skeleton */}
         <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <Card 
-              key={i} 
-              shadow="sm" 
-              padding="lg" 
-              radius="md" 
+            <Card
+              key={i}
+              shadow="sm"
+              padding="lg"
+              radius="md"
               withBorder
               style={{
                 minHeight: '150px',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
               }}
             >
               <Stack gap="sm">

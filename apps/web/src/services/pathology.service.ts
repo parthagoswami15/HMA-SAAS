@@ -256,10 +256,7 @@ const pathologyService = {
     testId: string,
     data: UpdateTestResultDto
   ): Promise<LabOrderResponse> => {
-    return enhancedApiClient.patch(
-      `/pathology/orders/${orderId}/tests/${testId}/result`,
-      data
-    );
+    return enhancedApiClient.patch(`/pathology/orders/${orderId}/tests/${testId}/result`, data);
   },
 
   // ==================== STATISTICS ====================

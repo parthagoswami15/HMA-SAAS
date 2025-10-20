@@ -45,8 +45,20 @@ export interface TelehealthStats {
 }
 
 export type Platform = 'zoom' | 'teams' | 'google_meet' | 'custom';
-export type SessionStatus = 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'active' | 'waiting';
-export type DeviceType = 'blood_pressure' | 'glucose_meter' | 'pulse_oximeter' | 'weight_scale' | 'ecg';
+export type SessionStatus =
+  | 'scheduled'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled'
+  | 'no_show'
+  | 'active'
+  | 'waiting';
+export type DeviceType =
+  | 'blood_pressure'
+  | 'glucose_meter'
+  | 'pulse_oximeter'
+  | 'weight_scale'
+  | 'ecg';
 export type DataStatus = 'normal' | 'abnormal' | 'critical';
 
 // Additional types required by telemedicine page

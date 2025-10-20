@@ -42,7 +42,13 @@ const STATUS_OPTIONS = [
   { value: 'PAID', label: 'Paid' },
 ];
 
-function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange }: InsuranceClaimDetailsProps) {
+function InsuranceClaimDetails({
+  opened,
+  onClose,
+  claim,
+  onEdit,
+  onStatusChange,
+}: InsuranceClaimDetailsProps) {
   if (!claim) return null;
 
   const formatDate = (dateString: string) => {
@@ -62,7 +68,7 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
   };
 
   const formatProvider = (provider: string) => {
-    return provider.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return provider.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   const getStatusColor = (status: string) => {
@@ -103,11 +109,7 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
       <Stack gap="md">
         {/* Status Badge and Claim Number */}
         <Group justify="space-between">
-          <Badge
-            size="lg"
-            color={getStatusColor(claim.status)}
-            variant="light"
-          >
+          <Badge size="lg" color={getStatusColor(claim.status)} variant="light">
             {claim.status.replace(/_/g, ' ')}
           </Badge>
           {claim.claimNumber && (
@@ -121,11 +123,15 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
 
         {/* Patient Information */}
         <Paper p="md" withBorder>
-          <Title order={5} mb="sm">Patient Information</Title>
+          <Title order={5} mb="sm">
+            Patient Information
+          </Title>
           <Group gap="xs">
             <IconUser size={16} color="gray" />
             <div>
-              <Text size="xs" c="dimmed">Patient Name</Text>
+              <Text size="xs" c="dimmed">
+                Patient Name
+              </Text>
               <Text fw={500}>
                 {claim.patient?.firstName} {claim.patient?.lastName}
               </Text>
@@ -135,13 +141,17 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
 
         {/* Insurance Information */}
         <Paper p="md" withBorder>
-          <Title order={5} mb="sm">Insurance Information</Title>
+          <Title order={5} mb="sm">
+            Insurance Information
+          </Title>
           <Grid>
             <Grid.Col span={6}>
               <Group gap="xs">
                 <IconShieldCheck size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Insurance Provider</Text>
+                  <Text size="xs" c="dimmed">
+                    Insurance Provider
+                  </Text>
                   <Text fw={500}>{formatProvider(claim.insuranceProvider)}</Text>
                 </div>
               </Group>
@@ -150,7 +160,9 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
               <Group gap="xs">
                 <IconFileText size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Policy Number</Text>
+                  <Text size="xs" c="dimmed">
+                    Policy Number
+                  </Text>
                   <Text fw={500}>{claim.policyNumber}</Text>
                 </div>
               </Group>
@@ -160,13 +172,17 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
 
         {/* Claim Details */}
         <Paper p="md" withBorder>
-          <Title order={5} mb="sm">Claim Details</Title>
+          <Title order={5} mb="sm">
+            Claim Details
+          </Title>
           <Grid>
             <Grid.Col span={12}>
               <Group gap="xs">
                 <IconCurrency size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Claim Amount</Text>
+                  <Text size="xs" c="dimmed">
+                    Claim Amount
+                  </Text>
                   <Text fw={700} size="lg" c="blue">
                     {formatCurrency(claim.amount)}
                   </Text>
@@ -177,7 +193,9 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
               <Group gap="xs">
                 <IconCalendar size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Submitted Date</Text>
+                  <Text size="xs" c="dimmed">
+                    Submitted Date
+                  </Text>
                   <Text fw={500}>{formatDate(claim.submittedAt)}</Text>
                 </div>
               </Group>
@@ -187,7 +205,9 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
                 <Group gap="xs">
                   <IconCalendar size={16} color="gray" />
                   <div>
-                    <Text size="xs" c="dimmed">Approved Date</Text>
+                    <Text size="xs" c="dimmed">
+                      Approved Date
+                    </Text>
                     <Text fw={500}>{formatDate(claim.approvedAt)}</Text>
                   </div>
                 </Group>
@@ -198,7 +218,9 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
                 <Group gap="xs">
                   <IconCalendar size={16} color="gray" />
                   <div>
-                    <Text size="xs" c="dimmed">Paid Date</Text>
+                    <Text size="xs" c="dimmed">
+                      Paid Date
+                    </Text>
                     <Text fw={500}>{formatDate(claim.paidAt)}</Text>
                   </div>
                 </Group>
@@ -209,21 +231,31 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
 
         {/* Medical Information */}
         <Paper p="md" withBorder>
-          <Title order={5} mb="sm">Medical Information</Title>
+          <Title order={5} mb="sm">
+            Medical Information
+          </Title>
           <Stack gap="md">
             <div>
               <Group gap="xs" mb="xs">
                 <IconStethoscope size={16} color="gray" />
-                <Text size="sm" fw={600}>Diagnosis</Text>
+                <Text size="sm" fw={600}>
+                  Diagnosis
+                </Text>
               </Group>
-              <Text size="sm" pl={24}>{claim.diagnosis}</Text>
+              <Text size="sm" pl={24}>
+                {claim.diagnosis}
+              </Text>
             </div>
             <div>
               <Group gap="xs" mb="xs">
                 <IconClipboardList size={16} color="gray" />
-                <Text size="sm" fw={600}>Treatment Details</Text>
+                <Text size="sm" fw={600}>
+                  Treatment Details
+                </Text>
               </Group>
-              <Text size="sm" pl={24}>{claim.treatmentDetails}</Text>
+              <Text size="sm" pl={24}>
+                {claim.treatmentDetails}
+              </Text>
             </div>
           </Stack>
         </Paper>
@@ -233,15 +265,21 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
           <Paper p="md" withBorder>
             <Group gap="xs" mb="xs">
               <IconNotes size={16} color="gray" />
-              <Text size="sm" fw={600}>Additional Notes</Text>
+              <Text size="sm" fw={600}>
+                Additional Notes
+              </Text>
             </Group>
-            <Text size="sm" pl={24}>{claim.notes}</Text>
+            <Text size="sm" pl={24}>
+              {claim.notes}
+            </Text>
           </Paper>
         )}
 
         {/* Status Update */}
         <Paper p="md" withBorder bg="gray.0">
-          <Title order={5} mb="sm">Update Status</Title>
+          <Title order={5} mb="sm">
+            Update Status
+          </Title>
           <Select
             label="Change Claim Status"
             placeholder="Select new status"
@@ -255,11 +293,15 @@ function InsuranceClaimDetails({ opened, onClose, claim, onEdit, onStatusChange 
         <Paper p="md" withBorder bg="gray.0">
           <Grid>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Created At</Text>
+              <Text size="xs" c="dimmed">
+                Created At
+              </Text>
               <Text size="sm">{formatDate(claim.createdAt)}</Text>
             </Grid.Col>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Last Updated</Text>
+              <Text size="xs" c="dimmed">
+                Last Updated
+              </Text>
               <Text size="sm">{formatDate(claim.updatedAt)}</Text>
             </Grid.Col>
           </Grid>

@@ -76,11 +76,7 @@ function WardDetails({ opened, onClose, ward, onEdit }: WardDetailsProps) {
       <Stack gap="md">
         {/* Ward Status */}
         <Group justify="space-between">
-          <Badge
-            size="lg"
-            color={ward.isActive ? 'green' : 'red'}
-            variant="light"
-          >
+          <Badge size="lg" color={ward.isActive ? 'green' : 'red'} variant="light">
             {ward.isActive ? 'Active' : 'Inactive'}
           </Badge>
           <Text size="sm" c="dimmed">
@@ -92,13 +88,17 @@ function WardDetails({ opened, onClose, ward, onEdit }: WardDetailsProps) {
 
         {/* Ward Information */}
         <Paper p="md" withBorder>
-          <Title order={5} mb="sm">Ward Information</Title>
+          <Title order={5} mb="sm">
+            Ward Information
+          </Title>
           <Grid>
             <Grid.Col span={6}>
               <Group gap="xs">
                 <IconHome size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Ward Name</Text>
+                  <Text size="xs" c="dimmed">
+                    Ward Name
+                  </Text>
                   <Text fw={500}>{ward.name}</Text>
                 </div>
               </Group>
@@ -107,7 +107,9 @@ function WardDetails({ opened, onClose, ward, onEdit }: WardDetailsProps) {
               <Group gap="xs">
                 <IconUsers size={16} color="gray" />
                 <div>
-                  <Text size="xs" c="dimmed">Capacity</Text>
+                  <Text size="xs" c="dimmed">
+                    Capacity
+                  </Text>
                   <Text fw={500}>{ward.capacity} beds</Text>
                 </div>
               </Group>
@@ -117,7 +119,9 @@ function WardDetails({ opened, onClose, ward, onEdit }: WardDetailsProps) {
                 <Group gap="xs">
                   <IconMapPin size={16} color="gray" />
                   <div>
-                    <Text size="xs" c="dimmed">Location</Text>
+                    <Text size="xs" c="dimmed">
+                      Location
+                    </Text>
                     <Text fw={500}>{ward.location}</Text>
                   </div>
                 </Group>
@@ -128,7 +132,9 @@ function WardDetails({ opened, onClose, ward, onEdit }: WardDetailsProps) {
                 <Group gap="xs">
                   <IconArrowUp size={16} color="gray" />
                   <div>
-                    <Text size="xs" c="dimmed">Floor</Text>
+                    <Text size="xs" c="dimmed">
+                      Floor
+                    </Text>
                     <Text fw={500}>{ward.floor}</Text>
                   </div>
                 </Group>
@@ -140,30 +146,50 @@ function WardDetails({ opened, onClose, ward, onEdit }: WardDetailsProps) {
         {/* Description */}
         {ward.description && (
           <Paper p="md" withBorder>
-            <Title order={5} mb="sm">Description</Title>
+            <Title order={5} mb="sm">
+              Description
+            </Title>
             <Text size="sm">{ward.description}</Text>
           </Paper>
         )}
 
         {/* Bed Statistics */}
         <Paper p="md" withBorder>
-          <Title order={5} mb="sm">Bed Statistics</Title>
+          <Title order={5} mb="sm">
+            Bed Statistics
+          </Title>
           <Grid>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Total Beds</Text>
-              <Text fw={700} size="lg">{ward._count?.beds || 0}</Text>
+              <Text size="xs" c="dimmed">
+                Total Beds
+              </Text>
+              <Text fw={700} size="lg">
+                {ward._count?.beds || 0}
+              </Text>
             </Grid.Col>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Available</Text>
-              <Text fw={700} size="lg" c="green">{availableBeds}</Text>
+              <Text size="xs" c="dimmed">
+                Available
+              </Text>
+              <Text fw={700} size="lg" c="green">
+                {availableBeds}
+              </Text>
             </Grid.Col>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Occupied</Text>
-              <Text fw={700} size="lg" c="red">{occupiedBeds}</Text>
+              <Text size="xs" c="dimmed">
+                Occupied
+              </Text>
+              <Text fw={700} size="lg" c="red">
+                {occupiedBeds}
+              </Text>
             </Grid.Col>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Occupancy Rate</Text>
-              <Text fw={700} size="lg" c="blue">{occupancyRate}%</Text>
+              <Text size="xs" c="dimmed">
+                Occupancy Rate
+              </Text>
+              <Text fw={700} size="lg" c="blue">
+                {occupancyRate}%
+              </Text>
             </Grid.Col>
           </Grid>
         </Paper>
@@ -192,9 +218,7 @@ function WardDetails({ opened, onClose, ward, onEdit }: WardDetailsProps) {
                       <Text fw={500}>{bed.bedNumber}</Text>
                     </Table.Td>
                     <Table.Td>
-                      <Badge color={getStatusColor(bed.status)}>
-                        {bed.status}
-                      </Badge>
+                      <Badge color={getStatusColor(bed.status)}>{bed.status}</Badge>
                     </Table.Td>
                     <Table.Td>
                       <Text size="sm">{bed.description || '-'}</Text>
@@ -210,11 +234,15 @@ function WardDetails({ opened, onClose, ward, onEdit }: WardDetailsProps) {
         <Paper p="md" withBorder bg="gray.0">
           <Grid>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Created At</Text>
+              <Text size="xs" c="dimmed">
+                Created At
+              </Text>
               <Text size="sm">{formatDate(ward.createdAt)}</Text>
             </Grid.Col>
             <Grid.Col span={6}>
-              <Text size="xs" c="dimmed">Last Updated</Text>
+              <Text size="xs" c="dimmed">
+                Last Updated
+              </Text>
               <Text size="sm">{formatDate(ward.updatedAt)}</Text>
             </Grid.Col>
           </Grid>

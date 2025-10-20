@@ -19,7 +19,7 @@ import {
   Alert,
   Tabs,
   ActionIcon,
-  Menu
+  Menu,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
@@ -38,7 +38,7 @@ import {
   IconTrendingUp,
   IconAlertCircle,
   IconCheck,
-  IconClock
+  IconClock,
 } from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
@@ -49,7 +49,11 @@ import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn } from '../../types/common';
 import billingService from '../../services/billing.service';
 import patientsService from '../../services/patients.service';
-import type { CreateInvoiceDto, CreatePaymentDto, InvoiceFilters } from '../../services/billing.service';
+import type {
+  CreateInvoiceDto,
+  CreatePaymentDto,
+  InvoiceFilters,
+} from '../../services/billing.service';
 
 const mockUser: User = {
   id: '1',
@@ -81,8 +85,10 @@ function BillingPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [dateFilter, setDateFilter] = useState<Date | null>(null);
 
-  const [invoiceFormOpened, { open: openInvoiceForm, close: closeInvoiceForm }] = useDisclosure(false);
-  const [paymentFormOpened, { open: openPaymentForm, close: closePaymentForm }] = useDisclosure(false);
+  const [invoiceFormOpened, { open: openInvoiceForm, close: closeInvoiceForm }] =
+    useDisclosure(false);
+  const [paymentFormOpened, { open: openPaymentForm, close: closePaymentForm }] =
+    useDisclosure(false);
   const [detailsOpened, { open: openDetails, close: closeDetails }] = useDisclosure(false);
 
   useEffect(() => {
@@ -93,7 +99,7 @@ function BillingPage() {
     fetchPayments();
     fetchStats();
     fetchPatients();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchInvoices = async () => {
@@ -284,7 +290,7 @@ function BillingPage() {
       PARTIALLY_PAID: 'orange',
       PAID: 'green',
       OVERDUE: 'red',
-      CANCELLED: 'gray'
+      CANCELLED: 'gray',
     };
     return colors[status] || 'gray';
   };
@@ -303,9 +309,7 @@ function BillingPage() {
       key: 'invoiceNumber',
       title: 'Invoice #',
       sortable: true,
-      render: (invoice: any) => (
-        <Text fw={600}>{invoice.invoiceNumber}</Text>
-      )
+      render: (invoice: any) => <Text fw={600}>{invoice.invoiceNumber}</Text>,
     },
     {
       key: 'patient',
@@ -320,67 +324,49 @@ function BillingPage() {
             {invoice.patient?.medicalRecordNumber || invoice.patient?.id}
           </Text>
         </div>
-      )
+      ),
     },
     {
       key: 'date',
       title: 'Date',
       sortable: true,
-      render: (invoice: any) => (
-        <Text>{formatDate(invoice.date)}</Text>
-      )
+      render: (invoice: any) => <Text>{formatDate(invoice.date)}</Text>,
     },
     {
       key: 'dueDate',
       title: 'Due Date',
       sortable: true,
-      render: (invoice: any) => (
-        <Text>{formatDate(invoice.dueDate)}</Text>
-      )
+      render: (invoice: any) => <Text>{formatDate(invoice.dueDate)}</Text>,
     },
     {
       key: 'totalAmount',
       title: 'Amount',
       sortable: true,
-      render: (invoice: any) => (
-        <Text fw={600}>{formatCurrency(invoice.totalAmount)}</Text>
-      )
+      render: (invoice: any) => <Text fw={600}>{formatCurrency(invoice.totalAmount)}</Text>,
     },
     {
       key: 'status',
       title: 'Status',
       sortable: true,
       render: (invoice: any) => (
-        <Badge color={getStatusColor(invoice.status)}>
-          {invoice.status}
-        </Badge>
-      )
+        <Badge color={getStatusColor(invoice.status)}>{invoice.status}</Badge>
+      ),
     },
     {
       key: 'actions',
       title: 'Actions',
       render: (invoice: any) => (
         <Group gap="xs">
-          <ActionIcon
-            variant="subtle"
-            onClick={() => handleViewInvoice(invoice)}
-          >
+          <ActionIcon variant="subtle" onClick={() => handleViewInvoice(invoice)}>
             <IconEye size={16} />
           </ActionIcon>
           {invoice.status === 'PENDING' && (
-            <ActionIcon
-              variant="subtle"
-              onClick={() => handleEditInvoice(invoice)}
-            >
+            <ActionIcon variant="subtle" onClick={() => handleEditInvoice(invoice)}>
               <IconEdit size={16} />
             </ActionIcon>
           )}
           {invoice.status !== 'PAID' && invoice.status !== 'CANCELLED' && (
-            <ActionIcon
-              variant="subtle"
-              color="green"
-              onClick={() => handleRecordPayment(invoice)}
-            >
+            <ActionIcon variant="subtle" color="green" onClick={() => handleRecordPayment(invoice)}>
               <IconCash size={16} />
             </ActionIcon>
           )}
@@ -426,8 +412,8 @@ function BillingPage() {
             </Menu.Dropdown>
           </Menu>
         </Group>
-      )
-    }
+      ),
+    },
   ];
 
   const paymentColumns: TableColumn[] = [
@@ -435,16 +421,12 @@ function BillingPage() {
       key: 'paymentNumber',
       title: 'Payment #',
       sortable: true,
-      render: (payment: any) => (
-        <Text fw={600}>{payment.paymentNumber}</Text>
-      )
+      render: (payment: any) => <Text fw={600}>{payment.paymentNumber}</Text>,
     },
     {
       key: 'invoice',
       title: 'Invoice',
-      render: (payment: any) => (
-        <Text>{payment.invoice?.invoiceNumber}</Text>
-      )
+      render: (payment: any) => <Text>{payment.invoice?.invoiceNumber}</Text>,
     },
     {
       key: 'patient',
@@ -453,40 +435,32 @@ function BillingPage() {
         <Text>
           {payment.invoice?.patient?.firstName} {payment.invoice?.patient?.lastName}
         </Text>
-      )
+      ),
     },
     {
       key: 'amount',
       title: 'Amount',
       sortable: true,
-      render: (payment: any) => (
-        <Text fw={600}>{formatCurrency(payment.amount)}</Text>
-      )
+      render: (payment: any) => <Text fw={600}>{formatCurrency(payment.amount)}</Text>,
     },
     {
       key: 'paymentMethod',
       title: 'Method',
-      render: (payment: any) => (
-        <Badge variant="light">{payment.paymentMethod}</Badge>
-      )
+      render: (payment: any) => <Badge variant="light">{payment.paymentMethod}</Badge>,
     },
     {
       key: 'paymentDate',
       title: 'Date',
       sortable: true,
-      render: (payment: any) => (
-        <Text>{formatDate(payment.paymentDate)}</Text>
-      )
+      render: (payment: any) => <Text>{formatDate(payment.paymentDate)}</Text>,
     },
     {
       key: 'status',
       title: 'Status',
       render: (payment: any) => (
-        <Badge color={payment.status === 'COMPLETED' ? 'green' : 'gray'}>
-          {payment.status}
-        </Badge>
-      )
-    }
+        <Badge color={payment.status === 'COMPLETED' ? 'green' : 'gray'}>{payment.status}</Badge>
+      ),
+    },
   ];
 
   const currentUser = user || mockUser;
@@ -507,10 +481,7 @@ function BillingPage() {
                 Manage invoices, payments, and billing operations
               </Text>
             </div>
-            <Button
-              leftSection={<IconPlus size={16} />}
-              onClick={handleNewInvoice}
-            >
+            <Button leftSection={<IconPlus size={16} />} onClick={handleNewInvoice}>
               Create Invoice
             </Button>
           </Group>
@@ -527,7 +498,9 @@ function BillingPage() {
                     <Text fw={700} size="xl">
                       ₹{stats.monthlyRevenue.toFixed(2)}
                     </Text>
-                    <Text size="xs" c="dimmed">This month</Text>
+                    <Text size="xs" c="dimmed">
+                      This month
+                    </Text>
                   </div>
                   <IconTrendingUp size={32} color="#40c057" />
                 </Group>
@@ -542,7 +515,9 @@ function BillingPage() {
                     <Text fw={700} size="xl">
                       {stats.pendingInvoices}
                     </Text>
-                    <Text size="xs" c="dimmed">Invoices</Text>
+                    <Text size="xs" c="dimmed">
+                      Invoices
+                    </Text>
                   </div>
                   <IconClock size={32} color="#fab005" />
                 </Group>
@@ -557,7 +532,9 @@ function BillingPage() {
                     <Text fw={700} size="xl">
                       {stats.paidInvoices}
                     </Text>
-                    <Text size="xs" c="dimmed">Invoices</Text>
+                    <Text size="xs" c="dimmed">
+                      Invoices
+                    </Text>
                   </div>
                   <IconCheck size={32} color="#40c057" />
                 </Group>
@@ -572,7 +549,9 @@ function BillingPage() {
                     <Text fw={700} size="xl">
                       ₹{stats.todayRevenue.toFixed(2)}
                     </Text>
-                    <Text size="xs" c="dimmed">Revenue</Text>
+                    <Text size="xs" c="dimmed">
+                      Revenue
+                    </Text>
                   </div>
                   <IconCurrencyRupee size={32} color="#228be6" />
                 </Group>
@@ -611,7 +590,7 @@ function BillingPage() {
                         { value: 'PENDING', label: 'Pending' },
                         { value: 'PARTIALLY_PAID', label: 'Partially Paid' },
                         { value: 'PAID', label: 'Paid' },
-                        { value: 'CANCELLED', label: 'Cancelled' }
+                        { value: 'CANCELLED', label: 'Cancelled' },
                       ]}
                       value={statusFilter}
                       onChange={(value) => setStatusFilter(value || '')}
@@ -638,15 +617,16 @@ function BillingPage() {
               <Paper withBorder>
                 <LoadingOverlay visible={loading} />
                 {invoices.length === 0 && !loading ? (
-                  <Alert icon={<IconAlertCircle size={16} />} title="No invoices found" color="blue">
-                    No invoices match your current filters. Try adjusting your search criteria or create a new invoice.
+                  <Alert
+                    icon={<IconAlertCircle size={16} />}
+                    title="No invoices found"
+                    color="blue"
+                  >
+                    No invoices match your current filters. Try adjusting your search criteria or
+                    create a new invoice.
                   </Alert>
                 ) : (
-                  <DataTable
-                    columns={invoiceColumns}
-                    data={invoices}
-                    loading={loading}
-                  />
+                  <DataTable columns={invoiceColumns} data={invoices} loading={loading} />
                 )}
               </Paper>
             </Tabs.Panel>
@@ -656,15 +636,15 @@ function BillingPage() {
               <Paper withBorder>
                 <LoadingOverlay visible={loading} />
                 {payments.length === 0 && !loading ? (
-                  <Alert icon={<IconAlertCircle size={16} />} title="No payments found" color="blue">
+                  <Alert
+                    icon={<IconAlertCircle size={16} />}
+                    title="No payments found"
+                    color="blue"
+                  >
                     No payment records available.
                   </Alert>
                 ) : (
-                  <DataTable
-                    columns={paymentColumns}
-                    data={payments}
-                    loading={loading}
-                  />
+                  <DataTable columns={paymentColumns} data={payments} loading={loading} />
                 )}
               </Paper>
             </Tabs.Panel>

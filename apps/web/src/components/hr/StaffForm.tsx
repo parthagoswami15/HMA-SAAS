@@ -89,10 +89,12 @@ function StaffForm({ opened, onClose, staff, onSubmit }: StaffFormProps) {
     try {
       const response = await hrService.getDepartments({ limit: 100 });
       if (response.success && response.data) {
-        setDepartments(response.data.items.map(dept => ({
-          value: dept.id,
-          label: dept.name,
-        })));
+        setDepartments(
+          response.data.items.map((dept) => ({
+            value: dept.id,
+            label: dept.name,
+          }))
+        );
       }
     } catch (error) {
       console.error('Error fetching departments:', error);
@@ -295,7 +297,9 @@ function StaffForm({ opened, onClose, staff, onSubmit }: StaffFormProps) {
                 label="Date of Joining"
                 placeholder="Select date"
                 value={formData.dateOfJoining}
-                onChange={(value) => setFormData({ ...formData, dateOfJoining: value || new Date() })}
+                onChange={(value) =>
+                  setFormData({ ...formData, dateOfJoining: value ? new Date(value) : new Date() })
+                }
                 clearable={false}
               />
             </Grid.Col>

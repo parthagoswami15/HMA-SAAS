@@ -18,11 +18,11 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Get token from localStorage
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-    
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
   (error: AxiosError) => {
@@ -44,15 +44,16 @@ apiClient.interceptors.response.use(
 
       try {
         // Try to refresh token
-        const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
-        
+        const refreshToken =
+          typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
+
         if (refreshToken) {
           const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
             refreshToken,
           });
 
           const { accessToken } = response.data;
-          
+
           // Save new token
           if (typeof window !== 'undefined') {
             localStorage.setItem('accessToken', accessToken);
@@ -129,23 +130,23 @@ export const apiCall = async <T = any>(
 
 // Enhanced API client with proper method signatures
 const enhancedApiClient = {
-  get: async <_T = any>(url: string, params?: any) => {
+  get: async (url: string, params?: any) => {
     const response = await apiClient.get(url, { params });
     return response.data;
   },
-  post: async <_T = any>(url: string, data?: any) => {
+  post: async (url: string, data?: any) => {
     const response = await apiClient.post(url, data);
     return response.data;
   },
-  patch: async <_T = any>(url: string, data?: any) => {
+  patch: async (url: string, data?: any) => {
     const response = await apiClient.patch(url, data);
     return response.data;
   },
-  put: async <_T = any>(url: string, data?: any) => {
+  put: async (url: string, data?: any) => {
     const response = await apiClient.put(url, data);
     return response.data;
   },
-  delete: async <_T = any>(url: string) => {
+  delete: async (url: string) => {
     const response = await apiClient.delete(url);
     return response.data;
   },

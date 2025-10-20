@@ -17,7 +17,7 @@ import {
   Alert,
   Tabs,
   Menu,
-  ThemeIcon
+  ThemeIcon,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE, PDF_MIME_TYPE } from '@mantine/dropzone';
@@ -42,7 +42,7 @@ import {
   IconShield,
   IconWorld,
   IconSortAscending,
-  IconDotsVertical
+  IconDotsVertical,
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { PatientDocument } from '../../types/patient';
@@ -62,7 +62,17 @@ interface DocumentManagerProps {
 }
 
 interface DocumentFormData {
-  documentType: 'id_proof' | 'medical_report' | 'lab_result' | 'radiology' | 'prescription' | 'insurance' | 'consent' | 'discharge_summary' | 'vaccination_record' | 'other';
+  documentType:
+    | 'id_proof'
+    | 'medical_report'
+    | 'lab_result'
+    | 'radiology'
+    | 'prescription'
+    | 'insurance'
+    | 'consent'
+    | 'discharge_summary'
+    | 'vaccination_record'
+    | 'other';
   title: string;
   description?: string;
   accessLevel: 'public' | 'restricted' | 'confidential';
@@ -80,7 +90,7 @@ const documentTypes = [
   { value: 'consent', label: 'Consent Form', color: 'red' },
   { value: 'discharge_summary', label: 'Discharge Summary', color: 'cyan' },
   { value: 'vaccination_record', label: 'Vaccination Record', color: 'lime' },
-  { value: 'other', label: 'Other', color: 'gray' }
+  { value: 'other', label: 'Other', color: 'gray' },
 ];
 
 export default function DocumentManager({
@@ -93,7 +103,7 @@ export default function DocumentManager({
   onUpdate,
   onDelete,
   onDownload,
-  onView
+  onView,
 }: DocumentManagerProps) {
   const [activeTab, setActiveTab] = useState('all');
   const [uploadModalOpened, setUploadModalOpened] = useState(false);
@@ -112,12 +122,12 @@ export default function DocumentManager({
       description: '',
       accessLevel: 'restricted',
       tags: [],
-      expirationDate: undefined
+      expirationDate: undefined,
     },
     validate: {
       title: (value) => (value.trim().length < 2 ? 'Title must be at least 2 characters' : null),
-      documentType: (value) => (!value ? 'Document type is required' : null)
-    }
+      documentType: (value) => (!value ? 'Document type is required' : null),
+    },
   });
 
   const editForm = useForm<DocumentFormData>({
@@ -127,8 +137,8 @@ export default function DocumentManager({
       description: '',
       accessLevel: 'restricted',
       tags: [],
-      expirationDate: undefined
-    }
+      expirationDate: undefined,
+    },
   });
 
   const handleUpload = async (values: DocumentFormData) => {
@@ -136,14 +146,14 @@ export default function DocumentManager({
       notifications.show({
         title: 'Error',
         message: 'Please select at least one file to upload.',
-        color: 'red'
+        color: 'red',
       });
       return;
     }
 
     try {
       setUploading(true);
-      
+
       for (const file of selectedFiles) {
         const documentData = {
           ...values,
@@ -153,7 +163,7 @@ export default function DocumentManager({
           uploadedAt: new Date(),
           uploadedBy: 'current_user', // Would come from auth context
           isActive: true,
-          patientId
+          patientId,
         };
 
         await onUpload(documentData, file);
@@ -162,16 +172,16 @@ export default function DocumentManager({
       notifications.show({
         title: 'Upload Successful',
         message: `${selectedFiles.length} document(s) uploaded successfully.`,
-        color: 'green'
+        color: 'green',
       });
 
       handleUploadModalClose();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Upload Failed',
         message: 'Failed to upload documents. Please try again.',
-        color: 'red'
+        color: 'red',
       });
     } finally {
       setUploading(false);
@@ -186,15 +196,15 @@ export default function DocumentManager({
       notifications.show({
         title: 'Document Updated',
         message: 'Document information has been updated successfully.',
-        color: 'green'
+        color: 'green',
       });
       handleEditModalClose();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Update Failed',
         message: 'Failed to update document. Please try again.',
-        color: 'red'
+        color: 'red',
       });
     }
   };
@@ -206,14 +216,14 @@ export default function DocumentManager({
         notifications.show({
           title: 'Document Deleted',
           message: 'Document has been deleted successfully.',
-          color: 'green'
+          color: 'green',
         });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (_error) {
         notifications.show({
           title: 'Delete Failed',
           message: 'Failed to delete document. Please try again.',
-          color: 'red'
+          color: 'red',
         });
       }
     }
@@ -239,7 +249,7 @@ export default function DocumentManager({
       description: document.description || '',
       accessLevel: document.accessLevel,
       tags: document.tags || [],
-      expirationDate: document.expirationDate ? new Date(document.expirationDate) : undefined
+      expirationDate: document.expirationDate ? new Date(document.expirationDate) : undefined,
     });
     setEditModalOpened(true);
   };
@@ -258,19 +268,27 @@ export default function DocumentManager({
 
   const getAccessIcon = (level: string) => {
     switch (level) {
-      case 'public': return <IconWorld size="1rem" />;
-      case 'restricted': return <IconShield size="1rem" />;
-      case 'confidential': return <IconLock size="1rem" />;
-      default: return <IconShield size="1rem" />;
+      case 'public':
+        return <IconWorld size="1rem" />;
+      case 'restricted':
+        return <IconShield size="1rem" />;
+      case 'confidential':
+        return <IconLock size="1rem" />;
+      default:
+        return <IconShield size="1rem" />;
     }
   };
 
   const getAccessColor = (level: string) => {
     switch (level) {
-      case 'public': return 'green';
-      case 'restricted': return 'blue';
-      case 'confidential': return 'red';
-      default: return 'gray';
+      case 'public':
+        return 'green';
+      case 'restricted':
+        return 'blue';
+      case 'confidential':
+        return 'red';
+      default:
+        return 'gray';
     }
   };
 
@@ -279,22 +297,23 @@ export default function DocumentManager({
 
     // Filter by search query
     if (searchQuery.trim()) {
-      filtered = filtered.filter(doc => 
-        doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doc.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doc.documentType.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (doc) =>
+          doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          doc.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          doc.documentType.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     // Filter by tab
     if (activeTab !== 'all') {
-      filtered = filtered.filter(doc => doc.documentType === activeTab);
+      filtered = filtered.filter((doc) => doc.documentType === activeTab);
     }
 
     // Sort documents
     filtered.sort((a, b) => {
       let comparison = 0;
-      
+
       switch (sortBy) {
         case 'title':
           comparison = a.title.localeCompare(b.title);
@@ -319,13 +338,13 @@ export default function DocumentManager({
   };
 
   const getDocumentTypeStats = () => {
-    const stats = documentTypes.map(type => ({
+    const stats = documentTypes.map((type) => ({
       ...type,
-      count: documents.filter(doc => doc.documentType === type.value).length
+      count: documents.filter((doc) => doc.documentType === type.value).length,
     }));
     return [
       { value: 'all', label: 'All Documents', count: documents.length, color: 'gray' },
-      ...stats.filter(stat => stat.count > 0)
+      ...stats.filter((stat) => stat.count > 0),
     ];
   };
 
@@ -336,16 +355,20 @@ export default function DocumentManager({
           <ThemeIcon
             size="lg"
             variant="light"
-            color={documentTypes.find(t => t.value === document.documentType)?.color || 'gray'}
+            color={documentTypes.find((t) => t.value === document.documentType)?.color || 'gray'}
           >
             {getFileIcon(document.mimeType)}
           </ThemeIcon>
           <div>
-            <Text fw={500} size="sm">{document.title}</Text>
-            <Text size="xs" c="dimmed">{document.documentType.replace('_', ' ')}</Text>
+            <Text fw={500} size="sm">
+              {document.title}
+            </Text>
+            <Text size="xs" c="dimmed">
+              {document.documentType.replace('_', ' ')}
+            </Text>
           </div>
         </Group>
-        
+
         <Menu shadow="md" width={200}>
           <Menu.Target>
             <ActionIcon variant="subtle" size="sm">
@@ -353,10 +376,7 @@ export default function DocumentManager({
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>
-            <Menu.Item
-              leftSection={<IconEye size="0.9rem" />}
-              onClick={() => onView(document)}
-            >
+            <Menu.Item leftSection={<IconEye size="0.9rem" />} onClick={() => onView(document)}>
               View
             </Menu.Item>
             <Menu.Item
@@ -371,11 +391,7 @@ export default function DocumentManager({
             >
               Edit
             </Menu.Item>
-            <Menu.Item
-              leftSection={<IconShare size="0.9rem" />}
-            >
-              Share
-            </Menu.Item>
+            <Menu.Item leftSection={<IconShare size="0.9rem" />}>Share</Menu.Item>
             <Menu.Divider />
             <Menu.Item
               color="red"
@@ -389,7 +405,9 @@ export default function DocumentManager({
       </Group>
 
       {document.description && (
-        <Text size="sm" c="dimmed" mb="sm">{document.description}</Text>
+        <Text size="sm" c="dimmed" mb="sm">
+          {document.description}
+        </Text>
       )}
 
       <Group justify="space-between" align="center" mb="sm">
@@ -427,9 +445,7 @@ export default function DocumentManager({
 
       {document.expirationDate && (
         <Alert color="orange" mt="sm" p="xs">
-          <Text size="xs">
-            Expires: {formatDate(document.expirationDate)}
-          </Text>
+          <Text size="xs">Expires: {formatDate(document.expirationDate)}</Text>
         </Alert>
       )}
     </Paper>
@@ -445,7 +461,9 @@ export default function DocumentManager({
             <IconFileText size="1.2rem" />
             <div>
               <Text fw={600}>Document Manager</Text>
-              <Text size="sm" c="dimmed">{patientName}</Text>
+              <Text size="sm" c="dimmed">
+                {patientName}
+              </Text>
             </div>
           </Group>
         }
@@ -469,7 +487,7 @@ export default function DocumentManager({
                   { value: 'date', label: 'Upload Date' },
                   { value: 'title', label: 'Title' },
                   { value: 'type', label: 'Type' },
-                  { value: 'size', label: 'File Size' }
+                  { value: 'size', label: 'File Size' },
                 ]}
                 value={sortBy}
                 onChange={(value) => setSortBy(value as any)}
@@ -483,7 +501,7 @@ export default function DocumentManager({
                 {sortOrder === 'asc' ? '↑' : '↓'}
               </Button>
             </Group>
-            
+
             <Button
               leftSection={<IconUpload size="1rem" />}
               onClick={() => setUploadModalOpened(true)}
@@ -540,7 +558,12 @@ export default function DocumentManager({
           <Stack gap="md">
             <Dropzone
               onDrop={setSelectedFiles}
-              accept={[...IMAGE_MIME_TYPE, ...PDF_MIME_TYPE, 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']}
+              accept={[
+                ...IMAGE_MIME_TYPE,
+                ...PDF_MIME_TYPE,
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              ]}
               maxSize={10 * 1024 * 1024} // 10MB
               multiple
             >
@@ -568,20 +591,34 @@ export default function DocumentManager({
 
             {selectedFiles.length > 0 && (
               <Stack gap="xs">
-                <Text size="sm" fw={500}>Selected Files:</Text>
+                <Text size="sm" fw={500}>
+                  Selected Files:
+                </Text>
                 {selectedFiles.map((file, index) => (
-                  <Group key={index} justify="space-between" p="xs" bg="gray.0" style={{ borderRadius: 4 }}>
+                  <Group
+                    key={index}
+                    justify="space-between"
+                    p="xs"
+                    bg="gray.0"
+                    style={{ borderRadius: 4 }}
+                  >
                     <Group>
                       {getFileIcon(file.type, '1rem')}
                       <div>
-                        <Text size="sm" fw={500}>{file.name}</Text>
-                        <Text size="xs" c="dimmed">{(file.size / 1024).toFixed(1)} KB</Text>
+                        <Text size="sm" fw={500}>
+                          {file.name}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          {(file.size / 1024).toFixed(1)} KB
+                        </Text>
                       </div>
                     </Group>
                     <ActionIcon
                       variant="subtle"
                       size="sm"
-                      onClick={() => setSelectedFiles(files => files.filter((_, i) => i !== index))}
+                      onClick={() =>
+                        setSelectedFiles((files) => files.filter((_, i) => i !== index))
+                      }
                     >
                       <IconX size="0.8rem" />
                     </ActionIcon>
@@ -596,11 +633,11 @@ export default function DocumentManager({
                   label="Document Type"
                   placeholder="Select document type"
                   required
-                  data={documentTypes.map(type => ({ value: type.value, label: type.label }))}
+                  data={documentTypes.map((type) => ({ value: type.value, label: type.label }))}
                   {...uploadForm.getInputProps('documentType')}
                 />
               </Grid.Col>
-              
+
               <Grid.Col span={{ base: 12, md: 6 }}>
                 <Select
                   label="Access Level"
@@ -609,7 +646,7 @@ export default function DocumentManager({
                   data={[
                     { value: 'public', label: 'Public - Everyone can view' },
                     { value: 'restricted', label: 'Restricted - Healthcare staff only' },
-                    { value: 'confidential', label: 'Confidential - Authorized personnel only' }
+                    { value: 'confidential', label: 'Confidential - Authorized personnel only' },
                   ]}
                   {...uploadForm.getInputProps('accessLevel')}
                 />
@@ -639,18 +676,10 @@ export default function DocumentManager({
             />
 
             <Group justify="flex-end" mt="xl">
-              <Button
-                variant="outline"
-                onClick={handleUploadModalClose}
-                disabled={uploading}
-              >
+              <Button variant="outline" onClick={handleUploadModalClose} disabled={uploading}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                loading={uploading}
-                leftSection={<IconUpload size="1rem" />}
-              >
+              <Button type="submit" loading={uploading} leftSection={<IconUpload size="1rem" />}>
                 Upload Documents
               </Button>
             </Group>
@@ -678,11 +707,11 @@ export default function DocumentManager({
                   label="Document Type"
                   placeholder="Select document type"
                   required
-                  data={documentTypes.map(type => ({ value: type.value, label: type.label }))}
+                  data={documentTypes.map((type) => ({ value: type.value, label: type.label }))}
                   {...editForm.getInputProps('documentType')}
                 />
               </Grid.Col>
-              
+
               <Grid.Col span={{ base: 12, md: 6 }}>
                 <Select
                   label="Access Level"
@@ -691,7 +720,7 @@ export default function DocumentManager({
                   data={[
                     { value: 'public', label: 'Public - Everyone can view' },
                     { value: 'restricted', label: 'Restricted - Healthcare staff only' },
-                    { value: 'confidential', label: 'Confidential - Authorized personnel only' }
+                    { value: 'confidential', label: 'Confidential - Authorized personnel only' },
                   ]}
                   {...editForm.getInputProps('accessLevel')}
                 />
@@ -721,16 +750,10 @@ export default function DocumentManager({
             />
 
             <Group justify="flex-end" mt="xl">
-              <Button
-                variant="outline"
-                onClick={handleEditModalClose}
-              >
+              <Button variant="outline" onClick={handleEditModalClose}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                leftSection={<IconDeviceFloppy size="1rem" />}
-              >
+              <Button type="submit" leftSection={<IconDeviceFloppy size="1rem" />}>
                 Save Changes
               </Button>
             </Group>

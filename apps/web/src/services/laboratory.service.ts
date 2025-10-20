@@ -54,7 +54,7 @@ export interface LabOrderFilters {
 
 const laboratoryService = {
   // ==================== LAB TESTS ====================
-  
+
   /**
    * Create new lab test
    */

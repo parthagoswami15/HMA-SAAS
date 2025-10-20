@@ -14,18 +14,18 @@ import {
   Paper,
   Flex,
   Loader,
-  Group
+  Group,
 } from '@mantine/core';
-import { 
-  IconSearch, 
-  IconFilter, 
-  IconSortAscending, 
+import {
+  IconSearch,
+  IconFilter,
+  IconSortAscending,
   IconSortDescending,
   IconRefresh,
   IconDownload,
   IconEye,
   IconEdit,
-  IconTrash
+  IconTrash,
 } from '@tabler/icons-react';
 import { TableColumn, SortOption, FilterOption } from '../../types/common';
 
@@ -87,8 +87,8 @@ export default function DataTable<T extends { id: string }>({
   actions,
   selectable = false,
   onSelectionChange,
-  emptyMessage = "No data available",
-  rowClassName
+  emptyMessage = 'No data available',
+  rowClassName,
 }: DataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>({});
@@ -118,11 +118,12 @@ export default function DataTable<T extends { id: string }>({
   // Handle sort
   const handleSort = (field: string) => {
     if (!sortable) return;
-    
-    const direction = sortConfig?.field === field && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+
+    const direction =
+      sortConfig?.field === field && sortConfig.direction === 'asc' ? 'desc' : 'asc';
     const newSort: SortOption = { field, direction };
     setSortConfig(newSort);
-    
+
     if (onSort) {
       onSort(newSort);
     }
@@ -137,18 +138,18 @@ export default function DataTable<T extends { id: string }>({
       newSelected.delete(rowId);
     }
     setSelectedRows(newSelected);
-    
+
     if (onSelectionChange) {
-      const selectedData = data.filter(item => newSelected.has(item.id));
+      const selectedData = data.filter((item) => newSelected.has(item.id));
       onSelectionChange(selectedData);
     }
   };
 
   // Handle select all
   const handleSelectAll = (checked: boolean) => {
-    const newSelected = checked ? new Set(data.map(item => item.id)) : new Set<string>();
+    const newSelected = checked ? new Set(data.map((item) => item.id)) : new Set<string>();
     setSelectedRows(newSelected);
-    
+
     if (onSelectionChange) {
       const selectedData = checked ? data : [];
       onSelectionChange(selectedData);
@@ -160,27 +161,20 @@ export default function DataTable<T extends { id: string }>({
     <Box mb="md">
       <Flex justify="space-between" align="center" mb="sm">
         {title && (
-          <Text size="xl" fw={600}>{title}</Text>
+          <Text size="xl" fw={600}>
+            {title}
+          </Text>
         )}
-        
+
         <Group>
           {onRefresh && (
-            <ActionIcon
-              variant="outline"
-              size="lg"
-              onClick={onRefresh}
-              loading={loading}
-            >
+            <ActionIcon variant="outline" size="lg" onClick={onRefresh} loading={loading}>
               <IconRefresh size="1rem" />
             </ActionIcon>
           )}
-          
+
           {onExport && (
-            <Button
-              variant="outline"
-              leftSection={<IconDownload size="1rem" />}
-              onClick={onExport}
-            >
+            <Button variant="outline" leftSection={<IconDownload size="1rem" />} onClick={onExport}>
               Export
             </Button>
           )}
@@ -207,7 +201,7 @@ export default function DataTable<T extends { id: string }>({
                   key={filter.key}
                   placeholder={filter.label}
                   data={filter.options || []}
-                  value={activeFilters[filter.key] as string || null}
+                  value={(activeFilters[filter.key] as string) || null}
                   onChange={(value) => handleFilterChange(filter.key, value)}
                   clearable
                   w={150}
@@ -260,8 +254,8 @@ export default function DataTable<T extends { id: string }>({
     }
 
     return data.map((record) => (
-      <Table.Tr 
-        key={record.id} 
+      <Table.Tr
+        key={record.id}
         className={rowClassName?.(record)}
         bg={selectedRows.has(record.id) ? 'blue.0' : undefined}
       >
@@ -274,29 +268,24 @@ export default function DataTable<T extends { id: string }>({
             />
           </Table.Td>
         )}
-        
+
         {columns.map((column) => (
           <Table.Td key={column.key}>
-            {column.render 
+            {column.render
               ? column.render(record[column.key as keyof T], record)
-              : String(record[column.key as keyof T] || '')
-            }
+              : String(record[column.key as keyof T] || '')}
           </Table.Td>
         ))}
-        
+
         {actions && (
           <Table.Td>
             <Group gap="xs">
               {actions.view && (
-                <ActionIcon
-                  variant="subtle"
-                  size="sm"
-                  onClick={() => actions.view!(record)}
-                >
+                <ActionIcon variant="subtle" size="sm" onClick={() => actions.view!(record)}>
                   <IconEye size="1rem" />
                 </ActionIcon>
               )}
-              
+
               {actions.edit && (
                 <ActionIcon
                   variant="subtle"
@@ -307,7 +296,7 @@ export default function DataTable<T extends { id: string }>({
                   <IconEdit size="1rem" />
                 </ActionIcon>
               )}
-              
+
               {actions.delete && (
                 <ActionIcon
                   variant="subtle"
@@ -318,7 +307,7 @@ export default function DataTable<T extends { id: string }>({
                   <IconTrash size="1rem" />
                 </ActionIcon>
               )}
-              
+
               {actions.custom?.map((customAction, idx) => (
                 <ActionIcon
                   key={idx}
@@ -342,7 +331,7 @@ export default function DataTable<T extends { id: string }>({
     <Container fluid>
       <Paper shadow="sm" p="md">
         {renderHeader()}
-        
+
         <Table.ScrollContainer minWidth={800}>
           <Table highlightOnHover>
             <Table.Thead>
@@ -356,13 +345,13 @@ export default function DataTable<T extends { id: string }>({
                     />
                   </Table.Th>
                 )}
-                
+
                 {columns.map((column) => (
-                  <Table.Th 
+                  <Table.Th
                     key={column.key}
-                    style={{ 
+                    style={{
                       cursor: sortable && column.sortable ? 'pointer' : 'default',
-                      width: column.width
+                      width: column.width,
                     }}
                     onClick={() => column.sortable && handleSort(column.key)}
                   >
@@ -382,7 +371,7 @@ export default function DataTable<T extends { id: string }>({
                     </Group>
                   </Table.Th>
                 ))}
-                
+
                 {actions && (
                   <Table.Th>
                     <Text fw={600}>Actions</Text>
@@ -390,19 +379,19 @@ export default function DataTable<T extends { id: string }>({
                 )}
               </Table.Tr>
             </Table.Thead>
-            
-            <Table.Tbody>
-              {renderRows()}
-            </Table.Tbody>
+
+            <Table.Tbody>{renderRows()}</Table.Tbody>
           </Table>
         </Table.ScrollContainer>
 
         {pagination && (
           <Flex justify="space-between" align="center" mt="md">
             <Text size="sm" c="dimmed">
-              Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} entries
+              Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+              {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}{' '}
+              entries
             </Text>
-            
+
             <Group>
               <Select
                 value={pagination.limit.toString()}
@@ -411,11 +400,11 @@ export default function DataTable<T extends { id: string }>({
                   { value: '10', label: '10' },
                   { value: '25', label: '25' },
                   { value: '50', label: '50' },
-                  { value: '100', label: '100' }
+                  { value: '100', label: '100' },
                 ]}
                 w={80}
               />
-              
+
               <Pagination
                 value={pagination.page}
                 onChange={pagination.onPageChange}

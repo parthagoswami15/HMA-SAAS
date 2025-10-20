@@ -25,12 +25,16 @@ import {
   ThemeIcon,
   Alert,
   NumberInput,
-  Textarea
+  Textarea,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleBarChart, SimpleAreaChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleBarChart,
+  SimpleAreaChart,
+} from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -49,7 +53,7 @@ import {
   IconDownload,
   IconDroplet,
   IconDna,
-  // IconClockHour4,
+  IconClockHour4,
   IconBarcode,
   IconTemperature,
   IconShieldCheck,
@@ -57,16 +61,11 @@ import {
   IconClipboard,
   IconReportMedical,
   IconAtom,
-  IconSettings
+  IconSettings,
 } from '@tabler/icons-react';
 
 // Import types, services and mock data
-import {
-  LabTest,
-  TestCategory,
-  LabOrder,
-  Sample
-} from '../../../types/laboratory';
+import { LabTest, TestCategory, LabOrder, Sample } from '../../../types/laboratory';
 import laboratoryService from '../../../services/laboratory.service';
 // Mock data imports removed
 const LaboratoryManagement = () => {
@@ -91,32 +90,30 @@ const LaboratoryManagement = () => {
   // Modal states
   const [testDetailOpened, { open: openTestDetail, close: closeTestDetail }] = useDisclosure(false);
   const [addTestOpened, { open: openAddTest, close: closeAddTest }] = useDisclosure(false);
-  const [_orderDetailOpened, { open: _openOrderDetail, close: _closeOrderDetail }] = useDisclosure(false);
+  const [_orderDetailOpened, { open: _openOrderDetail, close: _closeOrderDetail }] =
+    useDisclosure(false);
   const [_addOrderOpened, { open: _openAddOrder, close: _closeAddOrder }] = useDisclosure(false);
-  const [_sampleDetailOpened, { open: _openSampleDetail, close: _closeSampleDetail }] = useDisclosure(false);
+  const [_sampleDetailOpened, { open: _openSampleDetail, close: _closeSampleDetail }] =
+    useDisclosure(false);
 
   useEffect(() => {
     fetchAllData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      await Promise.all([
-        fetchLabTests(),
-        fetchLabOrders(),
-        fetchLabStats()
-      ]);
+      _setLoading(true);
+      _setError(null);
+      await Promise.all([fetchLabTests(), fetchLabOrders(), fetchLabStats()]);
     } catch (err: any) {
       console.error('Error loading laboratory data:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load laboratory data');
+      _setError(err.response?.data?.message || err.message || 'Failed to load laboratory data');
       // Fallback to mock data
       setLabTests([] /* TODO: Fetch from API */);
       setLabOrders([] /* TODO: Fetch from API */);
     } finally {
-      setLoading(false);
+      _setLoading(false);
     }
   };
 
@@ -124,9 +121,9 @@ const LaboratoryManagement = () => {
     try {
       const filters = {
         category: selectedCategory || undefined,
-        search: searchQuery || undefined
+        search: searchQuery || undefined,
       };
-      const response = await laboratoryService.getLabTests(filters) as any;
+      const response = (await laboratoryService.getLabTests(filters)) as any;
       setLabTests(response.data?.items || response.data || []);
     } catch (err: any) {
       console.warn('Error fetching lab tests (using empty data):', err.message || err);
@@ -139,9 +136,9 @@ const LaboratoryManagement = () => {
       const filters = {
         patientId: selectedPatient || undefined,
         status: selectedStatus || undefined,
-        search: searchQuery || undefined
+        search: searchQuery || undefined,
       };
-      const response = await laboratoryService.getLabOrders(filters) as any;
+      const response = (await laboratoryService.getLabOrders(filters)) as any;
       setLabOrders(response.data?.items || response.data || []);
     } catch (err: any) {
       console.warn('Error fetching lab orders (using empty data):', err.message || err);
@@ -151,7 +148,7 @@ const LaboratoryManagement = () => {
 
   const fetchLabStats = async () => {
     try {
-      const response = await laboratoryService.getLabStats() as any;
+      const response = (await laboratoryService.getLabStats()) as any;
       setLabStats(response.data);
     } catch (err: any) {
       console.warn('Error fetching lab stats (using default values):', err.message || err);
@@ -161,7 +158,7 @@ const LaboratoryManagement = () => {
         completedTests: 0,
         totalOrders: 0,
         pendingOrders: 0,
-        completedOrders: 0
+        completedOrders: 0,
       });
     }
   };
@@ -175,16 +172,16 @@ const LaboratoryManagement = () => {
         fetchLabOrders();
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, searchQuery, selectedCategory, selectedStatus, selectedPatient]);
 
   // Filter lab tests
   const filteredTests = useMemo(() => {
     return labTests.filter((test) => {
-      const matchesSearch = 
+      const matchesSearch =
         test.testName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         test.testCode.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesCategory = !selectedCategory || test.category === selectedCategory;
       const matchesStatus = !selectedStatus || test.status === selectedStatus;
       const matchesType = !selectedType || test.testType === selectedType;
@@ -196,11 +193,11 @@ const LaboratoryManagement = () => {
   // Filter lab orders
   const filteredOrders = useMemo(() => {
     return labOrders.filter((order) => {
-      const matchesSearch = 
+      const matchesSearch =
         order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesStatus = !selectedStatus || order.status === selectedStatus;
       const matchesPatient = !selectedPatient || order.patientId === selectedPatient;
 
@@ -210,16 +207,18 @@ const LaboratoryManagement = () => {
 
   // Filter samples
   const filteredSamples = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((sample) => {
-      const matchesSearch = 
-        sample.sampleId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        sample.patientName.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedStatus || sample.status === selectedStatus;
-      const matchesType = !selectedType || sample.sampleType === selectedType;
+    return [].filter(
+      /* TODO: Fetch from API */ (sample) => {
+        const matchesSearch =
+          sample.sampleId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          sample.patientName.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesStatus && matchesType;
-    });
+        const matchesStatus = !selectedStatus || sample.status === selectedStatus;
+        const matchesType = !selectedType || sample.sampleType === selectedType;
+
+        return matchesSearch && matchesStatus && matchesType;
+      }
+    );
   }, [searchQuery, selectedStatus, selectedType]);
 
   // Helper functions
@@ -229,49 +228,71 @@ const LaboratoryManagement = () => {
       case 'completed':
       case 'processed':
       case 'operational':
-      case 'passed': return 'green';
+      case 'passed':
+        return 'green';
       case 'pending':
       case 'in_progress':
       case 'collected':
       case 'maintenance':
-      case 'in_review': return 'orange';
+      case 'in_review':
+        return 'orange';
       case 'cancelled':
       case 'rejected':
       case 'contaminated':
       case 'out_of_service':
-      case 'failed': return 'red';
+      case 'failed':
+        return 'red';
       case 'draft':
       case 'ordered':
       case 'received':
-      case 'calibration': return 'blue';
-      case 'expired': return 'dark';
-      default: return 'gray';
+      case 'calibration':
+        return 'blue';
+      case 'expired':
+        return 'dark';
+      default:
+        return 'gray';
     }
   };
 
   const getCategoryColor = (category: TestCategory) => {
     switch (category) {
-      case 'hematology': return 'red';
-      case 'biochemistry': return 'blue';
-      case 'microbiology': return 'green';
-      case 'immunology': return 'purple';
-      case 'pathology': return 'orange';
-      case 'molecular': return 'cyan';
-      case 'genetics': return 'pink';
-      default: return 'gray';
+      case 'hematology':
+        return 'red';
+      case 'biochemistry':
+        return 'blue';
+      case 'microbiology':
+        return 'green';
+      case 'immunology':
+        return 'purple';
+      case 'pathology':
+        return 'orange';
+      case 'molecular':
+        return 'cyan';
+      case 'genetics':
+        return 'pink';
+      default:
+        return 'gray';
     }
   };
 
   const getCategoryIcon = (category: TestCategory) => {
     switch (category) {
-      case 'hematology': return <IconDroplet size={16} />;
-      case 'biochemistry': return <IconFlask size={16} />;
-      case 'microbiology': return <IconMicroscope size={16} />;
-      case 'immunology': return <IconShieldCheck size={16} />;
-      case 'pathology': return <IconReportMedical size={16} />;
-      case 'molecular': return <IconDna size={16} />;
-      case 'genetics': return <IconAtom size={16} />;
-      default: return <IconTestPipe size={16} />;
+      case 'hematology':
+        return <IconDroplet size={16} />;
+      case 'biochemistry':
+        return <IconFlask size={16} />;
+      case 'microbiology':
+        return <IconMicroscope size={16} />;
+      case 'immunology':
+        return <IconShieldCheck size={16} />;
+      case 'pathology':
+        return <IconReportMedical size={16} />;
+      case 'molecular':
+        return <IconDna size={16} />;
+      case 'genetics':
+        return <IconAtom size={16} />;
+      default:
+        return <IconTestPipe size={16} />;
     }
   };
 
@@ -280,14 +301,14 @@ const LaboratoryManagement = () => {
     openTestDetail();
   };
 
-  const handleViewOrder = (order: LabOrder) => {
+  const _handleViewOrder = (order: LabOrder) => {
     setSelectedOrder(order);
-    openOrderDetail();
+    _openOrderDetail();
   };
 
-  const handleViewSample = (sample: Sample) => {
+  const _handleViewSample = (sample: Sample) => {
     setSelectedSample(sample);
-    openSampleDetail();
+    _openSampleDetail();
   };
 
   const clearFilters = () => {
@@ -301,7 +322,7 @@ const LaboratoryManagement = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
@@ -312,45 +333,48 @@ const LaboratoryManagement = () => {
       value: labStats?.totalTests || 0 /* TODO: Fetch from API */,
       icon: IconTestPipe,
       color: 'blue',
-      trend: '+0%'
+      trend: '+0%',
     },
     {
       title: 'Pending Results',
       value: labStats?.pendingTests || 0 /* TODO: Fetch from API */,
       icon: IconClockHour4,
       color: 'orange',
-      trend: '0%'
+      trend: '0%',
     },
     {
       title: 'Completed Today',
       value: labStats?.completedToday || 0,
       icon: IconCheck,
       color: 'green',
-      trend: '+0%'
+      trend: '+0%',
     },
     {
       title: 'Equipment Status',
-      value: labStats?.equipmentOperational && labStats?.totalEquipment 
-        ? `${labStats.equipmentOperational}/${labStats.totalEquipment}`
-        : `${0 /* TODO: Fetch from API */}/${0 /* TODO: Fetch from API */}`,
+      value:
+        labStats?.equipmentOperational && labStats?.totalEquipment
+          ? `${labStats.equipmentOperational}/${labStats.totalEquipment}`
+          : `${0 /* TODO: Fetch from API */}/${0 /* TODO: Fetch from API */}`,
       icon: IconSettings,
       color: 'purple',
-      trend: '0%'
-    }
+      trend: '0%',
+    },
   ];
 
   // Chart data
-  const testCategoryData = (labStats?.testsByCategory && typeof labStats.testsByCategory === 'object')
-    ? Object.entries(labStats.testsByCategory)
-        .map(([category, count]) => ({
+  const testCategoryData =
+    labStats?.testsByCategory && typeof labStats.testsByCategory === 'object'
+      ? Object.entries(labStats.testsByCategory).map(([category, count]) => ({
           name: category.replace('_', ' ').toUpperCase(),
           value: count as number,
-          color: getCategoryColor(category as TestCategory)
+          color: getCategoryColor(category as TestCategory),
         }))
-    : [];
+      : [];
 
   const dailyTestsData = Array.isArray(labStats?.dailyTestVolume) ? labStats.dailyTestVolume : [];
-  const turnaroundTimeData = Array.isArray(labStats?.averageTurnaroundTime) ? labStats.averageTurnaroundTime : [];
+  const turnaroundTimeData = Array.isArray(labStats?.averageTurnaroundTime)
+    ? labStats.averageTurnaroundTime
+    : [];
 
   return (
     <Container size="xl" py="md">
@@ -363,33 +387,32 @@ const LaboratoryManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openAddTest}
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddTest}>
             Add Test
           </Button>
-          <Button
-            variant="light"
-            leftSection={<IconFlask size={16} />}
-            onClick={openAddOrder}
-          >
+          <Button variant="light" leftSection={<IconFlask size={16} />} onClick={_openAddOrder}>
             New Order
           </Button>
         </Group>
       </Group>
 
       {/* Loading State */}
-      {loading && (
+      {_loading && (
         <Alert icon={<IconAlertCircle size={16} />} color="blue" mb="lg">
           Loading laboratory data...
         </Alert>
       )}
 
       {/* Error State */}
-      {error && (
-        <Alert icon={<IconAlertTriangle size={16} />} color="red" mb="lg" withCloseButton onClose={() => setError(null)}>
-          {error}
+      {_error && (
+        <Alert
+          icon={<IconAlertTriangle size={16} />}
+          color="red"
+          mb="lg"
+          withCloseButton
+          onClose={() => _setError(null)}
+        >
+          {_error}
         </Alert>
       )}
 
@@ -413,8 +436,14 @@ const LaboratoryManagement = () => {
                 </ThemeIcon>
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.includes('%') && stat.trend.startsWith('+') ? 'green' : stat.trend.includes('%') ? 'red' : 'blue'} 
+                <Badge
+                  color={
+                    stat.trend.includes('%') && stat.trend.startsWith('+')
+                      ? 'green'
+                      : stat.trend.includes('%')
+                        ? 'red'
+                        : 'blue'
+                  }
                   variant="light"
                   size="sm"
                 >
@@ -473,7 +502,7 @@ const LaboratoryManagement = () => {
                   { value: 'immunology', label: 'Immunology' },
                   { value: 'pathology', label: 'Pathology' },
                   { value: 'molecular', label: 'Molecular' },
-                  { value: 'genetics', label: 'Genetics' }
+                  { value: 'genetics', label: 'Genetics' },
                 ]}
                 value={selectedCategory}
                 onChange={setSelectedCategory}
@@ -485,7 +514,7 @@ const LaboratoryManagement = () => {
                   { value: 'active', label: 'Active' },
                   { value: 'pending', label: 'Pending' },
                   { value: 'completed', label: 'Completed' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -497,7 +526,7 @@ const LaboratoryManagement = () => {
                   { value: 'routine', label: 'Routine' },
                   { value: 'urgent', label: 'Urgent' },
                   { value: 'stat', label: 'STAT' },
-                  { value: 'research', label: 'Research' }
+                  { value: 'research', label: 'Research' },
                 ]}
                 value={selectedType}
                 onChange={setSelectedType}
@@ -515,9 +544,9 @@ const LaboratoryManagement = () => {
                   <Group justify="space-between" mb="md">
                     <div style={{ flex: 1 }}>
                       <Group>
-                        <ThemeIcon 
-                          color={getCategoryColor(test.category)} 
-                          variant="light" 
+                        <ThemeIcon
+                          color={getCategoryColor(test.category)}
+                          variant="light"
                           size="lg"
                         >
                           {getCategoryIcon(test.category)}
@@ -539,38 +568,44 @@ const LaboratoryManagement = () => {
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Category</Text>
+                      <Text size="sm" c="dimmed">
+                        Category
+                      </Text>
                       <Badge color={getCategoryColor(test.category)} variant="light" size="xs">
                         {test.category}
                       </Badge>
                     </Group>
-                    
+
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Type</Text>
+                      <Text size="sm" c="dimmed">
+                        Type
+                      </Text>
                       <Text size="sm" fw={500}>
                         {test.testType.toUpperCase()}
                       </Text>
                     </Group>
 
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Price</Text>
+                      <Text size="sm" c="dimmed">
+                        Price
+                      </Text>
                       <Text size="sm" fw={600}>
                         {formatCurrency(test.price)}
                       </Text>
                     </Group>
 
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Turnaround Time</Text>
-                      <Text size="sm">
-                        {test.turnaroundTime}
+                      <Text size="sm" c="dimmed">
+                        Turnaround Time
                       </Text>
+                      <Text size="sm">{test.turnaroundTime}</Text>
                     </Group>
 
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Sample Type</Text>
-                      <Text size="sm">
-                        {test.sampleType.replace('_', ' ')}
+                      <Text size="sm" c="dimmed">
+                        Sample Type
                       </Text>
+                      <Text size="sm">{test.sampleType.replace('_', ' ')}</Text>
                     </Group>
                   </Stack>
 
@@ -603,10 +638,7 @@ const LaboratoryManagement = () => {
                             Export Details
                           </Menu.Item>
                           <Menu.Divider />
-                          <Menu.Item 
-                            leftSection={<IconTrash size={14} />}
-                            color="red"
-                          >
+                          <Menu.Item leftSection={<IconTrash size={14} />} color="red">
                             Delete
                           </Menu.Item>
                         </Menu.Dropdown>
@@ -624,7 +656,7 @@ const LaboratoryManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Laboratory Orders</Title>
-              <Button leftSection={<IconPlus size={16} />} onClick={openAddOrder}>
+              <Button leftSection={<IconPlus size={16} />} onClick={_openAddOrder}>
                 New Order
               </Button>
             </Group>
@@ -640,10 +672,12 @@ const LaboratoryManagement = () => {
               />
               <Select
                 placeholder="Patient"
-                data={[].map /* TODO: Fetch from API */(patient => ({ 
-                  value: patient.id, 
-                  label: `${patient.firstName} ${patient.lastName}` 
-                }))}
+                data={[].map(
+                  /* TODO: Fetch from API */ (patient) => ({
+                    value: patient.id,
+                    label: `${patient.firstName} ${patient.lastName}`,
+                  })
+                )}
                 value={selectedPatient}
                 onChange={setSelectedPatient}
                 clearable
@@ -654,7 +688,7 @@ const LaboratoryManagement = () => {
                   { value: 'pending', label: 'Pending' },
                   { value: 'in_progress', label: 'In Progress' },
                   { value: 'completed', label: 'Completed' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -698,7 +732,8 @@ const LaboratoryManagement = () => {
                         <Table.Td>
                           <Group>
                             <Avatar color="blue" radius="xl" size="sm">
-                              {order.patient.firstName[0]}{order.patient.lastName[0]}
+                              {order.patient.firstName[0]}
+                              {order.patient.lastName[0]}
                             </Avatar>
                             <div>
                               <Text size="sm" fw={500}>
@@ -725,15 +760,20 @@ const LaboratoryManagement = () => {
                         </Table.Td>
                         <Table.Td>
                           <Text size="sm">
-                            {typeof order.orderDate === 'string' ? order.orderDate : new Date(order.orderDate).toISOString().split('T')[0]}
+                            {typeof order.orderDate === 'string'
+                              ? order.orderDate
+                              : new Date(order.orderDate).toISOString().split('T')[0]}
                           </Text>
                         </Table.Td>
                         <Table.Td>
-                          <Badge 
+                          <Badge
                             color={
-                              order.priority === 'stat' ? 'red' : 
-                              order.priority === 'urgent' ? 'orange' : 'blue'
-                            } 
+                              order.priority === 'stat'
+                                ? 'red'
+                                : order.priority === 'urgent'
+                                  ? 'orange'
+                                  : 'blue'
+                            }
                             variant="light"
                             size="sm"
                           >
@@ -750,7 +790,7 @@ const LaboratoryManagement = () => {
                             <ActionIcon
                               variant="subtle"
                               color="blue"
-                              onClick={() => handleViewOrder(order)}
+                              onClick={() => _handleViewOrder(order)}
                             >
                               <IconEye size={16} />
                             </ActionIcon>
@@ -780,9 +820,7 @@ const LaboratoryManagement = () => {
                 <Button leftSection={<IconBarcode size={16} />} variant="light">
                   Scan Sample
                 </Button>
-                <Button leftSection={<IconFlask size={16} />}>
-                  Register Sample
-                </Button>
+                <Button leftSection={<IconFlask size={16} />}>Register Sample</Button>
               </Group>
             </Group>
 
@@ -804,7 +842,7 @@ const LaboratoryManagement = () => {
                   { value: 'sputum', label: 'Sputum' },
                   { value: 'csf', label: 'CSF' },
                   { value: 'tissue', label: 'Tissue' },
-                  { value: 'swab', label: 'Swab' }
+                  { value: 'swab', label: 'Swab' },
                 ]}
                 value={selectedType}
                 onChange={setSelectedType}
@@ -816,7 +854,7 @@ const LaboratoryManagement = () => {
                   { value: 'collected', label: 'Collected' },
                   { value: 'received', label: 'Received' },
                   { value: 'processed', label: 'Processed' },
-                  { value: 'rejected', label: 'Rejected' }
+                  { value: 'rejected', label: 'Rejected' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -830,8 +868,12 @@ const LaboratoryManagement = () => {
                 <Card key={sample.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
-                      <Text fw={600} size="lg">{sample.sampleId}</Text>
-                      <Text size="sm" c="dimmed">{sample.patientName}</Text>
+                      <Text fw={600} size="lg">
+                        {sample.sampleId}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {sample.patientName}
+                      </Text>
                     </div>
                     <Badge color={getStatusColor(sample.status)} variant="light">
                       {sample.status}
@@ -840,7 +882,9 @@ const LaboratoryManagement = () => {
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Sample Type</Text>
+                      <Text size="sm" c="dimmed">
+                        Sample Type
+                      </Text>
                       <Group gap="xs">
                         <IconFlask size={16} />
                         <Text size="sm" fw={500}>
@@ -850,32 +894,44 @@ const LaboratoryManagement = () => {
                     </Group>
 
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Collection Date</Text>
+                      <Text size="sm" c="dimmed">
+                        Collection Date
+                      </Text>
                       <Text size="sm">
-                        {typeof sample.collectionDate === 'string' ? sample.collectionDate : new Date(sample.collectionDate).toISOString().split('T')[0]}
+                        {typeof sample.collectionDate === 'string'
+                          ? sample.collectionDate
+                          : new Date(sample.collectionDate).toISOString().split('T')[0]}
                       </Text>
                     </Group>
 
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Collection Time</Text>
+                      <Text size="sm" c="dimmed">
+                        Collection Time
+                      </Text>
+                      <Text size="sm">{(sample as any).collectionTime || 'N/A'}</Text>
+                    </Group>
+
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        Volume
+                      </Text>
                       <Text size="sm">
-                        {(sample as any).collectionTime || 'N/A'}
+                        {sample.volume} {sample.unit}
                       </Text>
                     </Group>
 
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Volume</Text>
-                      <Text size="sm">{sample.volume} {sample.unit}</Text>
-                    </Group>
-
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Container</Text>
+                      <Text size="sm" c="dimmed">
+                        Container
+                      </Text>
                       <Text size="sm">{sample.containerType}</Text>
                     </Group>
 
                     {sample.storageConditions && (
                       <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Storage</Text>
+                        <Text size="sm" c="dimmed">
+                          Storage
+                        </Text>
                         <Group gap="xs">
                           <IconTemperature size={14} />
                           <Text size="sm">{sample.storageConditions}</Text>
@@ -898,7 +954,7 @@ const LaboratoryManagement = () => {
                       <ActionIcon
                         variant="subtle"
                         color="blue"
-                        onClick={() => handleViewSample(sample)}
+                        onClick={() => _handleViewSample(sample)}
                       >
                         <IconEye size={16} />
                       </ActionIcon>
@@ -921,97 +977,114 @@ const LaboratoryManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Laboratory Equipment</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Add Equipment
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Add Equipment</Button>
             </Group>
 
             {/* Equipment Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((equipment) => (
-                <Card key={equipment.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div style={{ flex: 1 }}>
-                      <Text fw={600} size="lg" lineClamp={1}>
-                        {equipment.equipmentName}
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        {equipment.manufacturer} - {equipment.model}
-                      </Text>
-                    </div>
-                    <Badge color={getStatusColor(equipment.status)} variant="light">
-                      {equipment.status.replace('_', ' ')}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Serial Number</Text>
-                      <Text size="sm" fw={500}>{equipment.serialNumber}</Text>
+              {[].map(
+                /* TODO: Fetch from API */ (equipment) => (
+                  <Card key={equipment.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div style={{ flex: 1 }}>
+                        <Text fw={600} size="lg" lineClamp={1}>
+                          {equipment.equipmentName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {equipment.manufacturer} - {equipment.model}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(equipment.status)} variant="light">
+                        {equipment.status.replace('_', ' ')}
+                      </Badge>
                     </Group>
 
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Location</Text>
-                      <Text size="sm">{equipment.location}</Text>
-                    </Group>
-
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Installation Date</Text>
-                      <Text size="sm">
-                        {typeof equipment.installationDate === 'string' ? equipment.installationDate : new Date(equipment.installationDate).toISOString().split('T')[0]}
-                      </Text>
-                    </Group>
-
-                    {equipment.lastMaintenanceDate && (
+                    <Stack gap="sm" mb="md">
                       <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Last Maintenance</Text>
+                        <Text size="sm" c="dimmed">
+                          Serial Number
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {equipment.serialNumber}
+                        </Text>
+                      </Group>
+
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Location
+                        </Text>
+                        <Text size="sm">{equipment.location}</Text>
+                      </Group>
+
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Installation Date
+                        </Text>
                         <Text size="sm">
-                          {typeof equipment.lastMaintenanceDate === 'string' ? equipment.lastMaintenanceDate : new Date(equipment.lastMaintenanceDate).toISOString().split('T')[0]}
+                          {typeof equipment.installationDate === 'string'
+                            ? equipment.installationDate
+                            : new Date(equipment.installationDate).toISOString().split('T')[0]}
                         </Text>
                       </Group>
-                    )}
 
-                    {equipment.nextMaintenanceDate && (
+                      {equipment.lastMaintenanceDate && (
+                        <Group justify="space-between">
+                          <Text size="sm" c="dimmed">
+                            Last Maintenance
+                          </Text>
+                          <Text size="sm">
+                            {typeof equipment.lastMaintenanceDate === 'string'
+                              ? equipment.lastMaintenanceDate
+                              : new Date(equipment.lastMaintenanceDate).toISOString().split('T')[0]}
+                          </Text>
+                        </Group>
+                      )}
+
+                      {equipment.nextMaintenanceDate && (
+                        <Group justify="space-between">
+                          <Text size="sm" c="dimmed">
+                            Next Maintenance
+                          </Text>
+                          <Text size="sm" c="dimmed">
+                            {typeof equipment.nextMaintenanceDate === 'string'
+                              ? equipment.nextMaintenanceDate
+                              : new Date(equipment.nextMaintenanceDate).toISOString().split('T')[0]}
+                          </Text>
+                        </Group>
+                      )}
+
                       <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Next Maintenance</Text>
-                        <Text 
-                          size="sm" 
-                          c="dimmed"
+                        <Text size="sm" c="dimmed">
+                          Warranty
+                        </Text>
+                        <Text
+                          size="sm"
+                          c={new Date(equipment.warrantyExpiry) < new Date() ? 'red' : 'green'}
                         >
-                          {typeof equipment.nextMaintenanceDate === 'string' ? equipment.nextMaintenanceDate : new Date(equipment.nextMaintenanceDate).toISOString().split('T')[0]}
+                          {new Date(equipment.warrantyExpiry) < new Date() ? 'Expired' : 'Valid'}
                         </Text>
                       </Group>
-                    )}
+                    </Stack>
 
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Warranty</Text>
-                      <Text 
-                        size="sm" 
-                        c={new Date(equipment.warrantyExpiry) < new Date() ? 'red' : 'green'}
-                      >
-                        {new Date(equipment.warrantyExpiry) < new Date() ? 'Expired' : 'Valid'}
+                      <Text size="sm" fw={600} c="blue">
+                        {formatCurrency(equipment.purchasePrice)}
                       </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconSettings size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Stack>
-
-                  <Group justify="space-between">
-                    <Text size="sm" fw={600} c="blue">
-                      {formatCurrency(equipment.purchasePrice)}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconSettings size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -1021,79 +1094,99 @@ const LaboratoryManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Quality Control</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Add QC Test
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Add QC Test</Button>
             </Group>
 
             {/* QC Grid */}
             <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((qc) => (
-                <Card key={qc.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{qc.testName}</Text>
-                      <Text size="sm" c="dimmed">{qc.controlLotNumber}</Text>
-                    </div>
-                    <Badge color={getStatusColor(qc.status)} variant="light">
-                      {qc.status}
-                    </Badge>
-                  </Group>
+              {[].map(
+                /* TODO: Fetch from API */ (qc) => (
+                  <Card key={qc.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {qc.testName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {qc.controlLotNumber}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(qc.status)} variant="light">
+                        {qc.status}
+                      </Badge>
+                    </Group>
 
-                  <Stack gap="sm" mb="md">
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Test Date
+                        </Text>
+                        <Text size="sm">
+                          {typeof qc.testDate === 'string'
+                            ? qc.testDate
+                            : new Date(qc.testDate).toISOString().split('T')[0]}
+                        </Text>
+                      </Group>
+
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Expected Value
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {qc.expectedValue}
+                        </Text>
+                      </Group>
+
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Actual Value
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {qc.actualValue}
+                        </Text>
+                      </Group>
+
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Acceptable Range
+                        </Text>
+                        <Text size="sm">{qc.acceptableRange}</Text>
+                      </Group>
+
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Performed By
+                        </Text>
+                        <Text size="sm">{qc.performedBy}</Text>
+                      </Group>
+                    </Stack>
+
+                    {qc.comments && (
+                      <Alert
+                        variant="light"
+                        color={qc.status === 'failed' ? 'red' : 'blue'}
+                        mb="md"
+                      >
+                        <Text size="sm">{qc.comments}</Text>
+                      </Alert>
+                    )}
+
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Test Date</Text>
-                      <Text size="sm">
-                        {typeof qc.testDate === 'string' ? qc.testDate : new Date(qc.testDate).toISOString().split('T')[0]}
+                      <Text size="xs" c="dimmed">
+                        Control Type: {qc.controlType}
                       </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Expected Value</Text>
-                      <Text size="sm" fw={500}>{qc.expectedValue}</Text>
-                    </Group>
-
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Actual Value</Text>
-                      <Text size="sm" fw={500}>{qc.actualValue}</Text>
-                    </Group>
-
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Acceptable Range</Text>
-                      <Text size="sm">{qc.acceptableRange}</Text>
-                    </Group>
-
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Performed By</Text>
-                      <Text size="sm">{qc.performedBy}</Text>
-                    </Group>
-                  </Stack>
-
-                  {qc.comments && (
-                    <Alert 
-                      variant="light" 
-                      color={qc.status === 'failed' ? 'red' : 'blue'} 
-                      mb="md"
-                    >
-                      <Text size="sm">{qc.comments}</Text>
-                    </Alert>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Control Type: {qc.controlType}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -1101,78 +1194,105 @@ const LaboratoryManagement = () => {
         {/* Reports Tab */}
         <Tabs.Panel value="reports">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Laboratory Reports & Analytics</Title>
-            
+            <Title order={3} mb="lg">
+              Laboratory Reports & Analytics
+            </Title>
+
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Test Distribution by Category */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Tests by Category</Title>
-                <MantineDonutChart
-                  data={testCategoryData}
-                  size={160}
-                  thickness={30}
-                  withLabels
-                />
+                <Title order={4} mb="md">
+                  Tests by Category
+                </Title>
+                <MantineDonutChart data={testCategoryData} size={160} thickness={30} withLabels />
               </Card>
-              
+
               {/* Daily Test Volume */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Daily Test Volume</Title>
+                <Title order={4} mb="md">
+                  Daily Test Volume
+                </Title>
                 <SimpleAreaChart
                   data={dailyTestsData}
                   dataKey="date"
                   series={[{ name: 'tests', color: 'blue.6' }]}
                 />
               </Card>
-              
+
               {/* Turnaround Time Analysis */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
-                <Title order={4} mb="md">Average Turnaround Time by Category</Title>
+                <Title order={4} mb="md">
+                  Average Turnaround Time by Category
+                </Title>
                 <SimpleBarChart
                   data={turnaroundTimeData}
                   dataKey="category"
                   series={[{ name: 'hours', color: 'orange.6' }]}
                 />
               </Card>
-              
+
               {/* Key Performance Indicators */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Key Performance Indicators</Title>
+                <Title order={4} mb="md">
+                  Key Performance Indicators
+                </Title>
                 <Stack gap="md">
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Test Accuracy Rate</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Test Accuracy Rate
+                    </Text>
                     <Text size="sm" fw={600} c="green">
                       {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Average TAT</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Average TAT
+                    </Text>
                     <Text size="sm" fw={600}>
                       {0 /* TODO: Fetch from API */} hours
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Sample Rejection Rate</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Sample Rejection Rate
+                    </Text>
                     <Text size="sm" fw={600} c="red">
                       {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Equipment Uptime</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Equipment Uptime
+                    </Text>
                     <Text size="sm" fw={600} c="green">
                       {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
                 </Stack>
               </Card>
-              
+
               {/* Quick Actions */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Quick Reports</Title>
+                <Title order={4} mb="md">
+                  Quick Reports
+                </Title>
                 <Stack gap="sm">
                   <Button fullWidth leftSection={<IconDownload size={16} />} variant="light">
                     Export Test Results
@@ -1194,19 +1314,14 @@ const LaboratoryManagement = () => {
       </Tabs>
 
       {/* Test Detail Modal */}
-      <Modal
-        opened={testDetailOpened}
-        onClose={closeTestDetail}
-        title="Test Details"
-        size="lg"
-      >
+      <Modal opened={testDetailOpened} onClose={closeTestDetail} title="Test Details" size="lg">
         {selectedTest && (
           <ScrollArea h={500}>
             <Stack gap="md">
               <Group>
-                <ThemeIcon 
-                  color={getCategoryColor(selectedTest.category)} 
-                  size="xl" 
+                <ThemeIcon
+                  color={getCategoryColor(selectedTest.category)}
+                  size="xl"
                   variant="light"
                 >
                   {getCategoryIcon(selectedTest.category)}
@@ -1224,44 +1339,78 @@ const LaboratoryManagement = () => {
 
               <SimpleGrid cols={2}>
                 <div>
-                  <Text size="sm" fw={500}>Category</Text>
-                  <Text size="sm" c="dimmed">{selectedTest.category}</Text>
+                  <Text size="sm" fw={500}>
+                    Category
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedTest.category}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Type</Text>
-                  <Text size="sm" c="dimmed">{selectedTest.testType}</Text>
+                  <Text size="sm" fw={500}>
+                    Type
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedTest.testType}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Price</Text>
-                  <Text size="sm" fw={600}>{formatCurrency(selectedTest.price)}</Text>
+                  <Text size="sm" fw={500}>
+                    Price
+                  </Text>
+                  <Text size="sm" fw={600}>
+                    {formatCurrency(selectedTest.price)}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Turnaround Time</Text>
-                  <Text size="sm" c="dimmed">{selectedTest.turnaroundTime}</Text>
+                  <Text size="sm" fw={500}>
+                    Turnaround Time
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedTest.turnaroundTime}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Sample Type</Text>
-                  <Text size="sm" c="dimmed">{selectedTest.sampleType.replace('_', ' ')}</Text>
+                  <Text size="sm" fw={500}>
+                    Sample Type
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedTest.sampleType.replace('_', ' ')}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Sample Volume</Text>
-                  <Text size="sm" c="dimmed">{selectedTest.sampleVolume}</Text>
+                  <Text size="sm" fw={500}>
+                    Sample Volume
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedTest.sampleVolume}
+                  </Text>
                 </div>
               </SimpleGrid>
 
               <div>
-                <Text size="sm" fw={500} mb="sm">Description</Text>
+                <Text size="sm" fw={500} mb="sm">
+                  Description
+                </Text>
                 <Text size="sm">{selectedTest.description}</Text>
               </div>
 
               {selectedTest.parameters && selectedTest.parameters.length > 0 && (
                 <div>
-                  <Text size="sm" fw={500} mb="sm">Test Parameters</Text>
+                  <Text size="sm" fw={500} mb="sm">
+                    Test Parameters
+                  </Text>
                   <Stack gap="xs">
                     {selectedTest.parameters.map((param) => (
-                      <Group key={param.id} justify="space-between" p="sm" 
-                             style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                        <Text size="sm" fw={500}>{param.parameterName}</Text>
+                      <Group
+                        key={param.id}
+                        justify="space-between"
+                        p="sm"
+                        style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                      >
+                        <Text size="sm" fw={500}>
+                          {param.parameterName}
+                        </Text>
                         <Text size="sm" c="dimmed">
                           {param.normalRange} {param.unit}
                         </Text>
@@ -1275,9 +1424,7 @@ const LaboratoryManagement = () => {
                 <Button variant="light" onClick={closeTestDetail}>
                   Close
                 </Button>
-                <Button>
-                  Edit Test
-                </Button>
+                <Button>Edit Test</Button>
               </Group>
             </Stack>
           </ScrollArea>
@@ -1285,26 +1432,13 @@ const LaboratoryManagement = () => {
       </Modal>
 
       {/* Add Test Modal */}
-      <Modal
-        opened={addTestOpened}
-        onClose={closeAddTest}
-        title="Add New Test"
-        size="lg"
-      >
+      <Modal opened={addTestOpened} onClose={closeAddTest} title="Add New Test" size="lg">
         <Stack gap="md">
           <SimpleGrid cols={2}>
-            <TextInput
-              label="Test Name"
-              placeholder="Enter test name"
-              required
-            />
-            <TextInput
-              label="Test Code"
-              placeholder="Enter test code"
-              required
-            />
+            <TextInput label="Test Name" placeholder="Enter test name" required />
+            <TextInput label="Test Code" placeholder="Enter test code" required />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
             <Select
               label="Category"
@@ -1316,7 +1450,7 @@ const LaboratoryManagement = () => {
                 { value: 'immunology', label: 'Immunology' },
                 { value: 'pathology', label: 'Pathology' },
                 { value: 'molecular', label: 'Molecular' },
-                { value: 'genetics', label: 'Genetics' }
+                { value: 'genetics', label: 'Genetics' },
               ]}
               required
             />
@@ -1327,31 +1461,17 @@ const LaboratoryManagement = () => {
                 { value: 'routine', label: 'Routine' },
                 { value: 'urgent', label: 'Urgent' },
                 { value: 'stat', label: 'STAT' },
-                { value: 'research', label: 'Research' }
+                { value: 'research', label: 'Research' },
               ]}
               required
             />
           </SimpleGrid>
-          
-          <Textarea
-            label="Description"
-            placeholder="Enter test description"
-            rows={3}
-          />
-          
+
+          <Textarea label="Description" placeholder="Enter test description" rows={3} />
+
           <SimpleGrid cols={3}>
-            <NumberInput
-              label="Price"
-              placeholder="Enter price"
-              leftSection="₹"
-              min={0}
-              required
-            />
-            <TextInput
-              label="Turnaround Time"
-              placeholder="e.g., 2-4 hours"
-              required
-            />
+            <NumberInput label="Price" placeholder="Enter price" leftSection="₹" min={0} required />
+            <TextInput label="Turnaround Time" placeholder="e.g., 2-4 hours" required />
             <Select
               label="Sample Type"
               placeholder="Select sample type"
@@ -1360,30 +1480,28 @@ const LaboratoryManagement = () => {
                 { value: 'urine', label: 'Urine' },
                 { value: 'stool', label: 'Stool' },
                 { value: 'sputum', label: 'Sputum' },
-                { value: 'tissue', label: 'Tissue' }
+                { value: 'tissue', label: 'Tissue' },
               ]}
               required
             />
           </SimpleGrid>
-          
-          <TextInput
-            label="Sample Volume"
-            placeholder="e.g., 5ml"
-            required
-          />
-          
+
+          <TextInput label="Sample Volume" placeholder="e.g., 5ml" required />
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddTest}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Success',
-                message: 'Test added successfully',
-                color: 'green',
-              });
-              closeAddTest();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Success',
+                  message: 'Test added successfully',
+                  color: 'green',
+                });
+                closeAddTest();
+              }}
+            >
               Add Test
             </Button>
           </Group>

@@ -7,7 +7,7 @@ import {
   Group,
   Stack,
   Select,
-  LoadingOverlay
+  LoadingOverlay,
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { IconFileText, IconUser, IconCalendar, IconStethoscope } from '@tabler/icons-react';
@@ -30,7 +30,7 @@ export default function MedicalRecordForm({
   onSubmit,
   loading = false,
   patients = [],
-  doctors = []
+  doctors = [],
 }: MedicalRecordFormProps) {
   const [formData, setFormData] = useState({
     patientId: '',
@@ -38,7 +38,7 @@ export default function MedicalRecordForm({
     title: '',
     description: '',
     date: new Date(),
-    doctorId: ''
+    doctorId: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -51,7 +51,7 @@ export default function MedicalRecordForm({
         title: record.title || '',
         description: record.description || '',
         date: record.date ? new Date(record.date) : new Date(),
-        doctorId: record.doctorId || ''
+        doctorId: record.doctorId || '',
       });
     } else {
       resetForm();
@@ -65,7 +65,7 @@ export default function MedicalRecordForm({
       title: '',
       description: '',
       date: new Date(),
-      doctorId: ''
+      doctorId: '',
     });
     setErrors({});
   };
@@ -103,7 +103,7 @@ export default function MedicalRecordForm({
         title: formData.title,
         description: formData.description,
         date: formData.date.toISOString(),
-        doctorId: formData.doctorId || undefined
+        doctorId: formData.doctorId || undefined,
       };
 
       if (!record) {
@@ -123,14 +123,14 @@ export default function MedicalRecordForm({
     onClose();
   };
 
-  const patientOptions = patients.map(p => ({
+  const patientOptions = patients.map((p) => ({
     value: p.id,
-    label: `${p.firstName} ${p.lastName} - ${p.medicalRecordNumber || p.id}`
+    label: `${p.firstName} ${p.lastName} - ${p.medicalRecordNumber || p.id}`,
   }));
 
-  const doctorOptions = doctors.map(d => ({
+  const doctorOptions = doctors.map((d) => ({
     value: d.id,
-    label: `Dr. ${d.firstName} ${d.lastName}`
+    label: `Dr. ${d.firstName} ${d.lastName}`,
   }));
 
   const recordTypeOptions = [
@@ -142,7 +142,7 @@ export default function MedicalRecordForm({
     { value: 'PROCEDURE', label: 'Procedure' },
     { value: 'VACCINATION', label: 'Vaccination' },
     { value: 'ALLERGY', label: 'Allergy' },
-    { value: 'OTHER', label: 'Other' }
+    { value: 'OTHER', label: 'Other' },
   ];
 
   return (
@@ -159,7 +159,7 @@ export default function MedicalRecordForm({
       padding="md"
     >
       <LoadingOverlay visible={loading} />
-      
+
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           {!record && (
@@ -210,7 +210,7 @@ export default function MedicalRecordForm({
             label="Date"
             placeholder="Select date"
             value={formData.date}
-            onChange={(value) => setFormData({ ...formData, date: value || new Date() })}
+            onChange={(value) => setFormData({ ...formData, date: value ? new Date(value) : new Date() })}
             leftSection={<IconCalendar size={16} />}
             maxDate={new Date()}
           />

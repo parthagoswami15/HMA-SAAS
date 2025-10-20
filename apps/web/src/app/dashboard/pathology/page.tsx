@@ -40,12 +40,17 @@ import {
   Code,
   Spoiler,
   Mark,
-  SimpleGrid
+  SimpleGrid,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleAreaChart, SimpleLineChart, SimpleBarChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleAreaChart,
+  SimpleLineChart,
+  SimpleBarChart,
+} from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -142,7 +147,7 @@ import {
   IconFileReport,
   IconDatabase,
   IconFlask2,
-  IconScale
+  IconScale,
 } from '@tabler/icons-react';
 
 // Import types and mock data - using any for flexibility
@@ -179,7 +184,10 @@ const PathologyManagement = () => {
         setLabTests(response.data.items);
       }
     } catch (err: any) {
-      console.warn('Error fetching lab tests (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching lab tests (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setError(null);
       setLabTests([]);
     } finally {
@@ -197,7 +205,10 @@ const PathologyManagement = () => {
         setLabOrders(response.data.items);
       }
     } catch (err: any) {
-      console.warn('Error fetching lab orders (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching lab orders (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setError(null);
       setLabOrders([]);
     } finally {
@@ -213,14 +224,17 @@ const PathologyManagement = () => {
         setPathologyStats(response.data);
       }
     } catch (err: any) {
-      console.warn('Error fetching pathology stats (using default values):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching pathology stats (using default values):',
+        err.response?.data?.message || err.message
+      );
       setPathologyStats({
         totalTests: 0,
         pendingTests: 0,
         completedTests: 0,
         totalOrders: 0,
         pendingOrders: 0,
-        completedOrders: 0
+        completedOrders: 0,
       });
     }
   };
@@ -233,44 +247,54 @@ const PathologyManagement = () => {
   }, []);
 
   // Modal states
-  const [specimenDetailOpened, { open: openSpecimenDetail, close: closeSpecimenDetail }] = useDisclosure(false);
-  const [addSpecimenOpened, { open: openAddSpecimen, close: closeAddSpecimen }] = useDisclosure(false);
-  const [reportDetailOpened, { open: openReportDetail, close: closeReportDetail }] = useDisclosure(false);
+  const [specimenDetailOpened, { open: openSpecimenDetail, close: closeSpecimenDetail }] =
+    useDisclosure(false);
+  const [addSpecimenOpened, { open: openAddSpecimen, close: closeAddSpecimen }] =
+    useDisclosure(false);
+  const [reportDetailOpened, { open: openReportDetail, close: closeReportDetail }] =
+    useDisclosure(false);
   const [testDetailOpened, { open: openTestDetail, close: closeTestDetail }] = useDisclosure(false);
-  const [slideViewerOpened, { open: openSlideViewer, close: closeSlideViewer }] = useDisclosure(false);
-  const [createReportOpened, { open: openCreateReport, close: closeCreateReport }] = useDisclosure(false);
-  const [molecularTestOpened, { open: openMolecularTest, close: closeMolecularTest }] = useDisclosure(false);
+  const [slideViewerOpened, { open: openSlideViewer, close: closeSlideViewer }] =
+    useDisclosure(false);
+  const [createReportOpened, { open: openCreateReport, close: closeCreateReport }] =
+    useDisclosure(false);
+  const [molecularTestOpened, { open: openMolecularTest, close: closeMolecularTest }] =
+    useDisclosure(false);
 
   // Filter specimens
   const filteredSpecimens = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((specimen: any) => {
-      const matchesSearch = 
-        specimen.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        specimen.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        specimen.specimenId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        specimen.sourceLocation?.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesType = !selectedType || specimen.specimenType === selectedType;
-      const matchesStatus = !selectedStatus || specimen.status === selectedStatus;
-      const matchesBiopsyType = !selectedBiopsyType || specimen.biopsyType === selectedBiopsyType;
+    return [].filter(
+      /* TODO: Fetch from API */ (specimen: any) => {
+        const matchesSearch =
+          specimen.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          specimen.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          specimen.specimenId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          specimen.sourceLocation?.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesType && matchesStatus && matchesBiopsyType;
-    });
+        const matchesType = !selectedType || specimen.specimenType === selectedType;
+        const matchesStatus = !selectedStatus || specimen.status === selectedStatus;
+        const matchesBiopsyType = !selectedBiopsyType || specimen.biopsyType === selectedBiopsyType;
+
+        return matchesSearch && matchesType && matchesStatus && matchesBiopsyType;
+      }
+    );
   }, [searchQuery, selectedType, selectedStatus, selectedBiopsyType]);
 
   // Filter tests
   const filteredTests = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((test: any) => {
-      const matchesSearch = 
-        test.testName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        test.testId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        test.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        test.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedTestStatus || test.status === selectedTestStatus;
+    return [].filter(
+      /* TODO: Fetch from API */ (test: any) => {
+        const matchesSearch =
+          test.testName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          test.testId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          test.patient?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          test.patient?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesStatus;
-    });
+        const matchesStatus = !selectedTestStatus || test.status === selectedTestStatus;
+
+        return matchesSearch && matchesStatus;
+      }
+    );
   }, [searchQuery, selectedTestStatus]);
 
   // Helper functions
@@ -279,53 +303,80 @@ const PathologyManagement = () => {
       case 'received':
       case 'pending':
       case 'draft':
-      case 'ordered': return 'blue';
+      case 'ordered':
+        return 'blue';
       case 'processing':
       case 'in_progress':
-      case 'reviewing': return 'orange';
+      case 'reviewing':
+        return 'orange';
       case 'completed':
       case 'finalized':
-      case 'reported': return 'green';
+      case 'reported':
+        return 'green';
       case 'rejected':
-      case 'cancelled': return 'red';
-      case 'archived': return 'gray';
-      default: return 'gray';
+      case 'cancelled':
+        return 'red';
+      case 'archived':
+        return 'gray';
+      default:
+        return 'gray';
     }
   };
 
   const getSpecimenTypeColor = (type: string) => {
     switch (type) {
-      case 'tissue': return 'green';
-      case 'fluid': return 'blue';
-      case 'cytology': return 'purple';
-      case 'blood': return 'red';
-      case 'bone_marrow': return 'orange';
-      case 'frozen_section': return 'cyan';
-      default: return 'gray';
+      case 'tissue':
+        return 'green';
+      case 'fluid':
+        return 'blue';
+      case 'cytology':
+        return 'purple';
+      case 'blood':
+        return 'red';
+      case 'bone_marrow':
+        return 'orange';
+      case 'frozen_section':
+        return 'cyan';
+      default:
+        return 'gray';
     }
   };
 
   const getBiopsyTypeColor = (type: string) => {
     switch (type) {
-      case 'core_biopsy': return 'blue';
-      case 'fine_needle': return 'green';
-      case 'excisional': return 'orange';
-      case 'incisional': return 'purple';
-      case 'endoscopic': return 'cyan';
-      case 'surgical': return 'red';
-      default: return 'gray';
+      case 'core_biopsy':
+        return 'blue';
+      case 'fine_needle':
+        return 'green';
+      case 'excisional':
+        return 'orange';
+      case 'incisional':
+        return 'purple';
+      case 'endoscopic':
+        return 'cyan';
+      case 'surgical':
+        return 'red';
+      default:
+        return 'gray';
     }
   };
 
   const getDiagnosisCategoryColor = (category: string) => {
     switch (category) {
-      case 'benign': return 'green';
-      case 'malignant': return 'red';
-      case 'suspicious': return 'orange';
-      case 'inflammatory': return 'blue';
-      case 'infectious': return 'purple';
-      case 'normal': return 'gray';
-      default: return 'gray';
+      case 'benign':
+        return 'green';
+      case 'malignant':
+        return 'red';
+      case 'suspicious':
+        return 'orange';
+      case 'inflammatory':
+        return 'blue';
+      case 'infectious':
+        return 'purple';
+      case 'normal':
+        return 'gray';
+      default:
+        return 'gray';
     }
   };
 
@@ -364,29 +415,29 @@ const PathologyManagement = () => {
       value: pathologyStats?.tests?.total || 0,
       icon: IconFlask,
       color: 'blue',
-      trend: '+0%'
+      trend: '+0%',
     },
     {
       title: 'Pending Orders',
       value: pathologyStats?.orders?.pending || 0,
       icon: IconReportMedical,
       color: 'orange',
-      trend: '0'
+      trend: '0',
     },
     {
       title: 'Completed Orders',
       value: pathologyStats?.orders?.completed || 0,
       icon: IconMicroscope,
       color: 'green',
-      trend: '+0'
+      trend: '+0',
     },
     {
       title: 'Active Tests',
       value: pathologyStats?.tests?.active || 0,
       icon: IconUsers,
       color: 'purple',
-      trend: '0% available'
-    }
+      trend: '0% available',
+    },
   ];
 
   // Chart data
@@ -407,18 +458,10 @@ const PathologyManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openAddSpecimen}
-            color="blue"
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddSpecimen} color="blue">
             New Specimen
           </Button>
-          <Button
-            variant="light"
-            leftSection={<IconMicroscope size={16} />}
-            color="green"
-          >
+          <Button variant="light" leftSection={<IconMicroscope size={16} />} color="green">
             Quick Test
           </Button>
         </Group>
@@ -444,14 +487,18 @@ const PathologyManagement = () => {
                 </ThemeIcon>
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'} 
+                <Badge
+                  color={
+                    stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'
+                  }
                   variant="light"
                   size="sm"
                 >
                   {stat.trend}
                 </Badge>
-                <Text size="xs" c="dimmed">vs last month</Text>
+                <Text size="xs" c="dimmed">
+                  vs last month
+                </Text>
               </Group>
             </Card>
           );
@@ -490,11 +537,19 @@ const PathologyManagement = () => {
             {loading && (
               <Group justify="center" mb="md">
                 <Loader size="sm" />
-                <Text size="sm" c="dimmed">Loading pathology data...</Text>
+                <Text size="sm" c="dimmed">
+                  Loading pathology data...
+                </Text>
               </Group>
             )}
             {error && (
-              <Alert icon={<IconAlertCircle size={16} />} color="red" mb="md" onClose={() => setError(null)} withCloseButton>
+              <Alert
+                icon={<IconAlertCircle size={16} />}
+                color="red"
+                mb="md"
+                onClose={() => setError(null)}
+                withCloseButton
+              >
                 {error}
               </Alert>
             )}
@@ -515,7 +570,7 @@ const PathologyManagement = () => {
                   { value: 'cytology', label: 'Cytology' },
                   { value: 'blood', label: 'Blood' },
                   { value: 'bone_marrow', label: 'Bone Marrow' },
-                  { value: 'frozen_section', label: 'Frozen Section' }
+                  { value: 'frozen_section', label: 'Frozen Section' },
                 ]}
                 value={selectedType}
                 onChange={setSelectedType}
@@ -528,7 +583,7 @@ const PathologyManagement = () => {
                   { value: 'processing', label: 'Processing' },
                   { value: 'completed', label: 'Completed' },
                   { value: 'reported', label: 'Reported' },
-                  { value: 'archived', label: 'Archived' }
+                  { value: 'archived', label: 'Archived' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -542,7 +597,7 @@ const PathologyManagement = () => {
                   { value: 'excisional', label: 'Excisional' },
                   { value: 'incisional', label: 'Incisional' },
                   { value: 'endoscopic', label: 'Endoscopic' },
-                  { value: 'surgical', label: 'Surgical' }
+                  { value: 'surgical', label: 'Surgical' },
                 ]}
                 value={selectedBiopsyType}
                 onChange={setSelectedBiopsyType}
@@ -597,11 +652,13 @@ const PathologyManagement = () => {
                         <Table.Td>
                           <Group>
                             <Avatar color="blue" radius="xl" size="sm">
-                              {specimen.patient?.firstName?.[0] || 'P'}{specimen.patient?.lastName?.[0] || 'S'}
+                              {specimen.patient?.firstName?.[0] || 'P'}
+                              {specimen.patient?.lastName?.[0] || 'S'}
                             </Avatar>
                             <div>
                               <Text size="sm" fw={500}>
-                                {specimen.patient?.firstName || 'N/A'} {specimen.patient?.lastName || ''}
+                                {specimen.patient?.firstName || 'N/A'}{' '}
+                                {specimen.patient?.lastName || ''}
                               </Text>
                               <Text size="xs" c="dimmed">
                                 MRN: {specimen.patient?.medicalRecordNumber || 'N/A'}
@@ -610,7 +667,10 @@ const PathologyManagement = () => {
                           </Group>
                         </Table.Td>
                         <Table.Td>
-                          <Badge color={getSpecimenTypeColor(specimen.specimenType)} variant="light">
+                          <Badge
+                            color={getSpecimenTypeColor(specimen.specimenType)}
+                            variant="light"
+                          >
                             {specimen.specimenType.replace('_', ' ').toUpperCase()}
                           </Badge>
                         </Table.Td>
@@ -622,15 +682,29 @@ const PathologyManagement = () => {
                         <Table.Td>
                           <div>
                             <Text size="sm" fw={500}>
-                              {specimen.collectionDate ? (typeof specimen.collectionDate === 'string' ? specimen.collectionDate : new Date(specimen.collectionDate).toISOString().split('T')[0]) : 'N/A'}
+                              {specimen.collectionDate
+                                ? typeof specimen.collectionDate === 'string'
+                                  ? specimen.collectionDate
+                                  : new Date(specimen.collectionDate).toISOString().split('T')[0]
+                                : 'N/A'}
                             </Text>
                             <Text size="xs" c="dimmed">
-                              {specimen.collectionDate && typeof specimen.collectionDate !== 'string' ? new Date(specimen.collectionDate).toISOString().split('T')[1].substring(0, 5) : ''}
+                              {specimen.collectionDate &&
+                              typeof specimen.collectionDate !== 'string'
+                                ? new Date(specimen.collectionDate)
+                                    .toISOString()
+                                    .split('T')[1]
+                                    .substring(0, 5)
+                                : ''}
                             </Text>
                           </div>
                         </Table.Td>
                         <Table.Td>
-                          <Badge color={getBiopsyTypeColor(specimen.biopsyType)} variant="light" size="sm">
+                          <Badge
+                            color={getBiopsyTypeColor(specimen.biopsyType)}
+                            variant="light"
+                            size="sm"
+                          >
                             {specimen.biopsyType.replace('_', ' ')}
                           </Badge>
                         </Table.Td>
@@ -678,10 +752,7 @@ const PathologyManagement = () => {
                                   Print Label
                                 </Menu.Item>
                                 <Menu.Divider />
-                                <Menu.Item 
-                                  leftSection={<IconX size={14} />}
-                                  color="red"
-                                >
+                                <Menu.Item leftSection={<IconX size={14} />} color="red">
                                   Reject Specimen
                                 </Menu.Item>
                               </Menu.Dropdown>
@@ -714,91 +785,122 @@ const PathologyManagement = () => {
 
             {/* Reports Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((report: any) => (
-                <Card key={report.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{report.reportId}</Text>
-                      <Text size="sm" c="dimmed">{report.specimenType}</Text>
-                    </div>
-                    <Badge color={getStatusColor(report.status)} variant="light">
-                      {report.status}
-                    </Badge>
-                  </Group>
+              {[].map(
+                /* TODO: Fetch from API */ (report: any) => (
+                  <Card key={report.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {report.reportId}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {report.specimenType}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(report.status)} variant="light">
+                        {report.status}
+                      </Badge>
+                    </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Patient</Text>
-                      <Text size="sm" fw={500}>
-                        {report.patient?.firstName || 'N/A'} {report.patient?.lastName || ''}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Pathologist</Text>
-                      <Text size="sm" fw={500}>
-                        {report.pathologist?.lastName ? `Dr. ${report.pathologist.lastName}` : 'N/A'}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Collection Date</Text>
-                      <Text size="sm">
-                        {report.collectionDate ? (typeof report.collectionDate === 'string' ? report.collectionDate : new Date(report.collectionDate).toISOString().split('T')[0]) : 'N/A'}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Report Date</Text>
-                      <Text size="sm">
-                        {report.reportDate ? (typeof report.reportDate === 'string' ? report.reportDate : new Date(report.reportDate).toISOString().split('T')[0]) : 'Pending'}
-                      </Text>
-                    </Group>
-                  </Stack>
-
-                  {report.diagnosis && (
-                    <div style={{ marginBottom: '1rem' }}>
-                      <Text size="sm" fw={500} mb="xs">Primary Diagnosis</Text>
-                      <Group gap="xs" mb="sm">
-                        <Badge color={getDiagnosisCategoryColor(report.diagnosisCategory)} variant="light">
-                          {report.diagnosisCategory?.toUpperCase() || 'N/A'}
-                        </Badge>
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Patient
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {report.patient?.firstName || 'N/A'} {report.patient?.lastName || ''}
+                        </Text>
                       </Group>
-                      <Text size="sm" lineClamp={2}>
-                        {report.diagnosis}
-                      </Text>
-                    </div>
-                  )}
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Pathologist
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {report.pathologist?.lastName
+                            ? `Dr. ${report.pathologist.lastName}`
+                            : 'N/A'}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Collection Date
+                        </Text>
+                        <Text size="sm">
+                          {report.collectionDate
+                            ? typeof report.collectionDate === 'string'
+                              ? report.collectionDate
+                              : new Date(report.collectionDate).toISOString().split('T')[0]
+                            : 'N/A'}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Report Date
+                        </Text>
+                        <Text size="sm">
+                          {report.reportDate
+                            ? typeof report.reportDate === 'string'
+                              ? report.reportDate
+                              : new Date(report.reportDate).toISOString().split('T')[0]
+                            : 'Pending'}
+                        </Text>
+                      </Group>
+                    </Stack>
 
-                  {report.microscopicFindings && (
-                    <Spoiler maxHeight={60} showLabel="Show findings" hideLabel="Hide">
-                      <Text size="sm" fw={500} mb="xs">Microscopic Findings</Text>
-                      <Text size="sm" c="dimmed">
-                        {report.microscopicFindings}
-                      </Text>
-                    </Spoiler>
-                  )}
+                    {report.diagnosis && (
+                      <div style={{ marginBottom: '1rem' }}>
+                        <Text size="sm" fw={500} mb="xs">
+                          Primary Diagnosis
+                        </Text>
+                        <Group gap="xs" mb="sm">
+                          <Badge
+                            color={getDiagnosisCategoryColor(report.diagnosisCategory)}
+                            variant="light"
+                          >
+                            {report.diagnosisCategory?.toUpperCase() || 'N/A'}
+                          </Badge>
+                        </Group>
+                        <Text size="sm" lineClamp={2}>
+                          {report.diagnosis}
+                        </Text>
+                      </div>
+                    )}
 
-                  <Group justify="space-between" mt="md">
-                    <Text size="xs" c="dimmed">
-                      {report.isUrgent && <Mark color="red">URGENT</Mark>}
-                      TAT: {report.turnaroundTime}h
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewReport(report)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
+                    {report.microscopicFindings && (
+                      <Spoiler maxHeight={60} showLabel="Show findings" hideLabel="Hide">
+                        <Text size="sm" fw={500} mb="xs">
+                          Microscopic Findings
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {report.microscopicFindings}
+                        </Text>
+                      </Spoiler>
+                    )}
+
+                    <Group justify="space-between" mt="md">
+                      <Text size="xs" c="dimmed">
+                        {report.isUrgent && <Mark color="red">URGENT</Mark>}
+                        TAT: {report.turnaroundTime}h
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewReport(report)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -809,9 +911,7 @@ const PathologyManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Histology Slides</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />}>
-                  Prepare Slides
-                </Button>
+                <Button leftSection={<IconPlus size={16} />}>Prepare Slides</Button>
                 <Button variant="light" leftSection={<IconMicroscope size={16} />}>
                   Digital Microscopy
                 </Button>
@@ -820,95 +920,117 @@ const PathologyManagement = () => {
 
             {/* Histology Slides Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((slide) => (
-                <Card key={slide.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{slide.slideId}</Text>
-                      <Text size="sm" c="dimmed">Block: {slide.blockId}</Text>
-                    </div>
-                    <Badge color={getStatusColor(slide.status)} variant="light">
-                      {slide.status}
-                    </Badge>
-                  </Group>
-
-                  {/* Slide Thumbnail */}
-                  <div
-                    style={{
-                      height: '100px',
-                      backgroundColor: '#f1f3f4',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '1rem',
-                      position: 'relative'
-                    }}
-                  >
-                    <IconMicroscope size={32} color="#868e96" />
-                    <div style={{
-                      position: 'absolute',
-                      top: '8px',
-                      right: '8px',
-                      backgroundColor: 'rgba(255,255,255,0.9)',
-                      borderRadius: '4px',
-                      padding: '2px 6px'
-                    }}>
-                      <Text size="xs" fw={500}>{slide.magnification}x</Text>
-                    </div>
-                  </div>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Patient</Text>
-                      <Text size="sm" fw={500}>
-                        {slide.patient?.firstName || 'N/A'} {slide.patient?.lastName || ''}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Staining</Text>
+              {[].map(
+                /* TODO: Fetch from API */ (slide) => (
+                  <Card key={slide.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
                       <div>
-                        {slide.staining.map((stain) => (
-                          <Badge key={stain} size="xs" variant="light" mr="xs">
-                            {stain.toUpperCase()}
-                          </Badge>
-                        ))}
+                        <Text fw={600} size="lg">
+                          {slide.slideId}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          Block: {slide.blockId}
+                        </Text>
                       </div>
+                      <Badge color={getStatusColor(slide.status)} variant="light">
+                        {slide.status}
+                      </Badge>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Section Thickness</Text>
-                      <Text size="sm">{slide.sectionThickness}μm</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Preparation Date</Text>
-                      <Text size="sm">
-                        {slide.preparationDate ? (typeof slide.preparationDate === 'string' ? slide.preparationDate : new Date(slide.preparationDate).toISOString().split('T')[0]) : 'N/A'}
-                      </Text>
-                    </Group>
-                  </Stack>
 
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Quality: {slide.qualityScore}/10
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewSlide(slide)}
+                    {/* Slide Thumbnail */}
+                    <div
+                      style={{
+                        height: '100px',
+                        backgroundColor: '#f1f3f4',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '1rem',
+                        position: 'relative',
+                      }}
+                    >
+                      <IconMicroscope size={32} color="#868e96" />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '8px',
+                          right: '8px',
+                          backgroundColor: 'rgba(255,255,255,0.9)',
+                          borderRadius: '4px',
+                          padding: '2px 6px',
+                        }}
                       >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconMicroscope size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
+                        <Text size="xs" fw={500}>
+                          {slide.magnification}x
+                        </Text>
+                      </div>
+                    </div>
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Patient
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {slide.patient?.firstName || 'N/A'} {slide.patient?.lastName || ''}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Staining
+                        </Text>
+                        <div>
+                          {slide.staining.map((stain) => (
+                            <Badge key={stain} size="xs" variant="light" mr="xs">
+                              {stain.toUpperCase()}
+                            </Badge>
+                          ))}
+                        </div>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Section Thickness
+                        </Text>
+                        <Text size="sm">{slide.sectionThickness}μm</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Preparation Date
+                        </Text>
+                        <Text size="sm">
+                          {slide.preparationDate
+                            ? typeof slide.preparationDate === 'string'
+                              ? slide.preparationDate
+                              : new Date(slide.preparationDate).toISOString().split('T')[0]
+                            : 'N/A'}
+                        </Text>
+                      </Group>
+                    </Stack>
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Quality: {slide.qualityScore}/10
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewSlide(slide)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconMicroscope size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -919,9 +1041,7 @@ const PathologyManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Cytology Specimens</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />}>
-                  New Cytology
-                </Button>
+                <Button leftSection={<IconPlus size={16} />}>New Cytology</Button>
                 <Button variant="light" leftSection={<IconDroplet size={16} />}>
                   Liquid Based
                 </Button>
@@ -930,95 +1050,115 @@ const PathologyManagement = () => {
 
             {/* Cytology Slides Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((slide) => (
-                <Card key={slide.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{slide.slideId}</Text>
-                      <Text size="sm" c="dimmed">{slide.specimenType}</Text>
-                    </div>
-                    <Badge color={getStatusColor(slide.status)} variant="light">
-                      {slide.status}
-                    </Badge>
-                  </Group>
-
-                  {/* Cytology Slide Thumbnail */}
-                  <div
-                    style={{
-                      height: '100px',
-                      backgroundColor: '#e3f2fd',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '1rem'
-                    }}
-                  >
-                    <IconDroplet size={32} color="#1976d2" />
-                  </div>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Patient</Text>
-                      <Text size="sm" fw={500}>
-                        {slide.patient?.firstName || 'N/A'} {slide.patient?.lastName || ''}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Collection Method</Text>
-                      <Badge color="blue" variant="light" size="sm">
-                        {slide.collectionMethod.replace('_', ' ')}
+              {[].map(
+                /* TODO: Fetch from API */ (slide) => (
+                  <Card key={slide.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {slide.slideId}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {slide.specimenType}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(slide.status)} variant="light">
+                        {slide.status}
                       </Badge>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Adequacy</Text>
-                      <Badge 
-                        color={slide.adequacy === 'adequate' ? 'green' : 'orange'} 
-                        variant="light" 
-                        size="sm"
-                      >
-                        {slide.adequacy}
-                      </Badge>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Collection Date</Text>
-                      <Text size="sm">
-                        {slide.collectionDate ? (typeof slide.collectionDate === 'string' ? slide.collectionDate : new Date(slide.collectionDate).toISOString().split('T')[0]) : 'N/A'}
-                      </Text>
-                    </Group>
-                  </Stack>
 
-                  {slide.interpretation && (
-                    <div style={{ marginBottom: '0.5rem' }}>
-                      <Text size="sm" fw={500} mb="xs">Interpretation</Text>
-                      <Text size="sm" lineClamp={2} c="dimmed">
-                        {slide.interpretation}
-                      </Text>
+                    {/* Cytology Slide Thumbnail */}
+                    <div
+                      style={{
+                        height: '100px',
+                        backgroundColor: '#e3f2fd',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '1rem',
+                      }}
+                    >
+                      <IconDroplet size={32} color="#1976d2" />
                     </div>
-                  )}
 
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Screening: {slide.screeningDate ? 'Complete' : 'Pending'}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewSlide(slide)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconMicroscope size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconFileReport size={16} />
-                      </ActionIcon>
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Patient
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {slide.patient?.firstName || 'N/A'} {slide.patient?.lastName || ''}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Collection Method
+                        </Text>
+                        <Badge color="blue" variant="light" size="sm">
+                          {slide.collectionMethod.replace('_', ' ')}
+                        </Badge>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Adequacy
+                        </Text>
+                        <Badge
+                          color={slide.adequacy === 'adequate' ? 'green' : 'orange'}
+                          variant="light"
+                          size="sm"
+                        >
+                          {slide.adequacy}
+                        </Badge>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Collection Date
+                        </Text>
+                        <Text size="sm">
+                          {slide.collectionDate
+                            ? typeof slide.collectionDate === 'string'
+                              ? slide.collectionDate
+                              : new Date(slide.collectionDate).toISOString().split('T')[0]
+                            : 'N/A'}
+                        </Text>
+                      </Group>
+                    </Stack>
+
+                    {slide.interpretation && (
+                      <div style={{ marginBottom: '0.5rem' }}>
+                        <Text size="sm" fw={500} mb="xs">
+                          Interpretation
+                        </Text>
+                        <Text size="sm" lineClamp={2} c="dimmed">
+                          {slide.interpretation}
+                        </Text>
+                      </div>
+                    )}
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Screening: {slide.screeningDate ? 'Complete' : 'Pending'}
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewSlide(slide)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconMicroscope size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconFileReport size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -1040,78 +1180,102 @@ const PathologyManagement = () => {
 
             {/* Molecular Tests Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((test) => (
-                <Card key={test.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{test.testId}</Text>
-                      <Text size="sm" c="dimmed">{test.testType}</Text>
-                    </div>
-                    <Badge color={getStatusColor(test.status)} variant="light">
-                      {test.status}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Patient</Text>
-                      <Text size="sm" fw={500}>
-                        {test.patient?.firstName || 'N/A'} {test.patient?.lastName || ''}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Gene/Marker</Text>
-                      <Badge color="purple" variant="light">
-                        {test.geneMarker}
+              {[].map(
+                /* TODO: Fetch from API */ (test) => (
+                  <Card key={test.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {test.testId}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {test.testType}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(test.status)} variant="light">
+                        {test.status}
                       </Badge>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Method</Text>
-                      <Text size="sm">{test.methodology}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Ordered Date</Text>
-                      <Text size="sm">
-                        {test.orderedDate ? (typeof test.orderedDate === 'string' ? test.orderedDate : new Date(test.orderedDate).toISOString().split('T')[0]) : 'N/A'}
-                      </Text>
-                    </Group>
-                  </Stack>
 
-                  {test.result && (
-                    <Alert 
-                      variant="light" 
-                      color={test.result === 'positive' ? 'red' : test.result === 'negative' ? 'green' : 'blue'}
-                      mb="md"
-                    >
-                      <Text size="sm" fw={500}>
-                        Result: {test.result.toUpperCase()}
-                      </Text>
-                      {test.interpretation && (
-                        <Text size="sm" mt="xs">
-                          {test.interpretation}
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Patient
                         </Text>
-                      )}
-                    </Alert>
-                  )}
+                        <Text size="sm" fw={500}>
+                          {test.patient?.firstName || 'N/A'} {test.patient?.lastName || ''}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Gene/Marker
+                        </Text>
+                        <Badge color="purple" variant="light">
+                          {test.geneMarker}
+                        </Badge>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Method
+                        </Text>
+                        <Text size="sm">{test.methodology}</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Ordered Date
+                        </Text>
+                        <Text size="sm">
+                          {test.orderedDate
+                            ? typeof test.orderedDate === 'string'
+                              ? test.orderedDate
+                              : new Date(test.orderedDate).toISOString().split('T')[0]
+                            : 'N/A'}
+                        </Text>
+                      </Group>
+                    </Stack>
 
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      TAT: {test.turnaroundTime}h
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconDna size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
+                    {test.result && (
+                      <Alert
+                        variant="light"
+                        color={
+                          test.result === 'positive'
+                            ? 'red'
+                            : test.result === 'negative'
+                              ? 'green'
+                              : 'blue'
+                        }
+                        mb="md"
+                      >
+                        <Text size="sm" fw={500}>
+                          Result: {test.result.toUpperCase()}
+                        </Text>
+                        {test.interpretation && (
+                          <Text size="sm" mt="xs">
+                            {test.interpretation}
+                          </Text>
+                        )}
+                      </Alert>
+                    )}
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        TAT: {test.turnaroundTime}h
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconDna size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -1121,92 +1285,115 @@ const PathologyManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Pathologists</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Add Pathologist
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Add Pathologist</Button>
             </Group>
 
             {/* Pathologists Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((pathologist) => (
-                <Card key={pathologist.id} padding="lg" radius="md" withBorder>
-                  <Group mb="md">
-                    <Avatar size="lg" color="blue" radius="xl">
-                      {pathologist.firstName[0]}{pathologist.lastName[0]}
-                    </Avatar>
+              {[].map(
+                /* TODO: Fetch from API */ (pathologist) => (
+                  <Card key={pathologist.id} padding="lg" radius="md" withBorder>
+                    <Group mb="md">
+                      <Avatar size="lg" color="blue" radius="xl">
+                        {pathologist.firstName[0]}
+                        {pathologist.lastName[0]}
+                      </Avatar>
+                      <div>
+                        <Text fw={600} size="lg">
+                          Dr. {pathologist.firstName} {pathologist.lastName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {pathologist.specialization}
+                        </Text>
+                        <Badge
+                          color={pathologist.isAvailable ? 'green' : 'red'}
+                          variant="light"
+                          size="sm"
+                        >
+                          {pathologist.isAvailable ? 'Available' : 'Busy'}
+                        </Badge>
+                      </div>
+                    </Group>
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          License
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {pathologist.licenseNumber}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Experience
+                        </Text>
+                        <Text size="sm">{pathologist.yearsOfExperience} years</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Cases (Month)
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {pathologist.casesThisMonth}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Pending Reports
+                        </Text>
+                        <Badge
+                          color={
+                            pathologist.pendingReports > 10
+                              ? 'red'
+                              : pathologist.pendingReports > 5
+                                ? 'orange'
+                                : 'green'
+                          }
+                          variant="light"
+                        >
+                          {pathologist.pendingReports}
+                        </Badge>
+                      </Group>
+                    </Stack>
+
                     <div>
-                      <Text fw={600} size="lg">
-                        Dr. {pathologist.firstName} {pathologist.lastName}
+                      <Text size="sm" fw={500} mb="xs">
+                        Subspecialties
                       </Text>
-                      <Text size="sm" c="dimmed">{pathologist.specialization}</Text>
-                      <Badge 
-                        color={pathologist.isAvailable ? 'green' : 'red'} 
-                        variant="light" 
-                        size="sm"
-                      >
-                        {pathologist.isAvailable ? 'Available' : 'Busy'}
-                      </Badge>
+                      <Group gap="xs">
+                        {pathologist.subspecialties.slice(0, 3).map((specialty) => (
+                          <Badge key={specialty} size="xs" variant="light">
+                            {specialty}
+                          </Badge>
+                        ))}
+                        {pathologist.subspecialties.length > 3 && (
+                          <Badge size="xs" variant="light" color="gray">
+                            +{pathologist.subspecialties.length - 3}
+                          </Badge>
+                        )}
+                      </Group>
                     </div>
-                  </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">License</Text>
-                      <Text size="sm" fw={500}>{pathologist.licenseNumber}</Text>
+                    <Group justify="space-between" mt="md">
+                      <Text size="xs" c="dimmed">
+                        Avg TAT: {pathologist.averageTurnaroundTime}h
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconMail size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconPhone size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Experience</Text>
-                      <Text size="sm">{pathologist.yearsOfExperience} years</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Cases (Month)</Text>
-                      <Text size="sm" fw={500}>{pathologist.casesThisMonth}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Pending Reports</Text>
-                      <Badge 
-                        color={pathologist.pendingReports > 10 ? 'red' : pathologist.pendingReports > 5 ? 'orange' : 'green'} 
-                        variant="light"
-                      >
-                        {pathologist.pendingReports}
-                      </Badge>
-                    </Group>
-                  </Stack>
-
-                  <div>
-                    <Text size="sm" fw={500} mb="xs">Subspecialties</Text>
-                    <Group gap="xs">
-                      {pathologist.subspecialties.slice(0, 3).map((specialty) => (
-                        <Badge key={specialty} size="xs" variant="light">
-                          {specialty}
-                        </Badge>
-                      ))}
-                      {pathologist.subspecialties.length > 3 && (
-                        <Badge size="xs" variant="light" color="gray">
-                          +{pathologist.subspecialties.length - 3}
-                        </Badge>
-                      )}
-                    </Group>
-                  </div>
-
-                  <Group justify="space-between" mt="md">
-                    <Text size="xs" c="dimmed">
-                      Avg TAT: {pathologist.averageTurnaroundTime}h
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconMail size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconPhone size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -1214,55 +1401,60 @@ const PathologyManagement = () => {
         {/* Analytics Tab */}
         <Tabs.Panel value="analytics">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Pathology Analytics</Title>
-            
+            <Title order={3} mb="lg">
+              Pathology Analytics
+            </Title>
+
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Specimen Types Distribution */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Specimens by Type</Title>
-                <MantineDonutChart
-                  data={specimenTypeData}
-                  size={160}
-                  thickness={30}
-                  withLabels
-                />
+                <Title order={4} mb="md">
+                  Specimens by Type
+                </Title>
+                <MantineDonutChart data={specimenTypeData} size={160} thickness={30} withLabels />
               </Card>
-              
+
               {/* Monthly Volume */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Monthly Pathology Volume</Title>
+                <Title order={4} mb="md">
+                  Monthly Pathology Volume
+                </Title>
                 <SimpleAreaChart
                   data={monthlyVolume}
                   dataKey="month"
                   series={[{ name: 'volume', color: 'blue.6' }]}
                 />
               </Card>
-              
+
               {/* Diagnosis Distribution */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Diagnosis Distribution</Title>
+                <Title order={4} mb="md">
+                  Diagnosis Distribution
+                </Title>
                 <SimpleBarChart
                   data={diagnosisDistribution}
                   dataKey="category"
                   series={[{ name: 'count', color: 'green.6' }]}
                 />
               </Card>
-              
+
               {/* Turnaround Times */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Average Turnaround Times</Title>
+                <Title order={4} mb="md">
+                  Average Turnaround Times
+                </Title>
                 <SimpleBarChart
                   data={turnaroundTimes}
                   dataKey="type"
-                  series={[
-                    { name: 'hours', color: 'orange.6' }
-                  ]}
+                  series={[{ name: 'hours', color: 'orange.6' }]}
                 />
               </Card>
-              
+
               {/* Key Metrics */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
-                <Title order={4} mb="md">Key Performance Indicators</Title>
+                <Title order={4} mb="md">
+                  Key Performance Indicators
+                </Title>
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
@@ -1275,9 +1467,11 @@ const PathologyManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Report Completion Rate</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Report Completion Rate
+                    </Text>
                   </div>
-                  
+
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
                       size={120}
@@ -1289,9 +1483,11 @@ const PathologyManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Avg Turnaround Time</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Avg Turnaround Time
+                    </Text>
                   </div>
-                  
+
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
                       size={120}
@@ -1303,9 +1499,11 @@ const PathologyManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Quality Score</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Quality Score
+                    </Text>
                   </div>
-                  
+
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
                       size={120}
@@ -1317,7 +1515,9 @@ const PathologyManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Critical Alerts</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Critical Alerts
+                    </Text>
                   </div>
                 </SimpleGrid>
               </Card>
@@ -1353,47 +1553,70 @@ const PathologyManagement = () => {
 
               <SimpleGrid cols={2}>
                 <div>
-                  <Text size="sm" fw={500}>Patient</Text>
+                  <Text size="sm" fw={500}>
+                    Patient
+                  </Text>
                   <Text size="sm" c="dimmed">
-                    {selectedSpecimen.patient?.firstName || 'N/A'} {selectedSpecimen.patient?.lastName || ''}
+                    {selectedSpecimen.patient?.firstName || 'N/A'}{' '}
+                    {selectedSpecimen.patient?.lastName || ''}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Medical Record Number</Text>
-                  <Text size="sm" c="dimmed">{selectedSpecimen.patient?.medicalRecordNumber || 'N/A'}</Text>
+                  <Text size="sm" fw={500}>
+                    Medical Record Number
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedSpecimen.patient?.medicalRecordNumber || 'N/A'}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Specimen Type</Text>
-                  <Badge color={getSpecimenTypeColor(selectedSpecimen.specimenType)} variant="light">
+                  <Text size="sm" fw={500}>
+                    Specimen Type
+                  </Text>
+                  <Badge
+                    color={getSpecimenTypeColor(selectedSpecimen.specimenType)}
+                    variant="light"
+                  >
                     {selectedSpecimen.specimenType.replace('_', ' ').toUpperCase()}
                   </Badge>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Biopsy Type</Text>
+                  <Text size="sm" fw={500}>
+                    Biopsy Type
+                  </Text>
                   <Badge color={getBiopsyTypeColor(selectedSpecimen.biopsyType)} variant="light">
                     {selectedSpecimen.biopsyType.replace('_', ' ')}
                   </Badge>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Collection Date</Text>
+                  <Text size="sm" fw={500}>
+                    Collection Date
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {new Date(selectedSpecimen.collectionDate).toLocaleString()}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Received Date</Text>
+                  <Text size="sm" fw={500}>
+                    Received Date
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {new Date(selectedSpecimen.receivedDate).toLocaleString()}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Pathologist</Text>
+                  <Text size="sm" fw={500}>
+                    Pathologist
+                  </Text>
                   <Text size="sm" c="dimmed">
-                    Dr. {selectedSpecimen.pathologist.firstName} {selectedSpecimen.pathologist.lastName}
+                    Dr. {selectedSpecimen.pathologist.firstName}{' '}
+                    {selectedSpecimen.pathologist.lastName}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Priority</Text>
+                  <Text size="sm" fw={500}>
+                    Priority
+                  </Text>
                   <Badge color={selectedSpecimen.isUrgent ? 'red' : 'blue'} variant="light">
                     {selectedSpecimen.isUrgent ? 'URGENT' : 'ROUTINE'}
                   </Badge>
@@ -1404,7 +1627,9 @@ const PathologyManagement = () => {
                 <>
                   <Divider />
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Clinical History</Text>
+                    <Text size="sm" fw={500} mb="sm">
+                      Clinical History
+                    </Text>
                     <Text size="sm">{selectedSpecimen.clinicalHistory}</Text>
                   </div>
                 </>
@@ -1414,7 +1639,9 @@ const PathologyManagement = () => {
                 <>
                   <Divider />
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Gross Description</Text>
+                    <Text size="sm" fw={500} mb="sm">
+                      Gross Description
+                    </Text>
                     <Text size="sm">{selectedSpecimen.grossDescription}</Text>
                   </div>
                 </>
@@ -1424,12 +1651,8 @@ const PathologyManagement = () => {
                 <Button variant="light" onClick={closeSpecimenDetail}>
                   Close
                 </Button>
-                <Button leftSection={<IconReportMedical size={16} />}>
-                  Create Report
-                </Button>
-                <Button leftSection={<IconEdit size={16} />}>
-                  Edit Specimen
-                </Button>
+                <Button leftSection={<IconReportMedical size={16} />}>Create Report</Button>
+                <Button leftSection={<IconEdit size={16} />}>Edit Specimen</Button>
               </Group>
             </Stack>
           </ScrollArea>
@@ -1448,23 +1671,27 @@ const PathologyManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={[].map /* TODO: Fetch from API */(patient => ({ 
-                value: patient.id, 
-                label: `${patient.firstName} ${patient.lastName}` 
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (patient) => ({
+                  value: patient.id,
+                  label: `${patient.firstName} ${patient.lastName}`,
+                })
+              )}
               required
             />
             <Select
               label="Pathologist"
               placeholder="Select pathologist"
-              data={[].map /* TODO: Fetch from API */(pathologist => ({ 
-                value: pathologist.id, 
-                label: `Dr. ${pathologist.firstName} ${pathologist.lastName}` 
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (pathologist) => ({
+                  value: pathologist.id,
+                  label: `Dr. ${pathologist.firstName} ${pathologist.lastName}`,
+                })
+              )}
               required
             />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
             <Select
               label="Specimen Type"
@@ -1475,7 +1702,7 @@ const PathologyManagement = () => {
                 { value: 'cytology', label: 'Cytology' },
                 { value: 'blood', label: 'Blood' },
                 { value: 'bone_marrow', label: 'Bone Marrow' },
-                { value: 'frozen_section', label: 'Frozen Section' }
+                { value: 'frozen_section', label: 'Frozen Section' },
               ]}
               required
             />
@@ -1488,73 +1715,62 @@ const PathologyManagement = () => {
                 { value: 'excisional', label: 'Excisional' },
                 { value: 'incisional', label: 'Incisional' },
                 { value: 'endoscopic', label: 'Endoscopic' },
-                { value: 'surgical', label: 'Surgical' }
+                { value: 'surgical', label: 'Surgical' },
               ]}
               required
             />
           </SimpleGrid>
-          
-          <TextInput
-            label="Source Location"
-            placeholder="Enter anatomical location"
-            required
-          />
-          
+
+          <TextInput label="Source Location" placeholder="Enter anatomical location" required />
+
           <SimpleGrid cols={2}>
-            <TextInput
-              label="Collection Date"
-              placeholder="YYYY-MM-DD"
-              type="date"
-              required
-            />
+            <TextInput label="Collection Date" placeholder="YYYY-MM-DD" type="date" required />
             <Select
               label="Priority"
               placeholder="Select priority"
               data={[
                 { value: 'routine', label: 'Routine' },
-                { value: 'urgent', label: 'Urgent' }
+                { value: 'urgent', label: 'Urgent' },
               ]}
               required
             />
           </SimpleGrid>
-          
+
           <Textarea
             label="Clinical History"
             placeholder="Enter clinical history"
             rows={3}
             required
           />
-          
-          <Textarea
-            label="Gross Description"
-            placeholder="Enter gross description"
-            rows={3}
-          />
-          
+
+          <Textarea label="Gross Description" placeholder="Enter gross description" rows={3} />
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddSpecimen}>
               Cancel
             </Button>
-            <Button onClick={async () => {
-              try {
-                // Note: Creating specimens is not yet supported by the API
-                // This would need to be added to the pathology service
-                notifications.show({
-                  title: 'Specimen Received',
-                  message: 'Pathology specimen has been successfully logged',
-                  color: 'green',
-                });
-                closeAddSpecimen();
-                // Refresh data
-                await fetchLabTests();
-              } catch (err: any) {
-                notifications.show({
-                  title: 'Error',
-                  message: err.message || 'Failed to create specimen',
-                  color: 'red',
-                });
-              }
-            }}>
+            <Button
+              onClick={async () => {
+                try {
+                  // Note: Creating specimens is not yet supported by the API
+                  // This would need to be added to the pathology service
+                  notifications.show({
+                    title: 'Specimen Received',
+                    message: 'Pathology specimen has been successfully logged',
+                    color: 'green',
+                  });
+                  closeAddSpecimen();
+                  // Refresh data
+                  await fetchLabTests();
+                } catch (err: any) {
+                  notifications.show({
+                    title: 'Error',
+                    message: err.message || 'Failed to create specimen',
+                    color: 'red',
+                  });
+                }
+              }}
+            >
               Create Specimen
             </Button>
           </Group>
@@ -1573,9 +1789,12 @@ const PathologyManagement = () => {
           <div style={{ height: 'calc(100vh - 120px)' }}>
             <Group justify="space-between" mb="md">
               <div>
-                <Text fw={600} size="lg">Slide {selectedSlide.slideId}</Text>
+                <Text fw={600} size="lg">
+                  Slide {selectedSlide.slideId}
+                </Text>
                 <Text size="sm" c="dimmed">
-                  {selectedSlide.patient?.firstName || 'N/A'} {selectedSlide.patient?.lastName || ''}
+                  {selectedSlide.patient?.firstName || 'N/A'}{' '}
+                  {selectedSlide.patient?.lastName || ''}
                 </Text>
               </div>
               <Group>
@@ -1593,7 +1812,7 @@ const PathologyManagement = () => {
                 </Button>
               </Group>
             </Group>
-            
+
             <div
               style={{
                 height: 'calc(100% - 60px)',
@@ -1602,20 +1821,21 @@ const PathologyManagement = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                position: 'relative'
+                position: 'relative',
               }}
             >
               <div style={{ textAlign: 'center', color: '#868e96' }}>
                 <IconMicroscope size={120} />
-                <Text size="lg" mt="md">Digital Microscopy Viewer</Text>
+                <Text size="lg" mt="md">
+                  Digital Microscopy Viewer
+                </Text>
                 <Text size="sm" c="dimmed">
-                  {'magnification' in selectedSlide ? 
-                    `${selectedSlide.magnification}x magnification` : 
-                    'High resolution digital slides'
-                  }
+                  {'magnification' in selectedSlide
+                    ? `${selectedSlide.magnification}x magnification`
+                    : 'High resolution digital slides'}
                 </Text>
               </div>
-              
+
               {/* Microscopy viewer controls */}
               <div
                 style={{
@@ -1624,7 +1844,7 @@ const PathologyManagement = () => {
                   left: '50%',
                   transform: 'translateX(-50%)',
                   display: 'flex',
-                  gap: '10px'
+                  gap: '10px',
                 }}
               >
                 <ActionIcon color="white" variant="filled">

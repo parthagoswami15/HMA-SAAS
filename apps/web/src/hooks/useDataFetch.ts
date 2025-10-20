@@ -20,7 +20,7 @@ export function useDataFetch<T>({
   dependencies = [],
   onSuccess,
   onError,
-  initialData = null
+  initialData = null,
 }: UseDataFetchOptions<T>): UseDataFetchReturn<T> {
   const [data, setData] = useState<T | null>(initialData);
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,14 +45,14 @@ export function useDataFetch<T>({
 
   useEffect(() => {
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 
   return {
     data,
     loading,
     error,
-    refetch: fetchData
+    refetch: fetchData,
   };
 }
 

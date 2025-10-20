@@ -33,12 +33,9 @@ export class ApiError extends Error {
 /**
  * Generic API request function
  */
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
+async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = getAuthToken();
-  
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...options.headers,
@@ -55,16 +52,12 @@ async function apiRequest<T>(
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    
+
     // Parse response
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new ApiError(
-        data.message || `HTTP Error ${response.status}`,
-        response.status,
-        data
-      );
+      throw new ApiError(data.message || `HTTP Error ${response.status}`, response.status, data);
     }
 
     return data;
@@ -72,12 +65,9 @@ async function apiRequest<T>(
     if (error instanceof ApiError) {
       throw error;
     }
-    
+
     // Network or other errors
-    throw new ApiError(
-      error instanceof Error ? error.message : 'Network error',
-      0
-    );
+    throw new ApiError(error instanceof Error ? error.message : 'Network error', 0);
   }
 }
 
@@ -89,9 +79,7 @@ export const apiClient = {
    * GET request
    */
   get: <T>(endpoint: string, params?: Record<string, any>): Promise<T> => {
-    const queryString = params
-      ? '?' + new URLSearchParams(params).toString()
-      : '';
+    const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
     return apiRequest<T>(`${endpoint}${queryString}`, {
       method: 'GET',
     });

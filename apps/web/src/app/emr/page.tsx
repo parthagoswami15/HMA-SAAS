@@ -19,7 +19,7 @@ import {
   Alert,
   ActionIcon,
   Menu,
-  Avatar
+  Avatar,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
@@ -33,7 +33,7 @@ import {
   IconAlertCircle,
   IconFiles,
   IconClipboardList,
-  IconActivity
+  IconActivity,
 } from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
@@ -43,7 +43,11 @@ import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn } from '../../types/common';
 import emrService from '../../services/emr.service';
 import patientsService from '../../services/patients.service';
-import type { CreateMedicalRecordDto, UpdateMedicalRecordDto, EmrFilters } from '../../services/emr.service';
+import type {
+  CreateMedicalRecordDto,
+  UpdateMedicalRecordDto,
+  EmrFilters,
+} from '../../services/emr.service';
 
 const mockUser: User = {
   id: '1',
@@ -84,7 +88,7 @@ function EmrPage() {
     fetchRecords();
     fetchPatients();
     fetchDoctors();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchRecords = async () => {
@@ -246,7 +250,7 @@ function EmrPage() {
       PROCEDURE: 'orange',
       VACCINATION: 'teal',
       ALLERGY: 'pink',
-      OTHER: 'gray'
+      OTHER: 'gray',
     };
     return colors[type] || 'gray';
   };
@@ -262,10 +266,8 @@ function EmrPage() {
       title: 'Type',
       sortable: true,
       render: (record: any) => (
-        <Badge color={getRecordTypeColor(record.recordType)}>
-          {record.recordType}
-        </Badge>
-      )
+        <Badge color={getRecordTypeColor(record.recordType)}>{record.recordType}</Badge>
+      ),
     },
     {
       key: 'patient',
@@ -274,7 +276,8 @@ function EmrPage() {
       render: (record: any) => (
         <Group gap="xs">
           <Avatar size="sm" radius="xl" color="blue">
-            {record.patient?.firstName?.[0]}{record.patient?.lastName?.[0]}
+            {record.patient?.firstName?.[0]}
+            {record.patient?.lastName?.[0]}
           </Avatar>
           <div>
             <Text fw={500} size="sm">
@@ -285,59 +288,48 @@ function EmrPage() {
             </Text>
           </div>
         </Group>
-      )
+      ),
     },
     {
       key: 'title',
       title: 'Title',
       sortable: true,
-      render: (record: any) => (
-        <Text fw={500}>{record.title}</Text>
-      )
+      render: (record: any) => <Text fw={500}>{record.title}</Text>,
     },
     {
       key: 'description',
       title: 'Description',
-      render: (record: any) => (
-        <Text lineClamp={2}>{record.description}</Text>
-      )
+      render: (record: any) => <Text lineClamp={2}>{record.description}</Text>,
     },
     {
       key: 'doctor',
       title: 'Doctor',
-      render: (record: any) => (
+      render: (record: any) =>
         record.doctor ? (
           <Text size="sm">
             Dr. {record.doctor.firstName} {record.doctor.lastName}
           </Text>
         ) : (
-          <Text size="sm" c="dimmed">Not assigned</Text>
-        )
-      )
+          <Text size="sm" c="dimmed">
+            Not assigned
+          </Text>
+        ),
     },
     {
       key: 'date',
       title: 'Date',
       sortable: true,
-      render: (record: any) => (
-        <Text size="sm">{formatDate(record.date)}</Text>
-      )
+      render: (record: any) => <Text size="sm">{formatDate(record.date)}</Text>,
     },
     {
       key: 'actions',
       title: 'Actions',
       render: (record: any) => (
         <Group gap="xs">
-          <ActionIcon
-            variant="subtle"
-            onClick={() => handleViewRecord(record)}
-          >
+          <ActionIcon variant="subtle" onClick={() => handleViewRecord(record)}>
             <IconEye size={16} />
           </ActionIcon>
-          <ActionIcon
-            variant="subtle"
-            onClick={() => handleEditRecord(record)}
-          >
+          <ActionIcon variant="subtle" onClick={() => handleEditRecord(record)}>
             <IconEdit size={16} />
           </ActionIcon>
           <Menu position="bottom-end">
@@ -370,12 +362,16 @@ function EmrPage() {
             </Menu.Dropdown>
           </Menu>
         </Group>
-      )
-    }
+      ),
+    },
   ];
 
   return (
-    <Layout user={user || mockUser} notifications={0} onLogout={() => {}}>
+    <Layout
+      user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : { id: mockUser.id, name: `${mockUser.firstName} ${mockUser.lastName}`, email: mockUser.email, role: mockUser.role }}
+      notifications={0}
+      onLogout={() => {}}
+    >
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -386,10 +382,7 @@ function EmrPage() {
                 Manage patient medical records and history
               </Text>
             </div>
-            <Button
-              leftSection={<IconPlus size={16} />}
-              onClick={handleNewRecord}
-            >
+            <Button leftSection={<IconPlus size={16} />} onClick={handleNewRecord}>
               Create Medical Record
             </Button>
           </Group>
@@ -420,7 +413,9 @@ function EmrPage() {
                     <Text fw={700} size="xl">
                       {stats.recentRecords}
                     </Text>
-                    <Text size="xs" c="dimmed">Last 30 days</Text>
+                    <Text size="xs" c="dimmed">
+                      Last 30 days
+                    </Text>
                   </div>
                   <IconActivity size={32} color="#40c057" />
                 </Group>
@@ -457,11 +452,11 @@ function EmrPage() {
                 <Select
                   placeholder="Filter by patient"
                   data={[
-                    { value: '', title: 'All Patients' },
-                    ...patients.map(p => ({
+                    { value: '', label: 'All Patients' },
+                    ...patients.map((p) => ({
                       value: p.id,
-                      title: `${p.firstName} ${p.lastName}`
-                    }))
+                      label: `${p.firstName} ${p.lastName}`,
+                    })),
                   ]}
                   value={patientFilter}
                   onChange={(value) => setPatientFilter(value || '')}
@@ -473,15 +468,15 @@ function EmrPage() {
                 <Select
                   placeholder="Filter by type"
                   data={[
-                    { value: '', title: 'All Types' },
-                    { value: 'CONSULTATION', title: 'Consultation' },
-                    { value: 'DIAGNOSIS', title: 'Diagnosis' },
-                    { value: 'PRESCRIPTION', title: 'Prescription' },
-                    { value: 'LAB_RESULT', title: 'Lab Result' },
-                    { value: 'IMAGING', title: 'Imaging' },
-                    { value: 'PROCEDURE', title: 'Procedure' },
-                    { value: 'VACCINATION', title: 'Vaccination' },
-                    { value: 'ALLERGY', title: 'Allergy' }
+                    { value: '', label: 'All Types' },
+                    { value: 'CONSULTATION', label: 'Consultation' },
+                    { value: 'DIAGNOSIS', label: 'Diagnosis' },
+                    { value: 'PRESCRIPTION', label: 'Prescription' },
+                    { value: 'LAB_RESULT', label: 'Lab Result' },
+                    { value: 'IMAGING', label: 'Imaging' },
+                    { value: 'PROCEDURE', label: 'Procedure' },
+                    { value: 'VACCINATION', label: 'Vaccination' },
+                    { value: 'ALLERGY', label: 'Allergy' },
                   ]}
                   value={recordTypeFilter}
                   onChange={(value) => setRecordTypeFilter(value || '')}
@@ -489,9 +484,7 @@ function EmrPage() {
               </Grid.Col>
             </Grid>
             <Group justify="flex-end" mt="md">
-              <Button onClick={fetchRecords}>
-                Apply Filters
-              </Button>
+              <Button onClick={fetchRecords}>Apply Filters</Button>
             </Group>
           </Paper>
 
@@ -503,11 +496,7 @@ function EmrPage() {
                 No medical records match your current filters.
               </Alert>
             ) : (
-              <DataTable
-                columns={recordColumns}
-                data={records}
-                loading={loading}
-              />
+              <DataTable columns={recordColumns} data={records} loading={loading} />
             )}
           </Paper>
         </Stack>

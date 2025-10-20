@@ -10,7 +10,7 @@ import {
   Grid,
   Card,
   Avatar,
-  Timeline
+  Timeline,
 } from '@mantine/core';
 import {
   IconAlertTriangle,
@@ -19,7 +19,7 @@ import {
   IconEdit,
   IconActivity,
   IconStethoscope,
-  IconNotes
+  IconNotes,
 } from '@tabler/icons-react';
 
 interface EmergencyCaseDetailsProps {
@@ -35,7 +35,7 @@ export default function EmergencyCaseDetails({
   onClose,
   emergencyCase,
   onEdit,
-  onUpdateTriage
+  onUpdateTriage,
 }: EmergencyCaseDetailsProps) {
   if (!emergencyCase) return null;
 
@@ -44,7 +44,7 @@ export default function EmergencyCaseDetails({
       CRITICAL: 'red',
       URGENT: 'orange',
       SEMI_URGENT: 'yellow',
-      NON_URGENT: 'green'
+      NON_URGENT: 'green',
     };
     return colors[level] || 'gray';
   };
@@ -55,7 +55,7 @@ export default function EmergencyCaseDetails({
       IN_TREATMENT: 'yellow',
       DISCHARGED: 'green',
       ADMITTED: 'cyan',
-      TRANSFERRED: 'grape'
+      TRANSFERRED: 'grape',
     };
     return colors[status] || 'gray';
   };
@@ -67,15 +67,16 @@ export default function EmergencyCaseDetails({
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   const patient = emergencyCase.patient || {};
   const doctor = emergencyCase.assignedDoctor || {};
-  const vitalSigns = typeof emergencyCase.vitalSigns === 'string' 
-    ? JSON.parse(emergencyCase.vitalSigns) 
-    : emergencyCase.vitalSigns || {};
+  const vitalSigns =
+    typeof emergencyCase.vitalSigns === 'string'
+      ? JSON.parse(emergencyCase.vitalSigns)
+      : emergencyCase.vitalSigns || {};
 
   return (
     <Modal
@@ -119,7 +120,8 @@ export default function EmergencyCaseDetails({
             <Grid.Col span={6}>
               <Group>
                 <Avatar color="blue" radius="xl">
-                  {patient.firstName?.[0]}{patient.lastName?.[0]}
+                  {patient.firstName?.[0]}
+                  {patient.lastName?.[0]}
                 </Avatar>
                 <div>
                   <Text fw={500}>
@@ -134,12 +136,16 @@ export default function EmergencyCaseDetails({
             <Grid.Col span={6}>
               <Stack gap="xs">
                 <Group justify="space-between">
-                  <Text size="sm" c="dimmed">Gender:</Text>
+                  <Text size="sm" c="dimmed">
+                    Gender:
+                  </Text>
                   <Text fw={500}>{patient.gender || 'N/A'}</Text>
                 </Group>
                 {patient.phone && (
                   <Group justify="space-between">
-                    <Text size="sm" c="dimmed">Phone:</Text>
+                    <Text size="sm" c="dimmed">
+                      Phone:
+                    </Text>
                     <Text fw={500}>{patient.phone}</Text>
                   </Group>
                 )}
@@ -168,32 +174,46 @@ export default function EmergencyCaseDetails({
           <Grid>
             <Grid.Col span={6}>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Blood Pressure:</Text>
+                <Text size="sm" c="dimmed">
+                  Blood Pressure:
+                </Text>
                 <Text fw={500}>{vitalSigns.bloodPressure || 'N/A'}</Text>
               </Group>
             </Grid.Col>
             <Grid.Col span={6}>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Heart Rate:</Text>
+                <Text size="sm" c="dimmed">
+                  Heart Rate:
+                </Text>
                 <Text fw={500}>{vitalSigns.heartRate ? `${vitalSigns.heartRate} bpm` : 'N/A'}</Text>
               </Group>
             </Grid.Col>
             <Grid.Col span={6}>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Temperature:</Text>
-                <Text fw={500}>{vitalSigns.temperature ? `${vitalSigns.temperature}°F` : 'N/A'}</Text>
+                <Text size="sm" c="dimmed">
+                  Temperature:
+                </Text>
+                <Text fw={500}>
+                  {vitalSigns.temperature ? `${vitalSigns.temperature}°F` : 'N/A'}
+                </Text>
               </Group>
             </Grid.Col>
             <Grid.Col span={6}>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Respiratory Rate:</Text>
+                <Text size="sm" c="dimmed">
+                  Respiratory Rate:
+                </Text>
                 <Text fw={500}>{vitalSigns.respiratoryRate || 'N/A'}</Text>
               </Group>
             </Grid.Col>
             <Grid.Col span={6}>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">O2 Saturation:</Text>
-                <Text fw={500}>{vitalSigns.oxygenSaturation ? `${vitalSigns.oxygenSaturation}%` : 'N/A'}</Text>
+                <Text size="sm" c="dimmed">
+                  O2 Saturation:
+                </Text>
+                <Text fw={500}>
+                  {vitalSigns.oxygenSaturation ? `${vitalSigns.oxygenSaturation}%` : 'N/A'}
+                </Text>
               </Group>
             </Grid.Col>
           </Grid>
@@ -239,7 +259,8 @@ export default function EmergencyCaseDetails({
             <Divider mb="sm" />
             <Group>
               <Avatar color="green" radius="xl">
-                {doctor.firstName?.[0]}{doctor.lastName?.[0]}
+                {doctor.firstName?.[0]}
+                {doctor.lastName?.[0]}
               </Avatar>
               <div>
                 <Text fw={500}>
@@ -261,9 +282,7 @@ export default function EmergencyCaseDetails({
               <Text fw={600}>Treatment Notes</Text>
             </Group>
             <Divider mb="sm" />
-            <Text style={{ whiteSpace: 'pre-wrap' }}>
-              {emergencyCase.treatmentNotes}
-            </Text>
+            <Text style={{ whiteSpace: 'pre-wrap' }}>{emergencyCase.treatmentNotes}</Text>
           </Card>
         )}
 
@@ -284,7 +303,7 @@ export default function EmergencyCaseDetails({
               </Button>
             )}
           </Group>
-          
+
           <Group>
             {onEdit && (
               <Button

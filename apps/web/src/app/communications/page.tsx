@@ -22,7 +22,7 @@ import {
   Select,
   Avatar,
   Menu,
-  Grid
+  Grid,
 } from '@mantine/core';
 import {
   IconPlus,
@@ -36,7 +36,7 @@ import {
   IconInbox,
   IconSend,
   IconSearch,
-  IconAlertCircle
+  IconAlertCircle,
 } from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
@@ -76,7 +76,8 @@ function CommunicationsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
-  const [messageFormOpened, { open: openMessageForm, close: closeMessageForm }] = useDisclosure(false);
+  const [messageFormOpened, { open: openMessageForm, close: closeMessageForm }] =
+    useDisclosure(false);
   const [detailsOpened, { open: openDetails, close: closeDetails }] = useDisclosure(false);
 
   useEffect(() => {
@@ -87,7 +88,7 @@ function CommunicationsPage() {
     fetchNotifications();
     fetchStats();
     fetchUsers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchMessages = async () => {
@@ -279,7 +280,7 @@ function CommunicationsPage() {
       LOW: 'gray',
       NORMAL: 'blue',
       HIGH: 'orange',
-      URGENT: 'red'
+      URGENT: 'red',
     };
     return colors[priority] || 'blue';
   };
@@ -292,7 +293,7 @@ function CommunicationsPage() {
       INFO: 'blue',
       APPOINTMENT: 'cyan',
       BILLING: 'orange',
-      SYSTEM: 'gray'
+      SYSTEM: 'gray',
     };
     return colors[type] || 'blue';
   };
@@ -307,14 +308,10 @@ function CommunicationsPage() {
       key: 'read',
       title: '',
       render: (message: any) => (
-        <ActionIcon
-          size="sm"
-          variant="subtle"
-          color={message.read ? 'gray' : 'blue'}
-        >
+        <ActionIcon size="sm" variant="subtle" color={message.read ? 'gray' : 'blue'}>
           {message.read ? <IconMailOpened size={16} /> : <IconMail size={16} />}
         </ActionIcon>
-      )
+      ),
     },
     {
       key: 'sender',
@@ -323,16 +320,19 @@ function CommunicationsPage() {
       render: (message: any) => (
         <Group gap="xs">
           <Avatar size="sm" radius="xl" color="blue">
-            {message.sender?.firstName?.[0]}{message.sender?.lastName?.[0]}
+            {message.sender?.firstName?.[0]}
+            {message.sender?.lastName?.[0]}
           </Avatar>
           <div>
             <Text fw={message.read ? 400 : 600} size="sm">
               {message.sender?.firstName} {message.sender?.lastName}
             </Text>
-            <Text size="xs" c="dimmed">{message.sender?.email}</Text>
+            <Text size="xs" c="dimmed">
+              {message.sender?.email}
+            </Text>
           </div>
         </Group>
-      )
+      ),
     },
     {
       key: 'subject',
@@ -342,7 +342,7 @@ function CommunicationsPage() {
         <Text fw={message.read ? 400 : 600} lineClamp={1}>
           {message.subject}
         </Text>
-      )
+      ),
     },
     {
       key: 'priority',
@@ -352,33 +352,24 @@ function CommunicationsPage() {
         <Badge size="sm" color={getPriorityColor(message.priority)}>
           {message.priority}
         </Badge>
-      )
+      ),
     },
     {
       key: 'createdAt',
       title: 'Date',
       sortable: true,
-      render: (message: any) => (
-        <Text size="sm">{formatDate(message.createdAt)}</Text>
-      )
+      render: (message: any) => <Text size="sm">{formatDate(message.createdAt)}</Text>,
     },
     {
       key: 'actions',
       title: 'Actions',
       render: (message: any) => (
         <Group gap="xs">
-          <ActionIcon
-            variant="subtle"
-            onClick={() => handleViewMessage(message)}
-          >
+          <ActionIcon variant="subtle" onClick={() => handleViewMessage(message)}>
             <IconEye size={16} />
           </ActionIcon>
           {!message.read && (
-            <ActionIcon
-              variant="subtle"
-              color="green"
-              onClick={() => handleMarkAsRead(message.id)}
-            >
+            <ActionIcon variant="subtle" color="green" onClick={() => handleMarkAsRead(message.id)}>
               <IconCheck size={16} />
             </ActionIcon>
           )}
@@ -414,8 +405,8 @@ function CommunicationsPage() {
             </Menu.Dropdown>
           </Menu>
         </Group>
-      )
-    }
+      ),
+    },
   ];
 
   const notificationColumns: TableColumn[] = [
@@ -424,17 +415,13 @@ function CommunicationsPage() {
       title: 'Title',
       sortable: true,
       render: (notification: any) => (
-        <Text fw={notification.read ? 400 : 600}>
-          {notification.title}
-        </Text>
-      )
+        <Text fw={notification.read ? 400 : 600}>{notification.title}</Text>
+      ),
     },
     {
       key: 'message',
       title: 'Message',
-      render: (notification: any) => (
-        <Text lineClamp={2}>{notification.message}</Text>
-      )
+      render: (notification: any) => <Text lineClamp={2}>{notification.message}</Text>,
     },
     {
       key: 'type',
@@ -444,15 +431,13 @@ function CommunicationsPage() {
         <Badge size="sm" color={getNotificationColor(notification.type)}>
           {notification.type}
         </Badge>
-      )
+      ),
     },
     {
       key: 'createdAt',
       title: 'Date',
       sortable: true,
-      render: (notification: any) => (
-        <Text size="sm">{formatDate(notification.createdAt)}</Text>
-      )
+      render: (notification: any) => <Text size="sm">{formatDate(notification.createdAt)}</Text>,
     },
     {
       key: 'actions',
@@ -476,8 +461,8 @@ function CommunicationsPage() {
             <IconTrash size={16} />
           </ActionIcon>
         </Group>
-      )
-    }
+      ),
+    },
   ];
 
   const layoutUser = user || mockUser;
@@ -500,10 +485,7 @@ function CommunicationsPage() {
                 Manage messages and notifications
               </Text>
             </div>
-            <Button
-              leftSection={<IconPlus size={16} />}
-              onClick={openMessageForm}
-            >
+            <Button leftSection={<IconPlus size={16} />} onClick={openMessageForm}>
               New Message
             </Button>
           </Group>
@@ -598,7 +580,7 @@ function CommunicationsPage() {
                       data={[
                         { value: '', label: 'All Messages' },
                         { value: 'unread', label: 'Unread' },
-                        { value: 'read', label: 'Read' }
+                        { value: 'read', label: 'Read' },
                       ]}
                       value={statusFilter}
                       onChange={(value) => setStatusFilter(value || '')}
@@ -616,15 +598,15 @@ function CommunicationsPage() {
               <Paper withBorder>
                 <LoadingOverlay visible={loading} />
                 {messages.length === 0 && !loading ? (
-                  <Alert icon={<IconAlertCircle size={16} />} title="No messages found" color="blue">
+                  <Alert
+                    icon={<IconAlertCircle size={16} />}
+                    title="No messages found"
+                    color="blue"
+                  >
                     No messages match your current filters.
                   </Alert>
                 ) : (
-                  <DataTable
-                    columns={messageColumns}
-                    data={messages}
-                    loading={loading}
-                  />
+                  <DataTable columns={messageColumns} data={messages} loading={loading} />
                 )}
               </Paper>
             </Tabs.Panel>

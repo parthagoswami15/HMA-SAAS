@@ -10,17 +10,17 @@ export interface Invoice extends BaseEntity {
   patient: Patient;
   appointmentId?: string;
   appointment?: Appointment;
-  
+
   // Invoice Details
   invoiceDate: Date;
   dueDate: Date;
   issueDate: Date;
-  
+
   // Billing Information
   billToAddress: BillingAddress;
   billingAddress?: BillingAddress;
   items: InvoiceItem[];
-  
+
   // Financial Details
   subtotal: number;
   taxAmount: number;
@@ -29,29 +29,29 @@ export interface Invoice extends BaseEntity {
   totalAmount: number;
   paidAmount: number;
   balanceAmount: number;
-  
+
   // Status and Workflow
   status: InvoiceStatus;
   paymentStatus: PaymentStatus;
   priority: InvoicePriority;
-  
+
   // Payment Information
   payments: Payment[];
   paymentTerms: string;
   lateFeeApplied: boolean;
   lateFeeAmount?: number;
-  
+
   // Insurance Information
   insuranceClaim?: InsuranceClaim;
   isInsuranceBilled: boolean;
   insuranceAmount: number;
   patientResponsibility: number;
-  
+
   // Notes and References
   notes?: string;
   internalNotes?: string;
   referenceNumber?: string;
-  
+
   // Generated Information
   generatedBy: string;
   approvedBy?: string;
@@ -65,39 +65,39 @@ export interface InvoiceItem {
   description: string;
   itemType: InvoiceItemType;
   category: string;
-  
+
   // Quantity and Pricing
   quantity: number;
   unitPrice: number;
   totalPrice: number;
   totalAmount?: number;
-  
+
   // Tax and Discounts
   taxRate: number;
   taxAmount: number;
   discountRate: number;
   discountAmount: number;
-  
+
   // Service Details
   serviceDate: Date;
   providerId?: string;
   providerName?: string;
   departmentId?: string;
   departmentName?: string;
-  
+
   // Medical Coding
   cptCode?: string;
   icdCode?: string;
-  
+
   // Insurance
   isInsuranceCovered: boolean;
   insuranceCoverage: number;
   patientShare: number;
-  
+
   notes?: string;
 }
 
-export type InvoiceItemType = 
+export type InvoiceItemType =
   | 'consultation'
   | 'procedure'
   | 'laboratory'
@@ -112,7 +112,7 @@ export type InvoiceItemType =
   | 'emergency_service'
   | 'other';
 
-export type InvoiceStatus = 
+export type InvoiceStatus =
   | 'DRAFT'
   | 'PENDING'
   | 'PAID'
@@ -120,19 +120,9 @@ export type InvoiceStatus =
   | 'CANCELLED'
   | 'REFUNDED';
 
-export type PaymentStatus = 
-  | 'unpaid'
-  | 'partial'
-  | 'paid'
-  | 'overpaid'
-  | 'refunded'
-  | 'cancelled';
+export type PaymentStatus = 'unpaid' | 'partial' | 'paid' | 'overpaid' | 'refunded' | 'cancelled';
 
-export type InvoicePriority = 
-  | 'low'
-  | 'normal'
-  | 'high'
-  | 'urgent';
+export type InvoicePriority = 'low' | 'normal' | 'high' | 'urgent';
 
 // Payment Management
 export interface Payment extends BaseEntity {
@@ -143,48 +133,48 @@ export interface Payment extends BaseEntity {
   invoiceNumber?: string;
   patientId: string;
   patient: Patient;
-  
+
   // Payment Details
   paymentDate: Date;
   amount: number;
   currency: string;
-  
+
   // Payment Method
   paymentMethod: PaymentMethod;
   paymentType: PaymentType;
-  
+
   // Transaction Details
   transactionId?: string;
   referenceNumber?: string;
   bankDetails?: BankDetails;
   cardDetails?: CardDetails;
   checkDetails?: CheckDetails;
-  
+
   // Status and Processing
   status: PaymentTransactionStatus;
   processingStatus: ProcessingStatus;
-  
+
   // Reconciliation
   isReconciled: boolean;
   reconciledDate?: Date;
   reconciledBy?: string;
   bankStatementReference?: string;
-  
+
   // Refund Information
   refundable: boolean;
   refundAmount?: number;
   refundDate?: Date;
   refundReason?: string;
-  
+
   // Notes
   notes?: string;
   processingNotes?: string;
-  
+
   // Receipt
   receiptGenerated: boolean;
   receiptNumber?: string;
   receiptPath?: string;
-  
+
   // Processing Information
   processedBy: string;
   processedDate: Date;
@@ -192,7 +182,7 @@ export interface Payment extends BaseEntity {
   approvedDate?: Date;
 }
 
-export type PaymentMethod = 
+export type PaymentMethod =
   | 'CASH'
   | 'CREDIT_CARD'
   | 'DEBIT_CARD'
@@ -203,21 +193,21 @@ export type PaymentMethod =
   | 'WALLET'
   | 'OTHER';
 
-export type PaymentType = 
+export type PaymentType =
   | 'full_payment'
   | 'partial_payment'
   | 'advance_payment'
   | 'refund'
   | 'adjustment';
 
-export type PaymentTransactionStatus = 
+export type PaymentTransactionStatus =
   | 'PENDING'
   | 'COMPLETED'
   | 'FAILED'
   | 'REFUNDED'
   | 'CANCELLED';
 
-export type ProcessingStatus = 
+export type ProcessingStatus =
   | 'submitted'
   | 'authorized'
   | 'captured'
@@ -235,16 +225,16 @@ export interface InsuranceClaim extends BaseEntity {
   insurance: InsuranceProvider;
   insuranceProvider?: InsuranceProvider;
   policyNumber?: string;
-  
+
   // Claim Details
   claimDate: Date;
   serviceDate: Date;
   submissionDate: Date;
-  
+
   // Service Information
   services: ClaimedService[];
   diagnosis: ClaimDiagnosis[];
-  
+
   // Financial Information
   totalAmount: number;
   claimedAmount: number;
@@ -252,18 +242,18 @@ export interface InsuranceClaim extends BaseEntity {
   approvedAmount: number;
   deniedAmount: number;
   patientResponsibility: number;
-  
+
   // Status and Processing
   status: ClaimStatus;
   priority: ClaimPriority;
-  
+
   // Workflow
   submittedBy: string;
   reviewedBy?: string;
   reviewedDate?: Date;
   approvedBy?: string;
   approvedDate?: Date;
-  
+
   // Communication
   correspondences: ClaimCorrespondence[];
   denialReason?: string;
@@ -271,12 +261,12 @@ export interface InsuranceClaim extends BaseEntity {
   appealed: boolean;
   appealDate?: Date;
   appealOutcome?: AppealOutcome;
-  
+
   // Processing Information
   batchNumber?: string;
   clearinghouseId?: string;
   acknowledgmentNumber?: string;
-  
+
   // Payment Information
   paymentReceived: boolean;
   paymentAmount?: number;
@@ -284,11 +274,11 @@ export interface InsuranceClaim extends BaseEntity {
   eobReceived: boolean;
   eobDate?: Date;
   eobPath?: string;
-  
+
   // Notes
   notes?: string;
   internalNotes?: string;
-  
+
   // Resubmission
   originalClaimId?: string;
   resubmissionCount: number;
@@ -302,12 +292,12 @@ export interface ClaimedService {
   serviceDate: Date;
   providerId: string;
   providerName: string;
-  
+
   // Medical Coding
   cptCode: string;
   modifiers?: string[];
   units: number;
-  
+
   // Financial
   chargedAmount: number;
   allowedAmount: number;
@@ -315,7 +305,7 @@ export interface ClaimedService {
   deductible: number;
   copay: number;
   coinsurance: number;
-  
+
   // Status
   status: ServiceClaimStatus;
   denialCode?: string;
@@ -342,7 +332,7 @@ export interface ClaimCorrespondence {
   receivedFrom?: string;
 }
 
-export type ClaimStatus = 
+export type ClaimStatus =
   | 'draft'
   | 'submitted'
   | 'acknowledged'
@@ -354,20 +344,16 @@ export type ClaimStatus =
   | 'paid'
   | 'closed';
 
-export type ClaimPriority = 
-  | 'routine'
-  | 'urgent'
-  | 'emergency'
-  | 'stat';
+export type ClaimPriority = 'routine' | 'urgent' | 'emergency' | 'stat';
 
-export type ServiceClaimStatus = 
+export type ServiceClaimStatus =
   | 'submitted'
   | 'approved'
   | 'denied'
   | 'partially_approved'
   | 'paid';
 
-export type CorrespondenceType = 
+export type CorrespondenceType =
   | 'claim_submission'
   | 'acknowledgment'
   | 'request_for_information'
@@ -376,18 +362,14 @@ export type CorrespondenceType =
   | 'appeal'
   | 'other';
 
-export type AppealOutcome = 
-  | 'approved'
-  | 'partially_approved'
-  | 'denied'
-  | 'pending';
+export type AppealOutcome = 'approved' | 'partially_approved' | 'denied' | 'pending';
 
 // Insurance Provider Management
 export interface InsuranceProvider extends BaseEntity {
   insuranceId: string;
   providerName: string;
   providerType: InsuranceType;
-  
+
   // Contact Information
   contactInfo: {
     address: BillingAddress;
@@ -398,44 +380,44 @@ export interface InsuranceProvider extends BaseEntity {
     claimsPhone?: string;
     claimsEmail?: string;
   };
-  
+
   // Business Details
   taxId: string;
   npiNumber?: string;
   licensNumber?: string;
-  
+
   // Contract Information
   contractNumber?: string;
   contractStartDate?: Date;
   contractEndDate?: Date;
-  
+
   // Payment Information
   paymentTerms: string;
   paymentMethods: PaymentMethod[];
-  
+
   // Processing Information
   clearinghouseRequired: boolean;
   clearinghouseId?: string;
   electronicSubmission: boolean;
   submissionFormat: SubmissionFormat;
-  
+
   // Coverage Information
   coverageTypes: CoverageType[];
   specialRequirements?: string[];
-  
+
   // Status
   isActive: boolean;
   status: ProviderStatus;
-  
+
   // Statistics
   averageProcessingTime: number;
   averageApprovalRate: number;
   lastClaimDate?: Date;
-  
+
   notes?: string;
 }
 
-export type InsuranceType = 
+export type InsuranceType =
   | 'health_insurance'
   | 'dental_insurance'
   | 'vision_insurance'
@@ -447,14 +429,9 @@ export type InsuranceType =
   | 'medicaid'
   | 'government';
 
-export type SubmissionFormat = 
-  | 'edi_837'
-  | 'cms_1500'
-  | 'ub_04'
-  | 'custom'
-  | 'paper';
+export type SubmissionFormat = 'edi_837' | 'cms_1500' | 'ub_04' | 'custom' | 'paper';
 
-export type CoverageType = 
+export type CoverageType =
   | 'inpatient'
   | 'outpatient'
   | 'emergency'
@@ -467,7 +444,7 @@ export type CoverageType =
   | 'dental'
   | 'vision';
 
-export type ProviderStatus = 
+export type ProviderStatus =
   | 'active'
   | 'inactive'
   | 'suspended'
@@ -481,17 +458,17 @@ export interface PatientInsurance extends BaseEntity {
   patient: Patient;
   insuranceId: string;
   insurance: InsuranceProvider;
-  
+
   // Policy Information
   policyNumber: string;
   groupNumber?: string;
   memberNumber?: string;
-  
+
   // Coverage Details
   effectiveDate: Date;
   terminationDate?: Date;
   coverageLevel: CoverageLevel;
-  
+
   // Subscriber Information
   subscriberId: string;
   subscriberName: string;
@@ -499,7 +476,7 @@ export interface PatientInsurance extends BaseEntity {
   subscriberDateOfBirth: Date;
   subscriberGender: string;
   subscriberAddress?: BillingAddress;
-  
+
   // Benefits Information
   deductible: number;
   deductibleMet: number;
@@ -507,29 +484,29 @@ export interface PatientInsurance extends BaseEntity {
   outOfPocketMet: number;
   copay: number;
   coinsurance: number;
-  
+
   // Authorization
   requiresAuthorization: boolean;
   authorizationNumber?: string;
   authorizationDate?: Date;
   authorizationExpiry?: Date;
-  
+
   // Priority
   isPrimary: boolean;
   priority: number;
-  
+
   // Status
   isActive: boolean;
   verificationStatus: VerificationStatus;
   lastVerificationDate?: Date;
   nextVerificationDate?: Date;
-  
+
   // Notes
   notes?: string;
   specialInstructions?: string;
 }
 
-export type CoverageLevel = 
+export type CoverageLevel =
   | 'individual'
   | 'family'
   | 'spouse'
@@ -537,7 +514,7 @@ export type CoverageLevel =
   | 'employee_plus_one'
   | 'employee_plus_children';
 
-export type Relationship = 
+export type Relationship =
   | 'self'
   | 'spouse'
   | 'child'
@@ -548,7 +525,7 @@ export type Relationship =
   | 'other_relative'
   | 'other';
 
-export type VerificationStatus = 
+export type VerificationStatus =
   | 'verified'
   | 'unverified'
   | 'expired'
@@ -595,17 +572,17 @@ export interface BillingStats {
   totalOutstanding: number;
   totalCollected: number;
   totalWriteOffs: number;
-  
+
   // Period Comparisons
   currentPeriodRevenue: number;
   previousPeriodRevenue: number;
   revenueGrowth: number;
-  
+
   // Collection Metrics
   collectionRate: number;
   averageCollectionTime: number;
   accountsReceivableAging: ARaging[];
-  
+
   // Invoice Metrics
   totalInvoices: number;
   paidInvoices: number;
@@ -613,12 +590,12 @@ export interface BillingStats {
   overdueInvoices: number;
   averageInvoiceAmount: number;
   daysOutstanding: number;
-  
+
   // Payment Metrics
   totalPayments: number;
   averagePaymentAmount: number;
   paymentMethodDistribution: Record<PaymentMethod, number>;
-  
+
   // Insurance Metrics
   totalClaims: number;
   approvedClaims: number;
@@ -626,7 +603,7 @@ export interface BillingStats {
   pendingClaims: number;
   averageClaimAmount: number;
   insuranceCoverageRate: number;
-  
+
   claimStatusDistribution: Record<ClaimStatus, number>;
   // Top Performers
   topPayingPatients: Array<{
@@ -634,20 +611,20 @@ export interface BillingStats {
     patientName: string;
     totalPaid: number;
   }>;
-  
+
   topRevenueServices: Array<{
     serviceCode: string;
     serviceName: string;
     revenue: number;
   }>;
-  
+
   topInsuranceProviders: Array<{
     insuranceId: string;
     providerName: string;
     totalClaims: number;
     approvalRate: number;
   }>;
-  
+
   // Trends
   monthlyRevenueTrends: Array<{
     month: string;
@@ -655,7 +632,7 @@ export interface BillingStats {
     collections: number;
     outstanding: number;
   }>;
-  
+
   dailyCollections: Array<{
     date: string;
     amount: number;

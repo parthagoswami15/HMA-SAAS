@@ -9,66 +9,66 @@ export interface InventoryItem extends BaseEntity {
   description?: string;
   category: ItemCategory;
   subcategory?: string;
-  
+
   // Classification
   itemType: ItemType;
   classification: ItemClassification;
   criticality: ItemCriticality;
-  
+
   // Basic Information
   brand?: string;
   manufacturer?: string;
   model?: string;
   serialNumber?: string;
   barcode?: string;
-  
+
   // Unit Information
   baseUnit: string;
   alternativeUnits?: AlternativeUnit[];
-  
+
   // Stock Information
   currentStock: number;
   availableStock: number;
   allocatedStock: number;
   reservedStock: number;
-  
+
   // Stock Levels
   minimumStock: number;
   maximumStock: number;
   reorderPoint: number;
   reorderQuantity: number;
   safetyStock: number;
-  
+
   // Cost Information
   unitCost: number;
   averageCost: number;
   lastPurchaseCost: number;
   standardCost?: number;
-  
+
   // Location Information
   location: StorageLocation;
   alternativeLocations?: StorageLocation[];
-  
+
   // Supplier Information
   preferredSupplierId?: string;
   preferredSupplier?: Supplier;
   alternativeSuppliers?: Supplier[];
-  
+
   // Expiry and Batch Management
   hasExpiryDate: boolean;
   hasBatchTracking: boolean;
   shelfLife?: number; // in days
-  
+
   // Status
   isActive: boolean;
   isConsumable: boolean;
   isReturnable: boolean;
-  
+
   // Regulatory
   isControlled: boolean;
   controlledCategory?: string;
   requiresPrescription: boolean;
-  
+
   // Notes
   notes?: string;
   handlingInstructions?: string;
@@ -106,7 +106,7 @@ export interface HumidityRange {
   max: number;
 }
 
-export type ItemType = 
+export type ItemType =
   | 'medical_supplies'
   | 'pharmaceuticals'
   | 'equipment'
@@ -118,7 +118,7 @@ export type ItemType =
   | 'food_nutrition'
   | 'linen_clothing';
 
-export type ItemCategory = 
+export type ItemCategory =
   | 'medicines'
   | 'surgical_supplies'
   | 'diagnostic_supplies'
@@ -132,20 +132,15 @@ export type ItemCategory =
   | 'furniture'
   | 'equipment_parts';
 
-export type ItemClassification = 
+export type ItemClassification =
   | 'A' // High value, low volume
-  | 'B' // Medium value, medium volume  
+  | 'B' // Medium value, medium volume
   | 'C' // Low value, high volume
   | 'X' // Critical items
   | 'Y' // Essential items
-  | 'Z' // Non-essential items;
+  | 'Z'; // Non-essential items;
 
-export type ItemCriticality = 
-  | 'critical'
-  | 'essential' 
-  | 'important'
-  | 'normal'
-  | 'non_essential';
+export type ItemCriticality = 'critical' | 'essential' | 'important' | 'normal' | 'non_essential';
 
 // Stock Transactions
 export interface StockTransaction extends BaseEntity {
@@ -153,45 +148,45 @@ export interface StockTransaction extends BaseEntity {
   transactionNumber: string;
   itemId: string;
   item: InventoryItem;
-  
+
   // Transaction Details
   transactionType: TransactionType;
   transactionDate: Date;
   quantity: number;
   unit: string;
-  
+
   // Cost Information
   unitCost?: number;
   totalCost?: number;
-  
+
   // Reference Information
   referenceType?: ReferenceType;
   referenceId?: string;
   referenceNumber?: string;
-  
+
   // Location
   fromLocation?: StorageLocation;
   toLocation?: StorageLocation;
-  
+
   // Batch/Lot Information
   batchNumber?: string;
   lotNumber?: string;
   expiryDate?: Date;
   manufacturingDate?: Date;
-  
+
   // Personnel
   performedBy: string;
   authorizedBy?: string;
-  
+
   // Status
   status: TransactionStatus;
-  
+
   // Notes
   remarks?: string;
   reason?: string;
 }
 
-export type TransactionType = 
+export type TransactionType =
   | 'receipt'
   | 'issue'
   | 'transfer'
@@ -203,7 +198,7 @@ export type TransactionType =
   | 'expiry'
   | 'opening_balance';
 
-export type ReferenceType = 
+export type ReferenceType =
   | 'purchase_order'
   | 'requisition'
   | 'patient_usage'
@@ -213,11 +208,7 @@ export type ReferenceType =
   | 'transfer_note'
   | 'waste_note';
 
-export type TransactionStatus = 
-  | 'pending'
-  | 'completed'
-  | 'cancelled'
-  | 'reversed';
+export type TransactionStatus = 'pending' | 'completed' | 'cancelled' | 'reversed';
 
 // Purchase Management
 export interface PurchaseOrder extends BaseEntity {
@@ -225,46 +216,46 @@ export interface PurchaseOrder extends BaseEntity {
   poNumber: string;
   supplierId: string;
   supplier: Supplier;
-  
+
   // Order Details
   orderDate: Date;
   expectedDeliveryDate: Date;
   actualDeliveryDate?: Date;
-  
+
   // Items
   items: PurchaseOrderItem[];
-  
+
   // Financial Information
   subtotal: number;
   taxAmount: number;
   shippingCost: number;
   totalAmount: number;
-  
+
   // Status
   status: PurchaseOrderStatus;
   priority: OrderPriority;
-  
+
   // Terms and Conditions
   paymentTerms: string;
   deliveryTerms: string;
   warrantyTerms?: string;
-  
+
   // Approval Workflow
   requestedBy: string;
   approvedBy?: string;
   approvalDate?: Date;
-  
+
   // Delivery Information
   deliveryAddress: DeliveryAddress;
   contactPerson: string;
   contactPhone: string;
-  
+
   // Invoice Information
   invoiceReceived: boolean;
   invoiceNumber?: string;
   invoiceDate?: Date;
   invoiceAmount?: number;
-  
+
   // Notes
   notes?: string;
   internalNotes?: string;
@@ -276,31 +267,31 @@ export interface PurchaseOrderItem {
   itemId: string;
   item: InventoryItem;
   description: string;
-  
+
   // Quantity and Units
   orderedQuantity: number;
   receivedQuantity: number;
   cancelledQuantity: number;
   unit: string;
-  
+
   // Pricing
   unitPrice: number;
   totalPrice: number;
   taxRate: number;
   taxAmount: number;
-  
+
   // Delivery
   expectedDeliveryDate: Date;
   actualDeliveryDate?: Date;
-  
+
   // Status
   status: POItemStatus;
-  
+
   // Quality
   qualityChecked: boolean;
   qualityStatus?: QualityStatus;
   qualityRemarks?: string;
-  
+
   notes?: string;
 }
 
@@ -315,7 +306,7 @@ export interface DeliveryAddress {
   landmark?: string;
 }
 
-export type PurchaseOrderStatus = 
+export type PurchaseOrderStatus =
   | 'draft'
   | 'pending_approval'
   | 'approved'
@@ -327,25 +318,16 @@ export type PurchaseOrderStatus =
   | 'completed'
   | 'cancelled';
 
-export type OrderPriority = 
-  | 'low'
-  | 'normal'
-  | 'high'
-  | 'urgent'
-  | 'emergency';
+export type OrderPriority = 'low' | 'normal' | 'high' | 'urgent' | 'emergency';
 
-export type POItemStatus = 
+export type POItemStatus =
   | 'ordered'
   | 'partial_received'
   | 'fully_received'
   | 'cancelled'
   | 'returned';
 
-export type QualityStatus = 
-  | 'passed'
-  | 'failed'
-  | 'conditional'
-  | 'pending_inspection';
+export type QualityStatus = 'passed' | 'failed' | 'conditional' | 'pending_inspection';
 
 // Supplier Management
 export interface Supplier extends BaseEntity {
@@ -353,7 +335,7 @@ export interface Supplier extends BaseEntity {
   supplierCode: string;
   supplierName: string;
   supplierType: SupplierType;
-  
+
   // Contact Information
   contactInfo: {
     primaryContact: ContactPerson;
@@ -364,42 +346,42 @@ export interface Supplier extends BaseEntity {
     email: string;
     website?: string;
   };
-  
+
   // Business Information
   businessType: BusinessType;
   taxId: string;
   registrationNumber?: string;
   licensNumbers?: License[];
-  
+
   // Financial Information
   paymentTerms: string;
   creditLimit?: number;
   currentBalance: number;
-  
+
   // Performance Metrics
   rating: number; // 1-5
   deliveryRating: number;
   qualityRating: number;
   priceRating: number;
   serviceRating: number;
-  
+
   // Contract Information
   contractNumber?: string;
   contractStartDate?: Date;
   contractEndDate?: Date;
-  
+
   // Categories
   suppliedCategories: ItemCategory[];
   certifications: Certification[];
-  
+
   // Status
   isActive: boolean;
   isPreferred: boolean;
   status: SupplierStatus;
-  
+
   // Banking Information
   bankDetails?: BankDetails[];
-  
+
   // Notes
   notes?: string;
   internalNotes?: string;
@@ -440,7 +422,7 @@ export interface BankDetails {
   isPrimary: boolean;
 }
 
-export type SupplierType = 
+export type SupplierType =
   | 'manufacturer'
   | 'distributor'
   | 'wholesaler'
@@ -448,7 +430,7 @@ export type SupplierType =
   | 'service_provider'
   | 'contractor';
 
-export type BusinessType = 
+export type BusinessType =
   | 'sole_proprietorship'
   | 'partnership'
   | 'corporation'
@@ -457,7 +439,7 @@ export type BusinessType =
   | 'government'
   | 'non_profit';
 
-export type SupplierStatus = 
+export type SupplierStatus =
   | 'active'
   | 'inactive'
   | 'suspended'
@@ -468,7 +450,7 @@ export type SupplierStatus =
 export interface Requisition extends BaseEntity {
   requisitionId: string;
   requisitionNumber: string;
-  
+
   // Request Information
   requestDate: Date;
   requiredDate: Date;
@@ -476,30 +458,30 @@ export interface Requisition extends BaseEntity {
   departmentName: string;
   requestedBy: string;
   requester: Staff;
-  
+
   // Items
   items: RequisitionItem[];
-  
+
   // Status and Workflow
   status: RequisitionStatus;
   priority: RequisitionPriority;
-  
+
   // Approval Workflow
   approvals: RequisitionApproval[];
   currentApprovalLevel: number;
   totalApprovalLevels: number;
-  
+
   // Fulfillment
   fulfilledBy?: string;
   fulfilledDate?: Date;
   partialFulfillment: boolean;
-  
+
   // Budget Information
   budgetCode?: string;
   totalEstimatedCost: number;
   actualCost?: number;
   budgetApproval?: boolean;
-  
+
   // Notes
   justification?: string;
   notes?: string;
@@ -511,29 +493,29 @@ export interface RequisitionItem {
   itemId?: string;
   item?: InventoryItem;
   itemDescription: string;
-  
+
   // Quantity
   requestedQuantity: number;
   approvedQuantity: number;
   issuedQuantity: number;
   unit: string;
-  
+
   // Cost
   estimatedUnitCost: number;
   estimatedTotalCost: number;
   actualCost?: number;
-  
+
   // Purpose
   purpose: string;
   urgency: ItemUrgency;
-  
+
   // Status
   status: RequisitionItemStatus;
-  
+
   // Alternatives
   alternativeItems?: string[];
   acceptSubstitute: boolean;
-  
+
   notes?: string;
 }
 
@@ -548,7 +530,7 @@ export interface RequisitionApproval {
   conditions?: string[];
 }
 
-export type RequisitionStatus = 
+export type RequisitionStatus =
   | 'draft'
   | 'submitted'
   | 'under_approval'
@@ -560,31 +542,13 @@ export type RequisitionStatus =
   | 'cancelled'
   | 'closed';
 
-export type RequisitionPriority = 
-  | 'low'
-  | 'normal'
-  | 'high'
-  | 'urgent'
-  | 'emergency';
+export type RequisitionPriority = 'low' | 'normal' | 'high' | 'urgent' | 'emergency';
 
-export type ItemUrgency = 
-  | 'routine'
-  | 'needed_soon'
-  | 'urgent'
-  | 'emergency';
+export type ItemUrgency = 'routine' | 'needed_soon' | 'urgent' | 'emergency';
 
-export type RequisitionItemStatus = 
-  | 'pending'
-  | 'approved'
-  | 'rejected'
-  | 'issued'
-  | 'cancelled';
+export type RequisitionItemStatus = 'pending' | 'approved' | 'rejected' | 'issued' | 'cancelled';
 
-export type ApprovalStatus = 
-  | 'pending'
-  | 'approved'
-  | 'rejected'
-  | 'conditional';
+export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'conditional';
 
 // Equipment Management
 export interface Equipment extends BaseEntity {
@@ -592,19 +556,19 @@ export interface Equipment extends BaseEntity {
   equipmentCode: string;
   equipmentName: string;
   description?: string;
-  
+
   // Classification
   category: EquipmentCategory;
   type: EquipmentType;
   criticality: EquipmentCriticality;
-  
+
   // Technical Specifications
   manufacturer: string;
   model: string;
   serialNumber: string;
   partNumber?: string;
   specifications: EquipmentSpecification[];
-  
+
   // Purchase Information
   purchaseDate: Date;
   purchaseCost: number;
@@ -612,46 +576,46 @@ export interface Equipment extends BaseEntity {
   supplier: Supplier;
   warrantyPeriod: number; // in months
   warrantyExpiry: Date;
-  
+
   // Location and Assignment
   currentLocation: StorageLocation;
   assignedDepartment?: string;
   assignedTo?: string;
   isPortable: boolean;
-  
+
   // Status and Condition
   status: EquipmentStatus;
   condition: EquipmentCondition;
   operationalStatus: OperationalStatus;
-  
+
   // Maintenance Information
   lastMaintenanceDate?: Date;
   nextMaintenanceDate?: Date;
   maintenanceInterval: number; // in days
   maintenanceType: MaintenanceType;
-  
+
   // Calibration Information
   requiresCalibration: boolean;
   lastCalibrationDate?: Date;
   nextCalibrationDate?: Date;
   calibrationInterval?: number; // in days
-  
+
   // Usage Information
   totalOperatingHours?: number;
   averageDailyUsage?: number;
   utilizationRate?: number;
-  
+
   // Depreciation
   depreciationMethod: DepreciationMethod;
   depreciationRate: number;
   currentValue: number;
   salvageValue: number;
-  
+
   // Insurance and Compliance
   insurancePolicy?: string;
   insuranceValue?: number;
   complianceCertificates: ComplianceCertificate[];
-  
+
   // Notes
   notes?: string;
   operatingInstructions?: string;
@@ -674,7 +638,7 @@ export interface ComplianceCertificate {
   status: CertificateStatus;
 }
 
-export type EquipmentCategory = 
+export type EquipmentCategory =
   | 'medical_devices'
   | 'diagnostic_equipment'
   | 'surgical_equipment'
@@ -688,20 +652,20 @@ export type EquipmentCategory =
   | 'it_equipment'
   | 'facility_equipment';
 
-export type EquipmentType = 
+export type EquipmentType =
   | 'fixed_equipment'
   | 'portable_equipment'
   | 'consumable_equipment'
   | 'reusable_equipment';
 
-export type EquipmentCriticality = 
+export type EquipmentCriticality =
   | 'life_critical'
   | 'mission_critical'
   | 'important'
   | 'standard'
   | 'non_critical';
 
-export type EquipmentStatus = 
+export type EquipmentStatus =
   | 'active'
   | 'inactive'
   | 'under_maintenance'
@@ -710,36 +674,23 @@ export type EquipmentStatus =
   | 'retired'
   | 'disposed';
 
-export type EquipmentCondition = 
-  | 'excellent'
-  | 'good'
-  | 'fair'
-  | 'poor'
-  | 'non_functional';
+export type EquipmentCondition = 'excellent' | 'good' | 'fair' | 'poor' | 'non_functional';
 
-export type OperationalStatus = 
+export type OperationalStatus =
   | 'operational'
   | 'non_operational'
   | 'limited_operation'
   | 'under_testing';
 
-export type MaintenanceType = 
-  | 'preventive'
-  | 'corrective'
-  | 'predictive'
-  | 'emergency';
+export type MaintenanceType = 'preventive' | 'corrective' | 'predictive' | 'emergency';
 
-export type DepreciationMethod = 
+export type DepreciationMethod =
   | 'straight_line'
   | 'declining_balance'
   | 'sum_of_years_digits'
   | 'units_of_production';
 
-export type CertificateStatus = 
-  | 'valid'
-  | 'expired'
-  | 'suspended'
-  | 'revoked';
+export type CertificateStatus = 'valid' | 'expired' | 'suspended' | 'revoked';
 
 // Maintenance Management
 export interface MaintenanceRecord extends BaseEntity {
@@ -747,47 +698,47 @@ export interface MaintenanceRecord extends BaseEntity {
   maintenanceNumber: string;
   equipmentId: string;
   equipment: Equipment;
-  
+
   // Schedule Information
   scheduledDate: Date;
   actualDate?: Date;
   maintenanceType: MaintenanceType;
   priority: MaintenancePriority;
-  
+
   // Work Details
   workDescription: string;
   workPerformed?: string;
   partsUsed: MaintenancePart[];
   laborHours: number;
-  
+
   // Personnel
   assignedTo: string;
   technician?: Staff;
   supervisedBy?: string;
-  
+
   // Status
   status: MaintenanceStatus;
-  
+
   // Cost Information
   laborCost: number;
   partsCost: number;
   totalCost: number;
-  
+
   // Results
   preMaintenanceCondition: string;
   postMaintenanceCondition: string;
   issuesFound?: string[];
   recommendedActions?: string[];
-  
+
   // Next Maintenance
   nextMaintenanceDate?: Date;
   maintenanceInterval?: number;
-  
+
   // Documentation
   workOrderNumber?: string;
   completionCertificate?: string;
   photos?: string[];
-  
+
   // Notes
   notes?: string;
   technicianNotes?: string;
@@ -802,47 +753,37 @@ export interface MaintenancePart {
   totalCost: number;
 }
 
-export type MaintenancePriority = 
-  | 'low'
-  | 'normal'
-  | 'high'
-  | 'urgent'
-  | 'emergency';
+export type MaintenancePriority = 'low' | 'normal' | 'high' | 'urgent' | 'emergency';
 
-export type MaintenanceStatus = 
-  | 'scheduled'
-  | 'in_progress'
-  | 'completed'
-  | 'cancelled'
-  | 'overdue';
+export type MaintenanceStatus = 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'overdue';
 
 // Inventory Analytics and Reporting
 export interface InventoryStats {
   totalItems: number;
   totalValue: number;
   totalStockValue: number;
-  
+
   // Stock Levels
   lowStockItems: number;
   outOfStockItems: number;
   overstockedItems: number;
-  
+
   // Categories
   itemsByCategory: Record<ItemCategory, number>;
   valueByCategory: Record<ItemCategory, number>;
-  
+
   // Movements
   totalTransactions: number;
   receipts: number;
   issues: number;
   adjustments: number;
-  
+
   // Purchase Orders
   totalPurchaseOrders: number;
   pendingPurchaseOrders: number;
   deliveredPurchaseOrders: number;
   totalPurchaseValue: number;
-  
+
   // Suppliers
   totalSuppliers: number;
   activeSuppliers: number;
@@ -852,26 +793,26 @@ export interface InventoryStats {
     totalOrders: number;
     totalValue: number;
   }>;
-  
+
   // Equipment
   totalEquipment: number;
   activeEquipment: number;
   maintenanceDueEquipment: number;
-  
+
   // Trends
   monthlyConsumption: Array<{
     month: string;
     consumption: number;
     value: number;
   }>;
-  
+
   topConsumedItems: Array<{
     itemId: string;
     itemName: string;
     quantity: number;
     value: number;
   }>;
-  
+
   stockTurnoverRate: number;
   averageStockAge: number;
 }
@@ -887,5 +828,10 @@ export interface InventoryAlert {
   createdAt: Date;
 }
 
-export type AlertType = 'low_stock' | 'out_of_stock' | 'expiring_soon' | 'expired' | 'reorder_point';
+export type AlertType =
+  | 'low_stock'
+  | 'out_of_stock'
+  | 'expiring_soon'
+  | 'expired'
+  | 'reorder_point';
 export type OrderStatus = PurchaseOrderStatus;

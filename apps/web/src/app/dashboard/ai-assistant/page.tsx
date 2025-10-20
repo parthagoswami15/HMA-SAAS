@@ -27,7 +27,7 @@ import {
   Accordion,
   Rating,
   Spoiler,
-  Chip
+  Chip,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
@@ -61,13 +61,19 @@ import {
   IconClockHour4,
   IconCheck,
   IconMoodCheck,
-  IconShare
+  IconShare,
 } from '@tabler/icons-react';
 
 // Types
 interface AIInsight {
   id: string;
-  type: 'diagnosis' | 'treatment' | 'drug-interaction' | 'risk-assessment' | 'recommendation' | 'alert';
+  type:
+    | 'diagnosis'
+    | 'treatment'
+    | 'drug-interaction'
+    | 'risk-assessment'
+    | 'recommendation'
+    | 'alert';
   title: string;
   description: string;
   confidence: number; // 0-100
@@ -176,7 +182,8 @@ const _mockAIInsights: AIInsight[] = [
     id: '1',
     type: 'diagnosis',
     title: 'Possible Acute Coronary Syndrome',
-    description: 'Based on presenting symptoms (chest pain, shortness of breath) and elevated troponin levels, there is a high probability of acute coronary syndrome. Immediate cardiology consultation recommended.',
+    description:
+      'Based on presenting symptoms (chest pain, shortness of breath) and elevated troponin levels, there is a high probability of acute coronary syndrome. Immediate cardiology consultation recommended.',
     confidence: 87,
     severity: 'critical',
     category: 'clinical',
@@ -191,47 +198,48 @@ const _mockAIInsights: AIInsight[] = [
       {
         source: 'Clinical symptoms analysis',
         relevance: 95,
-        description: 'Typical chest pain presentation with radiation to left arm'
+        description: 'Typical chest pain presentation with radiation to left arm',
       },
       {
         source: 'Laboratory results',
         relevance: 88,
-        description: 'Elevated troponin I levels (0.8 ng/mL, normal <0.04)'
+        description: 'Elevated troponin I levels (0.8 ng/mL, normal <0.04)',
       },
       {
         source: 'Vital signs assessment',
         relevance: 75,
-        description: 'Elevated heart rate and blood pressure'
-      }
+        description: 'Elevated heart rate and blood pressure',
+      },
     ],
     recommendations: [
       {
         action: 'Immediate cardiology consultation',
         priority: 'high',
-        timeframe: 'Within 30 minutes'
+        timeframe: 'Within 30 minutes',
       },
       {
         action: 'Serial ECG monitoring',
         priority: 'high',
-        timeframe: 'Every 15 minutes'
+        timeframe: 'Every 15 minutes',
       },
       {
         action: 'Antiplatelet therapy initiation',
         priority: 'medium',
-        timeframe: 'After cardiology clearance'
-      }
+        timeframe: 'After cardiology clearance',
+      },
     ],
     metadata: {
       symptoms: ['chest pain', 'shortness of breath', 'left arm pain'],
       vitals: { bp: '150/95', hr: 110, temp: 98.6 },
-      labResults: { troponinI: 0.8, ck_mb: 12.5 }
-    }
+      labResults: { troponinI: 0.8, ck_mb: 12.5 },
+    },
   },
   {
     id: '2',
     type: 'drug-interaction',
     title: 'Major Drug Interaction Alert',
-    description: 'Warfarin and Aspirin combination may significantly increase bleeding risk. Consider dose adjustment or alternative anticoagulation strategy.',
+    description:
+      'Warfarin and Aspirin combination may significantly increase bleeding risk. Consider dose adjustment or alternative anticoagulation strategy.',
     confidence: 94,
     severity: 'high',
     category: 'medication',
@@ -244,36 +252,37 @@ const _mockAIInsights: AIInsight[] = [
       {
         source: 'Drug interaction database',
         relevance: 98,
-        description: 'Well-documented major interaction between warfarin and aspirin'
+        description: 'Well-documented major interaction between warfarin and aspirin',
       },
       {
         source: 'Patient bleeding risk factors',
         relevance: 82,
-        description: 'Age >65, history of GI bleeding'
-      }
+        description: 'Age >65, history of GI bleeding',
+      },
     ],
     recommendations: [
       {
         action: 'Review anticoagulation strategy',
         priority: 'high',
-        timeframe: 'Before next dose'
+        timeframe: 'Before next dose',
       },
       {
         action: 'Monitor INR more frequently',
         priority: 'medium',
-        timeframe: 'Every 3 days'
-      }
+        timeframe: 'Every 3 days',
+      },
     ],
     metadata: {
       medications: ['warfarin 5mg', 'aspirin 81mg'],
-      allergies: []
-    }
+      allergies: [],
+    },
   },
   {
     id: '3',
     type: 'risk-assessment',
     title: 'High Fall Risk Identified',
-    description: 'Patient presents multiple fall risk factors including advanced age, polypharmacy, and recent orthostatic hypotension. Fall prevention measures recommended.',
+    description:
+      'Patient presents multiple fall risk factors including advanced age, polypharmacy, and recent orthostatic hypotension. Fall prevention measures recommended.',
     confidence: 78,
     severity: 'medium',
     category: 'preventive',
@@ -286,49 +295,58 @@ const _mockAIInsights: AIInsight[] = [
       {
         source: 'MORSE Fall Scale assessment',
         relevance: 85,
-        description: 'Score of 55 indicates high fall risk'
+        description: 'Score of 55 indicates high fall risk',
       },
       {
         source: 'Medication review',
         relevance: 72,
-        description: 'Currently on 6 medications including sedatives'
-      }
+        description: 'Currently on 6 medications including sedatives',
+      },
     ],
     recommendations: [
       {
         action: 'Implement fall precautions protocol',
         priority: 'high',
-        timeframe: 'Immediately'
+        timeframe: 'Immediately',
       },
       {
         action: 'Physical therapy consultation',
         priority: 'medium',
-        timeframe: 'Within 24 hours'
+        timeframe: 'Within 24 hours',
       },
       {
         action: 'Medication review for dose optimization',
         priority: 'medium',
-        timeframe: 'Within 48 hours'
-      }
+        timeframe: 'Within 48 hours',
+      },
     ],
     metadata: {
       symptoms: ['dizziness', 'unsteady gait'],
       vitals: { bp_standing: '110/70', bp_sitting: '130/85' },
-      medications: ['metformin', 'lisinopril', 'atorvastatin', 'tramadol', 'lorazepam', 'omeprazole']
-    }
-  }
+      medications: [
+        'metformin',
+        'lisinopril',
+        'atorvastatin',
+        'tramadol',
+        'lorazepam',
+        'omeprazole',
+      ],
+    },
+  },
 ];
 
 const _mockAIQueries: AIQuery[] = [
   {
     id: '1',
-    question: 'What are the differential diagnoses for chest pain in a 45-year-old male with diabetes?',
+    question:
+      'What are the differential diagnoses for chest pain in a 45-year-old male with diabetes?',
     context: {
       patientId: 'P2024001',
       symptoms: ['chest pain', 'shortness of breath'],
-      history: ['diabetes mellitus', 'hypertension']
+      history: ['diabetes mellitus', 'hypertension'],
     },
-    response: 'For a 45-year-old diabetic male presenting with chest pain, the differential diagnoses should include:\n\n1. **Acute Coronary Syndrome** (highest priority)\n   - Myocardial infarction\n   - Unstable angina\n   - Diabetics may have atypical presentations\n\n2. **Pulmonary causes**\n   - Pulmonary embolism\n   - Pneumonia\n   - Pneumothorax\n\n3. **Gastrointestinal causes**\n   - GERD\n   - Esophageal spasm\n   - Peptic ulcer disease\n\n4. **Musculoskeletal causes**\n   - Costochondritis\n   - Muscle strain\n\nGiven the diabetes history, cardiac causes should be prioritized. Recommend immediate ECG, cardiac enzymes, and chest X-ray.',
+    response:
+      'For a 45-year-old diabetic male presenting with chest pain, the differential diagnoses should include:\n\n1. **Acute Coronary Syndrome** (highest priority)\n   - Myocardial infarction\n   - Unstable angina\n   - Diabetics may have atypical presentations\n\n2. **Pulmonary causes**\n   - Pulmonary embolism\n   - Pneumonia\n   - Pneumothorax\n\n3. **Gastrointestinal causes**\n   - GERD\n   - Esophageal spasm\n   - Peptic ulcer disease\n\n4. **Musculoskeletal causes**\n   - Costochondritis\n   - Muscle strain\n\nGiven the diabetes history, cardiac causes should be prioritized. Recommend immediate ECG, cardiac enzymes, and chest X-ray.',
     confidence: 92,
     model: 'MedAI-Clinical v2.1',
     timestamp: '2024-01-15T10:15:00Z',
@@ -338,14 +356,16 @@ const _mockAIQueries: AIQuery[] = [
     feedback: {
       rating: 5,
       helpful: true,
-      comments: 'Very comprehensive and practical response'
-    }
+      comments: 'Very comprehensive and practical response',
+    },
   },
   {
     id: '2',
-    question: 'What is the recommended antibiotic for community-acquired pneumonia in elderly patients?',
+    question:
+      'What is the recommended antibiotic for community-acquired pneumonia in elderly patients?',
     context: {},
-    response: 'For community-acquired pneumonia (CAP) in elderly patients, the treatment approach should consider:\n\n**First-line treatments:**\n1. **Amoxicillin/Clavulanate** 875/125 mg BID for 7-10 days\n2. **Ceftriaxone** 1-2g IV daily (if hospitalized)\n\n**Alternative options:**\n- **Levofloxacin** 750mg daily for 5 days (respiratory fluoroquinolone)\n- **Azithromycin** + **Amoxicillin** (combination therapy)\n\n**Special considerations for elderly:**\n- Adjust doses for renal function\n- Consider drug interactions with existing medications\n- Monitor for C. difficile risk with broader spectrum antibiotics\n- Higher risk for atypical pathogens (Legionella, Mycoplasma)\n\n**Severity assessment:** Use CURB-65 or PSI to guide inpatient vs outpatient management.',
+    response:
+      'For community-acquired pneumonia (CAP) in elderly patients, the treatment approach should consider:\n\n**First-line treatments:**\n1. **Amoxicillin/Clavulanate** 875/125 mg BID for 7-10 days\n2. **Ceftriaxone** 1-2g IV daily (if hospitalized)\n\n**Alternative options:**\n- **Levofloxacin** 750mg daily for 5 days (respiratory fluoroquinolone)\n- **Azithromycin** + **Amoxicillin** (combination therapy)\n\n**Special considerations for elderly:**\n- Adjust doses for renal function\n- Consider drug interactions with existing medications\n- Monitor for C. difficile risk with broader spectrum antibiotics\n- Higher risk for atypical pathogens (Legionella, Mycoplasma)\n\n**Severity assessment:** Use CURB-65 or PSI to guide inpatient vs outpatient management.',
     confidence: 89,
     model: 'MedAI-Clinical v2.1',
     timestamp: '2024-01-15T11:30:00Z',
@@ -354,23 +374,24 @@ const _mockAIQueries: AIQuery[] = [
     category: 'treatment',
     feedback: {
       rating: 4,
-      helpful: true
-    }
+      helpful: true,
+    },
   },
   {
     id: '3',
     question: 'Can metformin and contrast dye be given together safely?',
     context: {
-      symptoms: ['scheduled for CT with contrast']
+      symptoms: ['scheduled for CT with contrast'],
     },
-    response: 'Metformin and iodinated contrast media interaction requires careful management:\n\n**Key Concerns:**\n- Risk of contrast-induced nephropathy (CIN)\n- Potential for lactic acidosis if kidney function deteriorates\n\n**Current Guidelines:**\n1. **eGFR ≥30 mL/min/1.73m²**: Continue metformin, no need to hold\n2. **eGFR <30 mL/min/1.73m²**: Hold metformin 48 hours before contrast\n\n**Post-contrast management:**\n- Check creatinine 48-72 hours post-contrast\n- Restart metformin only if creatinine stable/improved\n- Ensure adequate hydration\n\n**Important:** Recent guidelines (2020) are less restrictive than previous recommendations, focusing on actual kidney function rather than blanket holds.\n\n**Patient counseling:** Explain the rationale and importance of follow-up labs.',
+    response:
+      'Metformin and iodinated contrast media interaction requires careful management:\n\n**Key Concerns:**\n- Risk of contrast-induced nephropathy (CIN)\n- Potential for lactic acidosis if kidney function deteriorates\n\n**Current Guidelines:**\n1. **eGFR ≥30 mL/min/1.73m²**: Continue metformin, no need to hold\n2. **eGFR <30 mL/min/1.73m²**: Hold metformin 48 hours before contrast\n\n**Post-contrast management:**\n- Check creatinine 48-72 hours post-contrast\n- Restart metformin only if creatinine stable/improved\n- Ensure adequate hydration\n\n**Important:** Recent guidelines (2020) are less restrictive than previous recommendations, focusing on actual kidney function rather than blanket holds.\n\n**Patient counseling:** Explain the rationale and importance of follow-up labs.',
     confidence: 94,
     model: 'DrugSafe-AI v1.8',
     timestamp: '2024-01-15T13:45:00Z',
     userId: 'D003',
     userName: 'Dr. Singh',
-    category: 'medication'
-  }
+    category: 'medication',
+  },
 ];
 
 const _mockClinicalGuidelines: ClinicalGuideline[] = [
@@ -379,57 +400,65 @@ const _mockClinicalGuidelines: ClinicalGuideline[] = [
     title: 'Management of Acute Coronary Syndromes',
     category: 'treatment',
     condition: 'Acute Coronary Syndrome',
-    description: 'Evidence-based guidelines for the diagnosis and management of acute coronary syndromes including STEMI, NSTEMI, and unstable angina.',
+    description:
+      'Evidence-based guidelines for the diagnosis and management of acute coronary syndromes including STEMI, NSTEMI, and unstable angina.',
     recommendations: [
       {
         level: 'A',
         strength: 'strong',
-        recommendation: 'Administer dual antiplatelet therapy (aspirin + P2Y12 inhibitor) to all patients with ACS unless contraindicated',
-        evidence: 'Multiple large randomized controlled trials demonstrate significant reduction in cardiovascular events'
+        recommendation:
+          'Administer dual antiplatelet therapy (aspirin + P2Y12 inhibitor) to all patients with ACS unless contraindicated',
+        evidence:
+          'Multiple large randomized controlled trials demonstrate significant reduction in cardiovascular events',
       },
       {
         level: 'A',
         strength: 'strong',
-        recommendation: 'Perform primary PCI within 90 minutes for STEMI patients presenting to PCI-capable centers',
-        evidence: 'Time-dependent mortality benefit demonstrated in large registry studies'
+        recommendation:
+          'Perform primary PCI within 90 minutes for STEMI patients presenting to PCI-capable centers',
+        evidence: 'Time-dependent mortality benefit demonstrated in large registry studies',
       },
       {
         level: 'B',
         strength: 'moderate',
         recommendation: 'Consider high-intensity statin therapy in all ACS patients',
-        evidence: 'Observational studies show improved outcomes with early statin initiation'
-      }
+        evidence: 'Observational studies show improved outcomes with early statin initiation',
+      },
     ],
     lastUpdated: '2024-01-01T00:00:00Z',
     source: 'American Heart Association',
     version: '2024.1',
-    applicability: ['Emergency Medicine', 'Cardiology', 'Internal Medicine']
+    applicability: ['Emergency Medicine', 'Cardiology', 'Internal Medicine'],
   },
   {
     id: '2',
     title: 'Antibiotic Stewardship in Community-Acquired Pneumonia',
     category: 'treatment',
     condition: 'Community-Acquired Pneumonia',
-    description: 'Guidelines for appropriate antibiotic selection and duration in community-acquired pneumonia.',
+    description:
+      'Guidelines for appropriate antibiotic selection and duration in community-acquired pneumonia.',
     recommendations: [
       {
         level: 'A',
         strength: 'strong',
-        recommendation: 'Use severity assessment tools (CURB-65, PSI) to guide treatment location and antibiotic choice',
-        evidence: 'Validated prediction rules improve patient outcomes and resource utilization'
+        recommendation:
+          'Use severity assessment tools (CURB-65, PSI) to guide treatment location and antibiotic choice',
+        evidence: 'Validated prediction rules improve patient outcomes and resource utilization',
       },
       {
         level: 'A',
         strength: 'strong',
-        recommendation: 'Limit antibiotic duration to 5-7 days for uncomplicated CAP with good clinical response',
-        evidence: 'Non-inferiority trials show shorter courses are as effective as longer durations'
-      }
+        recommendation:
+          'Limit antibiotic duration to 5-7 days for uncomplicated CAP with good clinical response',
+        evidence:
+          'Non-inferiority trials show shorter courses are as effective as longer durations',
+      },
     ],
     lastUpdated: '2023-12-15T00:00:00Z',
     source: 'Infectious Diseases Society of America',
     version: '2023.2',
-    applicability: ['Internal Medicine', 'Emergency Medicine', 'Pulmonology']
-  }
+    applicability: ['Internal Medicine', 'Emergency Medicine', 'Pulmonology'],
+  },
 ];
 
 const _mockDrugInteractions: DrugInteraction[] = [
@@ -439,12 +468,14 @@ const _mockDrugInteractions: DrugInteraction[] = [
     drug2: 'Aspirin',
     interactionType: 'major',
     mechanism: 'Pharmacodynamic synergism',
-    clinicalEffect: 'Increased risk of bleeding due to additive antiplatelet and anticoagulant effects',
-    recommendation: 'Monitor INR more frequently. Consider gastroprotection with PPI. Assess bleeding risk vs. thrombotic risk.',
+    clinicalEffect:
+      'Increased risk of bleeding due to additive antiplatelet and anticoagulant effects',
+    recommendation:
+      'Monitor INR more frequently. Consider gastroprotection with PPI. Assess bleeding risk vs. thrombotic risk.',
     frequency: 'common',
     onset: 'delayed',
     severity: 'severe',
-    documentation: 'excellent'
+    documentation: 'excellent',
   },
   {
     id: '2',
@@ -452,12 +483,14 @@ const _mockDrugInteractions: DrugInteraction[] = [
     drug2: 'Iodinated Contrast',
     interactionType: 'moderate',
     mechanism: 'Increased risk of lactic acidosis in presence of contrast-induced nephropathy',
-    clinicalEffect: 'Potential for lactic acidosis if kidney function deteriorates after contrast exposure',
-    recommendation: 'Hold metformin in patients with eGFR <30. Monitor renal function post-contrast. Resume metformin when creatinine stable.',
+    clinicalEffect:
+      'Potential for lactic acidosis if kidney function deteriorates after contrast exposure',
+    recommendation:
+      'Hold metformin in patients with eGFR <30. Monitor renal function post-contrast. Resume metformin when creatinine stable.',
     frequency: 'uncommon',
     onset: 'delayed',
     severity: 'severe',
-    documentation: 'good'
+    documentation: 'good',
   },
   {
     id: '3',
@@ -466,12 +499,13 @@ const _mockDrugInteractions: DrugInteraction[] = [
     interactionType: 'major',
     mechanism: 'Amiodarone inhibits P-glycoprotein, reducing digoxin clearance',
     clinicalEffect: 'Significantly increased digoxin levels leading to potential toxicity',
-    recommendation: 'Reduce digoxin dose by 50% when starting amiodarone. Monitor digoxin levels closely.',
+    recommendation:
+      'Reduce digoxin dose by 50% when starting amiodarone. Monitor digoxin levels closely.',
     frequency: 'common',
     onset: 'delayed',
     severity: 'severe',
-    documentation: 'excellent'
-  }
+    documentation: 'excellent',
+  },
 ];
 
 const AIAssistant = () => {
@@ -486,35 +520,42 @@ const AIAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Modal states
-  const [insightDetailOpened, { open: openInsightDetail, close: closeInsightDetail }] = useDisclosure(false);
-  const [_queryDetailOpened, { open: _openQueryDetail, close: _closeQueryDetail }] = useDisclosure(false);
+  const [insightDetailOpened, { open: openInsightDetail, close: closeInsightDetail }] =
+    useDisclosure(false);
+  const [_queryDetailOpened, { open: _openQueryDetail, close: _closeQueryDetail }] =
+    useDisclosure(false);
   const [askAIOpened, { open: openAskAI, close: closeAskAI }] = useDisclosure(false);
   const [_guidelineOpened, { open: _openGuideline, close: _closeGuideline }] = useDisclosure(false);
 
   // Filter insights
   const filteredInsights = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((insight) => {
-      const matchesSearch = 
-        insight.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        insight.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (insight.patientName && insight.patientName.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesCategory = !selectedCategory || insight.category === selectedCategory;
-      const matchesSeverity = !selectedSeverity || insight.severity === selectedSeverity;
+    return [].filter(
+      /* TODO: Fetch from API */ (insight) => {
+        const matchesSearch =
+          insight.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          insight.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (insight.patientName &&
+            insight.patientName.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      return matchesSearch && matchesCategory && matchesSeverity;
-    });
+        const matchesCategory = !selectedCategory || insight.category === selectedCategory;
+        const matchesSeverity = !selectedSeverity || insight.severity === selectedSeverity;
+
+        return matchesSearch && matchesCategory && matchesSeverity;
+      }
+    );
   }, [searchQuery, selectedCategory, selectedSeverity]);
 
   // Filter queries
   const filteredQueries = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((query) => {
-      const matchesSearch = 
-        query.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        query.response.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      return matchesSearch;
-    });
+    return [].filter(
+      /* TODO: Fetch from API */ (query) => {
+        const matchesSearch =
+          query.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          query.response.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return matchesSearch;
+      }
+    );
   }, [searchQuery]);
 
   const handleViewInsight = (insight: AIInsight) => {
@@ -548,7 +589,7 @@ const AIAssistant = () => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -558,53 +599,78 @@ const AIAssistant = () => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'red';
-      case 'high': return 'orange';
-      case 'medium': return 'yellow';
-      case 'low': return 'green';
-      default: return 'gray';
+      case 'critical':
+        return 'red';
+      case 'high':
+        return 'orange';
+      case 'medium':
+        return 'yellow';
+      case 'low':
+        return 'green';
+      default:
+        return 'gray';
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'diagnosis': return <IconStethoscope size={16} />;
-      case 'treatment': return <IconMedicalCross size={16} />;
-      case 'drug-interaction': return <IconPill size={16} />;
-      case 'risk-assessment': return <IconShield size={16} />;
-      case 'recommendation': return <IconBulb size={16} />;
-      case 'alert': return <IconAlertTriangle size={16} />;
-      default: return <IconBrain size={16} />;
+      case 'diagnosis':
+        return <IconStethoscope size={16} />;
+      case 'treatment':
+        return <IconMedicalCross size={16} />;
+      case 'drug-interaction':
+        return <IconPill size={16} />;
+      case 'risk-assessment':
+        return <IconShield size={16} />;
+      case 'recommendation':
+        return <IconBulb size={16} />;
+      case 'alert':
+        return <IconAlertTriangle size={16} />;
+      default:
+        return <IconBrain size={16} />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'accepted': return 'green';
-      case 'implemented': return 'teal';
-      case 'reviewed': return 'blue';
-      case 'rejected': return 'red';
-      case 'pending': return 'yellow';
-      default: return 'gray';
+      case 'accepted':
+        return 'green';
+      case 'implemented':
+        return 'teal';
+      case 'reviewed':
+        return 'blue';
+      case 'rejected':
+        return 'red';
+      case 'pending':
+        return 'yellow';
+      default:
+        return 'gray';
     }
   };
 
   // AI Assistant stats
   const aiStats = {
     totalInsights: 0 /* TODO: Fetch from API */,
-    pendingInsights: [].filter /* TODO: Fetch from API */(i => i.status === 'pending').length,
-    acceptedInsights: [].filter /* TODO: Fetch from API */(i => i.status === 'accepted').length,
-    criticalInsights: [].filter /* TODO: Fetch from API */(i => i.severity === 'critical').length,
+    pendingInsights: [].filter(/* TODO: Fetch from API */ (i) => i.status === 'pending').length,
+    acceptedInsights: [].filter(/* TODO: Fetch from API */ (i) => i.status === 'accepted').length,
+    criticalInsights: [].filter(/* TODO: Fetch from API */ (i) => i.severity === 'critical').length,
     totalQueries: 0 /* TODO: Fetch from API */,
-    avgConfidence: Math.round([].reduce /* TODO: Fetch from API */((acc, i) => acc + i.confidence, 0) / 0 /* TODO: Fetch from API */),
-    avgRating: [].filter /* TODO: Fetch from API */(q => q.feedback?.rating).reduce((acc, q) => acc + (q.feedback?.rating || 0), 0) / [].filter /* TODO: Fetch from API */(q => q.feedback?.rating).length,
-    helpfulResponses: [].filter /* TODO: Fetch from API */(q => q.feedback?.helpful).length
+    avgConfidence: Math.round(
+      [].reduce(/* TODO: Fetch from API */ (acc, i) => acc + i.confidence, 0) /
+        0 /* TODO: Fetch from API */
+    ),
+    avgRating:
+      []
+        .filter(/* TODO: Fetch from API */ (q) => q.feedback?.rating)
+        .reduce((acc, q) => acc + (q.feedback?.rating || 0), 0) /
+      [].filter(/* TODO: Fetch from API */ (q) => q.feedback?.rating).length,
+    helpfulResponses: [].filter(/* TODO: Fetch from API */ (q) => q.feedback?.helpful).length,
   };
 
   return (
@@ -642,8 +708,12 @@ const AIAssistant = () => {
               <IconSparkles size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{aiStats.totalInsights}</Text>
-              <Text size="xs" c="dimmed">AI Insights</Text>
+              <Text size="lg" fw={700}>
+                {aiStats.totalInsights}
+              </Text>
+              <Text size="xs" c="dimmed">
+                AI Insights
+              </Text>
             </div>
           </Group>
         </Card>
@@ -654,8 +724,12 @@ const AIAssistant = () => {
               <IconClockHour4 size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{aiStats.pendingInsights}</Text>
-              <Text size="xs" c="dimmed">Pending Review</Text>
+              <Text size="lg" fw={700}>
+                {aiStats.pendingInsights}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Pending Review
+              </Text>
             </div>
           </Group>
         </Card>
@@ -666,8 +740,12 @@ const AIAssistant = () => {
               <IconCheck size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{aiStats.acceptedInsights}</Text>
-              <Text size="xs" c="dimmed">Accepted</Text>
+              <Text size="lg" fw={700}>
+                {aiStats.acceptedInsights}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Accepted
+              </Text>
             </div>
           </Group>
         </Card>
@@ -678,8 +756,12 @@ const AIAssistant = () => {
               <IconAlertTriangle size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{aiStats.criticalInsights}</Text>
-              <Text size="xs" c="dimmed">Critical</Text>
+              <Text size="lg" fw={700}>
+                {aiStats.criticalInsights}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Critical
+              </Text>
             </div>
           </Group>
         </Card>
@@ -690,8 +772,12 @@ const AIAssistant = () => {
               <IconQuestionMark size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{aiStats.totalQueries}</Text>
-              <Text size="xs" c="dimmed">AI Queries</Text>
+              <Text size="lg" fw={700}>
+                {aiStats.totalQueries}
+              </Text>
+              <Text size="xs" c="dimmed">
+                AI Queries
+              </Text>
             </div>
           </Group>
         </Card>
@@ -702,8 +788,12 @@ const AIAssistant = () => {
               <IconTarget size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{aiStats.avgConfidence}%</Text>
-              <Text size="xs" c="dimmed">Avg Confidence</Text>
+              <Text size="lg" fw={700}>
+                {aiStats.avgConfidence}%
+              </Text>
+              <Text size="xs" c="dimmed">
+                Avg Confidence
+              </Text>
             </div>
           </Group>
         </Card>
@@ -714,8 +804,12 @@ const AIAssistant = () => {
               <IconStar size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{aiStats.avgRating.toFixed(1)}</Text>
-              <Text size="xs" c="dimmed">Avg Rating</Text>
+              <Text size="lg" fw={700}>
+                {aiStats.avgRating.toFixed(1)}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Avg Rating
+              </Text>
             </div>
           </Group>
         </Card>
@@ -726,8 +820,12 @@ const AIAssistant = () => {
               <IconMoodCheck size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{aiStats.helpfulResponses}</Text>
-              <Text size="xs" c="dimmed">Helpful</Text>
+              <Text size="lg" fw={700}>
+                {aiStats.helpfulResponses}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Helpful
+              </Text>
             </div>
           </Group>
         </Card>
@@ -773,7 +871,7 @@ const AIAssistant = () => {
                   { value: 'diagnostic', label: 'Diagnostic' },
                   { value: 'preventive', label: 'Preventive' },
                   { value: 'emergency', label: 'Emergency' },
-                  { value: 'all', label: 'All' }
+                  { value: 'all', label: 'All' },
                 ]}
                 value={selectedCategory}
                 onChange={(value) => setSelectedCategory(value || 'all')}
@@ -785,7 +883,7 @@ const AIAssistant = () => {
                   { value: 'critical', label: 'Critical' },
                   { value: 'high', label: 'High' },
                   { value: 'medium', label: 'Medium' },
-                  { value: 'low', label: 'Low' }
+                  { value: 'low', label: 'Low' },
                 ]}
                 value={selectedSeverity}
                 onChange={(value) => setSelectedSeverity(value || '')}
@@ -804,17 +902,30 @@ const AIAssistant = () => {
                 />
               ) : (
                 filteredInsights.map((insight) => (
-                  <Card key={insight.id} padding="lg" radius="md" withBorder onClick={() => handleViewInsight(insight)} style={{ cursor: 'pointer' }}>
+                  <Card
+                    key={insight.id}
+                    padding="lg"
+                    radius="md"
+                    withBorder
+                    onClick={() => handleViewInsight(insight)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <Group justify="space-between" mb="md">
                       <div>
                         <Group mb="xs">
-                          <ThemeIcon size="sm" variant="light" color={getSeverityColor(insight.severity)}>
+                          <ThemeIcon
+                            size="sm"
+                            variant="light"
+                            color={getSeverityColor(insight.severity)}
+                          >
                             {getTypeIcon(insight.type)}
                           </ThemeIcon>
                           <Title order={4}>{insight.title}</Title>
                         </Group>
                         {insight.patientName && (
-                          <Text c="dimmed" size="sm">Patient: {insight.patientName}</Text>
+                          <Text c="dimmed" size="sm">
+                            Patient: {insight.patientName}
+                          </Text>
                         )}
                       </div>
                       <Group>
@@ -831,32 +942,34 @@ const AIAssistant = () => {
                       {insight.description}
                     </Text>
 
-                  <Group justify="space-between">
-                    <div>
-                      <Text size="xs" c="dimmed">
-                        Generated by {insight.generatedBy} • {formatDateTime(insight.generatedDate)}
-                      </Text>
-                      {insight.reviewedBy && (
+                    <Group justify="space-between">
+                      <div>
                         <Text size="xs" c="dimmed">
-                          Reviewed by {insight.reviewedBy} • {formatDateTime(insight.reviewedDate!)}
+                          Generated by {insight.generatedBy} •{' '}
+                          {formatDateTime(insight.generatedDate)}
                         </Text>
-                      )}
-                    </div>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconCheck size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="red">
-                        <IconX size={16} />
-                      </ActionIcon>
+                        {insight.reviewedBy && (
+                          <Text size="xs" c="dimmed">
+                            Reviewed by {insight.reviewedBy} •{' '}
+                            {formatDateTime(insight.reviewedDate!)}
+                          </Text>
+                        )}
+                      </div>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconCheck size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="red">
+                          <IconX size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              )))
-              }
+                  </Card>
+                ))
+              )}
             </Stack>
           </Paper>
         </Tabs.Panel>
@@ -870,10 +983,17 @@ const AIAssistant = () => {
                 Ask New Question
               </Button>
             </Group>
-            
+
             <Stack gap="lg">
               {filteredQueries.map((query) => (
-                <Card key={query.id} padding="lg" radius="md" withBorder onClick={() => handleViewQuery(query)} style={{ cursor: 'pointer' }}>
+                <Card
+                  key={query.id}
+                  padding="lg"
+                  radius="md"
+                  withBorder
+                  onClick={() => handleViewQuery(query)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <Group justify="space-between" mb="md">
                     <div style={{ flex: 1 }}>
                       <Text fw={600} size="md" mb="xs" lineClamp={2}>
@@ -890,14 +1010,20 @@ const AIAssistant = () => {
                     </div>
                     <Group>
                       <Group gap="xs">
-                        <Text size="xs" c="dimmed">Confidence:</Text>
+                        <Text size="xs" c="dimmed">
+                          Confidence:
+                        </Text>
                         <Progress value={query.confidence} size="sm" w={60} color="green" />
-                        <Text size="xs" fw={500}>{query.confidence}%</Text>
+                        <Text size="xs" fw={500}>
+                          {query.confidence}%
+                        </Text>
                       </Group>
                       {query.feedback && (
                         <Group gap="xs">
                           <Rating value={query.feedback.rating} readOnly size="sm" />
-                          <Text size="xs" c="dimmed">({query.feedback.rating})</Text>
+                          <Text size="xs" c="dimmed">
+                            ({query.feedback.rating})
+                          </Text>
                         </Group>
                       )}
                     </Group>
@@ -939,75 +1065,81 @@ const AIAssistant = () => {
         {/* Clinical Guidelines Tab */}
         <Tabs.Panel value="guidelines">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Evidence-Based Clinical Guidelines</Title>
-            
+            <Title order={3} mb="lg">
+              Evidence-Based Clinical Guidelines
+            </Title>
+
             <Accordion variant="contained">
-              {[].map /* TODO: Fetch from API */((guideline) => (
-                <Accordion.Item key={guideline.id} value={guideline.id}>
-                  <Accordion.Control>
-                    <Group justify="space-between">
-                      <div>
-                        <Text fw={600}>{guideline.title}</Text>
-                        <Group gap="sm" mt="xs">
-                          <Badge variant="light" size="sm" tt="capitalize">
-                            {guideline.category}
-                          </Badge>
-                          <Text size="sm" c="dimmed">{guideline.condition}</Text>
-                        </Group>
-                      </div>
-                      <Group gap="xs">
-                        <Text size="xs" c="dimmed">
-                          {guideline.source} • v{guideline.version}
-                        </Text>
-                      </Group>
-                    </Group>
-                  </Accordion.Control>
-                  <Accordion.Panel>
-                    <Stack gap="md">
-                      <Text size="sm">
-                        {guideline.description}
-                      </Text>
-
-                      <Divider />
-
-                      <div>
-                        <Text size="sm" fw={600} mb="md">Recommendations:</Text>
-                        <Stack gap="sm">
-                          {guideline.recommendations.map((rec, index) => (
-                            <Card key={index} padding="sm" radius="sm" withBorder>
-                              <Group justify="space-between" mb="xs">
-                                <Group gap="xs">
-                                  <Badge size="xs" color="blue" variant="filled">
-                                    Level {rec.level}
-                                  </Badge>
-                                  <Badge size="xs" color="green" variant="outline">
-                                    {rec.strength}
-                                  </Badge>
-                                </Group>
-                              </Group>
-                              <Text size="sm" mb="xs">
-                                {rec.recommendation}
-                              </Text>
-                              <Text size="xs" c="dimmed">
-                                <strong>Evidence:</strong> {rec.evidence}
-                              </Text>
-                            </Card>
-                          ))}
-                        </Stack>
-                      </div>
-
+              {[].map(
+                /* TODO: Fetch from API */ (guideline) => (
+                  <Accordion.Item key={guideline.id} value={guideline.id}>
+                    <Accordion.Control>
                       <Group justify="space-between">
-                        <Text size="xs" c="dimmed">
-                          Applicable to: {guideline.applicability.join(', ')}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          Last updated: {formatDate(guideline.lastUpdated)}
-                        </Text>
+                        <div>
+                          <Text fw={600}>{guideline.title}</Text>
+                          <Group gap="sm" mt="xs">
+                            <Badge variant="light" size="sm" tt="capitalize">
+                              {guideline.category}
+                            </Badge>
+                            <Text size="sm" c="dimmed">
+                              {guideline.condition}
+                            </Text>
+                          </Group>
+                        </div>
+                        <Group gap="xs">
+                          <Text size="xs" c="dimmed">
+                            {guideline.source} • v{guideline.version}
+                          </Text>
+                        </Group>
                       </Group>
-                    </Stack>
-                  </Accordion.Panel>
-                </Accordion.Item>
-              ))}
+                    </Accordion.Control>
+                    <Accordion.Panel>
+                      <Stack gap="md">
+                        <Text size="sm">{guideline.description}</Text>
+
+                        <Divider />
+
+                        <div>
+                          <Text size="sm" fw={600} mb="md">
+                            Recommendations:
+                          </Text>
+                          <Stack gap="sm">
+                            {guideline.recommendations.map((rec, index) => (
+                              <Card key={index} padding="sm" radius="sm" withBorder>
+                                <Group justify="space-between" mb="xs">
+                                  <Group gap="xs">
+                                    <Badge size="xs" color="blue" variant="filled">
+                                      Level {rec.level}
+                                    </Badge>
+                                    <Badge size="xs" color="green" variant="outline">
+                                      {rec.strength}
+                                    </Badge>
+                                  </Group>
+                                </Group>
+                                <Text size="sm" mb="xs">
+                                  {rec.recommendation}
+                                </Text>
+                                <Text size="xs" c="dimmed">
+                                  <strong>Evidence:</strong> {rec.evidence}
+                                </Text>
+                              </Card>
+                            ))}
+                          </Stack>
+                        </div>
+
+                        <Group justify="space-between">
+                          <Text size="xs" c="dimmed">
+                            Applicable to: {guideline.applicability.join(', ')}
+                          </Text>
+                          <Text size="xs" c="dimmed">
+                            Last updated: {formatDate(guideline.lastUpdated)}
+                          </Text>
+                        </Group>
+                      </Stack>
+                    </Accordion.Panel>
+                  </Accordion.Item>
+                )
+              )}
             </Accordion>
           </Paper>
         </Tabs.Panel>
@@ -1015,77 +1147,106 @@ const AIAssistant = () => {
         {/* Drug Interactions Tab */}
         <Tabs.Panel value="interactions">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Drug Interaction Checker</Title>
-            
+            <Title order={3} mb="lg">
+              Drug Interaction Checker
+            </Title>
+
             <Stack gap="md">
-              {[].map /* TODO: Fetch from API */((interaction) => (
-                <Card key={interaction.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Group mb="xs">
-                        <Text fw={600} size="lg">
-                          {interaction.drug1} + {interaction.drug2}
+              {[].map(
+                /* TODO: Fetch from API */ (interaction) => (
+                  <Card key={interaction.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Group mb="xs">
+                          <Text fw={600} size="lg">
+                            {interaction.drug1} + {interaction.drug2}
+                          </Text>
+                        </Group>
+                        <Group gap="sm">
+                          <Badge color={getSeverityColor(interaction.severity)} variant="light">
+                            {interaction.interactionType.toUpperCase()}
+                          </Badge>
+                          <Badge variant="outline" size="sm">
+                            {interaction.severity}
+                          </Badge>
+                          <Badge variant="outline" size="sm" color="gray">
+                            {interaction.frequency}
+                          </Badge>
+                        </Group>
+                      </div>
+                      <Group gap="xs">
+                        <Text size="xs" c="dimmed">
+                          Documentation:
                         </Text>
+                        <Badge
+                          size="sm"
+                          color={
+                            interaction.documentation === 'excellent'
+                              ? 'green'
+                              : interaction.documentation === 'good'
+                                ? 'blue'
+                                : 'orange'
+                          }
+                        >
+                          {interaction.documentation}
+                        </Badge>
                       </Group>
-                      <Group gap="sm">
-                        <Badge color={getSeverityColor(interaction.severity)} variant="light">
-                          {interaction.interactionType.toUpperCase()}
-                        </Badge>
-                        <Badge variant="outline" size="sm">
-                          {interaction.severity}
-                        </Badge>
-                        <Badge variant="outline" size="sm" color="gray">
-                          {interaction.frequency}
-                        </Badge>
-                      </Group>
-                    </div>
-                    <Group gap="xs">
-                      <Text size="xs" c="dimmed">Documentation:</Text>
-                      <Badge size="sm" color={interaction.documentation === 'excellent' ? 'green' : interaction.documentation === 'good' ? 'blue' : 'orange'}>
-                        {interaction.documentation}
-                      </Badge>
                     </Group>
-                  </Group>
 
-                  <Stack gap="sm">
-                    <div>
-                      <Text size="sm" fw={600} c="dimmed">Mechanism:</Text>
-                      <Text size="sm">{interaction.mechanism}</Text>
-                    </div>
+                    <Stack gap="sm">
+                      <div>
+                        <Text size="sm" fw={600} c="dimmed">
+                          Mechanism:
+                        </Text>
+                        <Text size="sm">{interaction.mechanism}</Text>
+                      </div>
 
-                    <div>
-                      <Text size="sm" fw={600} c="dimmed">Clinical Effect:</Text>
-                      <Text size="sm">{interaction.clinicalEffect}</Text>
-                    </div>
+                      <div>
+                        <Text size="sm" fw={600} c="dimmed">
+                          Clinical Effect:
+                        </Text>
+                        <Text size="sm">{interaction.clinicalEffect}</Text>
+                      </div>
 
-                    <div>
-                      <Text size="sm" fw={600} c="dimmed">Recommendation:</Text>
-                      <Text size="sm">{interaction.recommendation}</Text>
-                    </div>
-                  </Stack>
+                      <div>
+                        <Text size="sm" fw={600} c="dimmed">
+                          Recommendation:
+                        </Text>
+                        <Text size="sm">{interaction.recommendation}</Text>
+                      </div>
+                    </Stack>
 
-                  <Group justify="space-between" mt="md">
-                    <Group gap="md">
+                    <Group justify="space-between" mt="md">
+                      <Group gap="md">
+                        <Group gap="xs">
+                          <Text size="xs" c="dimmed">
+                            Onset:
+                          </Text>
+                          <Text size="xs" fw={500}>
+                            {interaction.onset}
+                          </Text>
+                        </Group>
+                        <Group gap="xs">
+                          <Text size="xs" c="dimmed">
+                            Severity:
+                          </Text>
+                          <Text size="xs" fw={500}>
+                            {interaction.severity}
+                          </Text>
+                        </Group>
+                      </Group>
                       <Group gap="xs">
-                        <Text size="xs" c="dimmed">Onset:</Text>
-                        <Text size="xs" fw={500}>{interaction.onset}</Text>
-                      </Group>
-                      <Group gap="xs">
-                        <Text size="xs" c="dimmed">Severity:</Text>
-                        <Text size="xs" fw={500}>{interaction.severity}</Text>
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconInfoCircle size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconBookmark size={16} />
+                        </ActionIcon>
                       </Group>
                     </Group>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconInfoCircle size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconBookmark size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </Stack>
           </Paper>
         </Tabs.Panel>
@@ -1095,7 +1256,9 @@ const AIAssistant = () => {
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
             {/* Insight Types Distribution */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">AI Insights by Type</Title>
+              <Title order={4} mb="md">
+                AI Insights by Type
+              </Title>
               <Stack gap="md">
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -1104,7 +1267,9 @@ const AIAssistant = () => {
                     </ThemeIcon>
                     <Text size="sm">Diagnosis</Text>
                   </Group>
-                  <Badge color="blue" variant="light">1</Badge>
+                  <Badge color="blue" variant="light">
+                    1
+                  </Badge>
                 </Group>
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -1113,7 +1278,9 @@ const AIAssistant = () => {
                     </ThemeIcon>
                     <Text size="sm">Drug Interaction</Text>
                   </Group>
-                  <Badge color="red" variant="light">1</Badge>
+                  <Badge color="red" variant="light">
+                    1
+                  </Badge>
                 </Group>
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -1122,40 +1289,52 @@ const AIAssistant = () => {
                     </ThemeIcon>
                     <Text size="sm">Risk Assessment</Text>
                   </Group>
-                  <Badge color="orange" variant="light">1</Badge>
+                  <Badge color="orange" variant="light">
+                    1
+                  </Badge>
                 </Group>
               </Stack>
             </Card>
 
             {/* Confidence Levels */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">AI Confidence Distribution</Title>
+              <Title order={4} mb="md">
+                AI Confidence Distribution
+              </Title>
               <Stack gap="sm">
                 <div>
                   <Group justify="space-between" mb="xs">
                     <Text size="sm">90-100%</Text>
-                    <Text size="sm" fw={500}>2</Text>
+                    <Text size="sm" fw={500}>
+                      2
+                    </Text>
                   </Group>
                   <Progress value={100} color="teal" size="lg" />
                 </div>
                 <div>
                   <Group justify="space-between" mb="xs">
                     <Text size="sm">80-89%</Text>
-                    <Text size="sm" fw={500}>1</Text>
+                    <Text size="sm" fw={500}>
+                      1
+                    </Text>
                   </Group>
                   <Progress value={50} color="teal" size="lg" />
                 </div>
                 <div>
                   <Group justify="space-between" mb="xs">
                     <Text size="sm">70-79%</Text>
-                    <Text size="sm" fw={500}>0</Text>
+                    <Text size="sm" fw={500}>
+                      0
+                    </Text>
                   </Group>
                   <Progress value={0} color="teal" size="lg" />
                 </div>
                 <div>
                   <Group justify="space-between" mb="xs">
                     <Text size="sm">60-69%</Text>
-                    <Text size="sm" fw={500}>0</Text>
+                    <Text size="sm" fw={500}>
+                      0
+                    </Text>
                   </Group>
                   <Progress value={0} color="teal" size="lg" />
                 </div>
@@ -1164,7 +1343,9 @@ const AIAssistant = () => {
 
             {/* Query Categories */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">AI Queries by Category</Title>
+              <Title order={4} mb="md">
+                AI Queries by Category
+              </Title>
               <Stack gap="md">
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -1173,7 +1354,9 @@ const AIAssistant = () => {
                     </ThemeIcon>
                     <Text size="sm">Diagnosis</Text>
                   </Group>
-                  <Badge color="blue" variant="light">1</Badge>
+                  <Badge color="blue" variant="light">
+                    1
+                  </Badge>
                 </Group>
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -1182,7 +1365,9 @@ const AIAssistant = () => {
                     </ThemeIcon>
                     <Text size="sm">Treatment</Text>
                   </Group>
-                  <Badge color="green" variant="light">1</Badge>
+                  <Badge color="green" variant="light">
+                    1
+                  </Badge>
                 </Group>
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -1191,21 +1376,29 @@ const AIAssistant = () => {
                     </ThemeIcon>
                     <Text size="sm">Medication</Text>
                   </Group>
-                  <Badge color="orange" variant="light">1</Badge>
+                  <Badge color="orange" variant="light">
+                    1
+                  </Badge>
                 </Group>
               </Stack>
             </Card>
 
             {/* User Satisfaction */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">User Satisfaction Trends</Title>
+              <Title order={4} mb="md">
+                User Satisfaction Trends
+              </Title>
               <Stack gap="sm">
                 <div>
                   <Group justify="space-between" mb="xs">
                     <Text size="sm">Week 1</Text>
                     <Group gap="md">
-                      <Badge color="blue" variant="light">Rating: 4.2</Badge>
-                      <Badge color="green" variant="light">Helpful: 85%</Badge>
+                      <Badge color="blue" variant="light">
+                        Rating: 4.2
+                      </Badge>
+                      <Badge color="green" variant="light">
+                        Helpful: 85%
+                      </Badge>
                     </Group>
                   </Group>
                   <Progress value={85} color="green" size="md" />
@@ -1214,8 +1407,12 @@ const AIAssistant = () => {
                   <Group justify="space-between" mb="xs">
                     <Text size="sm">Week 2</Text>
                     <Group gap="md">
-                      <Badge color="blue" variant="light">Rating: 4.5</Badge>
-                      <Badge color="green" variant="light">Helpful: 88%</Badge>
+                      <Badge color="blue" variant="light">
+                        Rating: 4.5
+                      </Badge>
+                      <Badge color="green" variant="light">
+                        Helpful: 88%
+                      </Badge>
                     </Group>
                   </Group>
                   <Progress value={88} color="green" size="md" />
@@ -1224,8 +1421,12 @@ const AIAssistant = () => {
                   <Group justify="space-between" mb="xs">
                     <Text size="sm">Week 3</Text>
                     <Group gap="md">
-                      <Badge color="blue" variant="light">Rating: 4.3</Badge>
-                      <Badge color="green" variant="light">Helpful: 82%</Badge>
+                      <Badge color="blue" variant="light">
+                        Rating: 4.3
+                      </Badge>
+                      <Badge color="green" variant="light">
+                        Helpful: 82%
+                      </Badge>
                     </Group>
                   </Group>
                   <Progress value={82} color="green" size="md" />
@@ -1234,8 +1435,12 @@ const AIAssistant = () => {
                   <Group justify="space-between" mb="xs">
                     <Text size="sm">Week 4</Text>
                     <Group gap="md">
-                      <Badge color="blue" variant="light">Rating: 4.7</Badge>
-                      <Badge color="green" variant="light">Helpful: 91%</Badge>
+                      <Badge color="blue" variant="light">
+                        Rating: 4.7
+                      </Badge>
+                      <Badge color="green" variant="light">
+                        Helpful: 91%
+                      </Badge>
                     </Group>
                   </Group>
                   <Progress value={91} color="green" size="md" />
@@ -1271,10 +1476,18 @@ const AIAssistant = () => {
                     )}
                   </div>
                   <Group>
-                    <Badge color={getSeverityColor(selectedInsight.severity)} variant="light" size="lg">
+                    <Badge
+                      color={getSeverityColor(selectedInsight.severity)}
+                      variant="light"
+                      size="lg"
+                    >
                       {selectedInsight.severity.toUpperCase()}
                     </Badge>
-                    <Badge color={getStatusColor(selectedInsight.status)} variant="outline" size="lg">
+                    <Badge
+                      color={getStatusColor(selectedInsight.status)}
+                      variant="outline"
+                      size="lg"
+                    >
                       {selectedInsight.status.toUpperCase()}
                     </Badge>
                   </Group>
@@ -1284,32 +1497,50 @@ const AIAssistant = () => {
 
                 <Group gap="md">
                   <Group gap="xs">
-                    <Text size="sm" c="dimmed">Confidence:</Text>
+                    <Text size="sm" c="dimmed">
+                      Confidence:
+                    </Text>
                     <Progress value={selectedInsight.confidence} size="lg" w={120} color="blue" />
-                    <Text size="sm" fw={600}>{selectedInsight.confidence}%</Text>
+                    <Text size="sm" fw={600}>
+                      {selectedInsight.confidence}%
+                    </Text>
                   </Group>
                   <Group gap="xs">
-                    <Text size="sm" c="dimmed">Generated by:</Text>
-                    <Text size="sm" fw={500}>{selectedInsight.generatedBy}</Text>
+                    <Text size="sm" c="dimmed">
+                      Generated by:
+                    </Text>
+                    <Text size="sm" fw={500}>
+                      {selectedInsight.generatedBy}
+                    </Text>
                   </Group>
                 </Group>
               </Card>
 
               {/* Evidence */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={5} mb="md">Supporting Evidence</Title>
+                <Title order={5} mb="md">
+                  Supporting Evidence
+                </Title>
                 <Stack gap="sm">
                   {selectedInsight.evidence.map((evidence, index) => (
                     <Card key={index} padding="sm" radius="sm" withBorder>
                       <Group justify="space-between" mb="xs">
-                        <Text size="sm" fw={500}>{evidence.source}</Text>
+                        <Text size="sm" fw={500}>
+                          {evidence.source}
+                        </Text>
                         <Group gap="xs">
-                          <Text size="xs" c="dimmed">Relevance:</Text>
+                          <Text size="xs" c="dimmed">
+                            Relevance:
+                          </Text>
                           <Progress value={evidence.relevance} size="sm" w={60} color="green" />
-                          <Text size="xs" fw={500}>{evidence.relevance}%</Text>
+                          <Text size="xs" fw={500}>
+                            {evidence.relevance}%
+                          </Text>
                         </Group>
                       </Group>
-                      <Text size="sm" c="dimmed">{evidence.description}</Text>
+                      <Text size="sm" c="dimmed">
+                        {evidence.description}
+                      </Text>
                     </Card>
                   ))}
                 </Stack>
@@ -1317,17 +1548,23 @@ const AIAssistant = () => {
 
               {/* Recommendations */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={5} mb="md">Recommendations</Title>
+                <Title order={5} mb="md">
+                  Recommendations
+                </Title>
                 <Stack gap="sm">
                   {selectedInsight.recommendations.map((rec, index) => (
                     <Card key={index} padding="sm" radius="sm" withBorder>
                       <Group justify="space-between" mb="xs">
-                        <Text size="sm" fw={500}>{rec.action}</Text>
+                        <Text size="sm" fw={500}>
+                          {rec.action}
+                        </Text>
                         <Group gap="xs">
                           <Badge size="sm" color={getPriorityColor(rec.priority)} variant="light">
                             {rec.priority.toUpperCase()}
                           </Badge>
-                          <Text size="xs" c="dimmed">{rec.timeframe}</Text>
+                          <Text size="xs" c="dimmed">
+                            {rec.timeframe}
+                          </Text>
                         </Group>
                       </Group>
                     </Card>
@@ -1338,11 +1575,15 @@ const AIAssistant = () => {
               {/* Clinical Context */}
               {selectedInsight.metadata && (
                 <Card padding="lg" radius="md" withBorder>
-                  <Title order={5} mb="md">Clinical Context</Title>
+                  <Title order={5} mb="md">
+                    Clinical Context
+                  </Title>
                   <SimpleGrid cols={2} spacing="md">
                     {selectedInsight.metadata.symptoms && (
                       <div>
-                        <Text size="sm" fw={500} c="dimmed" mb="xs">Symptoms</Text>
+                        <Text size="sm" fw={500} c="dimmed" mb="xs">
+                          Symptoms
+                        </Text>
                         <Group gap="xs">
                           {selectedInsight.metadata.symptoms.map((symptom, index) => (
                             <Chip key={index} size="sm" variant="light">
@@ -1354,7 +1595,9 @@ const AIAssistant = () => {
                     )}
                     {selectedInsight.metadata.medications && (
                       <div>
-                        <Text size="sm" fw={500} c="dimmed" mb="xs">Current Medications</Text>
+                        <Text size="sm" fw={500} c="dimmed" mb="xs">
+                          Current Medications
+                        </Text>
                         <Group gap="xs">
                           {selectedInsight.metadata.medications.map((med, index) => (
                             <Chip key={index} size="sm" variant="light" color="blue">
@@ -1386,15 +1629,11 @@ const AIAssistant = () => {
       </Modal>
 
       {/* Ask AI Modal */}
-      <Modal
-        opened={askAIOpened}
-        onClose={closeAskAI}
-        title="Ask AI Assistant"
-        size="lg"
-      >
+      <Modal opened={askAIOpened} onClose={closeAskAI} title="Ask AI Assistant" size="lg">
         <Stack gap="md">
           <Alert icon={<IconInfoCircle size="1rem" />} title="AI Assistant Guidelines" color="blue">
-            Ask specific clinical questions for better responses. Include patient context when relevant.
+            Ask specific clinical questions for better responses. Include patient context when
+            relevant.
           </Alert>
 
           <Textarea
@@ -1415,7 +1654,7 @@ const AIAssistant = () => {
                 { value: 'treatment', label: 'Treatment' },
                 { value: 'medication', label: 'Medication' },
                 { value: 'general', label: 'General Medical' },
-                { value: 'emergency', label: 'Emergency' }
+                { value: 'emergency', label: 'Emergency' },
               ]}
             />
             <Select
@@ -1424,7 +1663,7 @@ const AIAssistant = () => {
               data={[
                 { value: 'P001', label: 'Rajesh Kumar' },
                 { value: 'P002', label: 'Sunita Patel' },
-                { value: 'P003', label: 'Mohammed Ali' }
+                { value: 'P003', label: 'Mohammed Ali' },
               ]}
             />
           </SimpleGrid>
@@ -1433,7 +1672,7 @@ const AIAssistant = () => {
             <Button variant="light" onClick={closeAskAI}>
               Cancel
             </Button>
-            <Button 
+            <Button
               leftSection={isLoading ? <Loader size={16} /> : <IconSend size={16} />}
               onClick={handleAskAI}
               disabled={!newQuery.trim() || isLoading}
@@ -1449,10 +1688,14 @@ const AIAssistant = () => {
 
 const getPriorityColor = (priority: string) => {
   switch (priority) {
-    case 'high': return 'red';
-    case 'medium': return 'yellow';
-    case 'low': return 'green';
-    default: return 'gray';
+    case 'high':
+      return 'red';
+    case 'medium':
+      return 'yellow';
+    case 'low':
+      return 'green';
+    default:
+      return 'gray';
   }
 };
 

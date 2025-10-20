@@ -17,20 +17,20 @@ import {
   ActionIcon,
   Stack,
   SimpleGrid,
-  ScrollArea,
+  // ScrollArea,
   ThemeIcon,
-  Progress,
+  // Progress,
   Textarea,
   Avatar,
   Divider,
   Alert,
-  NumberInput
+  NumberInput,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { DatePickerInput } from '@mantine/dates';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleBarChart } from '../../../components/MantineChart';
+import { MantineDonutChart /* SimpleBarChart */ } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -60,7 +60,7 @@ import {
   IconScreenShareOff,
   IconX,
   IconCircleCheck,
-  IconUser
+  IconUser,
 } from '@tabler/icons-react';
 
 // Import types and mock data
@@ -74,7 +74,7 @@ import {
   TelemedicineStats as _TelemedicineStats,
   PatientMonitoring,
   VirtualConsultation as _VirtualConsultation,
-  ConsultationStatus
+  ConsultationStatus,
 } from '../../../types/telemedicine';
 import telemedicineService from '../../../services/telemedicine.service';
 
@@ -86,8 +86,11 @@ const Telemedicine = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedDoctor, setSelectedDoctor] = useState<string>('');
   const [_selectedSession, setSelectedSession] = useState<TelemedicineSession | null>(null);
-  const [_selectedPrescription, setSelectedPrescription] = useState<DigitalPrescription | null>(null);
-  const [_selectedPatientMonitoring, setSelectedPatientMonitoring] = useState<PatientMonitoring | null>(null);
+  const [_selectedPrescription, setSelectedPrescription] = useState<DigitalPrescription | null>(
+    null
+  );
+  const [_selectedPatientMonitoring, setSelectedPatientMonitoring] =
+    useState<PatientMonitoring | null>(null);
   const [isInCall, setIsInCall] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
@@ -104,7 +107,7 @@ const Telemedicine = () => {
   // Fetch data
   useEffect(() => {
     fetchAllData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
@@ -123,12 +126,15 @@ const Telemedicine = () => {
   const fetchConsultations = async () => {
     try {
       const response = await telemedicineService.getConsultations({ limit: 100 });
-      const consultationsData = Array.isArray(response.data) 
-        ? response.data 
-        : (response.data?.items || []);
+      const consultationsData = Array.isArray(response.data)
+        ? response.data
+        : response.data?.items || [];
       setConsultations(consultationsData);
     } catch (err: any) {
-      console.warn('Error fetching consultations (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching consultations (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setConsultations([]);
     }
   };
@@ -138,7 +144,10 @@ const Telemedicine = () => {
       const response = await telemedicineService.getStats();
       setTelemedicineStats(response.data);
     } catch (err: any) {
-      console.warn('Error fetching telemedicine stats (using default values):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching telemedicine stats (using default values):',
+        err.response?.data?.message || err.message
+      );
       setTelemedicineStats({
         totalSessions: 0,
         activeSessions: 0,
@@ -147,17 +156,26 @@ const Telemedicine = () => {
         cancelledSessions: 0,
         totalPatients: 0,
         averageSessionDuration: 0,
-        patientSatisfaction: 0
+        patientSatisfaction: 0,
       });
     }
   };
 
   // Modal states
-  const [_sessionDetailOpened, { open: _openSessionDetail, close: _closeSessionDetail }] = useDisclosure(false);
-  const [startSessionOpened, { open: openStartSession, close: closeStartSession }] = useDisclosure(false);
-  const [_prescriptionDetailOpened, { open: _openPrescriptionDetail, close: _closePrescriptionDetail }] = useDisclosure(false);
-  const [_monitoringDetailOpened, { open: _openMonitoringDetail, close: _closeMonitoringDetail }] = useDisclosure(false);
-  const [_createPrescriptionOpened, { open: openCreatePrescription, close: _closeCreatePrescription }] = useDisclosure(false);
+  const [_sessionDetailOpened, { open: _openSessionDetail, close: _closeSessionDetail }] =
+    useDisclosure(false);
+  const [startSessionOpened, { open: openStartSession, close: closeStartSession }] =
+    useDisclosure(false);
+  const [
+    _prescriptionDetailOpened,
+    { open: _openPrescriptionDetail, close: _closePrescriptionDetail },
+  ] = useDisclosure(false);
+  const [_monitoringDetailOpened, { open: _openMonitoringDetail, close: _closeMonitoringDetail }] =
+    useDisclosure(false);
+  const [
+    _createPrescriptionOpened,
+    { open: openCreatePrescription, close: _closeCreatePrescription },
+  ] = useDisclosure(false);
   const [videoCallOpened, { open: openVideoCall, close: closeVideoCall }] = useDisclosure(false);
 
   // Timer effect for call duration
@@ -165,7 +183,7 @@ const Telemedicine = () => {
     let interval: NodeJS.Timeout;
     if (isInCall) {
       interval = setInterval(() => {
-        setCallDuration(prev => prev + 1);
+        setCallDuration((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -175,11 +193,11 @@ const Telemedicine = () => {
   const filteredSessions = useMemo(() => {
     const sessionsList = consultations.length > 0 ? consultations : [];
     return sessionsList.filter((session: any) => {
-      const matchesSearch = 
+      const matchesSearch =
         session.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         session.doctorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (session as any).sessionId?.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesType = !selectedSessionType || session.type === selectedSessionType;
       const matchesStatus = !selectedStatus || session.status === selectedStatus;
       const matchesDoctor = !selectedDoctor || (session as any).doctorId === selectedDoctor;
@@ -191,35 +209,53 @@ const Telemedicine = () => {
   // Helper functions
   const getStatusColor = (status: SessionStatus | ConsultationStatus) => {
     switch (status) {
-      case 'scheduled': return 'blue';
+      case 'scheduled':
+        return 'blue';
       case 'in_progress':
-      case 'active': return 'green';
-      case 'completed': return 'teal';
-      case 'cancelled': return 'red';
-      case 'no_show': return 'gray';
-      case 'waiting': return 'orange';
-      default: return 'gray';
+      case 'active':
+        return 'green';
+      case 'completed':
+        return 'teal';
+      case 'cancelled':
+        return 'red';
+      case 'no_show':
+        return 'gray';
+      case 'waiting':
+        return 'orange';
+      default:
+        return 'gray';
     }
   };
 
   const getSessionTypeColor = (type: SessionType) => {
     switch (type) {
-      case 'consultation': return 'blue';
-      case 'follow_up': return 'green';
-      case 'emergency': return 'red';
-      case 'therapy': return 'purple';
-      case 'monitoring': return 'orange';
-      default: return 'gray';
+      case 'consultation':
+        return 'blue';
+      case 'follow_up':
+        return 'green';
+      case 'emergency':
+        return 'red';
+      case 'therapy':
+        return 'purple';
+      case 'monitoring':
+        return 'orange';
+      default:
+        return 'gray';
     }
   };
 
   const _getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'red';
-      case 'high': return 'orange';
-      case 'normal': return 'blue';
-      case 'low': return 'gray';
-      default: return 'gray';
+      case 'urgent':
+        return 'red';
+      case 'high':
+        return 'orange';
+      case 'normal':
+        return 'blue';
+      case 'low':
+        return 'gray';
+      default:
+        return 'gray';
     }
   };
 
@@ -327,26 +363,26 @@ const Telemedicine = () => {
       title: 'Active Sessions',
       value: (telemedicineStats as any)?.activeSessions || 0,
       icon: IconVideo,
-      color: 'green'
+      color: 'green',
     },
     {
       title: 'Scheduled Sessions',
       value: (telemedicineStats as any)?.scheduledSessions || 0,
       icon: IconCalendarEvent,
-      color: 'blue'
+      color: 'blue',
     },
     {
       title: 'Monitored Patients',
       value: (telemedicineStats as any)?.monitoredPatients || 0,
       icon: IconDeviceHeartMonitor,
-      color: 'purple'
+      color: 'purple',
     },
     {
       title: 'Digital Prescriptions',
       value: (telemedicineStats as any)?.digitalPrescriptions || 0,
       icon: IconPrescription,
-      color: 'orange'
-    }
+      color: 'orange',
+    },
   ];
 
   return (
@@ -433,18 +469,17 @@ const Telemedicine = () => {
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
             {/* Session Analytics */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Session Statistics</Title>
-              <MantineDonutChart
-                data={[]}
-                size={200}
-                thickness={40}
-                withLabels
-              />
+              <Title order={4} mb="md">
+                Session Statistics
+              </Title>
+              <MantineDonutChart data={[]} size={200} thickness={40} withLabels />
             </Card>
 
             {/* Active Monitoring Alerts */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Monitoring Alerts</Title>
+              <Title order={4} mb="md">
+                Monitoring Alerts
+              </Title>
               <Stack gap="sm">
                 <Text size="sm" c="dimmed" ta="center" py="xl">
                   No active alerts
@@ -454,14 +489,20 @@ const Telemedicine = () => {
 
             {/* Today's Sessions */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Today&apos;s Sessions</Title>
+              <Title order={4} mb="md">
+                Today&apos;s Sessions
+              </Title>
               <Stack gap="sm">
                 {[].map((session) => (
                   <Card key={session.id} padding="sm" withBorder>
                     <Group justify="space-between">
                       <div>
-                        <Text fw={500} size="sm">{session.patientName}</Text>
-                        <Text size="xs" c="dimmed">Dr. {session.doctorName}</Text>
+                        <Text fw={500} size="sm">
+                          {session.patientName}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Dr. {session.doctorName}
+                        </Text>
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <Badge color={getStatusColor((session as any).status)} size="sm">
@@ -479,7 +520,9 @@ const Telemedicine = () => {
 
             {/* Equipment Status */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">System Status</Title>
+              <Title order={4} mb="md">
+                System Status
+              </Title>
               <Stack gap="sm">
                 <Text size="sm" c="dimmed" ta="center" py="xl">
                   System status unavailable
@@ -508,7 +551,7 @@ const Telemedicine = () => {
                   { value: 'follow_up', label: 'Follow-up' },
                   { value: 'emergency', label: 'Emergency' },
                   { value: 'therapy', label: 'Therapy' },
-                  { value: 'monitoring', label: 'Monitoring' }
+                  { value: 'monitoring', label: 'Monitoring' },
                 ]}
                 value={selectedSessionType}
                 onChange={setSelectedSessionType}
@@ -522,7 +565,7 @@ const Telemedicine = () => {
                   { value: 'completed', label: 'Completed' },
                   { value: 'cancelled', label: 'Cancelled' },
                   { value: 'no_show', label: 'No Show' },
-                  { value: 'waiting', label: 'Waiting' }
+                  { value: 'waiting', label: 'Waiting' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -530,10 +573,12 @@ const Telemedicine = () => {
               />
               <Select
                 placeholder="Doctor"
-                data={[].map /* TODO: Fetch from API */(doctor => ({
-                  value: doctor.id,
-                  label: `Dr. ${(doctor as any).firstName || doctor.name.split(' ')[0]} ${(doctor as any).lastName || doctor.name.split(' ')[1] || ''}`
-                }))}
+                data={[].map(
+                  /* TODO: Fetch from API */ (doctor) => ({
+                    value: doctor.id,
+                    label: `Dr. ${(doctor as any).firstName || doctor.name.split(' ')[0]} ${(doctor as any).lastName || doctor.name.split(' ')[1] || ''}`,
+                  })
+                )}
                 value={selectedDoctor}
                 onChange={setSelectedDoctor}
                 clearable
@@ -556,85 +601,110 @@ const Telemedicine = () => {
                   <Card key={session.id} padding="lg" radius="md" withBorder>
                     <Group justify="space-between" mb="md">
                       <div>
-                        <Text fw={600} size="lg">{session.patientName}</Text>
-                        <Text size="sm" c="dimmed">Dr. {session.doctorName}</Text>
+                        <Text fw={600} size="lg">
+                          {session.patientName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          Dr. {session.doctorName}
+                        </Text>
                       </div>
                       <Badge color={getStatusColor((session as any).status)} variant="light">
                         {session.status.replace('_', ' ').toUpperCase()}
                       </Badge>
                     </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Session ID</Text>
-                      <Text size="sm" fw={500}>{(session as any).sessionId || (session as any).consultationId}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Type</Text>
-                      <Badge color={getSessionTypeColor((session as any).type)} variant="light" size="sm">
-                        {session.type}
-                      </Badge>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Scheduled</Text>
-                      <Text size="sm">{formatDateTime((session as any).scheduledDate || new Date().toISOString())} at {session.scheduledTime}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Duration</Text>
-                      <Text size="sm">{session.duration} minutes</Text>
-                    </Group>
-                    {(session as any).actualDuration && (
+                    <Stack gap="sm" mb="md">
                       <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Actual Duration</Text>
-                        <Text size="sm">{(session as any).actualDuration} minutes</Text>
+                        <Text size="sm" c="dimmed">
+                          Session ID
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(session as any).sessionId || (session as any).consultationId}
+                        </Text>
                       </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Type
+                        </Text>
+                        <Badge
+                          color={getSessionTypeColor((session as any).type)}
+                          variant="light"
+                          size="sm"
+                        >
+                          {session.type}
+                        </Badge>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Scheduled
+                        </Text>
+                        <Text size="sm">
+                          {formatDateTime(
+                            (session as any).scheduledDate || new Date().toISOString()
+                          )}{' '}
+                          at {session.scheduledTime}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Duration
+                        </Text>
+                        <Text size="sm">{session.duration} minutes</Text>
+                      </Group>
+                      {(session as any).actualDuration && (
+                        <Group justify="space-between">
+                          <Text size="sm" c="dimmed">
+                            Actual Duration
+                          </Text>
+                          <Text size="sm">{(session as any).actualDuration} minutes</Text>
+                        </Group>
+                      )}
+                    </Stack>
+
+                    {(session as any).notes && (
+                      <Text size="sm" c="dimmed" lineClamp={2} mb="md">
+                        Notes: {(session as any).notes}
+                      </Text>
                     )}
-                  </Stack>
 
-                  {(session as any).notes && (
-                    <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-                      Notes: {(session as any).notes}
-                    </Text>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Platform: {(session as any).platform || 'Web'}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewSession(session as any)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      {(session as any).status === 'scheduled' && (
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Platform: {(session as any).platform || 'Web'}
+                      </Text>
+                      <Group gap="xs">
                         <ActionIcon
                           variant="subtle"
-                          color="green"
-                          onClick={() => handleStartVideoCall(session as any)}
+                          color="blue"
+                          onClick={() => handleViewSession(session as any)}
                         >
-                          <IconVideo size={16} />
+                          <IconEye size={16} />
                         </ActionIcon>
-                      )}
-                      {(session as any).status === 'in_progress' && (
-                        <ActionIcon
-                          variant="subtle"
-                          color="orange"
-                          onClick={() => openVideoCall()}
-                        >
-                          <IconBrandZoom size={16} />
+                        {(session as any).status === 'scheduled' && (
+                          <ActionIcon
+                            variant="subtle"
+                            color="green"
+                            onClick={() => handleStartVideoCall(session as any)}
+                          >
+                            <IconVideo size={16} />
+                          </ActionIcon>
+                        )}
+                        {(session as any).status === 'in_progress' && (
+                          <ActionIcon
+                            variant="subtle"
+                            color="orange"
+                            onClick={() => openVideoCall()}
+                          >
+                            <IconBrandZoom size={16} />
+                          </ActionIcon>
+                        )}
+                        <ActionIcon variant="subtle" color="teal">
+                          <IconDownload size={16} />
                         </ActionIcon>
-                      )}
-                      <ActionIcon variant="subtle" color="teal">
-                        <IconDownload size={16} />
-                      </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              )))
-              }
+                  </Card>
+                ))
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -651,123 +721,161 @@ const Telemedicine = () => {
 
             {/* Monitoring Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((monitoring) => (
-                <Card key={monitoring.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Group>
-                        <Avatar color="blue" size="md">
-                          {monitoring.patientName.split(' ').map(n => n[0]).join('')}
-                        </Avatar>
-                        <div>
-                          <Text fw={600} size="lg">{monitoring.patientName}</Text>
-                          <Text size="sm" c="dimmed">ID: {(monitoring as any).patientId || monitoring.id}</Text>
-                        </div>
-                      </Group>
-                    </div>
-                    <Badge 
-                      color={(monitoring as any).isActive ? 'green' : 'gray'} 
-                      variant={(monitoring as any).isActive ? 'filled' : 'light'}
-                    >
-                      {(monitoring as any).isActive ? 'ACTIVE' : 'INACTIVE'}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Device</Text>
-                      <Group gap="xs">
-                        <Text size="sm">{(monitoring as any).deviceType || 'N/A'}</Text>
-                        <Badge 
-                          color={(monitoring as any).deviceStatus === 'connected' ? 'green' : 'red'} 
-                          variant="light" 
-                          size="xs"
-                        >
-                          {(monitoring as any).deviceStatus || 'Unknown'}
-                        </Badge>
-                      </Group>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Last Reading</Text>
-                      <Text size="sm">{formatDateTime((monitoring as any).lastReading || new Date().toISOString())}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Monitoring Since</Text>
-                      <Text size="sm">{formatDate((monitoring as any).startDate || new Date().toISOString())}</Text>
-                    </Group>
-                  </Stack>
-
-                  {/* Vital Signs */}
-                  <Divider label="Current Vitals" labelPosition="center" mb="md" />
-                  <SimpleGrid cols={2} spacing="sm" mb="md">
-                    <div style={{ textAlign: 'center' }}>
-                      <ThemeIcon color="red" variant="light" size="lg" mx="auto" mb="xs">
-                        <IconHeart size={20} />
-                      </ThemeIcon>
-                      <Text size="lg" fw={600} c="red">
-                        {(monitoring as any).vitals?.heartRate || 'N/A'} bpm
-                      </Text>
-                      <Text size="xs" c="dimmed">Heart Rate</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <ThemeIcon color="blue" variant="light" size="lg" mx="auto" mb="xs">
-                        <IconActivity size={20} />
-                      </ThemeIcon>
-                      <Text size="lg" fw={600} c="blue">
-                        {(monitoring as any).vitals?.bloodPressure || 'N/A'}
-                      </Text>
-                      <Text size="xs" c="dimmed">Blood Pressure</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <ThemeIcon color="orange" variant="light" size="lg" mx="auto" mb="xs">
-                        <IconThermometer size={20} />
-                      </ThemeIcon>
-                      <Text size="lg" fw={600} c="orange">
-                        {(monitoring as any).vitals?.temperature || 'N/A'}°F
-                      </Text>
-                      <Text size="xs" c="dimmed">Temperature</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <ThemeIcon color="cyan" variant="light" size="lg" mx="auto" mb="xs">
-                        <IconLungs size={20} />
-                      </ThemeIcon>
-                      <Text size="lg" fw={600} c="cyan">
-                        {(monitoring as any).vitals?.oxygenSaturation || 'N/A'}%
-                      </Text>
-                      <Text size="xs" c="dimmed">O2 Saturation</Text>
-                    </div>
-                  </SimpleGrid>
-
-                  {/* Alert Status */}
-                  {(monitoring as any).alerts && (monitoring as any).alerts.length > 0 && (
-                    <Alert variant="light" color="red" icon={<IconAlertTriangle size={16} />} mb="md">
-                      <Text size="sm" fw={500}>Active Alerts: {(monitoring as any).alerts.length}</Text>
-                      <Text size="xs">Latest: {(monitoring as any).alerts[0]}</Text>
-                    </Alert>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Battery: {(monitoring as any).batteryLevel || 'N/A'}%
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewMonitoring(monitoring as any)}
+              {[].map(
+                /* TODO: Fetch from API */ (monitoring) => (
+                  <Card key={monitoring.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Group>
+                          <Avatar color="blue" size="md">
+                            {monitoring.patientName
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')}
+                          </Avatar>
+                          <div>
+                            <Text fw={600} size="lg">
+                              {monitoring.patientName}
+                            </Text>
+                            <Text size="sm" c="dimmed">
+                              ID: {(monitoring as any).patientId || monitoring.id}
+                            </Text>
+                          </div>
+                        </Group>
+                      </div>
+                      <Badge
+                        color={(monitoring as any).isActive ? 'green' : 'gray'}
+                        variant={(monitoring as any).isActive ? 'filled' : 'light'}
                       >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconChartLine size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconSettings size={16} />
-                      </ActionIcon>
+                        {(monitoring as any).isActive ? 'ACTIVE' : 'INACTIVE'}
+                      </Badge>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Device
+                        </Text>
+                        <Group gap="xs">
+                          <Text size="sm">{(monitoring as any).deviceType || 'N/A'}</Text>
+                          <Badge
+                            color={
+                              (monitoring as any).deviceStatus === 'connected' ? 'green' : 'red'
+                            }
+                            variant="light"
+                            size="xs"
+                          >
+                            {(monitoring as any).deviceStatus || 'Unknown'}
+                          </Badge>
+                        </Group>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Last Reading
+                        </Text>
+                        <Text size="sm">
+                          {formatDateTime(
+                            (monitoring as any).lastReading || new Date().toISOString()
+                          )}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Monitoring Since
+                        </Text>
+                        <Text size="sm">
+                          {formatDate((monitoring as any).startDate || new Date().toISOString())}
+                        </Text>
+                      </Group>
+                    </Stack>
+
+                    {/* Vital Signs */}
+                    <Divider label="Current Vitals" labelPosition="center" mb="md" />
+                    <SimpleGrid cols={2} spacing="sm" mb="md">
+                      <div style={{ textAlign: 'center' }}>
+                        <ThemeIcon color="red" variant="light" size="lg" mx="auto" mb="xs">
+                          <IconHeart size={20} />
+                        </ThemeIcon>
+                        <Text size="lg" fw={600} c="red">
+                          {(monitoring as any).vitals?.heartRate || 'N/A'} bpm
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Heart Rate
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <ThemeIcon color="blue" variant="light" size="lg" mx="auto" mb="xs">
+                          <IconActivity size={20} />
+                        </ThemeIcon>
+                        <Text size="lg" fw={600} c="blue">
+                          {(monitoring as any).vitals?.bloodPressure || 'N/A'}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Blood Pressure
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <ThemeIcon color="orange" variant="light" size="lg" mx="auto" mb="xs">
+                          <IconThermometer size={20} />
+                        </ThemeIcon>
+                        <Text size="lg" fw={600} c="orange">
+                          {(monitoring as any).vitals?.temperature || 'N/A'}°F
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Temperature
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <ThemeIcon color="cyan" variant="light" size="lg" mx="auto" mb="xs">
+                          <IconLungs size={20} />
+                        </ThemeIcon>
+                        <Text size="lg" fw={600} c="cyan">
+                          {(monitoring as any).vitals?.oxygenSaturation || 'N/A'}%
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          O2 Saturation
+                        </Text>
+                      </div>
+                    </SimpleGrid>
+
+                    {/* Alert Status */}
+                    {(monitoring as any).alerts && (monitoring as any).alerts.length > 0 && (
+                      <Alert
+                        variant="light"
+                        color="red"
+                        icon={<IconAlertTriangle size={16} />}
+                        mb="md"
+                      >
+                        <Text size="sm" fw={500}>
+                          Active Alerts: {(monitoring as any).alerts.length}
+                        </Text>
+                        <Text size="xs">Latest: {(monitoring as any).alerts[0]}</Text>
+                      </Alert>
+                    )}
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Battery: {(monitoring as any).batteryLevel || 'N/A'}%
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewMonitoring(monitoring as any)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconChartLine size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconSettings size={16} />
+                        </ActionIcon>
+                      </Group>
+                    </Group>
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -789,89 +897,128 @@ const Telemedicine = () => {
 
             {/* Prescriptions Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((prescription) => (
-                <Card key={prescription.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{prescription.patientName}</Text>
-                      <Text size="sm" c="dimmed">ID: {(prescription as any).prescriptionId || prescription.id}</Text>
-                    </div>
-                    <Badge 
-                      color={
-                        (prescription as any).status === 'active' ? 'green' : 
-                        (prescription as any).status === 'pending' ? 'orange' : 
-                        (prescription as any).status === 'completed' ? 'blue' : 'red'
-                      } 
-                      variant="light"
-                    >
-                      {((prescription as any).status || 'pending').toUpperCase()}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Prescribed by</Text>
-                      <Text size="sm">Dr. {(prescription as any).doctorName || 'N/A'}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Date Issued</Text>
-                      <Text size="sm">{formatDate((prescription as any).issuedDate || (prescription as any).date || new Date().toISOString())}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Valid Until</Text>
-                      <Text size="sm" c={(prescription as any).expiryDate && new Date((prescription as any).expiryDate) < new Date() ? 'red' : undefined}>
-                        {formatDate((prescription as any).expiryDate || new Date().toISOString())}
-                      </Text>
-                    </Group>
-                  </Stack>
-
-                  <Divider label="Medications" labelPosition="center" mb="md" />
-                  
-                  <Stack gap="xs" mb="md">
-                    {(Array.isArray((prescription as any).medications) ? (prescription as any).medications : []).map((med: any, index: number) => (
-                      <Card key={index} padding="xs" withBorder>
-                        <Group justify="space-between">
-                          <div>
-                            <Text size="sm" fw={500}>{med.name}</Text>
-                            <Text size="xs" c="dimmed">{med.dosage} - {med.frequency}</Text>
-                          </div>
-                          <Badge variant="light" size="xs">
-                            {med.duration}
-                          </Badge>
-                        </Group>
-                      </Card>
-                    ))}
-                  </Stack>
-
-                  {(prescription as any).pharmacyInfo && (
+              {[].map(
+                /* TODO: Fetch from API */ (prescription) => (
+                  <Card key={prescription.id} padding="lg" radius="md" withBorder>
                     <Group justify="space-between" mb="md">
-                      <Text size="sm" c="dimmed">Pharmacy</Text>
-                      <Text size="sm">{(prescription as any).pharmacyInfo}</Text>
-                    </Group>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Digital Signature: ✓ Verified
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewPrescription(prescription as any)}
+                      <div>
+                        <Text fw={600} size="lg">
+                          {prescription.patientName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          ID: {(prescription as any).prescriptionId || prescription.id}
+                        </Text>
+                      </div>
+                      <Badge
+                        color={
+                          (prescription as any).status === 'active'
+                            ? 'green'
+                            : (prescription as any).status === 'pending'
+                              ? 'orange'
+                              : (prescription as any).status === 'completed'
+                                ? 'blue'
+                                : 'red'
+                        }
+                        variant="light"
                       >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconShare size={16} />
-                      </ActionIcon>
+                        {((prescription as any).status || 'pending').toUpperCase()}
+                      </Badge>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Prescribed by
+                        </Text>
+                        <Text size="sm">Dr. {(prescription as any).doctorName || 'N/A'}</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Date Issued
+                        </Text>
+                        <Text size="sm">
+                          {formatDate(
+                            (prescription as any).issuedDate ||
+                              (prescription as any).date ||
+                              new Date().toISOString()
+                          )}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Valid Until
+                        </Text>
+                        <Text
+                          size="sm"
+                          c={
+                            (prescription as any).expiryDate &&
+                            new Date((prescription as any).expiryDate) < new Date()
+                              ? 'red'
+                              : undefined
+                          }
+                        >
+                          {formatDate((prescription as any).expiryDate || new Date().toISOString())}
+                        </Text>
+                      </Group>
+                    </Stack>
+
+                    <Divider label="Medications" labelPosition="center" mb="md" />
+
+                    <Stack gap="xs" mb="md">
+                      {(Array.isArray((prescription as any).medications)
+                        ? (prescription as any).medications
+                        : []
+                      ).map((med: any, index: number) => (
+                        <Card key={index} padding="xs" withBorder>
+                          <Group justify="space-between">
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {med.name}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {med.dosage} - {med.frequency}
+                              </Text>
+                            </div>
+                            <Badge variant="light" size="xs">
+                              {med.duration}
+                            </Badge>
+                          </Group>
+                        </Card>
+                      ))}
+                    </Stack>
+
+                    {(prescription as any).pharmacyInfo && (
+                      <Group justify="space-between" mb="md">
+                        <Text size="sm" c="dimmed">
+                          Pharmacy
+                        </Text>
+                        <Text size="sm">{(prescription as any).pharmacyInfo}</Text>
+                      </Group>
+                    )}
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Digital Signature: ✓ Verified
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewPrescription(prescription as any)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconShare size={16} />
+                        </ActionIcon>
+                      </Group>
+                    </Group>
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -888,83 +1035,116 @@ const Telemedicine = () => {
 
             {/* Consultations Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((consultation) => (
-                <Card key={consultation.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Group>
-                        <Avatar color="teal" size="md">
-                          {consultation.patientName.split(' ').map(n => n[0]).join('')}
-                        </Avatar>
-                        <div>
-                          <Text fw={600} size="lg">{consultation.patientName}</Text>
-                          <Text size="sm" c="dimmed">with Dr. {consultation.doctorName}</Text>
-                        </div>
+              {[].map(
+                /* TODO: Fetch from API */ (consultation) => (
+                  <Card key={consultation.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Group>
+                          <Avatar color="teal" size="md">
+                            {consultation.patientName
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')}
+                          </Avatar>
+                          <div>
+                            <Text fw={600} size="lg">
+                              {consultation.patientName}
+                            </Text>
+                            <Text size="sm" c="dimmed">
+                              with Dr. {consultation.doctorName}
+                            </Text>
+                          </div>
+                        </Group>
+                      </div>
+                      <Badge color={getStatusColor((consultation as any).status)} variant="light">
+                        {consultation.status.replace('_', ' ').toUpperCase()}
+                      </Badge>
+                    </Group>
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Specialty
+                        </Text>
+                        <Text size="sm">{consultation.specialty}</Text>
                       </Group>
-                    </div>
-                    <Badge color={getStatusColor((consultation as any).status)} variant="light">
-                      {consultation.status.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                  </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Appointment
+                        </Text>
+                        <Text size="sm">
+                          {formatDateTime(
+                            (consultation as any).appointmentDate || new Date().toISOString()
+                          )}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Duration
+                        </Text>
+                        <Text size="sm">
+                          {(consultation as any).estimatedDuration || consultation.duration} minutes
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Consultation Fee
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          ₹{(consultation as any).consultationFee || 0}
+                        </Text>
+                      </Group>
+                    </Stack>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Specialty</Text>
-                      <Text size="sm">{consultation.specialty}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Appointment</Text>
-                      <Text size="sm">{formatDateTime((consultation as any).appointmentDate || new Date().toISOString())}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Duration</Text>
-                      <Text size="sm">{(consultation as any).estimatedDuration || consultation.duration} minutes</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Consultation Fee</Text>
-                      <Text size="sm" fw={500}>₹{(consultation as any).consultationFee || 0}</Text>
-                    </Group>
-                  </Stack>
+                    {((consultation as any).symptoms || (consultation as any).reason) && (
+                      <>
+                        <Text size="sm" c="dimmed" mb="xs">
+                          Chief Complaints:
+                        </Text>
+                        <Text size="sm" lineClamp={2} mb="md">
+                          {(consultation as any).symptoms || (consultation as any).reason}
+                        </Text>
+                      </>
+                    )}
 
-                  {((consultation as any).symptoms || (consultation as any).reason) && (
-                    <>
-                      <Text size="sm" c="dimmed" mb="xs">Chief Complaints:</Text>
-                      <Text size="sm" lineClamp={2} mb="md">
-                        {(consultation as any).symptoms || (consultation as any).reason}
+                    {(consultation as any).followUpRequired && (
+                      <Alert
+                        variant="light"
+                        color="blue"
+                        icon={<IconCalendarEvent size={16} />}
+                        mb="md"
+                      >
+                        <Text size="sm">Follow-up consultation recommended</Text>
+                      </Alert>
+                    )}
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Session ID:{' '}
+                        {(consultation as any).sessionId || (consultation as any).consultationId}
                       </Text>
-                    </>
-                  )}
-
-                  {(consultation as any).followUpRequired && (
-                    <Alert variant="light" color="blue" icon={<IconCalendarEvent size={16} />} mb="md">
-                      <Text size="sm">Follow-up consultation recommended</Text>
-                    </Alert>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Session ID: {(consultation as any).sessionId || (consultation as any).consultationId}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      {(consultation as any).status === 'active' && (
-                        <ActionIcon
-                          variant="subtle"
-                          color="green"
-                          onClick={() => handleStartVideoCall()}
-                        >
-                          <IconVideo size={16} />
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
                         </ActionIcon>
-                      )}
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconMessage size={16} />
-                      </ActionIcon>
+                        {(consultation as any).status === 'active' && (
+                          <ActionIcon
+                            variant="subtle"
+                            color="green"
+                            onClick={() => handleStartVideoCall()}
+                          >
+                            <IconVideo size={16} />
+                          </ActionIcon>
+                        )}
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconMessage size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -987,40 +1167,50 @@ const Telemedicine = () => {
       >
         <div style={{ position: 'relative', height: '100vh', backgroundColor: '#000' }}>
           {/* Main Video Area */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            height: 'calc(100vh - 120px)',
-            position: 'relative'
-          }}>
-            {/* Doctor's Video (Main) */}
-            <div style={{ 
-              width: '70%', 
-              height: '80%', 
-              backgroundColor: '#1a1a1a', 
-              borderRadius: '12px',
+          <div
+            style={{
               display: 'flex',
-              alignItems: 'center',
               justifyContent: 'center',
-              position: 'relative'
-            }}>
+              alignItems: 'center',
+              height: 'calc(100vh - 120px)',
+              position: 'relative',
+            }}
+          >
+            {/* Doctor's Video (Main) */}
+            <div
+              style={{
+                width: '70%',
+                height: '80%',
+                backgroundColor: '#1a1a1a',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+              }}
+            >
               {isVideoEnabled ? (
                 <div style={{ textAlign: 'center', color: 'white' }}>
                   <IconVideo size={80} />
-                  <Text size="xl" mt="md">Dr. Smith</Text>
-                  <Text size="sm" c="dimmed">Cardiology Consultation</Text>
+                  <Text size="xl" mt="md">
+                    Dr. Smith
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    Cardiology Consultation
+                  </Text>
                 </div>
               ) : (
                 <div style={{ textAlign: 'center', color: 'white' }}>
                   <IconVideoOff size={80} />
-                  <Text size="xl" mt="md">Camera Off</Text>
+                  <Text size="xl" mt="md">
+                    Camera Off
+                  </Text>
                 </div>
               )}
-              
+
               {/* Screen Share Indicator */}
               {isScreenSharing && (
-                <Badge 
+                <Badge
                   style={{ position: 'absolute', top: 10, left: 10 }}
                   color="blue"
                   variant="filled"
@@ -1028,10 +1218,10 @@ const Telemedicine = () => {
                   Screen Sharing
                 </Badge>
               )}
-              
+
               {/* Recording Indicator */}
               {isRecording && (
-                <Badge 
+                <Badge
                   style={{ position: 'absolute', top: 10, right: 10 }}
                   color="red"
                   variant="filled"
@@ -1042,34 +1232,40 @@ const Telemedicine = () => {
             </div>
 
             {/* Patient's Video (Picture in Picture) */}
-            <div style={{ 
-              position: 'absolute', 
-              top: 20, 
-              right: 20, 
-              width: '200px', 
-              height: '150px',
-              backgroundColor: '#2a2a2a', 
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: 20,
+                right: 20,
+                width: '200px',
+                height: '150px',
+                backgroundColor: '#2a2a2a',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <div style={{ textAlign: 'center', color: 'white' }}>
                 <IconUser size={40} />
-                <Text size="sm" mt="xs">You</Text>
+                <Text size="sm" mt="xs">
+                  You
+                </Text>
               </div>
             </div>
 
             {/* Call Duration */}
-            <div style={{ 
-              position: 'absolute', 
-              top: 20, 
-              left: 20,
-              backgroundColor: 'rgba(0,0,0,0.7)',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              color: 'white'
-            }}>
+            <div
+              style={{
+                position: 'absolute',
+                top: 20,
+                left: 20,
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                color: 'white',
+              }}
+            >
               <Text size="lg" fw={600}>
                 {formatDuration(callDuration)}
               </Text>
@@ -1077,17 +1273,19 @@ const Telemedicine = () => {
           </div>
 
           {/* Control Bar */}
-          <div style={{ 
-            position: 'absolute', 
-            bottom: 0, 
-            left: 0, 
-            right: 0,
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            padding: '20px',
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '16px'
-          }}>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              padding: '20px',
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '16px',
+            }}
+          >
             <ActionIcon
               size="xl"
               variant={isAudioEnabled ? 'filled' : 'light'}
@@ -1096,7 +1294,7 @@ const Telemedicine = () => {
             >
               {isAudioEnabled ? <IconMicrophone size={24} /> : <IconMicrophoneOff size={24} />}
             </ActionIcon>
-            
+
             <ActionIcon
               size="xl"
               variant={isVideoEnabled ? 'filled' : 'light'}
@@ -1105,7 +1303,7 @@ const Telemedicine = () => {
             >
               {isVideoEnabled ? <IconVideo size={24} /> : <IconVideoOff size={24} />}
             </ActionIcon>
-            
+
             <ActionIcon
               size="xl"
               variant={isScreenSharing ? 'filled' : 'light'}
@@ -1114,7 +1312,7 @@ const Telemedicine = () => {
             >
               {isScreenSharing ? <IconScreenShareOff size={24} /> : <IconScreenShare size={24} />}
             </ActionIcon>
-            
+
             <ActionIcon
               size="xl"
               variant={isRecording ? 'filled' : 'light'}
@@ -1123,21 +1321,12 @@ const Telemedicine = () => {
             >
               {isRecording ? <IconX size={24} /> : <IconCircleCheck size={24} />}
             </ActionIcon>
-            
-            <ActionIcon
-              size="xl"
-              variant="light"
-              color="gray"
-            >
+
+            <ActionIcon size="xl" variant="light" color="gray">
               <IconMessage size={24} />
             </ActionIcon>
-            
-            <ActionIcon
-              size="xl"
-              variant="filled"
-              color="red"
-              onClick={handleEndCall}
-            >
+
+            <ActionIcon size="xl" variant="filled" color="red" onClick={handleEndCall}>
               <IconPhoneOff size={24} />
             </ActionIcon>
           </div>
@@ -1156,23 +1345,27 @@ const Telemedicine = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={[].map /* TODO: Fetch from API */(patient => ({
-                value: patient.id,
-                label: `${patient.firstName} ${patient.lastName}`
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (patient) => ({
+                  value: patient.id,
+                  label: `${patient.firstName} ${patient.lastName}`,
+                })
+              )}
               required
             />
             <Select
               label="Doctor"
               placeholder="Select doctor"
-              data={[].map /* TODO: Fetch from API */(doctor => ({
-                value: doctor.id,
-                label: `Dr. ${(doctor as any).firstName || doctor.name.split(' ')[0]} ${(doctor as any).lastName || doctor.name.split(' ')[1] || ''} - ${(doctor as any).specialty || doctor.specialization}`
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (doctor) => ({
+                  value: doctor.id,
+                  label: `Dr. ${(doctor as any).firstName || doctor.name.split(' ')[0]} ${(doctor as any).lastName || doctor.name.split(' ')[1] || ''} - ${(doctor as any).specialty || doctor.specialization}`,
+                })
+              )}
               required
             />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
             <Select
               label="Session Type"
@@ -1182,7 +1375,7 @@ const Telemedicine = () => {
                 { value: 'follow_up', label: 'Follow-up' },
                 { value: 'emergency', label: 'Emergency' },
                 { value: 'therapy', label: 'Therapy' },
-                { value: 'monitoring', label: 'Monitoring' }
+                { value: 'monitoring', label: 'Monitoring' },
               ]}
               required
             />
@@ -1195,14 +1388,9 @@ const Telemedicine = () => {
               required
             />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
-            <DatePickerInput
-              label="Date"
-              placeholder="Select date"
-              minDate={new Date()}
-              required
-            />
+            <DatePickerInput label="Date" placeholder="Select date" minDate={new Date()} required />
             <Select
               label="Time"
               placeholder="Select time"
@@ -1212,12 +1400,12 @@ const Telemedicine = () => {
                 { value: '11:00', label: '11:00 AM' },
                 { value: '14:00', label: '2:00 PM' },
                 { value: '15:00', label: '3:00 PM' },
-                { value: '16:00', label: '4:00 PM' }
+                { value: '16:00', label: '4:00 PM' },
               ]}
               required
             />
           </SimpleGrid>
-          
+
           <Select
             label="Platform"
             placeholder="Select platform"
@@ -1225,30 +1413,32 @@ const Telemedicine = () => {
               { value: 'zoom', label: 'Zoom' },
               { value: 'teams', label: 'Microsoft Teams' },
               { value: 'webex', label: 'Cisco Webex' },
-              { value: 'custom', label: 'Custom Platform' }
+              { value: 'custom', label: 'Custom Platform' },
             ]}
             defaultValue="zoom"
             required
           />
-          
+
           <Textarea
             label="Session Notes"
             placeholder="Enter any special instructions or notes"
             rows={3}
           />
-          
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeStartSession}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Session Scheduled',
-                message: 'Telemedicine session has been scheduled successfully',
-                color: 'green',
-              });
-              closeStartSession();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Session Scheduled',
+                  message: 'Telemedicine session has been scheduled successfully',
+                  color: 'green',
+                });
+                closeStartSession();
+              }}
+            >
               Schedule Session
             </Button>
           </Group>

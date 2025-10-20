@@ -8,7 +8,7 @@ import {
   Stack,
   Select,
   NumberInput,
-  LoadingOverlay
+  LoadingOverlay,
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { IconCurrencyRupee, IconCalendar, IconReceipt } from '@tabler/icons-react';
@@ -27,7 +27,7 @@ export default function FinanceTransactionForm({
   onClose,
   transaction,
   onSubmit,
-  loading = false
+  loading = false,
 }: FinanceTransactionFormProps) {
   const [formData, setFormData] = useState({
     type: 'INCOME',
@@ -36,7 +36,7 @@ export default function FinanceTransactionForm({
     description: '',
     date: new Date(),
     paymentMethod: 'CASH',
-    referenceNumber: ''
+    referenceNumber: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -50,7 +50,7 @@ export default function FinanceTransactionForm({
         description: transaction.description || '',
         date: transaction.date ? new Date(transaction.date) : new Date(),
         paymentMethod: transaction.paymentMethod || 'CASH',
-        referenceNumber: transaction.referenceNumber || ''
+        referenceNumber: transaction.referenceNumber || '',
       });
     } else {
       resetForm();
@@ -65,7 +65,7 @@ export default function FinanceTransactionForm({
       description: '',
       date: new Date(),
       paymentMethod: 'CASH',
-      referenceNumber: ''
+      referenceNumber: '',
     });
     setErrors({});
   };
@@ -105,7 +105,7 @@ export default function FinanceTransactionForm({
         description: formData.description,
         date: formData.date.toISOString(),
         paymentMethod: formData.paymentMethod,
-        referenceNumber: formData.referenceNumber || undefined
+        referenceNumber: formData.referenceNumber || undefined,
       };
 
       await onSubmit(submitData);
@@ -123,7 +123,7 @@ export default function FinanceTransactionForm({
 
   const transactionTypeOptions = [
     { value: 'INCOME', label: 'Income' },
-    { value: 'EXPENSE', label: 'Expense' }
+    { value: 'EXPENSE', label: 'Expense' },
   ];
 
   const incomeCategories = [
@@ -132,7 +132,7 @@ export default function FinanceTransactionForm({
     { value: 'LAB_FEES', label: 'Laboratory Fees' },
     { value: 'PHARMACY_SALES', label: 'Pharmacy Sales' },
     { value: 'ROOM_CHARGES', label: 'Room Charges' },
-    { value: 'OTHER_INCOME', label: 'Other Income' }
+    { value: 'OTHER_INCOME', label: 'Other Income' },
   ];
 
   const expenseCategories = [
@@ -142,7 +142,7 @@ export default function FinanceTransactionForm({
     { value: 'UTILITIES', label: 'Utilities' },
     { value: 'RENT', label: 'Rent' },
     { value: 'INSURANCE', label: 'Insurance' },
-    { value: 'OTHER_EXPENSES', label: 'Other Expenses' }
+    { value: 'OTHER_EXPENSES', label: 'Other Expenses' },
   ];
 
   const paymentMethodOptions = [
@@ -152,7 +152,7 @@ export default function FinanceTransactionForm({
     { value: 'UPI', label: 'UPI' },
     { value: 'NET_BANKING', label: 'Net Banking' },
     { value: 'CHEQUE', label: 'Cheque' },
-    { value: 'BANK_TRANSFER', label: 'Bank Transfer' }
+    { value: 'BANK_TRANSFER', label: 'Bank Transfer' },
   ];
 
   const categoryOptions = formData.type === 'INCOME' ? incomeCategories : expenseCategories;
@@ -171,7 +171,7 @@ export default function FinanceTransactionForm({
       padding="md"
     >
       <LoadingOverlay visible={loading} />
-      
+
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           <Select
@@ -201,7 +201,7 @@ export default function FinanceTransactionForm({
             label="Amount"
             placeholder="Enter amount"
             value={formData.amount}
-            onChange={(value) => setFormData({ ...formData, amount: value || 0 })}
+            onChange={(value) => setFormData({ ...formData, amount: Number(value) || 0 })}
             error={errors.amount}
             required
             min={0}
@@ -224,7 +224,7 @@ export default function FinanceTransactionForm({
             label="Date"
             placeholder="Select date"
             value={formData.date}
-            onChange={(value) => setFormData({ ...formData, date: value || new Date() })}
+            onChange={(value) => setFormData({ ...formData, date: value ? new Date(value) : new Date() })}
             leftSection={<IconCalendar size={16} />}
             maxDate={new Date()}
           />

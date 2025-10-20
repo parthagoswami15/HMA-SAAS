@@ -15,7 +15,10 @@ import {
 import { DatePickerInput } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
 import patientsService from '../../services/patients.service';
-import type { CreateInsuranceClaimDto, UpdateInsuranceClaimDto } from '../../services/insurance.service';
+import type {
+  CreateInsuranceClaimDto,
+  UpdateInsuranceClaimDto,
+} from '../../services/insurance.service';
 
 interface InsuranceClaimFormProps {
   opened: boolean;
@@ -80,10 +83,12 @@ function InsuranceClaimForm({ opened, onClose, claim, onSubmit }: InsuranceClaim
     try {
       const response = await patientsService.getPatients({ limit: 100 });
       if (response.success && response.data) {
-        setPatients(response.data.patients.map((patient: any) => ({
-          value: patient.id,
-          label: `${patient.firstName} ${patient.lastName} (${patient.mrn})`,
-        })));
+        setPatients(
+          response.data.patients.map((patient: any) => ({
+            value: patient.id,
+            label: `${patient.firstName} ${patient.lastName} (${patient.mrn})`,
+          }))
+        );
       }
     } catch (error) {
       console.error('Error fetching patients:', error);
@@ -255,7 +260,7 @@ function InsuranceClaimForm({ opened, onClose, claim, onSubmit }: InsuranceClaim
             label="Submission Date"
             placeholder="Select submission date"
             value={formData.submittedAt}
-            onChange={(value) => setFormData({ ...formData, submittedAt: value || new Date() })}
+            onChange={(value) => setFormData({ ...formData, submittedAt: value ? new Date(value) : new Date() })}
             clearable={false}
           />
 

@@ -12,7 +12,7 @@ import {
   Card,
   Avatar,
   Title,
-  Alert
+  Alert,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -26,7 +26,7 @@ import {
   IconSearch,
   IconChartBar,
   IconFileExport,
-  IconUser
+  IconUser,
 } from '@tabler/icons-react';
 import DataTable from '../../../components/shared/DataTable';
 import PatientForm from '../../../components/patients/PatientForm';
@@ -39,7 +39,15 @@ import PatientExportReport from '../../../components/patients/PatientExportRepor
 import PatientPortalAccess from '../../../components/patients/PatientPortalAccess';
 import { useAppStore } from '../../../stores/appStore';
 import { User, UserRole, TableColumn, FilterOption, Status } from '../../../types/common';
-import { Patient, PatientStats, PatientListItem, CreatePatientDto, UpdatePatientDto, PatientSearchParams, InsuranceInfo } from '../../../types/patient';
+import {
+  Patient,
+  PatientStats,
+  PatientListItem,
+  CreatePatientDto,
+  UpdatePatientDto,
+  PatientSearchParams,
+  InsuranceInfo,
+} from '../../../types/patient';
 import { formatDate, formatPhoneNumber } from '../../../lib/utils';
 import { notifications } from '@mantine/notifications';
 import patientsService from '../../../services/patients.service';
@@ -74,15 +82,17 @@ export default function PatientManagement() {
   const [opened, { open, close }] = useDisclosure(false);
   const [viewModalOpened, { open: openView, close: closeView }] = useDisclosure(false);
   const [historyModalOpened, { open: openHistory, close: closeHistory }] = useDisclosure(false);
-  const [documentsModalOpened, { open: openDocuments, close: closeDocuments }] = useDisclosure(false);
+  const [documentsModalOpened, { open: openDocuments, close: closeDocuments }] =
+    useDisclosure(false);
   const [searchModalOpened, { open: openSearch, close: closeSearch }] = useDisclosure(false);
-  const [analyticsModalOpened, { open: openAnalytics, close: closeAnalytics }] = useDisclosure(false);
+  const [analyticsModalOpened, { open: openAnalytics, close: closeAnalytics }] =
+    useDisclosure(false);
   const [exportModalOpened, { open: openExport, close: closeExport }] = useDisclosure(false);
   const [portalModalOpened, { open: openPortal, close: closePortal }] = useDisclosure(false);
 
   useEffect(() => {
     if (!user) {
-      setUser([] /* TODO: Fetch from API */);
+      // setUser(null /* TODO: Fetch from API */);
     }
     fetchPatients();
     fetchStats();
@@ -112,22 +122,25 @@ export default function PatientManagement() {
       console.log('Patient stats API response:', response);
       setPatientStats(response.data);
     } catch (err: any) {
-      console.warn('Error fetching patient stats (using default values):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching patient stats (using default values):',
+        err.response?.data?.message || err.message
+      );
       // Set default stats when backend is unavailable
-      setPatientStats({ 
-        totalPatients: 0, 
-        activePatients: 0, 
-        todaysPatients: 0, 
+      setPatientStats({
+        totalPatients: 0,
+        activePatients: 0,
+        todaysPatients: 0,
         weekPatients: 0,
         averageAge: 0,
         genderDistribution: { male: 0, female: 0, other: 0 },
-        insuranceDistribution: { insured: 0, uninsured: 0 }
+        insuranceDistribution: { insured: 0, uninsured: 0 },
       });
     }
   };
 
   // Convert patients to list items for table
-  const patientListItems: PatientListItem[] = patients.map(patient => ({
+  const patientListItems: PatientListItem[] = patients.map((patient) => ({
     id: patient.id,
     patientId: patient.patientId,
     fullName: `${patient.firstName} ${patient.lastName}`,
@@ -138,7 +151,7 @@ export default function PatientManagement() {
     totalVisits: patient.totalVisits,
     status: patient.status,
     hasInsurance: !!patient.insuranceInfo?.isActive,
-    emergencyFlag: patient.chronicDiseases.length > 0
+    emergencyFlag: patient.chronicDiseases.length > 0,
   }));
 
   // Table columns configuration
@@ -152,7 +165,7 @@ export default function PatientManagement() {
         <Text fw={500} c="blue">
           {value as string}
         </Text>
-      )
+      ),
     },
     {
       key: 'fullName',
@@ -168,7 +181,7 @@ export default function PatientManagement() {
             </Text>
           </div>
         </Group>
-      )
+      ),
     },
     {
       key: 'phoneNumber',
@@ -180,13 +193,13 @@ export default function PatientManagement() {
             <Text size="sm">{formatPhoneNumber(value as string)}</Text>
           </Group>
         </div>
-      )
+      ),
     },
     {
       key: 'lastVisitDate',
       title: 'Last Visit',
       sortable: true,
-      render: (value) => value ? formatDate(value as string | Date) : 'Never'
+      render: (value) => (value ? formatDate(value as string | Date) : 'Never'),
     },
     {
       key: 'totalVisits',
@@ -197,19 +210,16 @@ export default function PatientManagement() {
         <Badge variant="light" color="blue">
           {value as string}
         </Badge>
-      )
+      ),
     },
     {
       key: 'status',
       title: 'Status',
       render: (value) => (
-        <Badge 
-          color={value === 'active' ? 'green' : 'red'}
-          variant="light"
-        >
+        <Badge color={value === 'active' ? 'green' : 'red'} variant="light">
           {value as string}
         </Badge>
-      )
+      ),
     },
     {
       key: 'hasInsurance',
@@ -225,49 +235,47 @@ export default function PatientManagement() {
               Self Pay
             </Badge>
           )}
-          {record.emergencyFlag && (
-            <IconAlertCircle size="1rem" color="red" />
-          )}
+          {record.emergencyFlag && <IconAlertCircle size="1rem" color="red" />}
         </Group>
-      )
-    }
+      ),
+    },
   ];
 
   // Filter options
   const filterOptions: FilterOption[] = [
     {
       key: 'status',
-      title: 'Status',
+      label: 'Status',
       type: 'select',
       options: [
-        { value: 'active', title: 'Active' },
-        { value: 'inactive', title: 'Inactive' }
-      ]
+        { value: 'active', label: 'Active' },
+        { value: 'inactive', label: 'Inactive' },
+      ],
     },
     {
       key: 'gender',
-      title: 'Gender',
+      label: 'Gender',
       type: 'select',
       options: [
-        { value: 'male', title: 'Male' },
-        { value: 'female', title: 'Female' },
-        { value: 'other', title: 'Other' }
-      ]
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+        { value: 'other', label: 'Other' },
+      ],
     },
     {
       key: 'hasInsurance',
-      title: 'Insurance',
+      label: 'Insurance',
       type: 'select',
       options: [
-        { value: 'true', title: 'Insured' },
-        { value: 'false', title: 'Self Pay' }
-      ]
-    }
+        { value: 'true', label: 'Insured' },
+        { value: 'false', label: 'Self Pay' },
+      ],
+    },
   ];
 
   // Handle patient actions
   const handleViewPatient = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
+    const fullPatient = patients.find((p) => p.id === patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
       openView();
@@ -275,7 +283,7 @@ export default function PatientManagement() {
   };
 
   const handleEditPatient = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
+    const fullPatient = patients.find((p) => p.id === patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
       open();
@@ -283,7 +291,11 @@ export default function PatientManagement() {
   };
 
   const handleDeletePatient = async (patient: PatientListItem) => {
-    if (!window.confirm(`Are you sure you want to delete patient ${patient.fullName} (${patient.patientId})?`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete patient ${patient.fullName} (${patient.patientId})?`
+      )
+    ) {
       return;
     }
 
@@ -292,14 +304,14 @@ export default function PatientManagement() {
       notifications.show({
         title: 'Success',
         message: `Patient ${patient.fullName} deleted successfully!`,
-        color: 'green'
+        color: 'green',
       });
       fetchPatients(); // Refresh the list
     } catch (error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to delete patient',
-        color: 'red'
+        color: 'red',
       });
     }
   };
@@ -310,18 +322,19 @@ export default function PatientManagement() {
       // Convert Date to string for API
       const apiData = {
         ...data,
-        dateOfBirth: data.dateOfBirth instanceof Date 
-          ? data.dateOfBirth.toISOString().split('T')[0] 
-          : data.dateOfBirth
+        dateOfBirth:
+          data.dateOfBirth instanceof Date
+            ? data.dateOfBirth.toISOString().split('T')[0]
+            : data.dateOfBirth,
       };
       const response = await patientsService.createPatient(apiData as any);
       const newPatient = response.data;
       notifications.show({
         title: 'Success',
         message: `Patient ${newPatient.firstName} ${newPatient.lastName} registered successfully!`,
-        color: 'green'
+        color: 'green',
       });
-      
+
       // Refresh the patients list and stats
       await fetchPatients();
       await fetchStats();
@@ -330,7 +343,7 @@ export default function PatientManagement() {
       notifications.show({
         title: 'Error',
         message: errorMsg,
-        color: 'red'
+        color: 'red',
       });
       throw error;
     }
@@ -341,19 +354,20 @@ export default function PatientManagement() {
       // Convert Date to string for API
       const apiData = {
         ...data,
-        dateOfBirth: data.dateOfBirth instanceof Date 
-          ? data.dateOfBirth.toISOString().split('T')[0] 
-          : data.dateOfBirth
+        dateOfBirth:
+          data.dateOfBirth instanceof Date
+            ? data.dateOfBirth.toISOString().split('T')[0]
+            : data.dateOfBirth,
       };
       const response = await patientsService.updatePatient(data.id!, apiData as any);
       const updatedPatient = response.data;
-      
+
       notifications.show({
         title: 'Success',
         message: `Patient ${updatedPatient.firstName} ${updatedPatient.lastName} updated successfully!`,
-        color: 'green'
+        color: 'green',
       });
-      
+
       // Refresh the patients list
       await fetchPatients();
     } catch (error: any) {
@@ -361,7 +375,7 @@ export default function PatientManagement() {
       notifications.show({
         title: 'Error',
         message: errorMsg,
-        color: 'red'
+        color: 'red',
       });
       throw error;
     }
@@ -370,43 +384,43 @@ export default function PatientManagement() {
   // Medical history operations
   const handleSaveMedicalHistory = async (history: any) => {
     console.log('Saving medical history:', history);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleUpdateMedicalHistory = async (id: string, history: any) => {
     console.log('Updating medical history:', id, history);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleDeleteMedicalHistory = async (id: string) => {
     console.log('Deleting medical history:', id);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   // Document operations
   const handleUploadDocument = async (document: any, file: File) => {
     console.log('Uploading document:', document, file);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleUpdateDocument = async (id: string, document: any) => {
     console.log('Updating document:', id, document);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleDeleteDocument = async (id: string) => {
     console.log('Deleting document:', id);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleDownloadDocument = async (document: any) => {
     console.log('Downloading document:', document);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleViewDocument = async (document: any) => {
     console.log('Viewing document:', document);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   // Search operations
@@ -422,46 +436,50 @@ export default function PatientManagement() {
   // Export operations
   const handleExportPatients = async (options: any) => {
     console.log('Exporting patients:', options);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   };
 
   const handleGenerateReport = async (reportType: string, patientIds?: string[]) => {
     console.log('Generating report:', reportType, patientIds);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     return {
-      reportType: reportType as 'demographics' | 'visit_summary' | 'medical_summary' | 'insurance_summary',
+      reportType: reportType as
+        | 'demographics'
+        | 'visit_summary'
+        | 'medical_summary'
+        | 'insurance_summary',
       patientId: 'all',
       generatedAt: new Date(),
       generatedBy: 'current_user',
       data: {},
-      format: 'pdf' as const
+      format: 'pdf' as const,
     };
   };
 
   // Portal operations
   const handleEnablePortalAccess = async (patientId: string, preferences: any) => {
     console.log('Enabling portal access:', patientId, preferences);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleDisablePortalAccess = async (patientId: string) => {
     console.log('Disabling portal access:', patientId);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleUpdatePortalPreferences = async (patientId: string, preferences: any) => {
     console.log('Updating portal preferences:', patientId, preferences);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleResetPortalPassword = async (patientId: string) => {
     console.log('Resetting portal password:', patientId);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   const handleSendPortalCredentials = async (patientId: string, method: 'email' | 'sms') => {
     console.log('Sending portal credentials:', patientId, method);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   // Additional handlers
@@ -471,7 +489,7 @@ export default function PatientManagement() {
   };
 
   const handleOpenHistory = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
+    const fullPatient = patients.find((p) => p.id === patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
       openHistory();
@@ -479,7 +497,7 @@ export default function PatientManagement() {
   };
 
   const handleOpenDocuments = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
+    const fullPatient = patients.find((p) => p.id === patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
       openDocuments();
@@ -487,7 +505,7 @@ export default function PatientManagement() {
   };
 
   const handleOpenPortal = (patient: PatientListItem) => {
-    const fullPatient = patients.find(p => p.id === patient.id);
+    const fullPatient = patients.find((p) => p.id === patient.id);
     if (fullPatient) {
       setSelectedPatient(fullPatient);
       openPortal();
@@ -518,28 +536,38 @@ export default function PatientManagement() {
       totalVisits: patient.totalVisits,
       status: patient.status,
       hasInsurance: !!patient.insuranceInfo?.isActive,
-      emergencyFlag: patient.chronicDiseases.length > 0
+      emergencyFlag: patient.chronicDiseases.length > 0,
     };
     handleEditPatient(patientListItem);
   };
 
   // Statistics cards
-  const StatCard = ({ title, value, icon, color, subtitle }: { title: string; value: string; icon: React.ReactNode; color: string; subtitle?: string }) => (
+  const StatCard = ({
+    title,
+    value,
+    icon,
+    color,
+    subtitle,
+  }: {
+    title: string;
+    value: string;
+    icon: React.ReactNode;
+    color: string;
+    subtitle?: string;
+  }) => (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Group justify="space-between" mb="md">
-        <div style={{ color: `var(--mantine-color-${color}-6)` }}>
-          {icon}
-        </div>
+        <div style={{ color: `var(--mantine-color-${color}-6)` }}>{icon}</div>
       </Group>
-      
+
       <Text size="xl" fw={700} mb="xs">
         {value}
       </Text>
-      
+
       <Text size="sm" c="dimmed" mb="sm">
         {title}
       </Text>
-      
+
       {subtitle && (
         <Text size="xs" c="dimmed">
           {subtitle}
@@ -560,11 +588,7 @@ export default function PatientManagement() {
             </Text>
           </div>
           <Group>
-            <Button
-              variant="outline"
-              leftSection={<IconSearch size="1rem" />}
-              onClick={openSearch}
-            >
+            <Button variant="outline" leftSection={<IconSearch size="1rem" />} onClick={openSearch}>
               Advanced Search
             </Button>
             <Button
@@ -581,10 +605,7 @@ export default function PatientManagement() {
             >
               Export
             </Button>
-            <Button
-              leftSection={<IconUserPlus size="1rem" />}
-              onClick={handleNewPatient}
-            >
+            <Button leftSection={<IconUserPlus size="1rem" />} onClick={handleNewPatient}>
               New Patient
             </Button>
           </Group>
@@ -605,7 +626,11 @@ export default function PatientManagement() {
               value={(patientStats.totalPatients || 0).toLocaleString()}
               icon={<IconUsers size="2rem" />}
               color="blue"
-              subtitle={patientStats.newPatientsThisMonth ? `+${patientStats.newPatientsThisMonth} this month` : undefined}
+              subtitle={
+                patientStats.newPatientsThisMonth
+                  ? `+${patientStats.newPatientsThisMonth} this month`
+                  : undefined
+              }
             />
             <StatCard
               title="New Today"
@@ -647,7 +672,7 @@ export default function PatientManagement() {
             limit: 10,
             total: patientListItems.length,
             onPageChange: (page) => console.log('Page:', page),
-            onLimitChange: (limit) => console.log('Limit:', limit)
+            onLimitChange: (limit) => console.log('Limit:', limit),
           }}
           actions={{
             view: handleViewPatient,
@@ -655,16 +680,16 @@ export default function PatientManagement() {
             delete: handleDeletePatient,
             custom: [
               {
-                title: 'Documents',
+                label: 'Documents',
                 icon: <IconFileExport size="1rem" />,
-                action: (patient: PatientListItem) => handleOpenDocuments(patient)
+                action: (patient: PatientListItem) => handleOpenDocuments(patient),
               },
               {
-                title: 'Portal',
+                label: 'Portal',
                 icon: <IconUser size="1rem" />,
-                action: (patient: PatientListItem) => handleOpenPortal(patient)
-              }
-            ]
+                action: (patient: PatientListItem) => handleOpenPortal(patient),
+              },
+            ],
           }}
           emptyMessage="No patients found"
         />

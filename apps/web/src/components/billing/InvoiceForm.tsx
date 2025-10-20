@@ -15,7 +15,7 @@ import {
   Badge,
   LoadingOverlay,
   Divider,
-  Card
+  Card,
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { IconCalendar, IconPlus, IconTrash, IconCurrencyRupee } from '@tabler/icons-react';
@@ -36,14 +36,14 @@ export default function InvoiceForm({
   invoice,
   onSubmit,
   loading = false,
-  patients = []
+  patients = [],
 }: InvoiceFormProps) {
   const [formData, setFormData] = useState({
     patientId: '',
     date: new Date(),
     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
     discountAmount: 0,
-    notes: ''
+    notes: '',
   });
 
   const [items, setItems] = useState<InvoiceItem[]>([
@@ -53,8 +53,8 @@ export default function InvoiceForm({
       quantity: 1,
       unitPrice: 0,
       discount: 0,
-      taxRate: 0
-    }
+      taxRate: 0,
+    },
   ]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -66,18 +66,20 @@ export default function InvoiceForm({
         date: invoice.date ? new Date(invoice.date) : new Date(),
         dueDate: invoice.dueDate ? new Date(invoice.dueDate) : new Date(),
         discountAmount: invoice.discountAmount || 0,
-        notes: invoice.notes || ''
+        notes: invoice.notes || '',
       });
       if (invoice.invoiceItems && invoice.invoiceItems.length > 0) {
-        setItems(invoice.invoiceItems.map((item: any) => ({
-          itemType: item.itemType || 'SERVICE',
-          itemId: item.itemId,
-          description: item.description,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice,
-          discount: item.discount || 0,
-          taxRate: item.taxRate || 0
-        })));
+        setItems(
+          invoice.invoiceItems.map((item: any) => ({
+            itemType: item.itemType || 'SERVICE',
+            itemId: item.itemId,
+            description: item.description,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            discount: item.discount || 0,
+            taxRate: item.taxRate || 0,
+          }))
+        );
       }
     } else {
       resetForm();
@@ -90,7 +92,7 @@ export default function InvoiceForm({
       date: new Date(),
       dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       discountAmount: 0,
-      notes: ''
+      notes: '',
     });
     setItems([
       {
@@ -99,8 +101,8 @@ export default function InvoiceForm({
         quantity: 1,
         unitPrice: 0,
         discount: 0,
-        taxRate: 0
-      }
+        taxRate: 0,
+      },
     ]);
     setErrors({});
   };
@@ -147,7 +149,7 @@ export default function InvoiceForm({
         dueDate: formData.dueDate.toISOString(),
         items: items,
         discountAmount: formData.discountAmount,
-        notes: formData.notes
+        notes: formData.notes,
       };
 
       await onSubmit(submitData);
@@ -172,8 +174,8 @@ export default function InvoiceForm({
         quantity: 1,
         unitPrice: 0,
         discount: 0,
-        taxRate: 0
-      }
+        taxRate: 0,
+      },
     ]);
   };
 
@@ -201,7 +203,7 @@ export default function InvoiceForm({
     let totalTax = 0;
     const totalDiscount = formData.discountAmount || 0;
 
-    items.forEach(item => {
+    items.forEach((item) => {
       const itemSubtotal = item.quantity * item.unitPrice;
       const itemDiscount = item.discount || 0;
       const itemAfterDiscount = itemSubtotal - itemDiscount;
@@ -218,9 +220,9 @@ export default function InvoiceForm({
 
   const totals = calculateTotals();
 
-  const patientOptions = patients.map(p => ({
+  const patientOptions = patients.map((p) => ({
     value: p.id,
-    label: `${p.firstName} ${p.lastName} - ${p.medicalRecordNumber || p.id}`
+    label: `${p.firstName} ${p.lastName} - ${p.medicalRecordNumber || p.id}`,
   }));
 
   const itemTypeOptions = [
@@ -229,7 +231,7 @@ export default function InvoiceForm({
     { value: 'LAB_TEST', label: 'Lab Test' },
     { value: 'PROCEDURE', label: 'Procedure' },
     { value: 'CONSULTATION', label: 'Consultation' },
-    { value: 'OTHER', label: 'Other' }
+    { value: 'OTHER', label: 'Other' },
   ];
 
   return (
@@ -248,7 +250,7 @@ export default function InvoiceForm({
       padding="md"
     >
       <LoadingOverlay visible={loading} />
-      
+
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           {/* Patient Selection */}
@@ -270,7 +272,7 @@ export default function InvoiceForm({
                 label="Invoice Date"
                 placeholder="Select date"
                 value={formData.date}
-                onChange={(value) => setFormData({ ...formData, date: value || new Date() })}
+                onChange={(value) => setFormData({ ...formData, date: value ? new Date(value) : new Date() })}
                 leftSection={<IconCalendar size={16} />}
               />
             </Grid.Col>
@@ -279,7 +281,7 @@ export default function InvoiceForm({
                 label="Due Date"
                 placeholder="Select due date"
                 value={formData.dueDate}
-                onChange={(value) => setFormData({ ...formData, dueDate: value || new Date() })}
+                onChange={(value) => setFormData({ ...formData, dueDate: value ? new Date(value) : new Date() })}
                 error={errors.dueDate}
                 required
                 leftSection={<IconCalendar size={16} />}
@@ -406,27 +408,35 @@ export default function InvoiceForm({
             <Stack gap="xs">
               <Group justify="space-between">
                 <Text size="sm">Subtotal:</Text>
-                <Text size="sm" fw={500}>₹{totals.subTotal.toFixed(2)}</Text>
+                <Text size="sm" fw={500}>
+                  ₹{totals.subTotal.toFixed(2)}
+                </Text>
               </Group>
               <Group justify="space-between">
                 <Text size="sm">Tax:</Text>
-                <Text size="sm" fw={500}>₹{totals.totalTax.toFixed(2)}</Text>
+                <Text size="sm" fw={500}>
+                  ₹{totals.totalTax.toFixed(2)}
+                </Text>
               </Group>
               <Group justify="space-between">
                 <NumberInput
                   label="Global Discount"
                   value={formData.discountAmount}
-                  onChange={(value) => setFormData({ ...formData, discountAmount: value || 0 })}
+                  onChange={(value) => setFormData({ ...formData, discountAmount: Number(value) || 0 })}
                   min={0}
                   prefix="₹"
                   size="xs"
                   style={{ width: 150 }}
                 />
-                <Text size="sm" fw={500}>-₹{totals.totalDiscount.toFixed(2)}</Text>
+                <Text size="sm" fw={500}>
+                  -₹{totals.totalDiscount.toFixed(2)}
+                </Text>
               </Group>
               <Divider />
               <Group justify="space-between">
-                <Text size="lg" fw={700}>Grand Total:</Text>
+                <Text size="lg" fw={700}>
+                  Grand Total:
+                </Text>
                 <Badge size="xl" color="green">
                   ₹{totals.grandTotal.toFixed(2)}
                 </Badge>

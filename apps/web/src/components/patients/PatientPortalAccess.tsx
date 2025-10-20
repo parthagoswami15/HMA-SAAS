@@ -17,7 +17,7 @@ import {
   Timeline,
   Table,
   Avatar,
-  Select
+  Select,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
@@ -37,16 +37,16 @@ import {
   IconEye,
   IconBell,
   IconActivity,
-  IconHistory
+  IconHistory,
 } from '@tabler/icons-react';
-import { PatientPortalAccess, PatientPortalPreferences, Patient } from '../../types/patient';
+import { PatientPortalAccess as PatientPortalAccessType, PatientPortalPreferences, Patient } from '../../types/patient';
 import { formatDate } from '../../lib/utils';
 
 interface PatientPortalAccessProps {
   opened: boolean;
   onClose: () => void;
   patient: Patient | null;
-  portalAccess?: PatientPortalAccess;
+  portalAccess?: PatientPortalAccessType;
   onEnableAccess: (patientId: string, preferences: PatientPortalPreferences) => Promise<void>;
   onDisableAccess: (patientId: string) => Promise<void>;
   onUpdatePreferences: (patientId: string, preferences: PatientPortalPreferences) => Promise<void>;
@@ -61,7 +61,7 @@ const defaultPreferences: PatientPortalPreferences = {
   labResultNotifications: true,
   prescriptionRefillReminders: true,
   languagePreference: 'English',
-  timeZone: 'Asia/Kolkata'
+  timeZone: 'Asia/Kolkata',
 };
 
 export default function PatientPortalAccess({
@@ -73,43 +73,43 @@ export default function PatientPortalAccess({
   onDisableAccess,
   onUpdatePreferences,
   onResetPassword,
-  onSendCredentials
+  onSendCredentials,
 }: PatientPortalAccessProps) {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const preferencesForm = useForm<PatientPortalPreferences>({
-    initialValues: portalAccess?.preferences || defaultPreferences
+    initialValues: portalAccess?.preferences || defaultPreferences,
   });
 
   useEffect(() => {
     if (portalAccess?.preferences) {
       preferencesForm.setValues(portalAccess.preferences);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [portalAccess]);
 
   const handleEnableAccess = async () => {
     if (!patient) return;
-    
+
     try {
       setActionLoading('enable');
       await onEnableAccess(patient.id, preferencesForm.values);
-      
+
       notifications.show({
         title: 'Portal Access Enabled',
         message: 'Patient portal access has been enabled successfully.',
         color: 'green',
-        icon: <IconCheck size="1rem" />
+        icon: <IconCheck size="1rem" />,
       });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to enable portal access. Please try again.',
         color: 'red',
-        icon: <IconAlertCircle size="1rem" />
+        icon: <IconAlertCircle size="1rem" />,
       });
     } finally {
       setActionLoading(null);
@@ -118,24 +118,24 @@ export default function PatientPortalAccess({
 
   const handleDisableAccess = async () => {
     if (!patient) return;
-    
+
     try {
       setActionLoading('disable');
       await onDisableAccess(patient.id);
-      
+
       notifications.show({
         title: 'Portal Access Disabled',
         message: 'Patient portal access has been disabled.',
         color: 'orange',
-        icon: <IconCheck size="1rem" />
+        icon: <IconCheck size="1rem" />,
       });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to disable portal access. Please try again.',
         color: 'red',
-        icon: <IconAlertCircle size="1rem" />
+        icon: <IconAlertCircle size="1rem" />,
       });
     } finally {
       setActionLoading(null);
@@ -144,24 +144,24 @@ export default function PatientPortalAccess({
 
   const handleUpdatePreferences = async (values: PatientPortalPreferences) => {
     if (!patient) return;
-    
+
     try {
       setLoading(true);
       await onUpdatePreferences(patient.id, values);
-      
+
       notifications.show({
         title: 'Preferences Updated',
         message: 'Portal preferences have been updated successfully.',
         color: 'green',
-        icon: <IconCheck size="1rem" />
+        icon: <IconCheck size="1rem" />,
       });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to update preferences. Please try again.',
         color: 'red',
-        icon: <IconAlertCircle size="1rem" />
+        icon: <IconAlertCircle size="1rem" />,
       });
     } finally {
       setLoading(false);
@@ -170,24 +170,24 @@ export default function PatientPortalAccess({
 
   const handleResetPassword = async () => {
     if (!patient) return;
-    
+
     try {
       setActionLoading('reset');
       await onResetPassword(patient.id);
-      
+
       notifications.show({
         title: 'Password Reset',
         message: 'Password has been reset and new credentials sent to the patient.',
         color: 'green',
-        icon: <IconCheck size="1rem" />
+        icon: <IconCheck size="1rem" />,
       });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to reset password. Please try again.',
         color: 'red',
-        icon: <IconAlertCircle size="1rem" />
+        icon: <IconAlertCircle size="1rem" />,
       });
     } finally {
       setActionLoading(null);
@@ -196,24 +196,24 @@ export default function PatientPortalAccess({
 
   const handleSendCredentials = async (method: 'email' | 'sms') => {
     if (!patient) return;
-    
+
     try {
       setActionLoading(`send-${method}`);
       await onSendCredentials(patient.id, method);
-      
+
       notifications.show({
         title: 'Credentials Sent',
         message: `Login credentials have been sent via ${method.toUpperCase()}.`,
         color: 'green',
-        icon: <IconCheck size="1rem" />
+        icon: <IconCheck size="1rem" />,
       });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Error',
         message: `Failed to send credentials via ${method.toUpperCase()}. Please try again.`,
         color: 'red',
-        icon: <IconAlertCircle size="1rem" />
+        icon: <IconAlertCircle size="1rem" />,
       });
     } finally {
       setActionLoading(null);
@@ -232,17 +232,25 @@ export default function PatientPortalAccess({
             <Group mb="md">
               <Avatar size="lg" name={`${patient.firstName} ${patient.lastName}`} color="blue" />
               <div>
-                <Title order={3}>{patient.firstName} {patient.lastName}</Title>
+                <Title order={3}>
+                  {patient.firstName} {patient.lastName}
+                </Title>
                 <Text c="dimmed">{patient.patientId}</Text>
               </div>
             </Group>
-            
+
             <Group>
               <Badge
                 size="lg"
                 color={portalAccess?.isEnabled ? 'green' : 'red'}
                 variant="light"
-                leftSection={portalAccess?.isEnabled ? <IconUserCheck size="0.8rem" /> : <IconUserX size="0.8rem" />}
+                leftSection={
+                  portalAccess?.isEnabled ? (
+                    <IconUserCheck size="0.8rem" />
+                  ) : (
+                    <IconUserX size="0.8rem" />
+                  )
+                }
               >
                 {portalAccess?.isEnabled ? 'Portal Access Enabled' : 'Portal Access Disabled'}
               </Badge>
@@ -253,7 +261,7 @@ export default function PatientPortalAccess({
               )}
             </Group>
           </Grid.Col>
-          
+
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Stack>
               {!portalAccess?.isEnabled ? (
@@ -279,7 +287,7 @@ export default function PatientPortalAccess({
                   </Button>
                 </Group>
               )}
-              
+
               {portalAccess?.isEnabled && (
                 <Group grow>
                   <Button
@@ -317,7 +325,9 @@ export default function PatientPortalAccess({
                   </Group>
                   <Group justify="space-between">
                     <Text size="sm">Login Attempts</Text>
-                    <Text size="sm" c="dimmed">{portalAccess.loginAttempts}</Text>
+                    <Text size="sm" c="dimmed">
+                      {portalAccess.loginAttempts}
+                    </Text>
                   </Group>
                   <Group justify="space-between">
                     <Text size="sm">Two Factor Auth</Text>
@@ -338,19 +348,28 @@ export default function PatientPortalAccess({
                 <Stack gap="sm">
                   <Group justify="space-between">
                     <Text size="sm">Email Notifications</Text>
-                    <Badge color={portalAccess.preferences.receiveEmailNotifications ? 'green' : 'gray'} size="sm">
+                    <Badge
+                      color={portalAccess.preferences.receiveEmailNotifications ? 'green' : 'gray'}
+                      size="sm"
+                    >
                       {portalAccess.preferences.receiveEmailNotifications ? 'Enabled' : 'Disabled'}
                     </Badge>
                   </Group>
                   <Group justify="space-between">
                     <Text size="sm">SMS Notifications</Text>
-                    <Badge color={portalAccess.preferences.receiveSmsNotifications ? 'green' : 'gray'} size="sm">
+                    <Badge
+                      color={portalAccess.preferences.receiveSmsNotifications ? 'green' : 'gray'}
+                      size="sm"
+                    >
                       {portalAccess.preferences.receiveSmsNotifications ? 'Enabled' : 'Disabled'}
                     </Badge>
                   </Group>
                   <Group justify="space-between">
                     <Text size="sm">Appointment Reminders</Text>
-                    <Badge color={portalAccess.preferences.appointmentReminders ? 'green' : 'gray'} size="sm">
+                    <Badge
+                      color={portalAccess.preferences.appointmentReminders ? 'green' : 'gray'}
+                      size="sm"
+                    >
                       {portalAccess.preferences.appointmentReminders ? 'Enabled' : 'Disabled'}
                     </Badge>
                   </Group>
@@ -409,7 +428,9 @@ export default function PatientPortalAccess({
 
         {/* Notification Preferences */}
         <Paper p="md" withBorder>
-          <Title order={4} mb="md">Notification Preferences</Title>
+          <Title order={4} mb="md">
+            Notification Preferences
+          </Title>
           <Stack gap="md">
             <Switch
               label="Email Notifications"
@@ -438,7 +459,9 @@ export default function PatientPortalAccess({
             <Switch
               label="Prescription Refill Reminders"
               description="Receive reminders for prescription refills"
-              {...preferencesForm.getInputProps('prescriptionRefillReminders', { type: 'checkbox' })}
+              {...preferencesForm.getInputProps('prescriptionRefillReminders', {
+                type: 'checkbox',
+              })}
               disabled={!portalAccess?.isEnabled}
             />
           </Stack>
@@ -446,7 +469,9 @@ export default function PatientPortalAccess({
 
         {/* Language and Regional Settings */}
         <Paper p="md" withBorder>
-          <Title order={4} mb="md">Language & Regional Settings</Title>
+          <Title order={4} mb="md">
+            Language & Regional Settings
+          </Title>
           <Grid>
             <Grid.Col span={{ base: 12, md: 6 }}>
               <Select
@@ -455,7 +480,7 @@ export default function PatientPortalAccess({
                   { value: 'English', label: 'English' },
                   { value: 'Hindi', label: 'हिंदी (Hindi)' },
                   { value: 'Spanish', label: 'Español (Spanish)' },
-                  { value: 'French', label: 'Français (French)' }
+                  { value: 'French', label: 'Français (French)' },
                 ]}
                 {...preferencesForm.getInputProps('languagePreference')}
                 disabled={!portalAccess?.isEnabled}
@@ -468,7 +493,7 @@ export default function PatientPortalAccess({
                   { value: 'Asia/Kolkata', label: 'India Standard Time (IST)' },
                   { value: 'America/New_York', label: 'Eastern Time (EST)' },
                   { value: 'America/Los_Angeles', label: 'Pacific Time (PST)' },
-                  { value: 'Europe/London', label: 'Greenwich Mean Time (GMT)' }
+                  { value: 'Europe/London', label: 'Greenwich Mean Time (GMT)' },
                 ]}
                 {...preferencesForm.getInputProps('timeZone')}
                 disabled={!portalAccess?.isEnabled}
@@ -505,32 +530,52 @@ export default function PatientPortalAccess({
       ) : (
         <>
           <Paper p="md" withBorder>
-            <Title order={4} mb="md">Recent Access Activity</Title>
+            <Title order={4} mb="md">
+              Recent Access Activity
+            </Title>
             <Timeline active={1} bulletSize={24} lineWidth={2}>
               <Timeline.Item bullet={<IconLogin size="0.8rem" />} title="Successful Login">
-                <Text c="dimmed" size="sm">March 15, 2024 at 10:30 AM</Text>
-                <Text size="sm" mt={4}>Logged in from Chrome browser (IP: 192.168.1.100)</Text>
+                <Text c="dimmed" size="sm">
+                  March 15, 2024 at 10:30 AM
+                </Text>
+                <Text size="sm" mt={4}>
+                  Logged in from Chrome browser (IP: 192.168.1.100)
+                </Text>
               </Timeline.Item>
-              
+
               <Timeline.Item bullet={<IconEye size="0.8rem" />} title="Viewed Lab Results">
-                <Text c="dimmed" size="sm">March 15, 2024 at 10:32 AM</Text>
-                <Text size="sm" mt={4}>Accessed recent blood test results</Text>
+                <Text c="dimmed" size="sm">
+                  March 15, 2024 at 10:32 AM
+                </Text>
+                <Text size="sm" mt={4}>
+                  Accessed recent blood test results
+                </Text>
               </Timeline.Item>
-              
+
               <Timeline.Item bullet={<IconCalendar size="0.8rem" />} title="Appointment Scheduled">
-                <Text c="dimmed" size="sm">March 15, 2024 at 10:35 AM</Text>
-                <Text size="sm" mt={4}>Scheduled follow-up appointment for March 25th</Text>
+                <Text c="dimmed" size="sm">
+                  March 15, 2024 at 10:35 AM
+                </Text>
+                <Text size="sm" mt={4}>
+                  Scheduled follow-up appointment for March 25th
+                </Text>
               </Timeline.Item>
-              
+
               <Timeline.Item bullet={<IconLogout size="0.8rem" />} title="Logged Out">
-                <Text c="dimmed" size="sm">March 15, 2024 at 10:45 AM</Text>
-                <Text size="sm" mt={4}>Session ended normally</Text>
+                <Text c="dimmed" size="sm">
+                  March 15, 2024 at 10:45 AM
+                </Text>
+                <Text size="sm" mt={4}>
+                  Session ended normally
+                </Text>
               </Timeline.Item>
             </Timeline>
           </Paper>
 
           <Paper p="md" withBorder>
-            <Title order={4} mb="md">Security Events</Title>
+            <Title order={4} mb="md">
+              Security Events
+            </Title>
             <Table>
               <Table.Thead>
                 <Table.Tr>
@@ -545,7 +590,9 @@ export default function PatientPortalAccess({
                   <Table.Td>Mar 15, 2024</Table.Td>
                   <Table.Td>Password Reset</Table.Td>
                   <Table.Td>
-                    <Badge color="green" size="sm">Success</Badge>
+                    <Badge color="green" size="sm">
+                      Success
+                    </Badge>
                   </Table.Td>
                   <Table.Td>Admin initiated password reset</Table.Td>
                 </Table.Tr>
@@ -553,7 +600,9 @@ export default function PatientPortalAccess({
                   <Table.Td>Mar 10, 2024</Table.Td>
                   <Table.Td>Failed Login</Table.Td>
                   <Table.Td>
-                    <Badge color="red" size="sm">Failed</Badge>
+                    <Badge color="red" size="sm">
+                      Failed
+                    </Badge>
                   </Table.Td>
                   <Table.Td>Incorrect password (3 attempts)</Table.Td>
                 </Table.Tr>
@@ -561,7 +610,9 @@ export default function PatientPortalAccess({
                   <Table.Td>Mar 5, 2024</Table.Td>
                   <Table.Td>Account Created</Table.Td>
                   <Table.Td>
-                    <Badge color="blue" size="sm">Info</Badge>
+                    <Badge color="blue" size="sm">
+                      Info
+                    </Badge>
                   </Table.Td>
                   <Table.Td>Portal access enabled by admin</Table.Td>
                 </Table.Tr>

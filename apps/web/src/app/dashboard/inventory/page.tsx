@@ -37,7 +37,12 @@ import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleAreaChart,
+  SimpleBarChart,
+  SimpleLineChart,
+} from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -49,7 +54,7 @@ import {
   IconChartBar,
   // IconPhone,
   // IconMail,
-  // IconAlertCircle,
+  IconAlertCircle,
   // IconCheck,
   // IconX,
   IconDotsVertical,
@@ -66,7 +71,7 @@ import {
   // IconTrendingUp,
   // IconTrendingDown,
   // IconUsers,
-  // IconCalculator,
+  IconCalculator,
   // IconWallet,
   IconSettings,
   // IconBuildingWarehouse,
@@ -78,7 +83,7 @@ import {
   // IconShieldCheck,
   IconAlertTriangle,
   // IconCircleCheck,
-  IconClipboard
+  IconClipboard,
 } from '@tabler/icons-react';
 
 // Import types, services and mock data
@@ -97,7 +102,7 @@ import {
   MaintenanceType,
   InventoryAlert,
   AlertType,
-  InventoryStats
+  InventoryStats,
 } from '../../../types/inventory';
 import inventoryService from '../../../services/inventory.service';
 // Mock data imports removed
@@ -122,23 +127,22 @@ const InventoryManagement = () => {
   // Modal states
   const [itemDetailOpened, { open: openItemDetail, close: closeItemDetail }] = useDisclosure(false);
   const [addItemOpened, { open: openAddItem, close: closeAddItem }] = useDisclosure(false);
-  const [orderDetailOpened, { open: openOrderDetail, close: closeOrderDetail }] = useDisclosure(false);
+  const [orderDetailOpened, { open: openOrderDetail, close: closeOrderDetail }] =
+    useDisclosure(false);
   const [_addOrderOpened, { open: _openAddOrder, close: _closeAddOrder }] = useDisclosure(false);
-  const [_equipmentDetailOpened, { open: _openEquipmentDetail, close: _closeEquipmentDetail }] = useDisclosure(false);
+  const [_equipmentDetailOpened, { open: _openEquipmentDetail, close: _closeEquipmentDetail }] =
+    useDisclosure(false);
 
   useEffect(() => {
     fetchAllData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
     try {
       _setLoading(true);
       _setError(null);
-      await Promise.all([
-        fetchInventoryItems(),
-        fetchInventoryStats()
-      ]);
+      await Promise.all([fetchInventoryItems(), fetchInventoryStats()]);
     } catch (err: any) {
       console.error('Error loading inventory data:', err);
       _setError(err.response?.data?.message || err.message || 'Failed to load inventory data');
@@ -155,13 +159,16 @@ const InventoryManagement = () => {
       const filters = {
         category: selectedCategory || undefined,
         supplier: selectedSupplier || undefined,
-        search: searchQuery || undefined
+        search: searchQuery || undefined,
       };
       const response = await inventoryService.getItems(filters);
-      const itemsData = Array.isArray(response.data) ? response.data : (response.data?.items || []);
+      const itemsData = Array.isArray(response.data) ? response.data : response.data?.items || [];
       setInventoryItems(itemsData as InventoryItem[]);
     } catch (err: any) {
-      console.warn('Error fetching inventory items (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching inventory items (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setInventoryItems([]);
     }
   };
@@ -171,14 +178,17 @@ const InventoryManagement = () => {
       const response = await inventoryService.getStats();
       setInventoryStats(response.data);
     } catch (err: any) {
-      console.warn('Error fetching inventory stats (using default values):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching inventory stats (using default values):',
+        err.response?.data?.message || err.message
+      );
       setInventoryStats({
         totalItems: 0,
         lowStockItems: 0,
         outOfStockItems: 0,
         expiringSoon: 0,
         totalValue: 0,
-        categoriesCount: 0
+        categoriesCount: 0,
       });
     }
   };
@@ -188,17 +198,19 @@ const InventoryManagement = () => {
     if (!_loading) {
       fetchInventoryItems();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, selectedCategory, selectedSupplier]);
 
   // Filter inventory items
   const filteredItems = useMemo(() => {
     return inventoryItems.filter((item) => {
-      const matchesSearch = 
-        ((item as any).itemName || (item as any).name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch =
+        ((item as any).itemName || (item as any).name || '')
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
         (item.itemCode || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (item.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesCategory = !selectedCategory || (item as any).category === selectedCategory;
       const matchesStatus = !selectedStatus || (item as any).status === selectedStatus;
 
@@ -208,29 +220,39 @@ const InventoryManagement = () => {
 
   // Filter purchase orders
   const filteredOrders = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((order) => {
-      const matchesSearch = 
-        ((order as any).orderNumber || order.id || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ((order.supplier as any)?.companyName || (order.supplier as any)?.name || '').toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedStatus || order.status === selectedStatus;
+    return [].filter(
+      /* TODO: Fetch from API */ (order) => {
+        const matchesSearch =
+          ((order as any).orderNumber || order.id || '')
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          ((order.supplier as any)?.companyName || (order.supplier as any)?.name || '')
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesStatus;
-    });
+        const matchesStatus = !selectedStatus || order.status === selectedStatus;
+
+        return matchesSearch && matchesStatus;
+      }
+    );
   }, [searchQuery, selectedStatus]);
 
   // Filter equipment
   const filteredEquipment = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((equipment) => {
-      const matchesSearch = 
-        ((equipment as any).equipmentName || equipment.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ((equipment as any).model || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ((equipment as any).serialNumber || '').toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedStatus || equipment.status === selectedStatus;
+    return [].filter(
+      /* TODO: Fetch from API */ (equipment) => {
+        const matchesSearch =
+          ((equipment as any).equipmentName || equipment.name || '')
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          ((equipment as any).model || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          ((equipment as any).serialNumber || '').toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesStatus;
-    });
+        const matchesStatus = !selectedStatus || equipment.status === selectedStatus;
+
+        return matchesSearch && matchesStatus;
+      }
+    );
   }, [searchQuery, selectedStatus]);
 
   // Helper functions
@@ -239,47 +261,71 @@ const InventoryManagement = () => {
       case 'in_stock':
       case 'delivered':
       case 'operational':
-      case 'available': return 'green';
+      case 'available':
+        return 'green';
       case 'low_stock':
       case 'pending':
       case 'maintenance':
-      case 'in_use': return 'orange';
+      case 'in_use':
+        return 'orange';
       case 'out_of_stock':
       case 'cancelled':
       case 'out_of_service':
-      case 'retired': return 'red';
+      case 'retired':
+        return 'red';
       case 'expired':
-      case 'ordered': return 'yellow';
-      case 'damaged': return 'dark';
-      default: return 'gray';
+      case 'ordered':
+        return 'yellow';
+      case 'damaged':
+        return 'dark';
+      default:
+        return 'gray';
     }
   };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'medication': return 'blue';
-      case 'medical_supplies': return 'green';
-      case 'surgical_instruments': return 'purple';
-      case 'laboratory': return 'orange';
-      case 'radiology': return 'cyan';
-      case 'consumables': return 'yellow';
-      case 'equipment': return 'red';
-      case 'medicines': return 'blue';
-      case 'supplies': return 'green';
-      default: return 'gray';
+      case 'medication':
+        return 'blue';
+      case 'medical_supplies':
+        return 'green';
+      case 'surgical_instruments':
+        return 'purple';
+      case 'laboratory':
+        return 'orange';
+      case 'radiology':
+        return 'cyan';
+      case 'consumables':
+        return 'yellow';
+      case 'equipment':
+        return 'red';
+      case 'medicines':
+        return 'blue';
+      case 'supplies':
+        return 'green';
+      default:
+        return 'gray';
     }
   };
 
   const getAlertColor = (type: string) => {
     switch (type) {
-      case 'low_stock': return 'orange';
-      case 'expired': return 'red';
-      case 'expiring_soon': return 'yellow';
-      case 'out_of_stock': return 'red';
-      case 'maintenance_due': return 'blue';
-      case 'overdue_order': return 'red';
-      case 'reorder': return 'orange';
-      default: return 'gray';
+      case 'low_stock':
+        return 'orange';
+      case 'expired':
+        return 'red';
+      case 'expiring_soon':
+        return 'yellow';
+      case 'out_of_stock':
+        return 'red';
+      case 'maintenance_due':
+        return 'blue';
+      case 'overdue_order':
+        return 'red';
+      case 'reorder':
+        return 'orange';
+      default:
+        return 'gray';
     }
   };
 
@@ -293,9 +339,9 @@ const InventoryManagement = () => {
     openOrderDetail();
   };
 
-  const handleViewEquipment = (equipment: Equipment) => {
+  const _handleViewEquipment = (equipment: Equipment) => {
     setSelectedEquipment(equipment);
-    openEquipmentDetail();
+    _openEquipmentDetail();
   };
 
   const clearFilters = () => {
@@ -308,14 +354,16 @@ const InventoryManagement = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
   const getStockLevel = (current: number, minimum: number, maximum: number) => {
     if (current === 0) return { level: 'Out of Stock', color: 'red', percentage: 0 };
-    if (current <= minimum) return { level: 'Low Stock', color: 'orange', percentage: (current / maximum) * 100 };
-    if (current >= maximum * 0.8) return { level: 'Well Stocked', color: 'green', percentage: (current / maximum) * 100 };
+    if (current <= minimum)
+      return { level: 'Low Stock', color: 'orange', percentage: (current / maximum) * 100 };
+    if (current >= maximum * 0.8)
+      return { level: 'Well Stocked', color: 'green', percentage: (current / maximum) * 100 };
     return { level: 'Normal', color: 'blue', percentage: (current / maximum) * 100 };
   };
 
@@ -326,29 +374,29 @@ const InventoryManagement = () => {
       value: 0 /* TODO: Fetch from API */,
       icon: IconPackage,
       color: 'blue',
-      trend: '+5.2%'
+      trend: '+5.2%',
     },
     {
       title: 'Low Stock Alerts',
       value: 0 /* TODO: Fetch from API */,
       icon: IconAlertCircle,
       color: 'orange',
-      trend: '-12%'
+      trend: '-12%',
     },
     {
       title: 'Total Value',
       value: formatCurrency(0 /* TODO: Fetch from API */),
       icon: IconCalculator,
       color: 'green',
-      trend: '+8.7%'
+      trend: '+8.7%',
     },
     {
       title: 'Equipment',
       value: 0 /* TODO: Fetch from API */,
       icon: IconStethoscope,
       color: 'purple',
-      trend: '+3.1%'
-    }
+      trend: '+3.1%',
+    },
   ];
 
   // Chart data
@@ -368,16 +416,13 @@ const InventoryManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openAddItem}
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddItem}>
             Add Item
           </Button>
           <Button
             variant="light"
             leftSection={<IconShoppingCart size={16} />}
-            onClick={openAddOrder}
+            onClick={_openAddOrder}
           >
             New Order
           </Button>
@@ -404,14 +449,16 @@ const InventoryManagement = () => {
                 </ThemeIcon>
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.startsWith('+') ? 'green' : 'red'} 
+                <Badge
+                  color={stat.trend.startsWith('+') ? 'green' : 'red'}
                   variant="light"
                   size="sm"
                 >
                   {stat.trend}
                 </Badge>
-                <Text size="xs" c="dimmed">vs last month</Text>
+                <Text size="xs" c="dimmed">
+                  vs last month
+                </Text>
               </Group>
             </Card>
           );
@@ -458,7 +505,7 @@ const InventoryManagement = () => {
                   { value: 'laboratory', label: 'Laboratory' },
                   { value: 'radiology', label: 'Radiology' },
                   { value: 'consumables', label: 'Consumables' },
-                  { value: 'equipment', label: 'Equipment' }
+                  { value: 'equipment', label: 'Equipment' },
                 ]}
                 value={selectedCategory}
                 onChange={setSelectedCategory}
@@ -470,7 +517,7 @@ const InventoryManagement = () => {
                   { value: 'in_stock', label: 'In Stock' },
                   { value: 'low_stock', label: 'Low Stock' },
                   { value: 'out_of_stock', label: 'Out of Stock' },
-                  { value: 'expired', label: 'Expired' }
+                  { value: 'expired', label: 'Expired' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -478,10 +525,12 @@ const InventoryManagement = () => {
               />
               <Select
                 placeholder="Supplier"
-                data={[].map /* TODO: Fetch from API */(supplier => ({ 
-                  value: supplier.id, 
-                  label: (supplier as any).companyName || (supplier as any).name || 'Unknown' 
-                }))}
+                data={[].map(
+                  /* TODO: Fetch from API */ (supplier) => ({
+                    value: supplier.id,
+                    label: (supplier as any).companyName || (supplier as any).name || 'Unknown',
+                  })
+                )}
                 value={selectedSupplier}
                 onChange={setSelectedSupplier}
                 clearable
@@ -495,18 +544,18 @@ const InventoryManagement = () => {
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
               {filteredItems.map((item) => {
                 const stockInfo = getStockLevel(
-                  item.currentStock, 
-                  item.minimumStock, 
+                  item.currentStock,
+                  item.minimumStock,
                   item.maximumStock
                 );
-                
+
                 return (
                   <Card key={item.id} padding="lg" radius="md" withBorder>
                     <Group justify="space-between" mb="md">
                       <div style={{ flex: 1 }}>
                         <Group>
-                          <ThemeIcon 
-                            color={getCategoryColor((item as any).category || item.category)} 
+                          <ThemeIcon
+                            color={getCategoryColor((item as any).category || item.category)}
                             variant="light"
                             size="lg"
                           >
@@ -522,101 +571,111 @@ const InventoryManagement = () => {
                           </div>
                         </Group>
                       </div>
-                  <Badge color={getStatusColor((item as any).status)} variant="light" size="sm">
-                    {(item as any).status?.replace('_', ' ') || 'N/A'}
-                  </Badge>
-                </Group>
-
-                <Stack gap="sm" mb="md">
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">Current Stock</Text>
-                    <Text size="sm" fw={600}>
-                      {(item as any).currentStock || 0} {(item as any).unit || 'units'}
-                    </Text>
-                  </Group>
-                  
-                  <div>
-                    <Group justify="space-between" mb="xs">
-                      <Text size="xs" c="dimmed">Stock Level</Text>
-                      <Text size="xs" c={stockInfo.color} fw={500}>
-                        {stockInfo.level}
-                      </Text>
+                      <Badge color={getStatusColor((item as any).status)} variant="light" size="sm">
+                        {(item as any).status?.replace('_', ' ') || 'N/A'}
+                      </Badge>
                     </Group>
-                    <Progress 
-                      value={stockInfo.percentage} 
-                      color={stockInfo.color} 
-                      size="sm" 
-                    />
-                  </div>
 
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">Unit Price</Text>
-                    <Text size="sm" fw={600}>
-                      {formatCurrency((item as any).unitPrice || item.unitCost || 0)}
-                    </Text>
-                  </Group>
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Current Stock
+                        </Text>
+                        <Text size="sm" fw={600}>
+                          {(item as any).currentStock || 0} {(item as any).unit || 'units'}
+                        </Text>
+                      </Group>
 
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">Total Value</Text>
-                    <Text size="sm" fw={600} c="green">
-                      {formatCurrency((item as any).currentStock * ((item as any).unitPrice || item.unitCost || 0))}
-                    </Text>
-                  </Group>
+                      <div>
+                        <Group justify="space-between" mb="xs">
+                          <Text size="xs" c="dimmed">
+                            Stock Level
+                          </Text>
+                          <Text size="xs" c={stockInfo.color} fw={500}>
+                            {stockInfo.level}
+                          </Text>
+                        </Group>
+                        <Progress value={stockInfo.percentage} color={stockInfo.color} size="sm" />
+                      </div>
 
-                  {(item as any).expiryDate && (
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Unit Price
+                        </Text>
+                        <Text size="sm" fw={600}>
+                          {formatCurrency((item as any).unitPrice || item.unitCost || 0)}
+                        </Text>
+                      </Group>
+
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Total Value
+                        </Text>
+                        <Text size="sm" fw={600} c="green">
+                          {formatCurrency(
+                            (item as any).currentStock *
+                              ((item as any).unitPrice || item.unitCost || 0)
+                          )}
+                        </Text>
+                      </Group>
+
+                      {(item as any).expiryDate && (
+                        <Group justify="space-between">
+                          <Text size="sm" c="dimmed">
+                            Expiry Date
+                          </Text>
+                          <Text
+                            size="sm"
+                            c={new Date((item as any).expiryDate) < new Date() ? 'red' : 'dimmed'}
+                          >
+                            {new Date((item as any).expiryDate).toLocaleDateString()}
+                          </Text>
+                        </Group>
+                      )}
+                    </Stack>
+
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Expiry Date</Text>
-                      <Text 
-                        size="sm" 
-                        c={new Date((item as any).expiryDate) < new Date() ? 'red' : 'dimmed'}
+                      <Badge
+                        color={getCategoryColor((item as any).category || item.category)}
+                        variant="light"
+                        size="xs"
                       >
-                        {new Date((item as any).expiryDate).toLocaleDateString()}
-                      </Text>
-                    </Group>
-                  )}
-                </Stack>
-
-                <Group justify="space-between">
-                  <Badge color={getCategoryColor((item as any).category || item.category)} variant="light" size="xs">
-                    {(item as any).category?.replace('_', ' ') || 'N/A'}
-                  </Badge>
-                  <Group gap="xs">
-                    <ActionIcon
-                      variant="subtle"
-                      color="blue"
-                      onClick={() => handleViewItem(item as any)}
-                    >
-                      <IconEye size={16} />
-                    </ActionIcon>
-                    <ActionIcon variant="subtle" color="green">
-                      <IconEdit size={16} />
-                    </ActionIcon>
-                    <Menu>
-                      <Menu.Target>
-                        <ActionIcon variant="subtle" color="gray">
-                          <IconDotsVertical size={16} />
-                        </ActionIcon>
-                      </Menu.Target>
-                      <Menu.Dropdown>
-                        <Menu.Item leftSection={<IconClipboard size={14} />}>
-                          Stock Adjustment
-                        </Menu.Item>
-                        <Menu.Item leftSection={<IconShoppingCart size={14} />}>
-                          Reorder
-                        </Menu.Item>
-                        <Menu.Item leftSection={<IconDownload size={14} />}>
-                          Export Data
-                        </Menu.Item>
-                        <Menu.Divider />
-                        <Menu.Item 
-                          leftSection={<IconTrash size={14} />}
-                          color="red"
+                        {(item as any).category?.replace('_', ' ') || 'N/A'}
+                      </Badge>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewItem(item as any)}
                         >
-                          Delete
-                        </Menu.Item>
-                      </Menu.Dropdown>
-                    </Menu>
-                  </Group>
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <Menu>
+                          <Menu.Target>
+                            <ActionIcon variant="subtle" color="gray">
+                              <IconDotsVertical size={16} />
+                            </ActionIcon>
+                          </Menu.Target>
+                          <Menu.Dropdown>
+                            <Menu.Item leftSection={<IconClipboard size={14} />}>
+                              Stock Adjustment
+                            </Menu.Item>
+                            <Menu.Item leftSection={<IconShoppingCart size={14} />}>
+                              Reorder
+                            </Menu.Item>
+                            <Menu.Item leftSection={<IconDownload size={14} />}>
+                              Export Data
+                            </Menu.Item>
+                            <Menu.Divider />
+                            <Menu.Item leftSection={<IconTrash size={14} />} color="red">
+                              Delete
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
+                      </Group>
                     </Group>
                   </Card>
                 );
@@ -630,7 +689,7 @@ const InventoryManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Purchase Orders</Title>
-              <Button leftSection={<IconPlus size={16} />} onClick={openAddOrder}>
+              <Button leftSection={<IconPlus size={16} />} onClick={_openAddOrder}>
                 Create Order
               </Button>
             </Group>
@@ -651,7 +710,7 @@ const InventoryManagement = () => {
                   { value: 'approved', label: 'Approved' },
                   { value: 'ordered', label: 'Ordered' },
                   { value: 'delivered', label: 'Delivered' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -688,60 +747,61 @@ const InventoryManagement = () => {
                     </Table.Tr>
                   ) : (
                     filteredOrders.map((order) => (
-                    <Table.Tr key={order.id}>
-                      <Table.Td>
-                        <Text fw={500}>{(order as any).orderNumber || order.id}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {(order.supplier as any).companyName || (order.supplier as any).name || 'Unknown'}
+                      <Table.Tr key={order.id}>
+                        <Table.Td>
+                          <Text fw={500}>{(order as any).orderNumber || order.id}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {(order.supplier as any).companyName ||
+                                (order.supplier as any).name ||
+                                'Unknown'}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {(order.supplier as any).contactPerson || 'N/A'}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{new Date(order.orderDate).toLocaleDateString()}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">
+                            {new Date(order.expectedDeliveryDate).toLocaleDateString()}
                           </Text>
-                          <Text size="xs" c="dimmed">
-                            {(order.supplier as any).contactPerson || 'N/A'}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">
-                          {new Date(order.orderDate).toLocaleDateString()}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">
-                          {new Date(order.expectedDeliveryDate).toLocaleDateString()}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">{order.items.length} items</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text fw={600}>{formatCurrency(order.totalAmount)}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(order.status)} variant="light">
-                          {order.status}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewOrder(order)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="orange">
-                            <IconDownload size={16} />
-                          </ActionIcon>
-                        </Group>
-                      </Table.Td>
-                    </Table.Tr>
-                  )))}
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{order.items.length} items</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text fw={600}>{formatCurrency(order.totalAmount)}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(order.status)} variant="light">
+                            {order.status}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewOrder(order)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="orange">
+                              <IconDownload size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -753,9 +813,7 @@ const InventoryManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Medical Equipment</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Add Equipment
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Add Equipment</Button>
             </Group>
 
             {/* Equipment Grid */}
@@ -768,7 +826,8 @@ const InventoryManagement = () => {
                         {(equipment as any).equipmentName || equipment.name}
                       </Text>
                       <Text size="sm" c="dimmed">
-                        {(equipment as any).manufacturer || 'Unknown'} - {(equipment as any).model || 'N/A'}
+                        {(equipment as any).manufacturer || 'Unknown'} -{' '}
+                        {(equipment as any).model || 'N/A'}
                       </Text>
                     </div>
                     <Badge color={getStatusColor(equipment.status)} variant="light">
@@ -778,38 +837,65 @@ const InventoryManagement = () => {
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Serial Number</Text>
-                      <Text size="sm" fw={500}>{(equipment as any).serialNumber || 'N/A'}</Text>
-                    </Group>
-
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Location</Text>
-                      <Text size="sm">{equipment.location}</Text>
-                    </Group>
-
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Purchase Date</Text>
-                      <Text size="sm">
-                        {(equipment as any).purchaseDate ? new Date((equipment as any).purchaseDate).toLocaleDateString() : 'N/A'}
+                      <Text size="sm" c="dimmed">
+                        Serial Number
+                      </Text>
+                      <Text size="sm" fw={500}>
+                        {(equipment as any).serialNumber || 'N/A'}
                       </Text>
                     </Group>
 
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Warranty</Text>
-                      <Text 
-                        size="sm" 
-                        c={(equipment as any).warrantyExpiry && new Date((equipment as any).warrantyExpiry) < new Date() ? 'red' : 'green'}
+                      <Text size="sm" c="dimmed">
+                        Location
+                      </Text>
+                      <Text size="sm">{equipment.location}</Text>
+                    </Group>
+
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        Purchase Date
+                      </Text>
+                      <Text size="sm">
+                        {(equipment as any).purchaseDate
+                          ? new Date((equipment as any).purchaseDate).toLocaleDateString()
+                          : 'N/A'}
+                      </Text>
+                    </Group>
+
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        Warranty
+                      </Text>
+                      <Text
+                        size="sm"
+                        c={
+                          (equipment as any).warrantyExpiry &&
+                          new Date((equipment as any).warrantyExpiry) < new Date()
+                            ? 'red'
+                            : 'green'
+                        }
                       >
-                        {(equipment as any).warrantyExpiry ? (new Date((equipment as any).warrantyExpiry) < new Date() ? 'Expired' : 'Valid') : 'N/A'}
+                        {(equipment as any).warrantyExpiry
+                          ? new Date((equipment as any).warrantyExpiry) < new Date()
+                            ? 'Expired'
+                            : 'Valid'
+                          : 'N/A'}
                       </Text>
                     </Group>
 
                     {(equipment as any).nextMaintenanceDate && (
                       <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Next Maintenance</Text>
-                        <Text 
-                          size="sm" 
-                          c={new Date((equipment as any).nextMaintenanceDate) < new Date() ? 'red' : 'dimmed'}
+                        <Text size="sm" c="dimmed">
+                          Next Maintenance
+                        </Text>
+                        <Text
+                          size="sm"
+                          c={
+                            new Date((equipment as any).nextMaintenanceDate) < new Date()
+                              ? 'red'
+                              : 'dimmed'
+                          }
                         >
                           {new Date((equipment as any).nextMaintenanceDate).toLocaleDateString()}
                         </Text>
@@ -825,7 +911,7 @@ const InventoryManagement = () => {
                       <ActionIcon
                         variant="subtle"
                         color="blue"
-                        onClick={() => handleViewEquipment(equipment as any)}
+                        onClick={() => _handleViewEquipment(equipment as any)}
                       >
                         <IconEye size={16} />
                       </ActionIcon>
@@ -846,11 +932,15 @@ const InventoryManagement = () => {
         {/* Reports & Analytics Tab */}
         <Tabs.Panel value="reports">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Inventory Reports & Analytics</Title>
+            <Title order={3} mb="lg">
+              Inventory Reports & Analytics
+            </Title>
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Category Distribution */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Items by Category</Title>
+                <Title order={4} mb="md">
+                  Items by Category
+                </Title>
                 <MantineDonutChart
                   data={categoryDistribution}
                   size={160}
@@ -858,10 +948,12 @@ const InventoryManagement = () => {
                   withLabels
                 />
               </Card>
-              
+
               {/* Stock Levels */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Stock Level Distribution</Title>
+                <Title order={4} mb="md">
+                  Stock Level Distribution
+                </Title>
                 <SimpleBarChart
                   h={200}
                   data={stockLevelsData}
@@ -869,17 +961,19 @@ const InventoryManagement = () => {
                   series={[{ name: 'count', color: 'blue.6' }]}
                 />
               </Card>
-              
+
               {/* Monthly Consumption */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
-                <Title order={4} mb="md">Monthly Consumption Trends</Title>
+                <Title order={4} mb="md">
+                  Monthly Consumption Trends
+                </Title>
                 <SimpleLineChart
                   h={300}
                   data={monthlyConsumption}
                   dataKey="month"
                   series={[
                     { name: 'consumed', color: 'blue.6', label: 'Consumed' },
-                    { name: 'restocked', color: 'green.6', label: 'Restocked' }
+                    { name: 'restocked', color: 'green.6', label: 'Restocked' },
                   ]}
                 />
               </Card>
@@ -889,26 +983,13 @@ const InventoryManagement = () => {
       </Tabs>
 
       {/* Add Item Modal */}
-      <Modal
-        opened={addItemOpened}
-        onClose={closeAddItem}
-        title="Add New Item"
-        size="lg"
-      >
+      <Modal opened={addItemOpened} onClose={closeAddItem} title="Add New Item" size="lg">
         <Stack gap="md">
           <SimpleGrid cols={2}>
-            <TextInput
-              label="Item Name"
-              placeholder="Enter item name"
-              required
-            />
-            <TextInput
-              label="Item Code"
-              placeholder="Enter item code"
-              required
-            />
+            <TextInput label="Item Name" placeholder="Enter item name" required />
+            <TextInput label="Item Code" placeholder="Enter item code" required />
           </SimpleGrid>
-          
+
           <Select
             label="Category"
             placeholder="Select category"
@@ -917,17 +998,13 @@ const InventoryManagement = () => {
               { value: 'medical_supplies', label: 'Medical Supplies' },
               { value: 'surgical_instruments', label: 'Surgical Instruments' },
               { value: 'laboratory', label: 'Laboratory' },
-              { value: 'consumables', label: 'Consumables' }
+              { value: 'consumables', label: 'Consumables' },
             ]}
             required
           />
-          
-          <Textarea
-            label="Description"
-            placeholder="Enter item description"
-            rows={3}
-          />
-          
+
+          <Textarea label="Description" placeholder="Enter item description" rows={3} />
+
           <SimpleGrid cols={3}>
             <NumberInput
               label="Unit Price"
@@ -936,53 +1013,40 @@ const InventoryManagement = () => {
               min={0}
               required
             />
-            <NumberInput
-              label="Minimum Stock"
-              placeholder="Min stock level"
-              min={0}
-              required
-            />
-            <NumberInput
-              label="Maximum Stock"
-              placeholder="Max stock level"
-              min={0}
-              required
-            />
+            <NumberInput label="Minimum Stock" placeholder="Min stock level" min={0} required />
+            <NumberInput label="Maximum Stock" placeholder="Max stock level" min={0} required />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
-            <TextInput
-              label="Unit"
-              placeholder="e.g., pcs, mg, ml"
-              required
-            />
+            <TextInput label="Unit" placeholder="e.g., pcs, mg, ml" required />
             <Select
               label="Supplier"
               placeholder="Select supplier"
-              data={[].map /* TODO: Fetch from API */(supplier => ({ 
-                value: supplier.id, 
-                label: (supplier as any).companyName || (supplier as any).name || 'Unknown' 
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (supplier) => ({
+                  value: supplier.id,
+                  label: (supplier as any).companyName || (supplier as any).name || 'Unknown',
+                })
+              )}
             />
           </SimpleGrid>
-          
-          <DatePickerInput
-            label="Expiry Date (Optional)"
-            placeholder="Select expiry date"
-          />
-          
+
+          <DatePickerInput label="Expiry Date (Optional)" placeholder="Select expiry date" />
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddItem}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Success',
-                message: 'Item added successfully',
-                color: 'green',
-              });
-              closeAddItem();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Success',
+                  message: 'Item added successfully',
+                  color: 'green',
+                });
+                closeAddItem();
+              }}
+            >
               Add Item
             </Button>
           </Group>
@@ -991,8 +1055,8 @@ const InventoryManagement = () => {
 
       {/* Add Order Modal */}
       <Modal
-        opened={addOrderOpened}
-        onClose={closeAddOrder}
+        opened={_addOrderOpened}
+        onClose={_closeAddOrder}
         title="Create Purchase Order"
         size="lg"
       >
@@ -1000,37 +1064,36 @@ const InventoryManagement = () => {
           <Select
             label="Supplier"
             placeholder="Select supplier"
-            data={[].map /* TODO: Fetch from API */(supplier => ({ 
-              value: supplier.id, 
-              label: (supplier as any).companyName || (supplier as any).name || 'Unknown' 
-            }))}
+            data={[].map(
+              /* TODO: Fetch from API */ (supplier) => ({
+                value: supplier.id,
+                label: (supplier as any).companyName || (supplier as any).name || 'Unknown',
+              })
+            )}
             required
           />
-          
+
           <DatePickerInput
             label="Expected Delivery Date"
             placeholder="Select delivery date"
             required
           />
-          
+
           <Divider label="Order Items" labelPosition="center" />
-          
+
           <SimpleGrid cols={3}>
             <Select
               label="Item"
               placeholder="Select item"
-              data={[].map /* TODO: Fetch from API */(item => ({ 
-                value: item.id, 
-                label: (item as any).itemName || item.name 
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (item) => ({
+                  value: item.id,
+                  label: (item as any).itemName || item.name,
+                })
+              )}
               required
             />
-            <NumberInput
-              label="Quantity"
-              placeholder="Enter quantity"
-              min={1}
-              required
-            />
+            <NumberInput label="Quantity" placeholder="Enter quantity" min={1} required />
             <NumberInput
               label="Unit Price"
               placeholder="Enter price"
@@ -1039,29 +1102,27 @@ const InventoryManagement = () => {
               required
             />
           </SimpleGrid>
-          
+
           <Button variant="light" leftSection={<IconPlus size={16} />}>
             Add More Items
           </Button>
-          
-          <Textarea
-            label="Notes"
-            placeholder="Additional notes..."
-            rows={3}
-          />
-          
+
+          <Textarea label="Notes" placeholder="Additional notes..." rows={3} />
+
           <Group justify="flex-end">
-            <Button variant="light" onClick={closeAddOrder}>
+            <Button variant="light" onClick={_closeAddOrder}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Success',
-                message: 'Purchase order created successfully',
-                color: 'green',
-              });
-              closeAddOrder();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Success',
+                  message: 'Purchase order created successfully',
+                  color: 'green',
+                });
+                _closeAddOrder();
+              }}
+            >
               Create Order
             </Button>
           </Group>

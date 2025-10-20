@@ -51,7 +51,11 @@ import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
 import EmptyState from '../../../components/EmptyState';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleAreaChart,
+  SimpleBarChart,
+} from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -75,7 +79,7 @@ import {
   // IconChartPie,
   IconShare,
   IconWallet,
-  IconBriefcase
+  IconBriefcase,
 } from '@tabler/icons-react';
 import {
   Transaction,
@@ -109,38 +113,50 @@ const FinanceManagement = () => {
   const [selectedReport, setSelectedReport] = useState<FinancialReport | null>(null);
 
   // Modal states
-  const [transactionDetailOpened, { open: openTransactionDetail, close: closeTransactionDetail }] = useDisclosure(false);
-  const [addTransactionOpened, { open: openAddTransaction, close: closeAddTransaction }] = useDisclosure(false);
-  const [budgetDetailOpened, { open: openBudgetDetail, close: closeBudgetDetail }] = useDisclosure(false);
-  const [invoiceDetailOpened, { open: openInvoiceDetail, close: closeInvoiceDetail }] = useDisclosure(false);
-  const [reportDetailOpened, { open: openReportDetail, close: closeReportDetail }] = useDisclosure(false);
+  const [transactionDetailOpened, { open: openTransactionDetail, close: closeTransactionDetail }] =
+    useDisclosure(false);
+  const [addTransactionOpened, { open: openAddTransaction, close: closeAddTransaction }] =
+    useDisclosure(false);
+  const [budgetDetailOpened, { open: openBudgetDetail, close: closeBudgetDetail }] =
+    useDisclosure(false);
+  const [invoiceDetailOpened, { open: openInvoiceDetail, close: closeInvoiceDetail }] =
+    useDisclosure(false);
+  const [reportDetailOpened, { open: openReportDetail, close: closeReportDetail }] =
+    useDisclosure(false);
   const [_addBudgetOpened, { open: _openAddBudget, close: _closeAddBudget }] = useDisclosure(false);
-  const [_createInvoiceOpened, { open: _openCreateInvoice, close: _closeCreateInvoice }] = useDisclosure(false);
+  const [_createInvoiceOpened, { open: _openCreateInvoice, close: _closeCreateInvoice }] =
+    useDisclosure(false);
 
   // Filter transactions
   const filteredTransactions = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((transaction) => {
-      const matchesSearch = 
-        transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        transaction.transactionId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        transaction.reference?.toLowerCase().includes(searchQuery.toLowerCase() || '');
-      
-      const matchesType = !selectedType || transaction.type === selectedType;
-      const matchesStatus = !selectedStatus || transaction.status === selectedStatus;
-      const matchesCategory = !selectedCategory || transaction.category === selectedCategory;
-      const matchesAccount = !_selectedAccount || transaction.account.name === _selectedAccount;
+    return [].filter(
+      /* TODO: Fetch from API */ (transaction) => {
+        const matchesSearch =
+          transaction.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          transaction.transactionId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          transaction.reference?.toLowerCase().includes(searchQuery.toLowerCase() || '');
 
-      return matchesSearch && matchesType && matchesStatus && matchesCategory && matchesAccount;
-    });
+        const matchesType = !selectedType || transaction.type === selectedType;
+        const matchesStatus = !selectedStatus || transaction.status === selectedStatus;
+        const matchesCategory = !selectedCategory || transaction.category === selectedCategory;
+        const matchesAccount = !_selectedAccount || transaction.account.name === _selectedAccount;
+
+        return matchesSearch && matchesType && matchesStatus && matchesCategory && matchesAccount;
+      }
+    );
   }, [searchQuery, selectedType, selectedStatus, selectedCategory, _selectedAccount]);
 
   // Helper functions
   const getTransactionTypeColor = (type: TransactionType) => {
     switch (type) {
-      case 'income': return 'green';
-      case 'expense': return 'red';
-      case 'transfer': return 'blue';
-      default: return 'gray';
+      case 'income':
+        return 'green';
+      case 'expense':
+        return 'red';
+      case 'transfer':
+        return 'blue';
+      default:
+        return 'gray';
     }
   };
 
@@ -148,41 +164,62 @@ const FinanceManagement = () => {
     switch (status) {
       case 'completed':
       case 'paid':
-      case 'active': return 'green';
+      case 'active':
+        return 'green';
       case 'pending':
-      case 'draft': return 'orange';
+      case 'draft':
+        return 'orange';
       case 'failed':
       case 'overdue':
       case 'cancelled':
-      case 'expired': return 'red';
-      case 'processing': return 'blue';
-      default: return 'gray';
+      case 'expired':
+        return 'red';
+      case 'processing':
+        return 'blue';
+      default:
+        return 'gray';
     }
   };
 
   const getAccountTypeColor = (type: AccountType) => {
     switch (type) {
-      case 'checking': return 'blue';
-      case 'savings': return 'green';
-      case 'revenue': return 'teal';
-      case 'expense': return 'red';
-      case 'asset': return 'purple';
-      case 'liability': return 'orange';
-      default: return 'gray';
+      case 'checking':
+        return 'blue';
+      case 'savings':
+        return 'green';
+      case 'revenue':
+        return 'teal';
+      case 'expense':
+        return 'red';
+      case 'asset':
+        return 'purple';
+      case 'liability':
+        return 'orange';
+      default:
+        return 'gray';
     }
   };
 
   const getCategoryColor = (category: ExpenseCategory) => {
     switch (category) {
-      case 'medical_supplies': return 'blue';
-      case 'equipment': return 'purple';
-      case 'salaries': return 'green';
-      case 'utilities': return 'orange';
-      case 'maintenance': return 'yellow';
-      case 'marketing': return 'pink';
-      case 'insurance': return 'cyan';
-      case 'other': return 'gray';
-      default: return 'gray';
+      case 'medical_supplies':
+        return 'blue';
+      case 'equipment':
+        return 'purple';
+      case 'salaries':
+        return 'green';
+      case 'utilities':
+        return 'orange';
+      case 'maintenance':
+        return 'yellow';
+      case 'marketing':
+        return 'pink';
+      case 'insurance':
+        return 'cyan';
+      case 'other':
+        return 'gray';
+      default:
+        return 'gray';
     }
   };
 
@@ -217,7 +254,7 @@ const FinanceManagement = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
@@ -240,43 +277,47 @@ const FinanceManagement = () => {
       value: formatCurrency(0 /* TODO: Fetch from API */ || 0),
       icon: IconTrendingUp,
       color: 'green',
-      trend: '+12.5%'
+      trend: '+12.5%',
     },
     {
       title: 'Total Expenses',
       value: formatCurrency(0 /* TODO: Fetch from API */ || 0),
       icon: IconTrendingDown,
       color: 'red',
-      trend: '+8.3%'
+      trend: '+8.3%',
     },
     {
       title: 'Net Profit',
       value: formatCurrency(0 /* TODO: Fetch from API */ || 0),
       icon: IconWallet,
       color: 'blue',
-      trend: '+18.7%'
+      trend: '+18.7%',
     },
     {
       title: 'Cash Flow',
-      value: formatCurrency(typeof 0 /* TODO: Fetch from API */ === 'number' ? 0 /* TODO: Fetch from API */ : 0),
+      value: formatCurrency(
+        typeof 0 /* TODO: Fetch from API */ === 'number' ? 0 /* TODO: Fetch from API */ : 0
+      ),
       icon: IconCash,
       color: 'purple',
-      trend: '+5.2%'
-    }
+      trend: '+5.2%',
+    },
   ];
 
   // Chart data
   const revenueExpenseData = [
     { name: 'Revenue', value: 0 /* TODO: Fetch from API */ || 0, color: 'green' },
-    { name: 'Expenses', value: 0 /* TODO: Fetch from API */ || 0, color: 'red' }
+    { name: 'Expenses', value: 0 /* TODO: Fetch from API */ || 0, color: 'red' },
   ];
 
   const monthlyRevenueData = 0 /* TODO: Fetch from API */ || [];
-  const expenseCategoryData = (0 /* TODO: Fetch from API */ || []).map(item => ({
+  const expenseCategoryData = (0 /* TODO: Fetch from API */ || []).map((item) => ({
     ...item,
-    color: getCategoryColor(item.category as ExpenseCategory)
+    color: getCategoryColor(item.category as ExpenseCategory),
   }));
-  const cashFlowData = Array.isArray(0 /* TODO: Fetch from API */) ? 0 /* TODO: Fetch from API */ : [];
+  const cashFlowData: any[] = Array.isArray(0 /* TODO: Fetch from API */)
+    ? (0 /* TODO: Fetch from API */ as any)
+    : [];
 
   return (
     <Container size="xl" py="md">
@@ -289,11 +330,7 @@ const FinanceManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openAddTransaction}
-            color="blue"
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddTransaction} color="blue">
             New Transaction
           </Button>
           <Button
@@ -327,14 +364,18 @@ const FinanceManagement = () => {
                 </ThemeIcon>
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'} 
+                <Badge
+                  color={
+                    stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'
+                  }
                   variant="light"
                   size="sm"
                 >
                   {stat.trend}
                 </Badge>
-                <Text size="xs" c="dimmed">vs last month</Text>
+                <Text size="xs" c="dimmed">
+                  vs last month
+                </Text>
               </Group>
             </Card>
           );
@@ -369,48 +410,46 @@ const FinanceManagement = () => {
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
             {/* Revenue vs Expenses */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Revenue vs Expenses</Title>
-              <MantineDonutChart
-                data={revenueExpenseData}
-                size={200}
-                thickness={40}
-                withLabels
-              />
+              <Title order={4} mb="md">
+                Revenue vs Expenses
+              </Title>
+              <MantineDonutChart data={revenueExpenseData} size={200} thickness={40} withLabels />
             </Card>
-            
+
             {/* Monthly Revenue Trend */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Monthly Revenue Trend</Title>
+              <Title order={4} mb="md">
+                Monthly Revenue Trend
+              </Title>
               <SimpleAreaChart
                 data={monthlyRevenueData}
                 dataKey="month"
                 series={[
                   { name: 'revenue', color: 'green.6' },
-                  { name: 'expenses', color: 'red.6' }
+                  { name: 'expenses', color: 'red.6' },
                 ]}
               />
             </Card>
-            
+
             {/* Expense Categories */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Expenses by Category</Title>
-              <MantineDonutChart
-                data={expenseCategoryData}
-                size={200}
-                thickness={30}
-                withLabels
-              />
+              <Title order={4} mb="md">
+                Expenses by Category
+              </Title>
+              <MantineDonutChart data={expenseCategoryData} size={200} thickness={30} withLabels />
             </Card>
-            
+
             {/* Cash Flow */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Cash Flow Analysis</Title>
+              <Title order={4} mb="md">
+                Cash Flow Analysis
+              </Title>
               <SimpleBarChart
                 data={cashFlowData}
                 dataKey="month"
                 series={[
                   { name: 'inflow', color: 'green.6' },
-                  { name: 'outflow', color: 'red.6' }
+                  { name: 'outflow', color: 'red.6' },
                 ]}
               />
             </Card>
@@ -418,44 +457,56 @@ const FinanceManagement = () => {
 
           {/* Quick Financial Summary */}
           <Card padding="lg" radius="md" withBorder mt="lg">
-            <Title order={4} mb="md">Financial Summary</Title>
+            <Title order={4} mb="md">
+              Financial Summary
+            </Title>
             <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
               <div style={{ textAlign: 'center' }}>
                 <RingProgress
                   size={100}
                   thickness={8}
-                  sections={[{ 
-                    value: ((0 /* TODO: Fetch from API */ || 0) / 100) * 100, 
-                    color: (0 /* TODO: Fetch from API */ || 0) > 0 ? 'green' : 'red' 
-                  }]}
+                  sections={[
+                    {
+                      value: ((0 /* TODO: Fetch from API */ || 0) / 100) * 100,
+                      color: (0 /* TODO: Fetch from API */ || 0) > 0 ? 'green' : 'red',
+                    },
+                  ]}
                   label={
                     <Text size="sm" fw={700} ta="center">
                       {formatPercentage(0 /* TODO: Fetch from API */)}
                     </Text>
                   }
                 />
-                <Text size="xs" c="dimmed" mt="xs">Profit Margin</Text>
+                <Text size="xs" c="dimmed" mt="xs">
+                  Profit Margin
+                </Text>
               </div>
-              
+
               <div style={{ textAlign: 'center' }}>
                 <Text size="xl" fw={700} c="green">
                   {formatCurrency(0 /* TODO: Fetch from API */ || 0)}
                 </Text>
-                <Text size="xs" c="dimmed">Accounts Receivable</Text>
+                <Text size="xs" c="dimmed">
+                  Accounts Receivable
+                </Text>
               </div>
-              
+
               <div style={{ textAlign: 'center' }}>
                 <Text size="xl" fw={700} c="red">
                   {formatCurrency(0 /* TODO: Fetch from API */ || 0)}
                 </Text>
-                <Text size="xs" c="dimmed">Accounts Payable</Text>
+                <Text size="xs" c="dimmed">
+                  Accounts Payable
+                </Text>
               </div>
-              
+
               <div style={{ textAlign: 'center' }}>
                 <Text size="xl" fw={700} c="blue">
                   {formatCurrency(0 /* TODO: Fetch from API */ || 0)}
                 </Text>
-                <Text size="xs" c="dimmed">Total Assets</Text>
+                <Text size="xs" c="dimmed">
+                  Total Assets
+                </Text>
               </div>
             </SimpleGrid>
           </Card>
@@ -478,7 +529,7 @@ const FinanceManagement = () => {
                 data={[
                   { value: 'income', label: 'Income' },
                   { value: 'expense', label: 'Expense' },
-                  { value: 'transfer', label: 'Transfer' }
+                  { value: 'transfer', label: 'Transfer' },
                 ]}
                 value={selectedType}
                 onChange={setSelectedType}
@@ -490,7 +541,7 @@ const FinanceManagement = () => {
                   { value: 'pending', label: 'Pending' },
                   { value: 'completed', label: 'Completed' },
                   { value: 'failed', label: 'Failed' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -506,7 +557,7 @@ const FinanceManagement = () => {
                   { value: 'maintenance', label: 'Maintenance' },
                   { value: 'marketing', label: 'Marketing' },
                   { value: 'insurance', label: 'Insurance' },
-                  { value: 'other', label: 'Other' }
+                  { value: 'other', label: 'Other' },
                 ]}
                 value={selectedCategory}
                 onChange={setSelectedCategory}
@@ -557,7 +608,10 @@ const FinanceManagement = () => {
                               {formatDate(transaction.date)}
                             </Text>
                             <Text size="xs" c="dimmed" component="span">
-                              {new Date(transaction.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(transaction.date).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
                             </Text>
                           </div>
                         </Table.Td>
@@ -579,24 +633,44 @@ const FinanceManagement = () => {
                           </Badge>
                         </Table.Td>
                         <Table.Td>
-                          <Badge color={getCategoryColor(transaction.category)} variant="light" size="sm">
+                          <Badge
+                            color={getCategoryColor(transaction.category)}
+                            variant="light"
+                            size="sm"
+                          >
                             {transaction.category.replace('_', ' ')}
                           </Badge>
                         </Table.Td>
                         <Table.Td>
-                          <Text 
-                            size="sm" 
-                            fw={600} 
-                            c={transaction.type === 'income' ? 'green' : transaction.type === 'expense' ? 'red' : 'blue'}
+                          <Text
+                            size="sm"
+                            fw={600}
+                            c={
+                              transaction.type === 'income'
+                                ? 'green'
+                                : transaction.type === 'expense'
+                                  ? 'red'
+                                  : 'blue'
+                            }
                           >
-                            {transaction.type === 'income' ? '+' : transaction.type === 'expense' ? '-' : ''}
+                            {transaction.type === 'income'
+                              ? '+'
+                              : transaction.type === 'expense'
+                                ? '-'
+                                : ''}
                             {formatCurrency(transaction.amount)}
                           </Text>
                         </Table.Td>
                         <Table.Td>
                           <div>
-                            <Text size="sm" fw={500}>{transaction.account.name}</Text>
-                            <Badge color={getAccountTypeColor(transaction.account.type)} variant="light" size="xs">
+                            <Text size="sm" fw={500}>
+                              {transaction.account.name}
+                            </Text>
+                            <Badge
+                              color={getAccountTypeColor(transaction.account.type)}
+                              variant="light"
+                              size="xs"
+                            >
                               {transaction.account.type}
                             </Badge>
                           </div>
@@ -637,72 +711,86 @@ const FinanceManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Chart of Accounts</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Add Account
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Add Account</Button>
             </Group>
 
             {/* Accounts Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((account) => (
-                <Card key={account.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{account.name}</Text>
-                      <Text size="sm" c="dimmed">{account.code}</Text>
-                    </div>
-                    <Badge color={getAccountTypeColor(account.type)} variant="light">
-                      {account.type.replace('_', ' ').toUpperCase()}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Current Balance</Text>
-                      <Text size="lg" fw={700} c={account.balance >= 0 ? 'green' : 'red'}>
-                        {formatCurrency(account.balance)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Account Number</Text>
-                      <Text size="sm" fw={500}>{account.accountNumber}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Bank/Institution</Text>
-                      <Text size="sm">{account.bankName || 'N/A'}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Status</Text>
-                      <Badge color={account.isActive ? 'green' : 'red'} variant="light">
-                        {account.isActive ? 'Active' : 'Inactive'}
+              {[].map(
+                /* TODO: Fetch from API */ (account) => (
+                  <Card key={account.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {account.name}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {account.code}
+                        </Text>
+                      </div>
+                      <Badge color={getAccountTypeColor(account.type)} variant="light">
+                        {account.type.replace('_', ' ').toUpperCase()}
                       </Badge>
                     </Group>
-                  </Stack>
 
-                  {account.description && (
-                    <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-                      {account.description}
-                    </Text>
-                  )}
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Current Balance
+                        </Text>
+                        <Text size="lg" fw={700} c={account.balance >= 0 ? 'green' : 'red'}>
+                          {formatCurrency(account.balance)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Account Number
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {account.accountNumber}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Bank/Institution
+                        </Text>
+                        <Text size="sm">{account.bankName || 'N/A'}</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Status
+                        </Text>
+                        <Badge color={account.isActive ? 'green' : 'red'} variant="light">
+                          {account.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </Group>
+                    </Stack>
 
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Opened: {formatDate(account.createdDate)}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconFileSpreadsheet size={16} />
-                      </ActionIcon>
+                    {account.description && (
+                      <Text size="sm" c="dimmed" lineClamp={2} mb="md">
+                        {account.description}
+                      </Text>
+                    )}
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Opened: {formatDate(account.createdDate)}
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconFileSpreadsheet size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -724,85 +812,107 @@ const FinanceManagement = () => {
 
             {/* Budgets Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((budget) => (
-                <Card key={budget.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{budget.name}</Text>
-                      <Text size="sm" c="dimmed">{budget.description || 'No description'}</Text>
+              {[].map(
+                /* TODO: Fetch from API */ (budget) => (
+                  <Card key={budget.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {budget.name}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {budget.description || 'No description'}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(budget.status)} variant="light">
+                        {budget.status}
+                      </Badge>
+                    </Group>
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Budget Period
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {formatDate(budget.startDate)} - {formatDate(budget.endDate)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Allocated Amount
+                        </Text>
+                        <Text size="sm" fw={600} c="blue">
+                          {formatCurrency(budget.allocatedAmount)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Spent Amount
+                        </Text>
+                        <Text
+                          size="sm"
+                          fw={600}
+                          c={budget.spentAmount > budget.allocatedAmount ? 'red' : 'green'}
+                        >
+                          {formatCurrency(budget.spentAmount)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Remaining
+                        </Text>
+                        <Text size="sm" fw={600} c={budget.remainingAmount < 0 ? 'red' : 'green'}>
+                          {formatCurrency(budget.remainingAmount)}
+                        </Text>
+                      </Group>
+                    </Stack>
+
+                    <div style={{ marginBottom: '1rem' }}>
+                      <Group justify="space-between" mb="xs">
+                        <Text size="sm" c="dimmed">
+                          Budget Utilization
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {formatPercentage(budget.utilizationPercentage)}
+                        </Text>
+                      </Group>
+                      <Progress
+                        value={budget.utilizationPercentage}
+                        size="md"
+                        color={
+                          budget.utilizationPercentage > 100
+                            ? 'red'
+                            : budget.utilizationPercentage > 80
+                              ? 'orange'
+                              : 'green'
+                        }
+                      />
                     </div>
-                    <Badge color={getStatusColor(budget.status)} variant="light">
-                      {budget.status}
-                    </Badge>
-                  </Group>
 
-                  <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Budget Period</Text>
-                      <Text size="sm" fw={500}>
-                        {formatDate(budget.startDate)} - {formatDate(budget.endDate)}
+                      <Text size="xs" c="dimmed">
+                        Category: {budget.category.replace('_', ' ')}
                       </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewBudget(budget)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Allocated Amount</Text>
-                      <Text size="sm" fw={600} c="blue">
-                        {formatCurrency(budget.allocatedAmount)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Spent Amount</Text>
-                      <Text size="sm" fw={600} c={budget.spentAmount > budget.allocatedAmount ? 'red' : 'green'}>
-                        {formatCurrency(budget.spentAmount)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Remaining</Text>
-                      <Text size="sm" fw={600} c={budget.remainingAmount < 0 ? 'red' : 'green'}>
-                        {formatCurrency(budget.remainingAmount)}
-                      </Text>
-                    </Group>
-                  </Stack>
-
-                  <div style={{ marginBottom: '1rem' }}>
-                    <Group justify="space-between" mb="xs">
-                      <Text size="sm" c="dimmed">Budget Utilization</Text>
-                      <Text size="sm" fw={500}>
-                        {formatPercentage(budget.utilizationPercentage)}
-                      </Text>
-                    </Group>
-                    <Progress 
-                      value={budget.utilizationPercentage} 
-                      size="md" 
-                      color={
-                        budget.utilizationPercentage > 100 ? 'red' : 
-                        budget.utilizationPercentage > 80 ? 'orange' : 
-                        'green'
-                      }
-                    />
-                  </div>
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Category: {budget.category.replace('_', ' ')}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewBudget(budget)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -824,82 +934,108 @@ const FinanceManagement = () => {
 
             {/* Invoices Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((invoice) => (
-                <Card key={invoice.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{invoice.invoiceNumber}</Text>
-                      <Text size="sm" c="dimmed">
-                        {(invoice as any).patient ? `${(invoice as any).patient.firstName} ${(invoice as any).patient.lastName}` : 'Corporate Client'}
-                      </Text>
-                    </div>
-                    <Badge color={getStatusColor(invoice.status)} variant="light">
-                      {invoice.status}
-                    </Badge>
-                  </Group>
+              {[].map(
+                /* TODO: Fetch from API */ (invoice) => (
+                  <Card key={invoice.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {invoice.invoiceNumber}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {(invoice as any).patient
+                            ? `${(invoice as any).patient.firstName} ${(invoice as any).patient.lastName}`
+                            : 'Corporate Client'}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(invoice.status)} variant="light">
+                        {invoice.status}
+                      </Badge>
+                    </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Invoice Date</Text>
-                      <Text size="sm" fw={500}>
-                        {(invoice as any).invoiceDate ? formatDate((invoice as any).invoiceDate) : 'N/A'}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Due Date</Text>
-                      <Text size="sm" fw={500} c={new Date(invoice.dueDate) < new Date() && invoice.status !== 'paid' ? 'red' : undefined}>
-                        {formatDate(invoice.dueDate)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Subtotal</Text>
-                      <Text size="sm" fw={500}>
-                        {formatCurrency((invoice as any).subtotal || 0)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Tax ({formatPercentage((invoice as any).taxRate)})</Text>
-                      <Text size="sm">
-                        {formatCurrency(invoice.taxAmount)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Discount</Text>
-                      <Text size="sm" c="green">
-                        -{formatCurrency(invoice.discountAmount)}
-                      </Text>
-                    </Group>
-                    <Divider />
-                    <Group justify="space-between">
-                      <Text size="sm" fw={600}>Total Amount</Text>
-                      <Text size="lg" fw={700} c="blue">
-                        {formatCurrency(invoice.totalAmount)}
-                      </Text>
-                    </Group>
-                  </Stack>
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Invoice Date
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(invoice as any).invoiceDate
+                            ? formatDate((invoice as any).invoiceDate)
+                            : 'N/A'}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Due Date
+                        </Text>
+                        <Text
+                          size="sm"
+                          fw={500}
+                          c={
+                            new Date(invoice.dueDate) < new Date() && invoice.status !== 'paid'
+                              ? 'red'
+                              : undefined
+                          }
+                        >
+                          {formatDate(invoice.dueDate)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Subtotal
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {formatCurrency((invoice as any).subtotal || 0)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Tax ({formatPercentage((invoice as any).taxRate)})
+                        </Text>
+                        <Text size="sm">{formatCurrency(invoice.taxAmount)}</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Discount
+                        </Text>
+                        <Text size="sm" c="green">
+                          -{formatCurrency(invoice.discountAmount)}
+                        </Text>
+                      </Group>
+                      <Divider />
+                      <Group justify="space-between">
+                        <Text size="sm" fw={600}>
+                          Total Amount
+                        </Text>
+                        <Text size="lg" fw={700} c="blue">
+                          {formatCurrency(invoice.totalAmount)}
+                        </Text>
+                      </Group>
+                    </Stack>
 
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Payment Method: {invoice.paymentMethod}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewInvoice(invoice)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Payment Method: {invoice.paymentMethod}
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewInvoice(invoice)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -910,9 +1046,7 @@ const FinanceManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Financial Reports</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />}>
-                  Generate Report
-                </Button>
+                <Button leftSection={<IconPlus size={16} />}>Generate Report</Button>
                 <Button variant="light" leftSection={<IconDownload size={16} />}>
                   Export All
                 </Button>
@@ -921,65 +1055,79 @@ const FinanceManagement = () => {
 
             {/* Reports Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((report) => (
-                <Card key={report.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{report.title}</Text>
-                      <Text size="sm" c="dimmed">{report.reportType.replace('_', ' ').toUpperCase()}</Text>
-                    </div>
-                    <ThemeIcon color="blue" variant="light">
-                      <IconReportAnalytics size={20} />
-                    </ThemeIcon>
-                  </Group>
+              {[].map(
+                /* TODO: Fetch from API */ (report) => (
+                  <Card key={report.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {report.title}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {report.reportType.replace('_', ' ').toUpperCase()}
+                        </Text>
+                      </div>
+                      <ThemeIcon color="blue" variant="light">
+                        <IconReportAnalytics size={20} />
+                      </ThemeIcon>
+                    </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Period</Text>
-                      <Text size="sm" fw={500}>
-                        {formatDate(report.startDate)} - {formatDate(report.endDate)}
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Period
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {formatDate(report.startDate)} - {formatDate(report.endDate)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Generated
+                        </Text>
+                        <Text size="sm">{formatDate(report.generatedDate)}</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Generated By
+                        </Text>
+                        <Text size="sm">{report.generatedBy}</Text>
+                      </Group>
+                    </Stack>
+
+                    {(report as any).summary && (
+                      <Text size="sm" c="dimmed" lineClamp={3} mb="md">
+                        {(report as any).summary}
                       </Text>
-                    </Group>
+                    )}
+
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Generated</Text>
-                      <Text size="sm">
-                        {formatDate(report.generatedDate)}
+                      <Text size="xs" c="dimmed">
+                        File Size:{' '}
+                        {(report as any).fileSize
+                          ? ((report as any).fileSize / 1024).toFixed(0)
+                          : 'N/A'}{' '}
+                        KB
                       </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewReport(report)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconShare size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Generated By</Text>
-                      <Text size="sm">{report.generatedBy}</Text>
-                    </Group>
-                  </Stack>
-
-                  {(report as any).summary && (
-                    <Text size="sm" c="dimmed" lineClamp={3} mb="md">
-                      {(report as any).summary}
-                    </Text>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      File Size: {((report as any).fileSize ? ((report as any).fileSize / 1024).toFixed(0) : 'N/A')} KB
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewReport(report)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconShare size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -995,7 +1143,11 @@ const FinanceManagement = () => {
         {selectedTransaction && (
           <Stack gap="md">
             <Group>
-              <ThemeIcon color={getTransactionTypeColor(selectedTransaction.type)} size="xl" variant="light">
+              <ThemeIcon
+                color={getTransactionTypeColor(selectedTransaction.type)}
+                size="xl"
+                variant="light"
+              >
                 <IconReceipt size={24} />
               </ThemeIcon>
               <div>
@@ -1011,37 +1163,57 @@ const FinanceManagement = () => {
 
             <SimpleGrid cols={2}>
               <div>
-                <Text size="sm" fw={500}>Amount</Text>
+                <Text size="sm" fw={500}>
+                  Amount
+                </Text>
                 <Text size="lg" fw={700} c={getTransactionTypeColor(selectedTransaction.type)}>
-                  {selectedTransaction.type === 'income' ? '+' : selectedTransaction.type === 'expense' ? '-' : ''}
+                  {selectedTransaction.type === 'income'
+                    ? '+'
+                    : selectedTransaction.type === 'expense'
+                      ? '-'
+                      : ''}
                   {formatCurrency(selectedTransaction.amount)}
                 </Text>
               </div>
               <div>
-                <Text size="sm" fw={500}>Type</Text>
+                <Text size="sm" fw={500}>
+                  Type
+                </Text>
                 <Badge color={getTransactionTypeColor(selectedTransaction.type)} variant="light">
                   {selectedTransaction.type.toUpperCase()}
                 </Badge>
               </div>
               <div>
-                <Text size="sm" fw={500}>Date</Text>
+                <Text size="sm" fw={500}>
+                  Date
+                </Text>
                 <Text size="sm" c="dimmed">
                   {formatDate(selectedTransaction.date)}
                 </Text>
               </div>
               <div>
-                <Text size="sm" fw={500}>Category</Text>
+                <Text size="sm" fw={500}>
+                  Category
+                </Text>
                 <Badge color={getCategoryColor(selectedTransaction.category)} variant="light">
                   {selectedTransaction.category.replace('_', ' ')}
                 </Badge>
               </div>
               <div>
-                <Text size="sm" fw={500}>Account</Text>
-                <Text size="sm" c="dimmed">{selectedTransaction.account.name}</Text>
+                <Text size="sm" fw={500}>
+                  Account
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {selectedTransaction.account.name}
+                </Text>
               </div>
               <div>
-                <Text size="sm" fw={500}>Payment Method</Text>
-                <Text size="sm" c="dimmed">{selectedTransaction.paymentMethod}</Text>
+                <Text size="sm" fw={500}>
+                  Payment Method
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {selectedTransaction.paymentMethod}
+                </Text>
               </div>
             </SimpleGrid>
 
@@ -1049,7 +1221,9 @@ const FinanceManagement = () => {
               <>
                 <Divider />
                 <div>
-                  <Text size="sm" fw={500} mb="sm">Reference</Text>
+                  <Text size="sm" fw={500} mb="sm">
+                    Reference
+                  </Text>
                   <Text size="sm">{selectedTransaction.reference}</Text>
                 </div>
               </>
@@ -1059,7 +1233,9 @@ const FinanceManagement = () => {
               <>
                 <Divider />
                 <div>
-                  <Text size="sm" fw={500} mb="sm">Notes</Text>
+                  <Text size="sm" fw={500} mb="sm">
+                    Notes
+                  </Text>
                   <Text size="sm">{selectedTransaction.notes}</Text>
                 </div>
               </>
@@ -1069,12 +1245,8 @@ const FinanceManagement = () => {
               <Button variant="light" onClick={closeTransactionDetail}>
                 Close
               </Button>
-              <Button leftSection={<IconDownload size={16} />}>
-                Download Receipt
-              </Button>
-              <Button leftSection={<IconEdit size={16} />}>
-                Edit Transaction
-              </Button>
+              <Button leftSection={<IconDownload size={16} />}>Download Receipt</Button>
+              <Button leftSection={<IconEdit size={16} />}>Edit Transaction</Button>
             </Group>
           </Stack>
         )}
@@ -1095,7 +1267,7 @@ const FinanceManagement = () => {
               data={[
                 { value: 'income', label: 'Income' },
                 { value: 'expense', label: 'Expense' },
-                { value: 'transfer', label: 'Transfer' }
+                { value: 'transfer', label: 'Transfer' },
               ]}
               required
             />
@@ -1110,43 +1282,32 @@ const FinanceManagement = () => {
                 { value: 'maintenance', label: 'Maintenance' },
                 { value: 'marketing', label: 'Marketing' },
                 { value: 'insurance', label: 'Insurance' },
-                { value: 'other', label: 'Other' }
+                { value: 'other', label: 'Other' },
               ]}
               required
             />
           </SimpleGrid>
-          
-          <TextInput
-            label="Description"
-            placeholder="Enter transaction description"
-            required
-          />
-          
+
+          <TextInput label="Description" placeholder="Enter transaction description" required />
+
           <SimpleGrid cols={2}>
-            <NumberInput
-              label="Amount"
-              placeholder="Enter amount"
-              min={0}
-              required
-            />
+            <NumberInput label="Amount" placeholder="Enter amount" min={0} required />
             <Select
               label="Account"
               placeholder="Select account"
-              data={[].map /* TODO: Fetch from API */(account => ({
-                value: account.id,
-                label: account.name
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (account) => ({
+                  value: account.id,
+                  label: account.name,
+                })
+              )}
               onChange={(value) => value || ''}
               required
             />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
-            <DatePickerInput
-              label="Transaction Date"
-              placeholder="Select date"
-              required
-            />
+            <DatePickerInput label="Transaction Date" placeholder="Select date" required />
             <Select
               label="Payment Method"
               placeholder="Select payment method"
@@ -1155,36 +1316,31 @@ const FinanceManagement = () => {
                 { value: 'bank_transfer', label: 'Bank Transfer' },
                 { value: 'card', label: 'Card' },
                 { value: 'check', label: 'Check' },
-                { value: 'upi', label: 'UPI' }
+                { value: 'upi', label: 'UPI' },
               ]}
               onChange={(value) => value || ''}
               required
             />
           </SimpleGrid>
-          
-          <TextInput
-            label="Reference"
-            placeholder="Enter reference number (optional)"
-          />
-          
-          <Textarea
-            label="Notes"
-            placeholder="Enter additional notes (optional)"
-            rows={3}
-          />
-          
+
+          <TextInput label="Reference" placeholder="Enter reference number (optional)" />
+
+          <Textarea label="Notes" placeholder="Enter additional notes (optional)" rows={3} />
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddTransaction}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Transaction Added',
-                message: 'Financial transaction has been successfully recorded',
-                color: 'green',
-              });
-              closeAddTransaction();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Transaction Added',
+                  message: 'Financial transaction has been successfully recorded',
+                  color: 'green',
+                });
+                closeAddTransaction();
+              }}
+            >
               Add Transaction
             </Button>
           </Group>
@@ -1203,34 +1359,24 @@ const FinanceManagement = () => {
             <Select
               label="Patient/Client"
               placeholder="Select patient or client"
-              data={[].map /* TODO: Fetch from API */(patient => ({
-                value: patient.id,
-                label: `${patient.firstName} ${patient.lastName}`
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (patient) => ({
+                  value: patient.id,
+                  label: `${patient.firstName} ${patient.lastName}`,
+                })
+              )}
               required
             />
-            <TextInput
-              label="Invoice Number"
-              placeholder="Auto-generated"
-              disabled
-            />
+            <TextInput label="Invoice Number" placeholder="Auto-generated" disabled />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
-            <DatePickerInput
-              label="Invoice Date"
-              placeholder="Select invoice date"
-              required
-            />
-            <DatePickerInput
-              label="Due Date"
-              placeholder="Select due date"
-              required
-            />
+            <DatePickerInput label="Invoice Date" placeholder="Select invoice date" required />
+            <DatePickerInput label="Due Date" placeholder="Select due date" required />
           </SimpleGrid>
-          
+
           <Divider label="Invoice Items" labelPosition="left" />
-          
+
           <Card withBorder p="md">
             <Stack gap="sm">
               <SimpleGrid cols={4}>
@@ -1244,31 +1390,20 @@ const FinanceManagement = () => {
               </Button>
             </Stack>
           </Card>
-          
+
           <SimpleGrid cols={3}>
-            <NumberInput
-              label="Subtotal"
-              placeholder="Calculated automatically"
-              disabled
-            />
-            <NumberInput
-              label="Tax Rate (%)"
-              placeholder="Enter tax rate"
-              min={0}
-              max={100}
-            />
-            <NumberInput
-              label="Discount"
-              placeholder="Enter discount amount"
-              min={0}
-            />
+            <NumberInput label="Subtotal" placeholder="Calculated automatically" disabled />
+            <NumberInput label="Tax Rate (%)" placeholder="Enter tax rate" min={0} max={100} />
+            <NumberInput label="Discount" placeholder="Enter discount amount" min={0} />
           </SimpleGrid>
-          
+
           <Group justify="space-between">
             <Text fw={600}>Total Amount:</Text>
-            <Text size="xl" fw={700} c="blue">₹0.00</Text>
+            <Text size="xl" fw={700} c="blue">
+              ₹0.00
+            </Text>
           </Group>
-          
+
           <Select
             label="Payment Method"
             placeholder="Select payment method"
@@ -1277,29 +1412,27 @@ const FinanceManagement = () => {
               { value: 'card', label: 'Card' },
               { value: 'upi', label: 'UPI' },
               { value: 'bank_transfer', label: 'Bank Transfer' },
-              { value: 'insurance', label: 'Insurance' }
+              { value: 'insurance', label: 'Insurance' },
             ]}
             required
           />
-          
-          <Textarea
-            label="Notes"
-            placeholder="Additional notes or terms"
-            rows={3}
-          />
-          
+
+          <Textarea label="Notes" placeholder="Additional notes or terms" rows={3} />
+
           <Group justify="flex-end">
             <Button variant="light" onClick={_closeCreateInvoice}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Invoice Created',
-                message: 'Invoice has been successfully created',
-                color: 'green',
-              });
-              _closeCreateInvoice();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Invoice Created',
+                  message: 'Invoice has been successfully created',
+                  color: 'green',
+                });
+                _closeCreateInvoice();
+              }}
+            >
               Create Invoice
             </Button>
           </Group>

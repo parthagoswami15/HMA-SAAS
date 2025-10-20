@@ -1,8 +1,8 @@
 'use client';
 
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@mantine/core';
 
 interface SignupFormData {
@@ -37,22 +37,22 @@ export default function Signup() {
     adminPhone: '',
     adminPassword: '',
     confirmPassword: '',
-    agreeToTerms: false
+    agreeToTerms: false,
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
+
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
@@ -60,25 +60,25 @@ export default function Signup() {
     e.preventDefault();
     setError('');
     setSuccess('');
-    
+
     // Validation
     if (formData.adminPassword !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
+
     if (!formData.agreeToTerms) {
       setError('Please agree to the terms and conditions');
       return;
     }
-    
+
     if (formData.adminPassword.length < 8) {
       setError('Password must be at least 8 characters long');
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
       // Step 1: Create tenant
       // Generate unique identifiers to avoid conflicts
@@ -89,7 +89,7 @@ export default function Signup() {
         .replace(/^-|-$/g, '');
       const uniqueSlug = `${baseSlug}-${timestamp}`;
       const uniqueName = `${formData.organizationName} (${timestamp})`;
-      
+
       const tenantPayload = {
         name: uniqueName,
         slug: uniqueSlug,
@@ -98,8 +98,8 @@ export default function Signup() {
         phone: formData.phone,
         subscriptionPlan: 'free',
         settings: {
-          address: formData.address
-        }
+          address: formData.address,
+        },
       };
 
       const tenantResponse = await fetch(`${API_BASE_URL}/tenants`, {
@@ -107,7 +107,7 @@ export default function Signup() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(tenantPayload)
+        body: JSON.stringify(tenantPayload),
       });
 
       if (!tenantResponse.ok) {
@@ -126,7 +126,7 @@ export default function Signup() {
         lastName: formData.adminLastName,
         phone: formData.adminPhone,
         tenantId: tenant.id,
-        role: 'HOSPITAL_ADMIN'
+        role: 'HOSPITAL_ADMIN',
       };
 
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -134,7 +134,7 @@ export default function Signup() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userPayload)
+        body: JSON.stringify(userPayload),
       });
 
       const result = await response.json();
@@ -151,7 +151,9 @@ export default function Signup() {
       console.error('Registration error:', err);
       if (err instanceof Error) {
         if (err.message.includes('fetch')) {
-          setError('Unable to connect to server. Please check your internet connection and try again.');
+          setError(
+            'Unable to connect to server. Please check your internet connection and try again.'
+          );
         } else {
           setError(err.message);
         }
@@ -162,80 +164,126 @@ export default function Signup() {
       setIsLoading(false);
     }
   };
-  
+
   // Show loading state during hydration
   if (!isClient) {
     return (
-      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
-        <div style={{
-          background: "rgba(255, 255, 255, 0.95)",
-          padding: "3rem",
-          borderRadius: "15px",
-          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-          width: "100%",
-          maxWidth: "500px",
-          backdropFilter: "blur(10px)",
-          textAlign: "center"
-        }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem',
+        }}
+      >
+        <div
+          style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            padding: '3rem',
+            borderRadius: '15px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            width: '100%',
+            maxWidth: '500px',
+            backdropFilter: 'blur(10px)',
+            textAlign: 'center',
+          }}
+        >
           <div>Loading...</div>
         </div>
       </div>
     );
   }
-  
+
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
-      <div style={{
-        background: "rgba(255, 255, 255, 0.95)",
-        padding: "3rem",
-        borderRadius: "15px",
-        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-        width: "100%",
-        maxWidth: "500px",
-        backdropFilter: "blur(10px)"
-      }}>
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <Link href="/" style={{ textDecoration: "none", color: "#667eea", fontSize: "1.5rem", fontWeight: "bold" }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
+      }}
+    >
+      <div
+        style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          padding: '3rem',
+          borderRadius: '15px',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          width: '100%',
+          maxWidth: '500px',
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <Link
+            href="/"
+            style={{
+              textDecoration: 'none',
+              color: '#667eea',
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+            }}
+          >
             HMS SAAS
           </Link>
-          <h2 style={{ marginTop: "1rem", fontSize: "1.8rem", fontWeight: "600", color: "#374151" }}>
+          <h2
+            style={{ marginTop: '1rem', fontSize: '1.8rem', fontWeight: '600', color: '#374151' }}
+          >
             Create Account
           </h2>
-          <p style={{ marginTop: "0.5rem", color: "#6B7280" }}>
+          <p style={{ marginTop: '0.5rem', color: '#6B7280' }}>
             Get started with your hospital management system
           </p>
         </div>
 
         {error && (
-          <div style={{
-            background: "#fee2e2",
-            color: "#dc2626",
-            padding: "0.75rem",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            fontSize: "0.9rem"
-          }}>
+          <div
+            style={{
+              background: '#fee2e2',
+              color: '#dc2626',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              marginBottom: '1rem',
+              fontSize: '0.9rem',
+            }}
+          >
             {error}
           </div>
         )}
-        
+
         {success && (
-          <div style={{
-            background: "#dcfce7",
-            color: "#16a34a",
-            padding: "0.75rem",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            fontSize: "0.9rem"
-          }}>
+          <div
+            style={{
+              background: '#dcfce7',
+              color: '#16a34a',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              marginBottom: '1rem',
+              fontSize: '0.9rem',
+            }}
+          >
             {success}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+        >
           {/* Organization Info */}
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: '500',
+                color: '#374151',
+              }}
+            >
               Organization Type
             </label>
             <select
@@ -243,15 +291,15 @@ export default function Signup() {
               value={formData.organizationType}
               onChange={handleInputChange}
               style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid #D1D5DB",
-                borderRadius: "8px",
-                fontSize: "1rem",
-                outline: "none",
-                transition: "border-color 0.2s",
-                boxSizing: "border-box",
-                background: "white"
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #D1D5DB',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+                boxSizing: 'border-box',
+                background: 'white',
               }}
               required
             >
@@ -262,9 +310,16 @@ export default function Signup() {
               <option value="laboratory">Laboratory</option>
             </select>
           </div>
-          
+
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: '500',
+                color: '#374151',
+              }}
+            >
               Organization Name
             </label>
             <input
@@ -274,21 +329,28 @@ export default function Signup() {
               onChange={handleInputChange}
               placeholder="City General Hospital"
               style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid #D1D5DB",
-                borderRadius: "8px",
-                fontSize: "1rem",
-                outline: "none",
-                transition: "border-color 0.2s",
-                boxSizing: "border-box"
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #D1D5DB',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+                boxSizing: 'border-box',
               }}
               required
             />
           </div>
-          
+
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: '500',
+                color: '#374151',
+              }}
+            >
               Address
             </label>
             <input
@@ -298,22 +360,29 @@ export default function Signup() {
               onChange={handleInputChange}
               placeholder="123 Medical Center Drive, City, State 12345"
               style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid #D1D5DB",
-                borderRadius: "8px",
-                fontSize: "1rem",
-                outline: "none",
-                transition: "border-color 0.2s",
-                boxSizing: "border-box"
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #D1D5DB',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+                boxSizing: 'border-box',
               }}
               required
             />
           </div>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                }}
+              >
                 Phone
               </label>
               <input
@@ -323,20 +392,27 @@ export default function Signup() {
                 onChange={handleInputChange}
                 placeholder="+1 (555) 123-4567"
                 style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #D1D5DB",
-                  borderRadius: "8px",
-                  fontSize: "1rem",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
                 }}
                 required
               />
             </div>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                }}
+              >
                 Email
               </label>
               <input
@@ -346,24 +422,31 @@ export default function Signup() {
                 onChange={handleInputChange}
                 placeholder="info@hospital.com"
                 style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #D1D5DB",
-                  borderRadius: "8px",
-                  fontSize: "1rem",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
                 }}
                 required
               />
             </div>
           </div>
-          
+
           {/* Admin Info */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                }}
+              >
                 Admin First Name
               </label>
               <input
@@ -373,20 +456,27 @@ export default function Signup() {
                 onChange={handleInputChange}
                 placeholder="John"
                 style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #D1D5DB",
-                  borderRadius: "8px",
-                  fontSize: "1rem",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
                 }}
                 required
               />
             </div>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                }}
+              >
                 Admin Last Name
               </label>
               <input
@@ -396,23 +486,30 @@ export default function Signup() {
                 onChange={handleInputChange}
                 placeholder="Doe"
                 style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #D1D5DB",
-                  borderRadius: "8px",
-                  fontSize: "1rem",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
                 }}
                 required
               />
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                }}
+              >
                 Admin Email
               </label>
               <input
@@ -422,20 +519,27 @@ export default function Signup() {
                 onChange={handleInputChange}
                 placeholder="admin@hospital.com"
                 style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #D1D5DB",
-                  borderRadius: "8px",
-                  fontSize: "1rem",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
                 }}
                 required
               />
             </div>
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                }}
+              >
                 Admin Phone
               </label>
               <input
@@ -445,14 +549,14 @@ export default function Signup() {
                 onChange={handleInputChange}
                 placeholder="+1 (555) 987-6543"
                 style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  border: "1px solid #D1D5DB",
-                  borderRadius: "8px",
-                  fontSize: "1rem",
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                  boxSizing: "border-box"
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  boxSizing: 'border-box',
                 }}
                 required
               />
@@ -460,7 +564,14 @@ export default function Signup() {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: '500',
+                color: '#374151',
+              }}
+            >
               Admin Password
             </label>
             <input
@@ -470,21 +581,28 @@ export default function Signup() {
               onChange={handleInputChange}
               placeholder="Create a strong password (8+ characters)"
               style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid #D1D5DB",
-                borderRadius: "8px",
-                fontSize: "1rem",
-                outline: "none",
-                transition: "border-color 0.2s",
-                boxSizing: "border-box"
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #D1D5DB',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+                boxSizing: 'border-box',
               }}
               required
             />
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "500", color: "#374151" }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: '500',
+                color: '#374151',
+              }}
+            >
               Confirm Password
             </label>
             <input
@@ -494,36 +612,38 @@ export default function Signup() {
               onChange={handleInputChange}
               placeholder="Confirm your password"
               style={{
-                width: "100%",
-                padding: "0.75rem",
-                border: "1px solid #D1D5DB",
-                borderRadius: "8px",
-                fontSize: "1rem",
-                outline: "none",
-                transition: "border-color 0.2s",
-                boxSizing: "border-box"
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #D1D5DB',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+                boxSizing: 'border-box',
               }}
               required
             />
           </div>
 
-          <div style={{ fontSize: "0.9rem" }}>
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", color: "#374151" }}>
-              <input 
-                type="checkbox" 
+          <div style={{ fontSize: '0.9rem' }}>
+            <label
+              style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#374151' }}
+            >
+              <input
+                type="checkbox"
                 name="agreeToTerms"
                 checked={formData.agreeToTerms}
                 onChange={handleInputChange}
-                style={{ marginTop: "0.1rem" }} 
-                required 
+                style={{ marginTop: '0.1rem' }}
+                required
               />
               <span>
-                I agree to the{" "}
-                <Link href="/terms" style={{ color: "#667eea", textDecoration: "none" }}>
+                I agree to the{' '}
+                <Link href="/terms" style={{ color: '#667eea', textDecoration: 'none' }}>
                   Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link href="/privacy" style={{ color: "#667eea", textDecoration: "none" }}>
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy" style={{ color: '#667eea', textDecoration: 'none' }}>
                   Privacy Policy
                 </Link>
               </span>
@@ -539,21 +659,24 @@ export default function Signup() {
             variant="filled"
             color="blue"
           >
-            {isLoading ? "Creating Account..." : "Create Account"}
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </Button>
         </form>
 
-        <div style={{ marginTop: "2rem", textAlign: "center" }}>
-          <p style={{ color: "#6B7280" }}>
-            Already have an account?{" "}
-            <Link href="/login" style={{ color: "#667eea", textDecoration: "none", fontWeight: "500" }}>
+        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+          <p style={{ color: '#6B7280' }}>
+            Already have an account?{' '}
+            <Link
+              href="/login"
+              style={{ color: '#667eea', textDecoration: 'none', fontWeight: '500' }}
+            >
               Sign in
             </Link>
           </p>
         </div>
 
-        <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
-          <Link href="/" style={{ color: "#9CA3AF", textDecoration: "none", fontSize: "0.9rem" }}>
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <Link href="/" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.9rem' }}>
             ← Back to Home
           </Link>
         </div>

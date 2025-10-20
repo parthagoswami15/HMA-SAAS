@@ -1,13 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  Stepper, Card, Title, Text, Stack, Group, Button, 
-  TextInput, Select, Radio, Checkbox 
+import {
+  Stepper,
+  Card,
+  Title,
+  Text,
+  Stack,
+  Group,
+  Button,
+  TextInput,
+  Select,
+  Radio,
+  Checkbox,
 } from '@mantine/core';
-import { 
-  IconBuilding, IconUser, IconCreditCard, IconCheck 
-} from '@tabler/icons-react';
+import { IconBuilding, IconUser, IconCreditCard, IconCheck } from '@tabler/icons-react';
 
 export default function RegisterHospitalPage() {
   const [active, setActive] = useState(0);
@@ -20,7 +27,7 @@ export default function RegisterHospitalPage() {
     email: '',
     phone: '',
     website: '',
-    
+
     // Step 2: Address
     addressLine1: '',
     addressLine2: '',
@@ -28,7 +35,7 @@ export default function RegisterHospitalPage() {
     state: '',
     postalCode: '',
     country: '',
-    
+
     // Step 3: Admin User
     adminFirstName: '',
     adminLastName: '',
@@ -36,7 +43,7 @@ export default function RegisterHospitalPage() {
     adminPhone: '',
     adminPassword: '',
     confirmPassword: '',
-    
+
     // Step 4: Subscription
     plan: '',
     billingCycle: 'monthly',
@@ -66,8 +73,8 @@ export default function RegisterHospitalPage() {
             state: formData.state,
             postalCode: formData.postalCode,
             country: formData.country,
-          }
-        }
+          },
+        },
       };
 
       const tenantResponse = await fetch('/api/tenants', {
@@ -90,7 +97,7 @@ export default function RegisterHospitalPage() {
         lastName: formData.adminLastName,
         phone: formData.adminPhone,
         tenantId: tenant.id,
-        role: 'HOSPITAL_ADMIN'
+        role: 'HOSPITAL_ADMIN',
       };
 
       const userResponse = await fetch('/api/auth/register', {
@@ -112,36 +119,40 @@ export default function RegisterHospitalPage() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '2rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <Card 
-        shadow="xl" 
-        padding="xl" 
-        radius="md" 
-        style={{ 
-          width: '100%', 
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '2rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Card
+        shadow="xl"
+        padding="xl"
+        radius="md"
+        style={{
+          width: '100%',
           maxWidth: '900px',
           background: 'rgba(255,255,255,0.98)',
-          backdropFilter: 'blur(10px)'
+          backdropFilter: 'blur(10px)',
         }}
       >
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏥</div>
-          <Title order={1} mb="xs">Register Your Hospital</Title>
+          <Title order={1} mb="xs">
+            Register Your Hospital
+          </Title>
           <Text c="dimmed">Join HMS SAAS and modernize your healthcare facility</Text>
         </div>
 
         {/* Stepper */}
         <Stepper active={active} onStepClick={setActive} mb="xl">
-          <Stepper.Step 
-            label="Hospital Info" 
+          <Stepper.Step
+            label="Hospital Info"
             description="Basic details"
             icon={<IconBuilding size={18} />}
           >
@@ -153,7 +164,7 @@ export default function RegisterHospitalPage() {
                 onChange={(e) => setFormData({ ...formData, hospitalName: e.target.value })}
                 required
               />
-              
+
               <Select
                 label="Facility Type"
                 placeholder="Select type"
@@ -211,10 +222,7 @@ export default function RegisterHospitalPage() {
             </Stack>
           </Stepper.Step>
 
-          <Stepper.Step 
-            label="Address" 
-            description="Location details"
-          >
+          <Stepper.Step label="Address" description="Location details">
             <Stack gap="md" mt="xl">
               <TextInput
                 label="Address Line 1"
@@ -274,8 +282,8 @@ export default function RegisterHospitalPage() {
             </Stack>
           </Stepper.Step>
 
-          <Stepper.Step 
-            label="Admin User" 
+          <Stepper.Step
+            label="Admin User"
             description="Create account"
             icon={<IconUser size={18} />}
           >
@@ -338,14 +346,15 @@ export default function RegisterHospitalPage() {
             </Stack>
           </Stepper.Step>
 
-          <Stepper.Step 
-            label="Subscription" 
+          <Stepper.Step
+            label="Subscription"
             description="Choose plan"
             icon={<IconCreditCard size={18} />}
           >
             <Stack gap="md" mt="xl">
               <Text size="sm" c="dimmed" mb="md">
-                Select a subscription plan that fits your needs. You can upgrade or downgrade anytime.
+                Select a subscription plan that fits your needs. You can upgrade or downgrade
+                anytime.
               </Text>
 
               <Radio.Group
@@ -356,8 +365,8 @@ export default function RegisterHospitalPage() {
               >
                 <Stack mt="xs" gap="sm">
                   <Card shadow="sm" padding="md" withBorder>
-                    <Radio 
-                      value="free" 
+                    <Radio
+                      value="free"
                       label={
                         <div>
                           <Text fw={600}>Free Trial - $0/month</Text>
@@ -365,13 +374,13 @@ export default function RegisterHospitalPage() {
                             30 days free • Up to 5 users • 100 patients • Basic features
                           </Text>
                         </div>
-                      } 
+                      }
                     />
                   </Card>
 
                   <Card shadow="sm" padding="md" withBorder>
-                    <Radio 
-                      value="basic" 
+                    <Radio
+                      value="basic"
                       label={
                         <div>
                           <Text fw={600}>Basic - $99/month</Text>
@@ -379,13 +388,13 @@ export default function RegisterHospitalPage() {
                             Up to 20 users • 1,000 patients • Core HMS features
                           </Text>
                         </div>
-                      } 
+                      }
                     />
                   </Card>
 
                   <Card shadow="sm" padding="md" withBorder>
-                    <Radio 
-                      value="professional" 
+                    <Radio
+                      value="professional"
                       label={
                         <div>
                           <Text fw={600}>Professional - $299/month</Text>
@@ -393,13 +402,13 @@ export default function RegisterHospitalPage() {
                             Up to 100 users • 10,000 patients • Advanced features • Priority support
                           </Text>
                         </div>
-                      } 
+                      }
                     />
                   </Card>
 
                   <Card shadow="sm" padding="md" withBorder>
-                    <Radio 
-                      value="enterprise" 
+                    <Radio
+                      value="enterprise"
                       label={
                         <div>
                           <Text fw={600}>Enterprise - Custom Pricing</Text>
@@ -407,7 +416,7 @@ export default function RegisterHospitalPage() {
                             Unlimited users • Unlimited patients • All features • Dedicated support
                           </Text>
                         </div>
-                      } 
+                      }
                     />
                   </Card>
                 </Stack>
@@ -437,26 +446,29 @@ export default function RegisterHospitalPage() {
 
           <Stepper.Completed>
             <Stack align="center" gap="md" mt="xl" style={{ textAlign: 'center' }}>
-              <div style={{ 
-                width: '80px', 
-                height: '80px', 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
+              <div
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
                 <IconCheck size={48} color="white" />
               </div>
               <Title order={2}>Registration Complete!</Title>
               <Text c="dimmed">
-                Your hospital has been successfully registered. You will receive a confirmation email shortly.
+                Your hospital has been successfully registered. You will receive a confirmation
+                email shortly.
               </Text>
               <Button
                 size="lg"
                 mt="md"
                 style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
-                onClick={() => window.location.href = '/login'}
+                onClick={() => (window.location.href = '/login')}
               >
                 Go to Login
               </Button>
@@ -470,7 +482,7 @@ export default function RegisterHospitalPage() {
             <Button variant="default" onClick={prevStep} disabled={active === 0}>
               Back
             </Button>
-            <Button 
+            <Button
               onClick={active === 3 ? handleSubmit : nextStep}
               style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
             >

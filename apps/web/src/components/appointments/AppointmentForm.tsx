@@ -9,11 +9,14 @@ import {
   Grid,
   Text,
   Alert,
-  LoadingOverlay
+  LoadingOverlay,
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { IconCalendar, IconClock, IconAlertCircle, IconCheck } from '@tabler/icons-react';
-import type { CreateAppointmentDto, UpdateAppointmentDto } from '../../services/appointments.service';
+import type {
+  CreateAppointmentDto,
+  UpdateAppointmentDto,
+} from '../../services/appointments.service';
 
 interface AppointmentFormProps {
   opened: boolean;
@@ -32,7 +35,7 @@ export default function AppointmentForm({
   onSubmit,
   loading = false,
   patients = [],
-  doctors = []
+  doctors = [],
 }: AppointmentFormProps) {
   const [formData, setFormData] = useState<{
     patientId: string;
@@ -51,11 +54,10 @@ export default function AppointmentForm({
     appointmentTime: '',
     reason: '',
     notes: '',
-    status: 'SCHEDULED'
+    status: 'SCHEDULED',
   });
 
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
-  const [_checkingAvailability, _setCheckingAvailability] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -69,7 +71,7 @@ export default function AppointmentForm({
         appointmentTime: appointmentDateTime.toTimeString().slice(0, 5),
         reason: appointment.reason || '',
         notes: appointment.notes || '',
-        status: appointment.status || 'SCHEDULED'
+        status: appointment.status || 'SCHEDULED',
       });
     } else {
       resetForm();
@@ -85,7 +87,7 @@ export default function AppointmentForm({
       appointmentTime: '',
       reason: '',
       notes: '',
-      status: 'SCHEDULED'
+      status: 'SCHEDULED',
     });
     setErrors({});
     setAvailableSlots([]);
@@ -152,7 +154,7 @@ export default function AppointmentForm({
         appointmentDateTime: appointmentDateTime.toISOString(),
         reason: formData.reason,
         notes: formData.notes || undefined,
-        status: formData.status
+        status: formData.status,
       };
 
       await onSubmit(submitData);
@@ -168,19 +170,19 @@ export default function AppointmentForm({
     onClose();
   };
 
-  const patientOptions = patients.map(p => ({
+  const patientOptions = patients.map((p) => ({
     value: p.id,
-    label: `${p.firstName} ${p.lastName} - ${p.medicalRecordNumber || p.id}`
+    label: `${p.firstName} ${p.lastName} - ${p.medicalRecordNumber || p.id}`,
   }));
 
-  const doctorOptions = doctors.map(d => ({
+  const doctorOptions = doctors.map((d) => ({
     value: d.id,
-    label: `Dr. ${d.firstName} ${d.lastName}`
+    label: `Dr. ${d.firstName} ${d.lastName}`,
   }));
 
-  const timeSlotOptions = availableSlots.map(slot => ({
+  const timeSlotOptions = availableSlots.map((slot) => ({
     value: slot,
-    label: slot
+    label: slot,
   }));
 
   const statusOptions = [
@@ -190,7 +192,7 @@ export default function AppointmentForm({
     { value: 'COMPLETED', label: 'Completed' },
     { value: 'CANCELLED', label: 'Cancelled' },
     { value: 'NO_SHOW', label: 'No Show' },
-    { value: 'RESCHEDULED', label: 'Rescheduled' }
+    { value: 'RESCHEDULED', label: 'Rescheduled' },
   ];
 
   return (
@@ -209,7 +211,7 @@ export default function AppointmentForm({
       padding="md"
     >
       <LoadingOverlay visible={loading} />
-      
+
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           {/* Patient Selection */}
@@ -245,7 +247,9 @@ export default function AppointmentForm({
                 label="Appointment Date"
                 placeholder="Select date"
                 value={formData.appointmentDate}
-                onChange={(value) => setFormData({ ...formData, appointmentDate: value || new Date() })}
+                onChange={(value) =>
+                  setFormData({ ...formData, appointmentDate: value ? new Date(value) : new Date() })
+                }
                 error={errors.appointmentDate}
                 required
                 minDate={new Date()}

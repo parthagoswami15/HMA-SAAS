@@ -1,4 +1,12 @@
-import { BaseEntity, Address, ContactInfo, Gender, BloodGroup, MaritalStatus, Status } from './common';
+import {
+  BaseEntity,
+  Address,
+  ContactInfo,
+  Gender,
+  BloodGroup,
+  MaritalStatus,
+  Status,
+} from './common';
 
 // Enhanced Patient related interfaces
 export interface Patient extends BaseEntity {
@@ -11,16 +19,16 @@ export interface Patient extends BaseEntity {
   gender: Gender;
   bloodGroup?: BloodGroup;
   maritalStatus?: MaritalStatus;
-  
+
   // Contact Information
   contactInfo: ContactInfo;
   address: Address;
-  
+
   // Identity Documents (Optional - Aadhaar optional policy)
   aadhaarNumber?: string;
   otherIdNumber?: string;
   otherIdType?: 'pan' | 'passport' | 'driving_license' | 'voter_id';
-  
+
   // Medical Information
   allergies: string[];
   chronicDiseases: string[];
@@ -30,16 +38,16 @@ export interface Patient extends BaseEntity {
     relationship: string;
     phone: string;
   };
-  
+
   // Insurance Information
   insuranceInfo?: InsuranceInfo;
-  
+
   // System fields
   status: Status;
   registrationDate: Date;
   lastVisitDate?: Date;
   totalVisits: number;
-  
+
   // Additional metadata
   occupation?: string;
   religion?: string;
@@ -81,29 +89,29 @@ export interface PatientVisit extends BaseEntity {
   visitDate: Date;
   chiefComplaint: string;
   status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
-  
+
   // Doctor/Department Information
   doctorId?: string;
   doctorName?: string;
   departmentId: string;
   departmentName: string;
-  
+
   // Clinical Information
   vitals?: VitalSigns;
   diagnosis: string[];
   treatmentPlan: string;
   prescriptions: Prescription[];
   orders: MedicalOrder[];
-  
+
   // Follow-up
   followUpDate?: Date;
   followUpInstructions?: string;
-  
+
   // Billing
   totalAmount?: number;
   paidAmount?: number;
   pendingAmount?: number;
-  
+
   // Additional notes
   notes?: string;
 }
@@ -164,7 +172,14 @@ export interface MedicalOrder {
 // Medical History
 export interface MedicalHistory extends BaseEntity {
   patientId: string;
-  historyType: 'medical' | 'surgical' | 'family' | 'social' | 'allergy' | 'medication' | 'immunization';
+  historyType:
+    | 'medical'
+    | 'surgical'
+    | 'family'
+    | 'social'
+    | 'allergy'
+    | 'medication'
+    | 'immunization';
   title: string;
   description: string;
   date?: Date;
@@ -181,7 +196,17 @@ export interface MedicalHistory extends BaseEntity {
 // Patient Documents
 export interface PatientDocument extends BaseEntity {
   patientId: string;
-  documentType: 'id_proof' | 'medical_report' | 'lab_result' | 'radiology' | 'prescription' | 'insurance' | 'consent' | 'discharge_summary' | 'vaccination_record' | 'other';
+  documentType:
+    | 'id_proof'
+    | 'medical_report'
+    | 'lab_result'
+    | 'radiology'
+    | 'prescription'
+    | 'insurance'
+    | 'consent'
+    | 'discharge_summary'
+    | 'vaccination_record'
+    | 'other';
   title: string;
   description?: string;
   fileName: string;
@@ -208,14 +233,21 @@ export interface PatientAppointment extends BaseEntity {
   appointmentTime: string;
   duration: number; // in minutes
   appointmentType: 'consultation' | 'follow_up' | 'procedure' | 'emergency';
-  status: 'scheduled' | 'arrived' | 'in_progress' | 'completed' | 'cancelled' | 'no_show' | 'rescheduled';
+  status:
+    | 'scheduled'
+    | 'arrived'
+    | 'in_progress'
+    | 'completed'
+    | 'cancelled'
+    | 'no_show'
+    | 'rescheduled';
   chiefComplaint?: string;
   notes?: string;
-  
+
   // Reminder settings
   reminderSent?: boolean;
   reminderSentAt?: Date;
-  
+
   // Cancellation/Rescheduling
   cancelledAt?: Date;
   cancelledBy?: string;
@@ -226,29 +258,27 @@ export interface PatientAppointment extends BaseEntity {
 
 // Search and Filter types
 export interface PatientSearchParams {
-  query?: string;
+  searchTerm?: string;
   patientId?: string;
-  phoneNumber?: string;
-  aadhaarNumber?: string;
-  dateOfBirth?: Date;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
   bloodGroup?: BloodGroup;
   gender?: Gender;
-  age?: {
-    min?: number;
-    max?: number;
-  };
-  registrationDate?: {
-    from?: Date;
-    to?: Date;
-  };
-  lastVisitDate?: {
-    from?: Date;
-    to?: Date;
-  };
   status?: Status;
+  insuranceType?: string;
+  registrationDateFrom?: Date;
+  registrationDateTo?: Date;
+  lastVisitDateFrom?: Date;
+  lastVisitDateTo?: Date;
+  ageFrom?: number;
+  ageTo?: number;
+  hasAllergies?: boolean;
+  hasChronicDiseases?: boolean;
   hasInsurance?: boolean;
-  department?: string;
-  doctor?: string;
+  doctorId?: string;
+  departmentId?: string;
 }
 
 export interface PatientListItem {

@@ -14,14 +14,14 @@ export enum Status {
   PENDING = 'pending',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
-  DRAFT = 'draft'
+  DRAFT = 'draft',
 }
 
 export enum Priority {
   HIGH = 'high',
   MEDIUM = 'medium',
   LOW = 'low',
-  URGENT = 'urgent'
+  URGENT = 'urgent',
 }
 
 // Common Address Interface
@@ -67,7 +67,7 @@ export enum UserRole {
   ACCOUNTANT = 'ACCOUNTANT',
   PATIENT = 'PATIENT',
   USER = 'USER',
-  HOSPITAL_ADMIN = 'HOSPITAL_ADMIN'
+  HOSPITAL_ADMIN = 'HOSPITAL_ADMIN',
 }
 
 export interface Permission {
@@ -105,7 +105,17 @@ export interface ApiResponse<T = unknown> {
 export interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'password' | 'number' | 'date' | 'select' | 'textarea' | 'checkbox' | 'radio' | 'file';
+  type:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'date'
+    | 'select'
+    | 'textarea'
+    | 'checkbox'
+    | 'radio'
+    | 'file';
   placeholder?: string;
   required?: boolean;
   options?: { value: string; label: string }[];
@@ -146,7 +156,7 @@ export enum NotificationType {
   SUCCESS = 'success',
   ERROR = 'error',
   WARNING = 'warning',
-  INFO = 'info'
+  INFO = 'info',
 }
 
 export interface Notification {
@@ -225,7 +235,7 @@ export enum Gender {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
   OTHER = 'OTHER',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 export enum BloodGroup {
@@ -237,7 +247,7 @@ export enum BloodGroup {
   AB_NEGATIVE = 'AB_NEGATIVE',
   O_POSITIVE = 'O_POSITIVE',
   O_NEGATIVE = 'O_NEGATIVE',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 export enum MaritalStatus {
@@ -247,7 +257,7 @@ export enum MaritalStatus {
   WIDOWED = 'WIDOWED',
   SEPARATED = 'SEPARATED',
   DOMESTIC_PARTNERSHIP = 'DOMESTIC_PARTNERSHIP',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
 }
 
 // Insurance and Payment Types
@@ -257,14 +267,14 @@ export enum PaymentMode {
   UPI = 'upi',
   NET_BANKING = 'net_banking',
   INSURANCE = 'insurance',
-  CREDIT = 'credit'
+  CREDIT = 'credit',
 }
 
 export enum InsuranceType {
   GOVERNMENT = 'government',
   PRIVATE = 'private',
   CORPORATE = 'corporate',
-  SELF_PAY = 'self_pay'
+  SELF_PAY = 'self_pay',
 }
 
 // Error Handling

@@ -1,22 +1,6 @@
 import React from 'react';
-import {
-  Modal,
-  Text,
-  Group,
-  Stack,
-  Badge,
-  Button,
-  Divider,
-  Card,
-  Avatar
-} from '@mantine/core';
-import {
-  IconMail,
-  IconUser,
-  IconClock,
-  IconTrash,
-  IconArrowBackUp
-} from '@tabler/icons-react';
+import { Modal, Text, Group, Stack, Badge, Button, Divider, Card, Avatar } from '@mantine/core';
+import { IconMail, IconUser, IconClock, IconTrash, IconArrowBackUp } from '@tabler/icons-react';
 
 interface MessageDetailsProps {
   opened: boolean;
@@ -31,7 +15,7 @@ export default function MessageDetails({
   onClose,
   message,
   onDelete,
-  onReply
+  onReply,
 }: MessageDetailsProps) {
   if (!message) return null;
 
@@ -40,7 +24,7 @@ export default function MessageDetails({
       LOW: 'gray',
       NORMAL: 'blue',
       HIGH: 'orange',
-      URGENT: 'red'
+      URGENT: 'red',
     };
     return colors[priority] || 'blue';
   };
@@ -52,7 +36,7 @@ export default function MessageDetails({
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -89,7 +73,8 @@ export default function MessageDetails({
           <Divider mb="sm" />
           <Group>
             <Avatar color="blue" radius="xl">
-              {sender.firstName?.[0]}{sender.lastName?.[0]}
+              {sender.firstName?.[0]}
+              {sender.lastName?.[0]}
             </Avatar>
             <div>
               <Text fw={500}>
@@ -111,7 +96,8 @@ export default function MessageDetails({
           <Divider mb="sm" />
           <Group>
             <Avatar color="green" radius="xl">
-              {recipient.firstName?.[0]}{recipient.lastName?.[0]}
+              {recipient.firstName?.[0]}
+              {recipient.lastName?.[0]}
             </Avatar>
             <div>
               <Text fw={500}>
@@ -131,28 +117,34 @@ export default function MessageDetails({
             <Text fw={600}>Message</Text>
           </Group>
           <Divider mb="sm" />
-          
+
           <Stack gap="sm">
             <div>
-              <Text size="xs" c="dimmed" mb={4}>Subject:</Text>
+              <Text size="xs" c="dimmed" mb={4}>
+                Subject:
+              </Text>
               <Text fw={600}>{message.subject}</Text>
             </div>
-            
+
             <div>
-              <Text size="xs" c="dimmed" mb={4}>Content:</Text>
-              <Text style={{ whiteSpace: 'pre-wrap' }}>
-                {message.content}
+              <Text size="xs" c="dimmed" mb={4}>
+                Content:
               </Text>
+              <Text style={{ whiteSpace: 'pre-wrap' }}>{message.content}</Text>
             </div>
-            
+
             <div>
-              <Text size="xs" c="dimmed" mb={4}>Sent:</Text>
+              <Text size="xs" c="dimmed" mb={4}>
+                Sent:
+              </Text>
               <Text size="sm">{formatDate(message.createdAt)}</Text>
             </div>
-            
+
             {message.read && message.readAt && (
               <div>
-                <Text size="xs" c="dimmed" mb={4}>Read:</Text>
+                <Text size="xs" c="dimmed" mb={4}>
+                  Read:
+                </Text>
                 <Text size="sm">{formatDate(message.readAt)}</Text>
               </div>
             )}
@@ -178,7 +170,7 @@ export default function MessageDetails({
               </Button>
             )}
           </Group>
-          
+
           <Group>
             {onReply && (
               <Button

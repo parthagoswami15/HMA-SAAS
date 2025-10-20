@@ -210,7 +210,9 @@ const pharmacyManagementService = {
   /**
    * Get all pharmacy orders with filters
    */
-  getPharmacyOrders: async (filters?: PharmacyOrderFilters): Promise<PharmacyOrdersListResponse> => {
+  getPharmacyOrders: async (
+    filters?: PharmacyOrderFilters
+  ): Promise<PharmacyOrdersListResponse> => {
     return enhancedApiClient.get('/pharmacy-management/orders', filters);
   },
 

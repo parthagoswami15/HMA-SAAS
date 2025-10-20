@@ -124,14 +124,20 @@ const insuranceService = {
   /**
    * Update insurance claim
    */
-  updateClaim: async (id: string, data: UpdateInsuranceClaimDto): Promise<InsuranceClaimResponse> => {
+  updateClaim: async (
+    id: string,
+    data: UpdateInsuranceClaimDto
+  ): Promise<InsuranceClaimResponse> => {
     return enhancedApiClient.patch(`/insurance/claims/${id}`, data);
   },
 
   /**
    * Update claim status
    */
-  updateClaimStatus: async (id: string, status: UpdateStatusDto['status']): Promise<InsuranceClaimResponse> => {
+  updateClaimStatus: async (
+    id: string,
+    status: UpdateStatusDto['status']
+  ): Promise<InsuranceClaimResponse> => {
     return enhancedApiClient.patch(`/insurance/claims/${id}/status`, { status });
   },
 

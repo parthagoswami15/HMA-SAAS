@@ -42,7 +42,9 @@ interface NotificationSettings {
 }
 
 const ProfilePage = () => {
-  const [currentTab, setCurrentTab] = useState<'profile' | 'password' | 'notifications' | 'security'>('profile');
+  const [currentTab, setCurrentTab] = useState<
+    'profile' | 'password' | 'notifications' | 'security'
+  >('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -63,13 +65,13 @@ const ProfilePage = () => {
     licenseNumber: 'MD123456789',
     specialization: 'Interventional Cardiology',
     joinedDate: '2020-01-15',
-    isActive: true
+    isActive: true,
   });
 
   const [passwordForm, setPasswordForm] = useState<PasswordForm>({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   const [notifications, setNotifications] = useState<NotificationSettings>({
@@ -78,7 +80,7 @@ const ProfilePage = () => {
     pushNotifications: true,
     appointmentReminders: true,
     systemUpdates: true,
-    marketingEmails: false
+    marketingEmails: false,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -102,11 +104,11 @@ const ProfilePage = () => {
       }
 
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setIsEditing(false);
       alert('Profile updated successfully!');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       alert('Failed to update profile. Please try again.');
     } finally {
@@ -124,7 +126,8 @@ const ProfilePage = () => {
       const newErrors: Record<string, string> = {};
       if (!passwordForm.currentPassword) newErrors.currentPassword = 'Current password is required';
       if (!passwordForm.newPassword) newErrors.newPassword = 'New password is required';
-      if (passwordForm.newPassword.length < 8) newErrors.newPassword = 'Password must be at least 8 characters';
+      if (passwordForm.newPassword.length < 8)
+        newErrors.newPassword = 'Password must be at least 8 characters';
       if (passwordForm.newPassword !== passwordForm.confirmPassword) {
         newErrors.confirmPassword = 'Passwords do not match';
       }
@@ -135,11 +138,11 @@ const ProfilePage = () => {
       }
 
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
       alert('Password updated successfully!');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       alert('Failed to update password. Please try again.');
     } finally {
@@ -151,9 +154,9 @@ const ProfilePage = () => {
     setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       alert('Notification preferences saved!');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       alert('Failed to save preferences. Please try again.');
     } finally {
@@ -163,84 +166,105 @@ const ProfilePage = () => {
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'ADMIN': return '#dc2626';
-      case 'DOCTOR': return '#059669';
-      case 'NURSE': return '#0369a1';
-      case 'STAFF': return '#7c3aed';
-      case 'TECHNICIAN': return '#ea580c';
-      default: return '#6b7280';
+      case 'ADMIN':
+        return '#dc2626';
+      case 'DOCTOR':
+        return '#059669';
+      case 'NURSE':
+        return '#0369a1';
+      case 'STAFF':
+        return '#7c3aed';
+      case 'TECHNICIAN':
+        return '#ea580c';
+      default:
+        return '#6b7280';
     }
   };
 
   const ProfileForm = () => (
     <form onSubmit={handleProfileSubmit}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '1.5rem',
+        }}
+      >
         {/* Basic Information */}
         <div style={{ gridColumn: 'span 2' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>
+          <h3
+            style={{
+              fontSize: '1.25rem',
+              fontWeight: '600',
+              color: '#1f2937',
+              marginBottom: '1rem',
+            }}
+          >
             Basic Information
           </h3>
         </div>
-        
+
         <Input
           label="First Name"
           value={profile.firstName}
-          onChange={(e) => setProfile(prev => ({ ...prev, firstName: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, firstName: e.target.value }))}
           error={errors.firstName}
           disabled={!isEditing}
           required
         />
-        
+
         <Input
           label="Last Name"
           value={profile.lastName}
-          onChange={(e) => setProfile(prev => ({ ...prev, lastName: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, lastName: e.target.value }))}
           error={errors.lastName}
           disabled={!isEditing}
           required
         />
-        
+
         <Input
           type="email"
           label="Email"
           value={profile.email}
-          onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, email: e.target.value }))}
           error={errors.email}
           disabled={!isEditing}
           required
         />
-        
+
         <Input
           type="tel"
           label="Phone"
           value={profile.phone}
-          onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, phone: e.target.value }))}
           error={errors.phone}
           disabled={!isEditing}
           required
         />
-        
+
         <Input
           type="date"
           label="Date of Birth"
           value={profile.dateOfBirth}
-          onChange={(e) => setProfile(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, dateOfBirth: e.target.value }))}
           disabled={!isEditing}
         />
-        
+
         <div>
-          <label style={{ 
-            display: 'block', 
-            marginBottom: '0.5rem', 
-            fontSize: '0.875rem', 
-            fontWeight: '600', 
-            color: '#374151' 
-          }}>
+          <label
+            style={{
+              display: 'block',
+              marginBottom: '0.5rem',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              color: '#374151',
+            }}
+          >
             Gender
           </label>
           <select
             value={profile.gender}
-            onChange={(e) => setProfile(prev => ({ ...prev, gender: e.target.value as string }))}
+            onChange={(e) => setProfile((prev) => ({ ...prev, gender: e.target.value as 'MALE' | 'FEMALE' | 'OTHER' }))}
             disabled={!isEditing}
             style={{
               width: '100%',
@@ -249,7 +273,7 @@ const ProfilePage = () => {
               borderRadius: '8px',
               fontSize: '1rem',
               backgroundColor: isEditing ? 'white' : '#f9fafb',
-              color: '#374151'
+              color: '#374151',
             }}
           >
             <option value="MALE">Male</option>
@@ -260,74 +284,90 @@ const ProfilePage = () => {
 
         {/* Address Information */}
         <div style={{ gridColumn: 'span 2', marginTop: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>
+          <h3
+            style={{
+              fontSize: '1.25rem',
+              fontWeight: '600',
+              color: '#1f2937',
+              marginBottom: '1rem',
+            }}
+          >
             Address Information
           </h3>
         </div>
-        
+
         <div style={{ gridColumn: 'span 2' }}>
           <Input
             label="Address"
             value={profile.address}
-            onChange={(e) => setProfile(prev => ({ ...prev, address: e.target.value }))}
+            onChange={(e) => setProfile((prev) => ({ ...prev, address: e.target.value }))}
             disabled={!isEditing}
           />
         </div>
-        
+
         <Input
           label="City"
           value={profile.city}
-          onChange={(e) => setProfile(prev => ({ ...prev, city: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, city: e.target.value }))}
           disabled={!isEditing}
         />
-        
+
         <Input
           label="State"
           value={profile.state}
-          onChange={(e) => setProfile(prev => ({ ...prev, state: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, state: e.target.value }))}
           disabled={!isEditing}
         />
-        
+
         <Input
           label="ZIP Code"
           value={profile.zipCode}
-          onChange={(e) => setProfile(prev => ({ ...prev, zipCode: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, zipCode: e.target.value }))}
           disabled={!isEditing}
         />
 
         {/* Professional Information */}
         <div style={{ gridColumn: 'span 2', marginTop: '2rem' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1rem' }}>
+          <h3
+            style={{
+              fontSize: '1.25rem',
+              fontWeight: '600',
+              color: '#1f2937',
+              marginBottom: '1rem',
+            }}
+          >
             Professional Information
           </h3>
         </div>
-        
+
         <Input
           label="Department"
           value={profile.department}
-          onChange={(e) => setProfile(prev => ({ ...prev, department: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, department: e.target.value }))}
           disabled={!isEditing}
         />
-        
+
         <Input
           label="License Number"
           value={profile.licenseNumber || ''}
-          onChange={(e) => setProfile(prev => ({ ...prev, licenseNumber: e.target.value }))}
+          onChange={(e) => setProfile((prev) => ({ ...prev, licenseNumber: e.target.value }))}
           disabled={!isEditing}
         />
-        
+
         <div style={{ gridColumn: 'span 2' }}>
           <Input
             label="Specialization"
             value={profile.specialization || ''}
-            onChange={(e) => setProfile(prev => ({ ...prev, specialization: e.target.value }))}
+            onChange={(e) => setProfile((prev) => ({ ...prev, specialization: e.target.value }))}
             disabled={!isEditing}
           />
         </div>
       </div>
 
       {isEditing && (
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'flex-end' }}>
+        <div
+          style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'flex-end' }}
+        >
           <Button
             type="button"
             variant="outline"
@@ -346,10 +386,12 @@ const ProfilePage = () => {
 
   const PasswordForm = () => (
     <Card>
-      <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1.5rem' }}>
+      <h3
+        style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1.5rem' }}
+      >
         Change Password
       </h3>
-      
+
       <form onSubmit={handlePasswordSubmit}>
         <div style={{ maxWidth: '400px' }}>
           <div style={{ marginBottom: '1.5rem' }}>
@@ -357,18 +399,22 @@ const ProfilePage = () => {
               type="password"
               label="Current Password"
               value={passwordForm.currentPassword}
-              onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+              onChange={(e) =>
+                setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))
+              }
               error={errors.currentPassword}
               required
             />
           </div>
-          
+
           <div style={{ marginBottom: '1.5rem' }}>
             <Input
               type="password"
               label="New Password"
               value={passwordForm.newPassword}
-              onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+              onChange={(e) =>
+                setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))
+              }
               error={errors.newPassword}
               required
             />
@@ -376,18 +422,20 @@ const ProfilePage = () => {
               Password must be at least 8 characters long
             </p>
           </div>
-          
+
           <div style={{ marginBottom: '2rem' }}>
             <Input
               type="password"
               label="Confirm New Password"
               value={passwordForm.confirmPassword}
-              onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+              onChange={(e) =>
+                setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
+              }
               error={errors.confirmPassword}
               required
             />
           </div>
-          
+
           <Button type="submit" disabled={isLoading}>
             {isLoading ? 'Updating...' : 'Update Password'}
           </Button>
@@ -398,7 +446,14 @@ const ProfilePage = () => {
 
   const NotificationsForm = () => (
     <Card>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.5rem',
+        }}
+      >
         <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937' }}>
           Notification Preferences
         </h3>
@@ -406,26 +461,60 @@ const ProfilePage = () => {
           {isLoading ? 'Saving...' : 'Save Preferences'}
         </Button>
       </div>
-      
+
       <div style={{ display: 'grid', gap: '1.5rem' }}>
         {[
-          { key: 'emailNotifications', label: 'Email Notifications', description: 'Receive notifications via email' },
-          { key: 'smsNotifications', label: 'SMS Notifications', description: 'Receive notifications via SMS' },
-          { key: 'pushNotifications', label: 'Push Notifications', description: 'Receive push notifications in browser' },
-          { key: 'appointmentReminders', label: 'Appointment Reminders', description: 'Get reminded about upcoming appointments' },
-          { key: 'systemUpdates', label: 'System Updates', description: 'Receive updates about system changes' },
-          { key: 'marketingEmails', label: 'Marketing Emails', description: 'Receive marketing and promotional emails' }
-        ].map(item => (
-          <div key={item.key} style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '1rem',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px'
-          }}>
+          {
+            key: 'emailNotifications',
+            label: 'Email Notifications',
+            description: 'Receive notifications via email',
+          },
+          {
+            key: 'smsNotifications',
+            label: 'SMS Notifications',
+            description: 'Receive notifications via SMS',
+          },
+          {
+            key: 'pushNotifications',
+            label: 'Push Notifications',
+            description: 'Receive push notifications in browser',
+          },
+          {
+            key: 'appointmentReminders',
+            label: 'Appointment Reminders',
+            description: 'Get reminded about upcoming appointments',
+          },
+          {
+            key: 'systemUpdates',
+            label: 'System Updates',
+            description: 'Receive updates about system changes',
+          },
+          {
+            key: 'marketingEmails',
+            label: 'Marketing Emails',
+            description: 'Receive marketing and promotional emails',
+          },
+        ].map((item) => (
+          <div
+            key={item.key}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '1rem',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+            }}
+          >
             <div>
-              <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
+              <h4
+                style={{
+                  margin: '0 0 0.25rem 0',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                }}
+              >
                 {item.label}
               </h4>
               <p style={{ margin: '0', fontSize: '0.875rem', color: '#6b7280' }}>
@@ -436,14 +525,16 @@ const ProfilePage = () => {
               <input
                 type="checkbox"
                 checked={notifications[item.key as keyof NotificationSettings]}
-                onChange={(e) => setNotifications(prev => ({
-                  ...prev,
-                  [item.key]: e.target.checked
-                }))}
-                style={{ 
+                onChange={(e) =>
+                  setNotifications((prev) => ({
+                    ...prev,
+                    [item.key]: e.target.checked,
+                  }))
+                }
+                style={{
                   width: '1.25rem',
                   height: '1.25rem',
-                  marginRight: '0.5rem'
+                  marginRight: '0.5rem',
                 }}
               />
               <span style={{ fontSize: '0.875rem', color: '#374151' }}>
@@ -458,45 +549,56 @@ const ProfilePage = () => {
 
   const SecuritySettings = () => (
     <Card>
-      <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1.5rem' }}>
+      <h3
+        style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', marginBottom: '1.5rem' }}
+      >
         Security Settings
       </h3>
-      
+
       <div style={{ display: 'grid', gap: '1.5rem' }}>
-        <div style={{
-          padding: '1.5rem',
-          border: '1px solid #e5e7eb',
-          borderRadius: '8px'
-        }}>
-          <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
+        <div
+          style={{
+            padding: '1.5rem',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+          }}
+        >
+          <h4
+            style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}
+          >
             Two-Factor Authentication
           </h4>
           <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-            Add an extra layer of security to your account by requiring a second form of authentication.
+            Add an extra layer of security to your account by requiring a second form of
+            authentication.
           </p>
-          <Button variant="outline">
-            Enable 2FA
-          </Button>
+          <Button variant="outline">Enable 2FA</Button>
         </div>
 
-        <div style={{
-          padding: '1.5rem',
-          border: '1px solid #e5e7eb',
-          borderRadius: '8px'
-        }}>
-          <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
+        <div
+          style={{
+            padding: '1.5rem',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+          }}
+        >
+          <h4
+            style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}
+          >
             Active Sessions
           </h4>
           <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
             Monitor and manage your active login sessions across devices.
           </p>
-          <div style={{ 
-            padding: '0.75rem',
-            backgroundColor: '#f9fafb',
-            borderRadius: '6px',
-            marginBottom: '1rem',
-            fontSize: '0.875rem'
-          }}>
+          <div
+            style={{
+              padding: '0.75rem',
+              backgroundColor: '#f9fafb',
+              borderRadius: '6px',
+              marginBottom: '1rem',
+              fontSize: '0.875rem',
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <strong>Current Session</strong>
@@ -511,13 +613,17 @@ const ProfilePage = () => {
           </Button>
         </div>
 
-        <div style={{
-          padding: '1.5rem',
-          border: '1px solid #fee2e2',
-          borderRadius: '8px',
-          backgroundColor: '#fef2f2'
-        }}>
-          <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600', color: '#dc2626' }}>
+        <div
+          style={{
+            padding: '1.5rem',
+            border: '1px solid #fee2e2',
+            borderRadius: '8px',
+            backgroundColor: '#fef2f2',
+          }}
+        >
+          <h4
+            style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '600', color: '#dc2626' }}
+          >
             Danger Zone
           </h4>
           <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
@@ -527,7 +633,11 @@ const ProfilePage = () => {
             <Button variant="outline" size="sm">
               Deactivate Account
             </Button>
-            <Button variant="outline" size="sm" style={{ color: '#dc2626', borderColor: '#dc2626' }}>
+            <Button
+              variant="outline"
+              size="sm"
+              style={{ color: '#dc2626', borderColor: '#dc2626' }}
+            >
               Delete Account
             </Button>
           </div>
@@ -540,14 +650,23 @@ const ProfilePage = () => {
     <Layout>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '2rem' 
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '2rem',
+          }}
+        >
           <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1f2937', marginBottom: '0.5rem' }}>
+            <h1
+              style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                color: '#1f2937',
+                marginBottom: '0.5rem',
+              }}
+            >
               Profile Settings
             </h1>
             <p style={{ color: '#6b7280', fontSize: '1rem' }}>
@@ -555,57 +674,75 @@ const ProfilePage = () => {
             </p>
           </div>
           {currentTab === 'profile' && !isEditing && (
-            <Button onClick={() => setIsEditing(true)}>
-              ✏️ Edit Profile
-            </Button>
+            <Button onClick={() => setIsEditing(true)}>✏️ Edit Profile</Button>
           )}
         </div>
 
         {/* Profile Overview Card */}
         <Card style={{ marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            <div style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              backgroundColor: '#667eea',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '2rem',
-              color: 'white',
-              fontWeight: 'bold'
-            }}>
-              {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
+            <div
+              style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                backgroundColor: '#667eea',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '2rem',
+                color: 'white',
+                fontWeight: 'bold',
+              }}
+            >
+              {profile.firstName.charAt(0)}
+              {profile.lastName.charAt(0)}
             </div>
-            
+
             <div style={{ flex: 1 }}>
-              <h2 style={{ 
-                fontSize: '1.5rem', 
-                fontWeight: '600', 
-                color: '#1f2937', 
-                marginBottom: '0.5rem' 
-              }}>
+              <h2
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 {profile.firstName} {profile.lastName}
               </h2>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-                <span style={{
-                  padding: '0.25rem 0.75rem',
-                  backgroundColor: `${getRoleColor(profile.role)}15`,
-                  color: getRoleColor(profile.role),
-                  borderRadius: '12px',
-                  fontSize: '0.75rem',
-                  fontWeight: '600'
-                }}>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                <span
+                  style={{
+                    padding: '0.25rem 0.75rem',
+                    backgroundColor: `${getRoleColor(profile.role)}15`,
+                    color: getRoleColor(profile.role),
+                    borderRadius: '12px',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                  }}
+                >
                   {profile.role}
                 </span>
-                <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                  {profile.department}
-                </span>
+                <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>{profile.department}</span>
               </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '0.875rem', color: '#6b7280' }}>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '2rem',
+                  fontSize: '0.875rem',
+                  color: '#6b7280',
+                }}
+              >
                 <span>📧 {profile.email}</span>
                 <span>📞 {profile.phone}</span>
                 <span>📅 Joined {new Date(profile.joinedDate).toLocaleDateString()}</span>
@@ -621,11 +758,11 @@ const ProfilePage = () => {
               { key: 'profile', label: '👤 Profile', desc: 'Personal Information' },
               { key: 'password', label: '🔒 Password', desc: 'Security Settings' },
               { key: 'notifications', label: '🔔 Notifications', desc: 'Preferences' },
-              { key: 'security', label: '🛡️ Security', desc: 'Account Security' }
-            ].map(tab => (
+              { key: 'security', label: '🛡️ Security', desc: 'Account Security' },
+            ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setCurrentTab(tab.key as string)}
+                onClick={() => setCurrentTab(tab.key as 'profile' | 'password' | 'notifications' | 'security')}
                 style={{
                   padding: '1rem 1.5rem',
                   border: 'none',
@@ -633,16 +770,15 @@ const ProfilePage = () => {
                   fontSize: '1rem',
                   fontWeight: '500',
                   color: currentTab === tab.key ? '#667eea' : '#6b7280',
-                  borderBottom: currentTab === tab.key ? '2px solid #667eea' : '2px solid transparent',
+                  borderBottom:
+                    currentTab === tab.key ? '2px solid #667eea' : '2px solid transparent',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
                 }}
               >
                 <div>
                   {tab.label}
-                  <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
-                    {tab.desc}
-                  </div>
+                  <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>{tab.desc}</div>
                 </div>
               </button>
             ))}
@@ -655,7 +791,7 @@ const ProfilePage = () => {
             <ProfileForm />
           </Card>
         )}
-        
+
         {currentTab === 'password' && <PasswordForm />}
         {currentTab === 'notifications' && <NotificationsForm />}
         {currentTab === 'security' && <SecuritySettings />}

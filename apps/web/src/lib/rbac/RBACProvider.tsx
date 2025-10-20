@@ -25,26 +25,26 @@ export enum Permission {
   CREATE_PATIENTS = 'CREATE_PATIENTS',
   EDIT_PATIENTS = 'EDIT_PATIENTS',
   DELETE_PATIENTS = 'DELETE_PATIENTS',
-  
+
   // Appointment permissions
   VIEW_APPOINTMENTS = 'VIEW_APPOINTMENTS',
   CREATE_APPOINTMENTS = 'CREATE_APPOINTMENTS',
   EDIT_APPOINTMENTS = 'EDIT_APPOINTMENTS',
   CANCEL_APPOINTMENTS = 'CANCEL_APPOINTMENTS',
-  
+
   // Medical records
   VIEW_MEDICAL_RECORDS = 'VIEW_MEDICAL_RECORDS',
   EDIT_MEDICAL_RECORDS = 'EDIT_MEDICAL_RECORDS',
-  
+
   // Billing
   VIEW_BILLING = 'VIEW_BILLING',
   CREATE_INVOICES = 'CREATE_INVOICES',
   PROCESS_PAYMENTS = 'PROCESS_PAYMENTS',
-  
+
   // Staff management
   VIEW_STAFF = 'VIEW_STAFF',
   MANAGE_STAFF = 'MANAGE_STAFF',
-  
+
   // System admin
   MANAGE_SYSTEM = 'MANAGE_SYSTEM',
   VIEW_REPORTS = 'VIEW_REPORTS',
@@ -54,7 +54,7 @@ export enum Permission {
 // Role-Permission mapping
 const rolePermissions: Record<UserRole, Permission[]> = {
   [UserRole.SUPER_ADMIN]: Object.values(Permission),
-  
+
   [UserRole.ADMIN]: [
     Permission.VIEW_PATIENTS,
     Permission.CREATE_PATIENTS,
@@ -70,7 +70,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     Permission.VIEW_REPORTS,
     Permission.MANAGE_SETTINGS,
   ],
-  
+
   [UserRole.DOCTOR]: [
     Permission.VIEW_PATIENTS,
     Permission.EDIT_PATIENTS,
@@ -80,14 +80,14 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     Permission.EDIT_MEDICAL_RECORDS,
     Permission.VIEW_BILLING,
   ],
-  
+
   [UserRole.NURSE]: [
     Permission.VIEW_PATIENTS,
     Permission.VIEW_APPOINTMENTS,
     Permission.VIEW_MEDICAL_RECORDS,
     Permission.EDIT_MEDICAL_RECORDS,
   ],
-  
+
   [UserRole.RECEPTIONIST]: [
     Permission.VIEW_PATIENTS,
     Permission.CREATE_PATIENTS,
@@ -97,34 +97,25 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     Permission.EDIT_APPOINTMENTS,
     Permission.VIEW_BILLING,
   ],
-  
+
   [UserRole.PHARMACIST]: [
     Permission.VIEW_PATIENTS,
     Permission.VIEW_MEDICAL_RECORDS,
     Permission.VIEW_BILLING,
   ],
-  
-  [UserRole.LAB_TECHNICIAN]: [
-    Permission.VIEW_PATIENTS,
-    Permission.VIEW_MEDICAL_RECORDS,
-  ],
-  
-  [UserRole.RADIOLOGIST]: [
-    Permission.VIEW_PATIENTS,
-    Permission.VIEW_MEDICAL_RECORDS,
-  ],
-  
+
+  [UserRole.LAB_TECHNICIAN]: [Permission.VIEW_PATIENTS, Permission.VIEW_MEDICAL_RECORDS],
+
+  [UserRole.RADIOLOGIST]: [Permission.VIEW_PATIENTS, Permission.VIEW_MEDICAL_RECORDS],
+
   [UserRole.ACCOUNTANT]: [
     Permission.VIEW_BILLING,
     Permission.CREATE_INVOICES,
     Permission.PROCESS_PAYMENTS,
     Permission.VIEW_REPORTS,
   ],
-  
-  [UserRole.PATIENT]: [
-    Permission.VIEW_APPOINTMENTS,
-    Permission.CREATE_APPOINTMENTS,
-  ],
+
+  [UserRole.PATIENT]: [Permission.VIEW_APPOINTMENTS, Permission.CREATE_APPOINTMENTS],
 };
 
 // Route access control
@@ -204,7 +195,7 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
         router.push('/dashboard');
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, loading, user]);
 
   const getUserPermissions = (userRole: UserRole): Permission[] => {
@@ -229,14 +220,14 @@ export const RBACProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const canAccessRoute = (route: string): boolean => {
     if (!user) return false;
-    
+
     // Allow dashboard home for all authenticated users
     if (route === '/dashboard') return true;
-    
+
     // Check if route requires specific permissions
     const requiredPermissions = protectedRoutes[route];
     if (!requiredPermissions) return true; // No specific permissions required
-    
+
     return hasAnyPermission(requiredPermissions);
   };
 

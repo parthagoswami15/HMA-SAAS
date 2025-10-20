@@ -44,7 +44,13 @@ import WardDetails from '../../components/ipd/WardDetails';
 import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn } from '../../types/common';
 import ipdService from '../../services/ipd.service';
-import type { CreateWardDto, UpdateWardDto, CreateBedDto, WardFilters, BedFilters } from '../../services/ipd.service';
+import type {
+  CreateWardDto,
+  UpdateWardDto,
+  CreateBedDto,
+  WardFilters,
+  BedFilters,
+} from '../../services/ipd.service';
 
 const mockUser: User = {
   id: '1',
@@ -87,7 +93,7 @@ function IpdPage() {
     fetchWards();
     fetchBeds();
     fetchStats();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchWards = async () => {
@@ -104,10 +110,11 @@ function IpdPage() {
 
         // Apply search filter
         if (searchQuery) {
-          filteredWards = filteredWards.filter(w =>
-            w.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (w.location && w.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (w.description && w.description.toLowerCase().includes(searchQuery.toLowerCase()))
+          filteredWards = filteredWards.filter(
+            (w) =>
+              w.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              (w.location && w.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
+              (w.description && w.description.toLowerCase().includes(searchQuery.toLowerCase()))
           );
         }
 
@@ -117,7 +124,10 @@ function IpdPage() {
       console.error('Error fetching wards:', error);
       notifications.show({
         title: 'Error Loading Wards',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch wards. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to fetch wards. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -142,9 +152,10 @@ function IpdPage() {
 
         // Apply search filter
         if (searchQuery) {
-          filteredBeds = filteredBeds.filter(b =>
-            b.bedNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (b.ward && b.ward.name.toLowerCase().includes(searchQuery.toLowerCase()))
+          filteredBeds = filteredBeds.filter(
+            (b) =>
+              b.bedNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              (b.ward && b.ward.name.toLowerCase().includes(searchQuery.toLowerCase()))
           );
         }
 
@@ -154,7 +165,10 @@ function IpdPage() {
       console.error('Error fetching beds:', error);
       notifications.show({
         title: 'Error Loading Beds',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch beds. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to fetch beds. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -173,7 +187,10 @@ function IpdPage() {
       console.error('Error fetching stats:', error);
       notifications.show({
         title: 'Error Loading Statistics',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch IPD statistics. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to fetch IPD statistics. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -183,7 +200,7 @@ function IpdPage() {
   const handleCreateWard = async (data: CreateWardDto) => {
     try {
       const response = await ipdService.createWard(data);
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -191,7 +208,7 @@ function IpdPage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         closeWardForm();
         fetchWards();
         fetchStats();
@@ -200,7 +217,10 @@ function IpdPage() {
       console.error('Error creating ward:', error);
       notifications.show({
         title: 'Error Creating Ward',
-        message: error?.response?.data?.message || error?.message || 'Failed to create ward. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to create ward. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -213,7 +233,7 @@ function IpdPage() {
 
     try {
       const response = await ipdService.updateWard(selectedWard.id, data);
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -221,7 +241,7 @@ function IpdPage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         closeWardForm();
         setSelectedWard(null);
         fetchWards();
@@ -231,7 +251,10 @@ function IpdPage() {
       console.error('Error updating ward:', error);
       notifications.show({
         title: 'Error Updating Ward',
-        message: error?.response?.data?.message || error?.message || 'Failed to update ward. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to update ward. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -242,7 +265,7 @@ function IpdPage() {
   const handleCreateBed = async (data: CreateBedDto) => {
     try {
       const response = await ipdService.createBed(data);
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -250,7 +273,7 @@ function IpdPage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         closeBedForm();
         fetchBeds();
         fetchStats();
@@ -259,7 +282,10 @@ function IpdPage() {
       console.error('Error creating bed:', error);
       notifications.show({
         title: 'Error Creating Bed',
-        message: error?.response?.data?.message || error?.message || 'Failed to create bed. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to create bed. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -270,7 +296,7 @@ function IpdPage() {
   const handleUpdateBedStatus = async (bed: any, status: string) => {
     try {
       const response = await ipdService.updateBedStatus(bed.id, { status: status as any });
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -278,7 +304,7 @@ function IpdPage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         fetchBeds();
         fetchStats();
       }
@@ -286,7 +312,10 @@ function IpdPage() {
       console.error('Error updating bed status:', error);
       notifications.show({
         title: 'Error Updating Status',
-        message: error?.response?.data?.message || error?.message || 'Failed to update bed status. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to update bed status. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -338,10 +367,12 @@ function IpdPage() {
         return (
           <div>
             <Text fw={600}>{ward.name}</Text>
-            <Text size="xs" c="dimmed">{ward.location || 'No location'}</Text>
+            <Text size="xs" c="dimmed">
+              {ward.location || 'No location'}
+            </Text>
           </div>
         );
-      }
+      },
     },
     {
       key: 'capacity',
@@ -349,10 +380,8 @@ function IpdPage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const ward = record as any;
-        return (
-          <Text fw={500}>{ward.capacity} beds</Text>
-        );
-      }
+        return <Text fw={500}>{ward.capacity} beds</Text>;
+      },
     },
     {
       key: 'beds',
@@ -366,22 +395,24 @@ function IpdPage() {
           <div>
             <Text size="sm">Total: {totalBeds}</Text>
             <Group gap="xs">
-              <Badge size="xs" color="green">Avail: {available}</Badge>
-              <Badge size="xs" color="red">Occup: {occupied}</Badge>
+              <Badge size="xs" color="green">
+                Avail: {available}
+              </Badge>
+              <Badge size="xs" color="red">
+                Occup: {occupied}
+              </Badge>
             </Group>
           </div>
         );
-      }
+      },
     },
     {
       key: 'floor',
       title: 'Floor',
       render: (value: unknown, record: Record<string, unknown>) => {
         const ward = record as any;
-        return (
-          <Text size="sm">{ward.floor || '-'}</Text>
-        );
-      }
+        return <Text size="sm">{ward.floor || '-'}</Text>;
+      },
     },
     {
       key: 'status',
@@ -394,7 +425,7 @@ function IpdPage() {
             {ward.isActive ? 'Active' : 'Inactive'}
           </Badge>
         );
-      }
+      },
     },
     {
       key: 'actions',
@@ -403,16 +434,10 @@ function IpdPage() {
         const ward = record as any;
         return (
           <Group gap="xs">
-            <ActionIcon
-              variant="subtle"
-              onClick={() => handleViewWard(ward)}
-            >
+            <ActionIcon variant="subtle" onClick={() => handleViewWard(ward)}>
               <IconEye size={16} />
             </ActionIcon>
-            <ActionIcon
-              variant="subtle"
-              onClick={() => handleEditWard(ward)}
-            >
+            <ActionIcon variant="subtle" onClick={() => handleEditWard(ward)}>
               <IconEdit size={16} />
             </ActionIcon>
             <Menu position="bottom-end">
@@ -422,10 +447,7 @@ function IpdPage() {
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item
-                  leftSection={<IconEye size={14} />}
-                  onClick={() => handleViewWard(ward)}
-                >
+                <Menu.Item leftSection={<IconEye size={14} />} onClick={() => handleViewWard(ward)}>
                   View Details
                 </Menu.Item>
                 <Menu.Item
@@ -438,8 +460,8 @@ function IpdPage() {
             </Menu>
           </Group>
         );
-      }
-    }
+      },
+    },
   ];
 
   const bedColumns: TableColumn[] = [
@@ -449,10 +471,8 @@ function IpdPage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const bed = record as any;
-        return (
-          <Text fw={600}>{bed.bedNumber}</Text>
-        );
-      }
+        return <Text fw={600}>{bed.bedNumber}</Text>;
+      },
     },
     {
       key: 'ward',
@@ -463,10 +483,12 @@ function IpdPage() {
         return (
           <div>
             <Text fw={500}>{bed.ward?.name || 'N/A'}</Text>
-            <Text size="xs" c="dimmed">{bed.ward?.location || ''}</Text>
+            <Text size="xs" c="dimmed">
+              {bed.ward?.location || ''}
+            </Text>
           </div>
         );
-      }
+      },
     },
     {
       key: 'status',
@@ -474,22 +496,16 @@ function IpdPage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const bed = record as any;
-        return (
-          <Badge color={getStatusColor(bed.status)}>
-            {bed.status}
-          </Badge>
-        );
-      }
+        return <Badge color={getStatusColor(bed.status)}>{bed.status}</Badge>;
+      },
     },
     {
       key: 'description',
       title: 'Description',
       render: (value: unknown, record: Record<string, unknown>) => {
         const bed = record as any;
-        return (
-          <Text size="sm">{bed.description || '-'}</Text>
-        );
-      }
+        return <Text size="sm">{bed.description || '-'}</Text>;
+      },
     },
     {
       key: 'actions',
@@ -536,11 +552,11 @@ function IpdPage() {
             </Menu.Dropdown>
           </Menu>
         );
-      }
-    }
+      },
+    },
   ];
 
-  const layoutUser = user || [];
+  const layoutUser = user || mockUser;
   const userForLayout = {
     id: layoutUser.id,
     name: `${layoutUser.firstName} ${layoutUser.lastName}`,
@@ -561,16 +577,10 @@ function IpdPage() {
               </Text>
             </div>
             <Group>
-              <Button
-                leftSection={<IconHome size={16} />}
-                onClick={handleNewWard}
-              >
+              <Button leftSection={<IconHome size={16} />} onClick={handleNewWard}>
                 New Ward
               </Button>
-              <Button
-                leftSection={<IconBedFilled size={16} />}
-                onClick={handleNewBed}
-              >
+              <Button leftSection={<IconBedFilled size={16} />} onClick={handleNewBed}>
                 New Bed
               </Button>
             </Group>
@@ -690,11 +700,7 @@ function IpdPage() {
                       No wards match your current filters. Try adjusting your search criteria.
                     </Alert>
                   ) : (
-                    <DataTable
-                      columns={wardColumns}
-                      data={wards}
-                      loading={loading}
-                    />
+                    <DataTable columns={wardColumns} data={wards} loading={loading} />
                   )}
                 </Paper>
               </Stack>
@@ -719,7 +725,7 @@ function IpdPage() {
                         placeholder="Filter by ward"
                         data={[
                           { value: '', label: 'All Wards' },
-                          ...wards.map(w => ({ value: w.id, label: w.name })),
+                          ...wards.map((w) => ({ value: w.id, label: w.name })),
                         ]}
                         value={wardFilter}
                         onChange={(value) => setWardFilter(value || '')}
@@ -757,11 +763,7 @@ function IpdPage() {
                       No beds match your current filters. Try adjusting your search criteria.
                     </Alert>
                   ) : (
-                    <DataTable
-                      columns={bedColumns}
-                      data={beds}
-                      loading={loading}
-                    />
+                    <DataTable columns={bedColumns} data={beds} loading={loading} />
                   )}
                 </Paper>
               </Stack>

@@ -53,7 +53,7 @@ class TenantsService {
       page: page.toString(),
       limit: limit.toString(),
     });
-    
+
     if (status && status !== 'all') {
       params.append('status', status);
     }
@@ -107,7 +107,7 @@ class TenantsService {
     // For now, calculate from getAllTenants
     const response = await this.getAllTenants(1, 1000);
     const tenants = response.data?.items || [];
-    
+
     return {
       total: tenants.length,
       active: tenants.filter((t: any) => t.status === 'ACTIVE').length,

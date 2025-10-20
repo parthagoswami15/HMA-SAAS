@@ -35,7 +35,11 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleBarChart, SimpleAreaChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleBarChart,
+  SimpleAreaChart,
+} from '../../../components/MantineChart';
 import surgeryService from '../../../services/surgery.service';
 import {
   IconPlus,
@@ -63,7 +67,7 @@ import {
   IconCalendar,
   IconUsers,
   IconX,
-  IconSettings
+  IconSettings,
 } from '@tabler/icons-react';
 import { DatePickerInput } from '@mantine/dates';
 
@@ -80,29 +84,25 @@ const SurgeryManagement = () => {
   const [selectedPriority, setSelectedPriority] = useState<string>('');
   const [selectedORStatus, setSelectedORStatus] = useState<string>('');
   const [selectedSurgery, setSelectedSurgery] = useState<any>(null);
-  const [_selectedOR, setSelectedOR] = useState<any>(null);
+  const [selectedOR, setSelectedOR] = useState<any>(null);
 
   // API data state
   const [surgeries, setSurgeries] = useState<any[]>([]);
-  const [_stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<any>(null);
   const [theaters, setTheaters] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [_error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAllData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
     try {
       setLoading(true);
       setError(null);
-      await Promise.all([
-        fetchSurgeries(),
-        fetchStats(),
-        fetchTheaters()
-      ]);
+      await Promise.all([fetchSurgeries(), fetchStats(), fetchTheaters()]);
     } catch (err: any) {
       console.error('Error loading surgery data:', err);
       setError(err.response?.data?.message || 'Failed to load surgery data');
@@ -116,16 +116,19 @@ const SurgeryManagement = () => {
     try {
       const filters = {
         status: selectedStatus || undefined,
-        priority: selectedPriority || undefined
+        priority: selectedPriority || undefined,
       };
       const response = await surgeryService.getSurgeries(filters);
       // Handle different response structures
-      const surgeriesData = Array.isArray(response.data) 
-        ? response.data 
-        : (response.data?.items || []);
+      const surgeriesData = Array.isArray(response.data)
+        ? response.data
+        : response.data?.items || [];
       setSurgeries(surgeriesData);
     } catch (err: any) {
-      console.warn('Error fetching surgeries (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching surgeries (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setSurgeries([]);
     }
   };
@@ -135,14 +138,17 @@ const SurgeryManagement = () => {
       const response = await surgeryService.getStats();
       setStats(response.data);
     } catch (err: any) {
-      console.warn('Error fetching surgery stats (using default values):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching surgery stats (using default values):',
+        err.response?.data?.message || err.message
+      );
       setStats({
         totalSurgeries: 0,
         scheduledSurgeries: 0,
         completedSurgeries: 0,
         cancelledSurgeries: 0,
         upcomingSurgeries: 0,
-        availableTheaters: 0
+        availableTheaters: 0,
       });
     }
   };
@@ -152,7 +158,10 @@ const SurgeryManagement = () => {
       const response = await surgeryService.getAvailableTheaters();
       setTheaters(response.data || []);
     } catch (err: any) {
-      console.warn('Error fetching theaters (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching theaters (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setTheaters([]);
     }
   };
@@ -161,13 +170,14 @@ const SurgeryManagement = () => {
     if (!loading) {
       fetchSurgeries();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, selectedType, selectedStatus, selectedPriority]);
 
   // Modal states
-  const [surgeryDetailOpened, { open: openSurgeryDetail, close: closeSurgeryDetail }] = useDisclosure(false);
+  const [surgeryDetailOpened, { open: openSurgeryDetail, close: closeSurgeryDetail }] =
+    useDisclosure(false);
   const [addSurgeryOpened, { open: openAddSurgery, close: closeAddSurgery }] = useDisclosure(false);
-  const [_orDetailOpened, { open: _openORDetail, close: _closeORDetail }] = useDisclosure(false);
+  const [orDetailOpened, { open: openORDetail, close: closeORDetail }] = useDisclosure(false);
   const [_preOpOpened, { open: _openPreOp, close: _closePreOp }] = useDisclosure(false);
   const [_postOpOpened, { open: _openPostOp, close: _closePostOp }] = useDisclosure(false);
 
@@ -176,11 +186,11 @@ const SurgeryManagement = () => {
     // Ensure surgeries is an array before filtering
     if (!Array.isArray(surgeries)) return [];
     return surgeries.filter((surgery: any) => {
-      const matchesSearch = 
+      const matchesSearch =
         surgery.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         surgery.surgeryId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         surgery.procedure?.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesType = !selectedType || surgery.surgeryType === selectedType;
       const matchesStatus = !selectedStatus || surgery.status === selectedStatus;
       const matchesPriority = !selectedPriority || surgery.priority === selectedPriority;
@@ -194,10 +204,10 @@ const SurgeryManagement = () => {
     // Ensure theaters is an array before filtering
     if (!Array.isArray(theaters)) return [];
     return theaters.filter((or: any) => {
-      const matchesSearch = 
+      const matchesSearch =
         or.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         or.roomName?.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesStatus = !selectedORStatus || or.status === selectedORStatus;
 
       return matchesSearch && matchesStatus;
@@ -209,42 +219,63 @@ const SurgeryManagement = () => {
     switch (status) {
       case 'scheduled':
       case 'available':
-      case 'operational': return 'blue';
+      case 'operational':
+        return 'blue';
       case 'in_progress':
       case 'occupied':
-      case 'in_use': return 'orange';
+      case 'in_use':
+        return 'orange';
       case 'completed':
-      case 'cleaned': return 'green';
+      case 'cleaned':
+        return 'green';
       case 'cancelled':
-      case 'out_of_service': return 'red';
+      case 'out_of_service':
+        return 'red';
       case 'delayed':
-      case 'maintenance': return 'yellow';
-      case 'recovery': return 'purple';
-      default: return 'gray';
+      case 'maintenance':
+        return 'yellow';
+      case 'recovery':
+        return 'purple';
+      default:
+        return 'gray';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'emergency': return 'red';
-      case 'urgent': return 'orange';
-      case 'elective': return 'blue';
-      case 'routine': return 'green';
-      default: return 'gray';
+      case 'emergency':
+        return 'red';
+      case 'urgent':
+        return 'orange';
+      case 'elective':
+        return 'blue';
+      case 'routine':
+        return 'green';
+      default:
+        return 'gray';
     }
   };
 
   const getSurgeryTypeColor = (type: string) => {
     switch (type) {
-      case 'cardiac': return 'red';
-      case 'neurological': return 'purple';
-      case 'orthopedic': return 'blue';
-      case 'general': return 'green';
-      case 'plastic': return 'pink';
-      case 'pediatric': return 'cyan';
-      case 'trauma': return 'orange';
-      case 'transplant': return 'indigo';
-      default: return 'gray';
+      case 'cardiac':
+        return 'red';
+      case 'neurological':
+        return 'purple';
+      case 'orthopedic':
+        return 'blue';
+      case 'general':
+        return 'green';
+      case 'plastic':
+        return 'pink';
+      case 'pediatric':
+        return 'cyan';
+      case 'trauma':
+        return 'orange';
+      case 'transplant':
+        return 'indigo';
+      default:
+        return 'gray';
     }
   };
 
@@ -275,7 +306,7 @@ const SurgeryManagement = () => {
   const _formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
@@ -286,38 +317,39 @@ const SurgeryManagement = () => {
       value: 0 /* TODO: Fetch from API */,
       icon: IconScissors,
       color: 'blue',
-      trend: '+0%'
+      trend: '+0%',
     },
     {
-      title: 'Today\'s Surgeries',
+      title: "Today's Surgeries",
       value: 0,
       icon: IconCalendar,
       color: 'green',
-      trend: '+0'
+      trend: '+0',
     },
     {
       title: 'Active ORs',
       value: `${0 /* TODO: Fetch from API */}/${0 /* TODO: Fetch from API */}`,
       icon: IconBed,
       color: 'orange',
-      trend: '0% utilization'
+      trend: '0% utilization',
     },
     {
       title: 'Average Duration',
       value: `${0 /* TODO: Fetch from API */}min`,
       icon: IconClock,
       color: 'purple',
-      trend: '0min'
-    }
+      trend: '0min',
+    },
   ];
 
   // Chart data
-  const surgeryTypeData = Object.entries(0 /* TODO: Fetch from API */ || {})
-    .map(([type, count]) => ({
+  const surgeryTypeData = Object.entries(0 /* TODO: Fetch from API */ || {}).map(
+    ([type, count]) => ({
       name: type.replace('_', ' ').toUpperCase(),
       value: typeof count === 'number' ? count : 0,
-      color: getSurgeryTypeColor(type)
-    }));
+      color: getSurgeryTypeColor(type),
+    })
+  );
 
   const monthlyVolume = [];
   const orUtilization = [];
@@ -333,18 +365,10 @@ const SurgeryManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openAddSurgery}
-            color="blue"
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddSurgery} color="blue">
             Schedule Surgery
           </Button>
-          <Button
-            variant="light"
-            leftSection={<IconMedicalCross size={16} />}
-            color="red"
-          >
+          <Button variant="light" leftSection={<IconMedicalCross size={16} />} color="red">
             Emergency Surgery
           </Button>
         </Group>
@@ -370,14 +394,18 @@ const SurgeryManagement = () => {
                 </ThemeIcon>
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'} 
+                <Badge
+                  color={
+                    stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'
+                  }
                   variant="light"
                   size="sm"
                 >
                   {stat.trend}
                 </Badge>
-                <Text size="xs" c="dimmed">vs last month</Text>
+                <Text size="xs" c="dimmed">
+                  vs last month
+                </Text>
               </Group>
             </Card>
           );
@@ -425,7 +453,7 @@ const SurgeryManagement = () => {
                   { value: 'general', label: 'General' },
                   { value: 'plastic', label: 'Plastic' },
                   { value: 'pediatric', label: 'Pediatric' },
-                  { value: 'trauma', label: 'Trauma' }
+                  { value: 'trauma', label: 'Trauma' },
                 ]}
                 value={selectedType}
                 onChange={setSelectedType}
@@ -438,7 +466,7 @@ const SurgeryManagement = () => {
                   { value: 'in_progress', label: 'In Progress' },
                   { value: 'completed', label: 'Completed' },
                   { value: 'cancelled', label: 'Cancelled' },
-                  { value: 'delayed', label: 'Delayed' }
+                  { value: 'delayed', label: 'Delayed' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -450,7 +478,7 @@ const SurgeryManagement = () => {
                   { value: 'emergency', label: 'Emergency' },
                   { value: 'urgent', label: 'Urgent' },
                   { value: 'elective', label: 'Elective' },
-                  { value: 'routine', label: 'Routine' }
+                  { value: 'routine', label: 'Routine' },
                 ]}
                 value={selectedPriority}
                 onChange={setSelectedPriority}
@@ -516,7 +544,11 @@ const SurgeryManagement = () => {
                             <Text size="sm" fw={500} lineClamp={1}>
                               {surgery.procedure}
                             </Text>
-                            <Badge color={getSurgeryTypeColor((surgery as any).surgeryType || 'general')} variant="light" size="xs">
+                            <Badge
+                              color={getSurgeryTypeColor((surgery as any).surgeryType || 'general')}
+                              variant="light"
+                              size="xs"
+                            >
                               {(surgery as any).surgeryType || 'General'}
                             </Badge>
                           </div>
@@ -542,9 +574,7 @@ const SurgeryManagement = () => {
                           </div>
                         </Table.Td>
                         <Table.Td>
-                          <Text size="sm">
-                            {surgery.duration || 0} min
-                          </Text>
+                          <Text size="sm">{surgery.duration || 0} min</Text>
                         </Table.Td>
                         <Table.Td>
                           <Badge color="cyan" variant="light">
@@ -552,7 +582,11 @@ const SurgeryManagement = () => {
                           </Badge>
                         </Table.Td>
                         <Table.Td>
-                          <Badge color={getPriorityColor((surgery as any).priority || 'routine')} variant="light" size="xs">
+                          <Badge
+                            color={getPriorityColor((surgery as any).priority || 'routine')}
+                            variant="light"
+                            size="xs"
+                          >
                             {((surgery as any).priority || 'routine').toUpperCase()}
                           </Badge>
                         </Table.Td>
@@ -590,10 +624,7 @@ const SurgeryManagement = () => {
                                   Download Report
                                 </Menu.Item>
                                 <Menu.Divider />
-                                <Menu.Item 
-                                  leftSection={<IconX size={14} />}
-                                  color="red"
-                                >
+                                <Menu.Item leftSection={<IconX size={14} />} color="red">
                                   Cancel Surgery
                                 </Menu.Item>
                               </Menu.Dropdown>
@@ -618,9 +649,7 @@ const SurgeryManagement = () => {
                 <Button leftSection={<IconSettings size={16} />} variant="light">
                   OR Maintenance
                 </Button>
-                <Button leftSection={<IconActivity size={16} />}>
-                  Monitor Status
-                </Button>
+                <Button leftSection={<IconActivity size={16} />}>Monitor Status</Button>
               </Group>
             </Group>
 
@@ -639,7 +668,7 @@ const SurgeryManagement = () => {
                   { value: 'available', label: 'Available' },
                   { value: 'occupied', label: 'Occupied' },
                   { value: 'cleaned', label: 'Cleaned' },
-                  { value: 'maintenance', label: 'Maintenance' }
+                  { value: 'maintenance', label: 'Maintenance' },
                 ]}
                 value={selectedORStatus}
                 onChange={setSelectedORStatus}
@@ -653,8 +682,12 @@ const SurgeryManagement = () => {
                 <Card key={or.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
-                      <Text fw={600} size="lg">OR {or.roomNumber}</Text>
-                      <Text size="sm" c="dimmed">{or.roomName}</Text>
+                      <Text fw={600} size="lg">
+                        OR {or.roomNumber}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {or.roomName}
+                      </Text>
                     </div>
                     <Badge color={getStatusColor(or.status)} variant="light">
                       {or.status}
@@ -663,15 +696,23 @@ const SurgeryManagement = () => {
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Location</Text>
-                      <Text size="sm" fw={500}>{or.location}</Text>
+                      <Text size="sm" c="dimmed">
+                        Location
+                      </Text>
+                      <Text size="sm" fw={500}>
+                        {or.location}
+                      </Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Capacity</Text>
+                      <Text size="sm" c="dimmed">
+                        Capacity
+                      </Text>
                       <Text size="sm">{or.capacity} people</Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Specialties</Text>
+                      <Text size="sm" c="dimmed">
+                        Specialties
+                      </Text>
                       <div>
                         {or.specialties.slice(0, 2).map((specialty) => (
                           <Badge key={specialty} size="xs" variant="light" mr="xs">
@@ -689,7 +730,9 @@ const SurgeryManagement = () => {
 
                   {(or as any).currentSurgery && (
                     <Alert variant="light" color="blue" mb="md">
-                      <Text size="sm" fw={500}>Current Surgery:</Text>
+                      <Text size="sm" fw={500}>
+                        Current Surgery:
+                      </Text>
                       <Text size="sm">{(or as any).currentSurgery || 'N/A'}</Text>
                     </Alert>
                   )}
@@ -699,11 +742,7 @@ const SurgeryManagement = () => {
                       Equipment: {or.equipment.length} items
                     </Text>
                     <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewOR(or)}
-                      >
+                      <ActionIcon variant="subtle" color="blue" onClick={() => handleViewOR(or)}>
                         <IconEye size={16} />
                       </ActionIcon>
                       <ActionIcon variant="subtle" color="green">
@@ -725,87 +764,111 @@ const SurgeryManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Surgical Equipment</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Add Equipment
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Add Equipment</Button>
             </Group>
 
             {/* Equipment Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((equipment) => (
-                <Card key={equipment.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{equipment.equipmentName}</Text>
-                      <Text size="sm" c="dimmed">{equipment.manufacturer}</Text>
-                    </div>
-                    <Badge color={getStatusColor(equipment.status)} variant="light">
-                      {equipment.status.replace('_', ' ')}
-                    </Badge>
-                  </Group>
+              {[].map(
+                /* TODO: Fetch from API */ (equipment) => (
+                  <Card key={equipment.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {equipment.equipmentName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {equipment.manufacturer}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(equipment.status)} variant="light">
+                        {equipment.status.replace('_', ' ')}
+                      </Badge>
+                    </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Model</Text>
-                      <Text size="sm" fw={500}>{equipment.model}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Serial</Text>
-                      <Text size="sm" fw={500}>{equipment.serialNumber}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Location</Text>
-                      <Text size="sm">OR {equipment.assignedOR}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Last Calibrated</Text>
-                      <Text size="sm">
-                        {new Date(equipment.lastCalibrationDate).toLocaleDateString()}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Next Due</Text>
-                      <Text 
-                        size="sm" 
-                        c={new Date(equipment.nextCalibrationDate) < new Date() ? 'red' : 'dimmed'}
-                      >
-                        {new Date(equipment.nextCalibrationDate).toLocaleDateString()}
-                      </Text>
-                    </Group>
-                  </Stack>
-
-                  {equipment.usageHours && (
-                    <div>
-                      <Group justify="space-between" mb="xs">
-                        <Text size="sm" c="dimmed">Usage Hours</Text>
-                        <Text size="sm" fw={500}>{equipment.usageHours}h</Text>
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Model
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {equipment.model}
+                        </Text>
                       </Group>
-                      <Progress 
-                        value={(equipment.usageHours / 8760) * 100} 
-                        size="sm" 
-                        color="blue"
-                      />
-                    </div>
-                  )}
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Serial
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {equipment.serialNumber}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Location
+                        </Text>
+                        <Text size="sm">OR {equipment.assignedOR}</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Last Calibrated
+                        </Text>
+                        <Text size="sm">
+                          {new Date(equipment.lastCalibrationDate).toLocaleDateString()}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Next Due
+                        </Text>
+                        <Text
+                          size="sm"
+                          c={
+                            new Date(equipment.nextCalibrationDate) < new Date() ? 'red' : 'dimmed'
+                          }
+                        >
+                          {new Date(equipment.nextCalibrationDate).toLocaleDateString()}
+                        </Text>
+                      </Group>
+                    </Stack>
 
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      {equipment.equipmentType}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconSettings size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconTools size={16} />
-                      </ActionIcon>
+                    {equipment.usageHours && (
+                      <div>
+                        <Group justify="space-between" mb="xs">
+                          <Text size="sm" c="dimmed">
+                            Usage Hours
+                          </Text>
+                          <Text size="sm" fw={500}>
+                            {equipment.usageHours}h
+                          </Text>
+                        </Group>
+                        <Progress
+                          value={(equipment.usageHours / 8760) * 100}
+                          size="sm"
+                          color="blue"
+                        />
+                      </div>
+                    )}
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        {equipment.equipmentType}
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconSettings size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconTools size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -815,84 +878,98 @@ const SurgeryManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Surgical Teams</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Create Team
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Create Team</Button>
             </Group>
 
             {/* Surgical Teams Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((team) => (
-                <Card key={team.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{team.teamName}</Text>
-                      <Text size="sm" c="dimmed">{team.specialization}</Text>
-                    </div>
-                    <Badge color={team.isActive ? 'green' : 'gray'} variant="light">
-                      {team.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="md" mb="md">
-                    <div>
-                      <Text size="sm" fw={500} mb="sm">Lead Surgeon</Text>
-                      <Group>
-                        <Avatar color="blue" radius="xl">
-                          {team.leadSurgeon.firstName[0]}{team.leadSurgeon.lastName[0]}
-                        </Avatar>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            Dr. {team.leadSurgeon.firstName} {team.leadSurgeon.lastName}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            {team.leadSurgeon.department?.name}
-                          </Text>
-                        </div>
-                      </Group>
-                    </div>
-
-                    <div>
-                      <Text size="sm" fw={500} mb="sm">Team Members</Text>
-                      <Stack gap="xs">
-                        {team.teamMembers.slice(0, 3).map((member) => (
-                          <Group key={member.id} gap="sm">
-                            <Avatar size="sm" color="cyan" radius="xl">
-                              {member.firstName[0]}{member.lastName[0]}
-                            </Avatar>
-                            <div>
-                              <Text size="sm">{member.firstName} {member.lastName}</Text>
-                              <Text size="xs" c="dimmed">{member.role}</Text>
-                            </div>
-                          </Group>
-                        ))}
-                        {team.teamMembers.length > 3 && (
-                          <Text size="xs" c="dimmed">
-                            +{team.teamMembers.length - 3} more members
-                          </Text>
-                        )}
-                      </Stack>
-                    </div>
-                  </Stack>
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Created: {new Date(team.createdDate).toLocaleDateString()}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconUsers size={16} />
-                      </ActionIcon>
+              {[].map(
+                /* TODO: Fetch from API */ (team) => (
+                  <Card key={team.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {team.teamName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {team.specialization}
+                        </Text>
+                      </div>
+                      <Badge color={team.isActive ? 'green' : 'gray'} variant="light">
+                        {team.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+
+                    <Stack gap="md" mb="md">
+                      <div>
+                        <Text size="sm" fw={500} mb="sm">
+                          Lead Surgeon
+                        </Text>
+                        <Group>
+                          <Avatar color="blue" radius="xl">
+                            {team.leadSurgeon.firstName[0]}
+                            {team.leadSurgeon.lastName[0]}
+                          </Avatar>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              Dr. {team.leadSurgeon.firstName} {team.leadSurgeon.lastName}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {team.leadSurgeon.department?.name}
+                            </Text>
+                          </div>
+                        </Group>
+                      </div>
+
+                      <div>
+                        <Text size="sm" fw={500} mb="sm">
+                          Team Members
+                        </Text>
+                        <Stack gap="xs">
+                          {team.teamMembers.slice(0, 3).map((member) => (
+                            <Group key={member.id} gap="sm">
+                              <Avatar size="sm" color="cyan" radius="xl">
+                                {member.firstName[0]}
+                                {member.lastName[0]}
+                              </Avatar>
+                              <div>
+                                <Text size="sm">
+                                  {member.firstName} {member.lastName}
+                                </Text>
+                                <Text size="xs" c="dimmed">
+                                  {member.role}
+                                </Text>
+                              </div>
+                            </Group>
+                          ))}
+                          {team.teamMembers.length > 3 && (
+                            <Text size="xs" c="dimmed">
+                              +{team.teamMembers.length - 3} more members
+                            </Text>
+                          )}
+                        </Stack>
+                      </div>
+                    </Stack>
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Created: {new Date(team.createdDate).toLocaleDateString()}
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconUsers size={16} />
+                        </ActionIcon>
+                      </Group>
+                    </Group>
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -900,80 +977,105 @@ const SurgeryManagement = () => {
         {/* Reports & Analytics Tab */}
         <Tabs.Panel value="reports">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Surgery Reports & Analytics</Title>
-            
+            <Title order={3} mb="lg">
+              Surgery Reports & Analytics
+            </Title>
+
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Surgery Types Distribution */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Surgeries by Type</Title>
-                <MantineDonutChart
-                  data={surgeryTypeData}
-                  size={160}
-                  thickness={30}
-                  withLabels
-                />
+                <Title order={4} mb="md">
+                  Surgeries by Type
+                </Title>
+                <MantineDonutChart data={surgeryTypeData} size={160} thickness={30} withLabels />
               </Card>
-              
+
               {/* Monthly Surgery Volume */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Monthly Surgery Volume</Title>
+                <Title order={4} mb="md">
+                  Monthly Surgery Volume
+                </Title>
                 <SimpleAreaChart
                   data={monthlyVolume}
                   dataKey="month"
                   series={[{ name: 'surgeries', color: 'blue.6' }]}
                 />
               </Card>
-              
+
               {/* OR Utilization */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
-                <Title order={4} mb="md">Operating Room Utilization</Title>
+                <Title order={4} mb="md">
+                  Operating Room Utilization
+                </Title>
                 <SimpleBarChart
                   data={orUtilization}
                   dataKey="or"
-                  series={[
-                    { name: 'utilization', color: 'orange.6' }
-                  ]}
+                  series={[{ name: 'utilization', color: 'orange.6' }]}
                 />
               </Card>
-              
+
               {/* Key Performance Indicators */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Key Performance Indicators</Title>
+                <Title order={4} mb="md">
+                  Key Performance Indicators
+                </Title>
                 <Stack gap="md">
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Surgery Success Rate</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Surgery Success Rate
+                    </Text>
                     <Text size="sm" fw={600} c="green">
                       {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Average Turnover Time</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Average Turnover Time
+                    </Text>
                     <Text size="sm" fw={600}>
                       {0 /* TODO: Fetch from API */}min
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>On-Time Start Rate</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      On-Time Start Rate
+                    </Text>
                     <Text size="sm" fw={600} c="green">
                       {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Complication Rate</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Complication Rate
+                    </Text>
                     <Text size="sm" fw={600} c="red">
                       {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
                 </Stack>
               </Card>
-              
+
               {/* Quick Actions */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Quick Reports</Title>
+                <Title order={4} mb="md">
+                  Quick Reports
+                </Title>
                 <Stack gap="sm">
                   <Button fullWidth leftSection={<IconDownload size={16} />} variant="light">
                     Export Surgery Log
@@ -1021,48 +1123,74 @@ const SurgeryManagement = () => {
 
               <SimpleGrid cols={2}>
                 <div>
-                  <Text size="sm" fw={500}>Patient</Text>
+                  <Text size="sm" fw={500}>
+                    Patient
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {selectedSurgery.patientName || 'N/A'}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Surgery Type</Text>
-                  <Badge color={getSurgeryTypeColor(selectedSurgery.surgeryType || 'general')} variant="light">
+                  <Text size="sm" fw={500}>
+                    Surgery Type
+                  </Text>
+                  <Badge
+                    color={getSurgeryTypeColor(selectedSurgery.surgeryType || 'general')}
+                    variant="light"
+                  >
                     {selectedSurgery.surgeryType || 'General'}
                   </Badge>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Primary Surgeon</Text>
+                  <Text size="sm" fw={500}>
+                    Primary Surgeon
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {selectedSurgery.surgeon || 'N/A'}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Operating Room</Text>
-                  <Text size="sm" c="dimmed">{selectedSurgery.operatingRoom || 'N/A'}</Text>
+                  <Text size="sm" fw={500}>
+                    Operating Room
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedSurgery.operatingRoom || 'N/A'}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Scheduled Date</Text>
+                  <Text size="sm" fw={500}>
+                    Scheduled Date
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {selectedSurgery.date || 'N/A'} {selectedSurgery.time || ''}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Estimated Duration</Text>
+                  <Text size="sm" fw={500}>
+                    Estimated Duration
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {selectedSurgery.duration || 0} minutes
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Priority</Text>
-                  <Badge color={getPriorityColor(selectedSurgery.priority || 'routine')} variant="light">
+                  <Text size="sm" fw={500}>
+                    Priority
+                  </Text>
+                  <Badge
+                    color={getPriorityColor(selectedSurgery.priority || 'routine')}
+                    variant="light"
+                  >
                     {(selectedSurgery.priority || 'routine').toUpperCase()}
                   </Badge>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Anesthesiologist</Text>
-                  <Text size="sm" c="dimmed">{selectedSurgery.anesthesiologist || 'N/A'}</Text>
+                  <Text size="sm" fw={500}>
+                    Anesthesiologist
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedSurgery.anesthesiologist || 'N/A'}
+                  </Text>
                 </div>
               </SimpleGrid>
 
@@ -1070,7 +1198,9 @@ const SurgeryManagement = () => {
                 <>
                   <Divider />
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Special Instructions</Text>
+                    <Text size="sm" fw={500} mb="sm">
+                      Special Instructions
+                    </Text>
                     <Text size="sm">{selectedSurgery.specialInstructions}</Text>
                   </div>
                 </>
@@ -1080,7 +1210,9 @@ const SurgeryManagement = () => {
                 <>
                   <Divider />
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Assistants</Text>
+                    <Text size="sm" fw={500} mb="sm">
+                      Assistants
+                    </Text>
                     <Stack gap="xs">
                       {selectedSurgery.assistants.map((assistant: string, index: number) => (
                         <Group key={index}>
@@ -1099,12 +1231,8 @@ const SurgeryManagement = () => {
                 <Button variant="light" onClick={closeSurgeryDetail}>
                   Close
                 </Button>
-                <Button leftSection={<IconClipboardList size={16} />}>
-                  Pre-Op Checklist
-                </Button>
-                <Button leftSection={<IconEdit size={16} />}>
-                  Edit Surgery
-                </Button>
+                <Button leftSection={<IconClipboardList size={16} />}>Pre-Op Checklist</Button>
+                <Button leftSection={<IconEdit size={16} />}>Edit Surgery</Button>
               </Group>
             </Stack>
           </ScrollArea>
@@ -1123,29 +1251,32 @@ const SurgeryManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={[].map /* TODO: Fetch from API */(patient => ({ 
-                value: patient.id, 
-                label: `${patient.firstName} ${patient.lastName}` 
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (patient) => ({
+                  value: patient.id,
+                  label: `${patient.firstName} ${patient.lastName}`,
+                })
+              )}
               required
             />
             <Select
               label="Primary Surgeon"
               placeholder="Select surgeon"
-              data={[].filter /* TODO: Fetch from API */((staff: any) => staff.role === 'Doctor' || staff.role === 'doctor').map((surgeon: any) => ({ 
-                value: surgeon.staffId, 
-                label: `Dr. ${surgeon.firstName} ${surgeon.lastName}` 
-              }))}
+              data={[]
+                .filter(
+                  /* TODO: Fetch from API */ (staff: any) =>
+                    staff.role === 'Doctor' || staff.role === 'doctor'
+                )
+                .map((surgeon: any) => ({
+                  value: surgeon.staffId,
+                  label: `Dr. ${surgeon.firstName} ${surgeon.lastName}`,
+                }))}
               required
             />
           </SimpleGrid>
-          
-          <TextInput
-            label="Procedure"
-            placeholder="Enter surgical procedure"
-            required
-          />
-          
+
+          <TextInput label="Procedure" placeholder="Enter surgical procedure" required />
+
           <SimpleGrid cols={2}>
             <Select
               label="Surgery Type"
@@ -1156,7 +1287,7 @@ const SurgeryManagement = () => {
                 { value: 'orthopedic', label: 'Orthopedic' },
                 { value: 'general', label: 'General' },
                 { value: 'plastic', label: 'Plastic' },
-                { value: 'pediatric', label: 'Pediatric' }
+                { value: 'pediatric', label: 'Pediatric' },
               ]}
               required
             />
@@ -1167,34 +1298,27 @@ const SurgeryManagement = () => {
                 { value: 'emergency', label: 'Emergency' },
                 { value: 'urgent', label: 'Urgent' },
                 { value: 'elective', label: 'Elective' },
-                { value: 'routine', label: 'Routine' }
+                { value: 'routine', label: 'Routine' },
               ]}
               required
             />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
-            <DatePickerInput
-              label="Surgery Date"
-              placeholder="Select date"
-              required
-            />
-            <NumberInput
-              label="Estimated Duration (minutes)"
-              placeholder="120"
-              min={30}
-              required
-            />
+            <DatePickerInput label="Surgery Date" placeholder="Select date" required />
+            <NumberInput label="Estimated Duration (minutes)" placeholder="120" min={30} required />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
             <Select
               label="Operating Room"
               placeholder="Select OR"
-              data={[].map /* TODO: Fetch from API */(or => ({ 
-                value: or.id, 
-                label: `OR ${or.roomNumber} - ${or.roomName}` 
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (or) => ({
+                  value: or.id,
+                  label: `OR ${or.roomNumber} - ${or.roomName}`,
+                })
+              )}
               required
             />
             <Select
@@ -1204,30 +1328,32 @@ const SurgeryManagement = () => {
                 { value: 'general', label: 'General' },
                 { value: 'local', label: 'Local' },
                 { value: 'regional', label: 'Regional' },
-                { value: 'spinal', label: 'Spinal' }
+                { value: 'spinal', label: 'Spinal' },
               ]}
               required
             />
           </SimpleGrid>
-          
+
           <Textarea
             label="Special Instructions"
             placeholder="Enter any special instructions"
             rows={3}
           />
-          
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddSurgery}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Surgery Scheduled',
-                message: 'Surgery has been successfully scheduled',
-                color: 'green',
-              });
-              closeAddSurgery();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Surgery Scheduled',
+                  message: 'Surgery has been successfully scheduled',
+                  color: 'green',
+                });
+                closeAddSurgery();
+              }}
+            >
               Schedule Surgery
             </Button>
           </Group>

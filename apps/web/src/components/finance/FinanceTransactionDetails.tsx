@@ -1,20 +1,11 @@
 import React from 'react';
-import {
-  Modal,
-  Text,
-  Group,
-  Stack,
-  Badge,
-  Button,
-  Divider,
-  Card
-} from '@mantine/core';
+import { Modal, Text, Group, Stack, Badge, Button, Divider, Card } from '@mantine/core';
 import {
   IconCurrencyRupee,
   IconCalendar,
   IconEdit,
   IconTrash,
-  IconReceipt
+  IconReceipt,
 } from '@tabler/icons-react';
 
 interface FinanceTransactionDetailsProps {
@@ -30,7 +21,7 @@ export default function FinanceTransactionDetails({
   onClose,
   transaction,
   onEdit,
-  onDelete
+  onDelete,
 }: FinanceTransactionDetailsProps) {
   if (!transaction) return null;
 
@@ -49,12 +40,12 @@ export default function FinanceTransactionDetails({
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   const formatCategory = (category: string) => {
-    return category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return category.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   return (
@@ -87,32 +78,37 @@ export default function FinanceTransactionDetails({
             <Text fw={600}>Transaction Information</Text>
           </Group>
           <Divider mb="sm" />
-          
+
           <Stack gap="sm">
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Type:</Text>
-              <Badge color={getTypeColor(transaction.type)}>
-                {transaction.type}
-              </Badge>
+              <Text size="sm" c="dimmed">
+                Type:
+              </Text>
+              <Badge color={getTypeColor(transaction.type)}>{transaction.type}</Badge>
             </Group>
-            
+
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Category:</Text>
+              <Text size="sm" c="dimmed">
+                Category:
+              </Text>
               <Text fw={500}>{formatCategory(transaction.category)}</Text>
             </Group>
-            
+
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Amount:</Text>
+              <Text size="sm" c="dimmed">
+                Amount:
+              </Text>
               <Text fw={600} size="lg" c={getTypeColor(transaction.type)}>
-                {transaction.type === 'EXPENSE' ? '-' : '+'}{formatCurrency(transaction.amount)}
+                {transaction.type === 'EXPENSE' ? '-' : '+'}
+                {formatCurrency(transaction.amount)}
               </Text>
             </Group>
-            
+
             <div>
-              <Text size="sm" c="dimmed" mb={4}>Description:</Text>
-              <Text style={{ whiteSpace: 'pre-wrap' }}>
-                {transaction.description}
+              <Text size="sm" c="dimmed" mb={4}>
+                Description:
               </Text>
+              <Text style={{ whiteSpace: 'pre-wrap' }}>{transaction.description}</Text>
             </div>
           </Stack>
         </Card>
@@ -124,24 +120,30 @@ export default function FinanceTransactionDetails({
             <Text fw={600}>Payment Information</Text>
           </Group>
           <Divider mb="sm" />
-          
+
           <Stack gap="sm">
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Date:</Text>
+              <Text size="sm" c="dimmed">
+                Date:
+              </Text>
               <Text size="sm">{formatDate(transaction.date)}</Text>
             </Group>
-            
+
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Payment Method:</Text>
-              <Badge variant="light">
-                {transaction.paymentMethod?.replace(/_/g, ' ')}
-              </Badge>
+              <Text size="sm" c="dimmed">
+                Payment Method:
+              </Text>
+              <Badge variant="light">{transaction.paymentMethod?.replace(/_/g, ' ')}</Badge>
             </Group>
-            
+
             {transaction.referenceNumber && (
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Reference Number:</Text>
-                <Text size="sm" fw={500}>{transaction.referenceNumber}</Text>
+                <Text size="sm" c="dimmed">
+                  Reference Number:
+                </Text>
+                <Text size="sm" fw={500}>
+                  {transaction.referenceNumber}
+                </Text>
               </Group>
             )}
           </Stack>
@@ -154,16 +156,20 @@ export default function FinanceTransactionDetails({
             <Text fw={600}>Record Information</Text>
           </Group>
           <Divider mb="sm" />
-          
+
           <Stack gap="sm">
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Created:</Text>
+              <Text size="sm" c="dimmed">
+                Created:
+              </Text>
               <Text size="sm">{formatDate(transaction.createdAt)}</Text>
             </Group>
-            
+
             {transaction.updatedAt && transaction.updatedAt !== transaction.createdAt && (
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Last Updated:</Text>
+                <Text size="sm" c="dimmed">
+                  Last Updated:
+                </Text>
                 <Text size="sm">{formatDate(transaction.updatedAt)}</Text>
               </Group>
             )}
@@ -189,7 +195,7 @@ export default function FinanceTransactionDetails({
               </Button>
             )}
           </Group>
-          
+
           <Group>
             {onEdit && (
               <Button

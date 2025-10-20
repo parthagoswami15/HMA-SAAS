@@ -44,7 +44,7 @@ class YourModuleService {
    */
   async getItems(filters?: ItemFilters) {
     const params = new URLSearchParams();
-    
+
     if (filters?.status) params.append('status', filters.status);
     if (filters?.search) params.append('search', filters.search);
     if (filters?.page) params.append('page', filters.page.toString());
@@ -52,7 +52,7 @@ class YourModuleService {
 
     const queryString = params.toString();
     const url = queryString ? `${this.baseUrl}?${queryString}` : this.baseUrl;
-    
+
     return apiClient.get<{ data: YourType[]; total: number; page: number; limit: number }>(url);
   }
 
@@ -105,11 +105,7 @@ Update `src/services/index.ts`:
 export { default as yourModuleService } from './your-module.service';
 
 // Add your types export
-export type {
-  CreateItemDto,
-  UpdateItemDto,
-  ItemFilters
-} from './your-module.service';
+export type { CreateItemDto, UpdateItemDto, ItemFilters } from './your-module.service';
 ```
 
 ## Step 3: Update the Page Component
@@ -130,7 +126,7 @@ const YourModulePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('main');
-  
+
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
@@ -151,7 +147,7 @@ const YourModulePage = () => {
       const response = await yourModuleService.getItems(filters);
       const itemsData = response.data || [];
       setItems(Array.isArray(itemsData) ? itemsData : []);
-      
+
     } catch (err) {
       const errorMessage = handleApiError(err);
       setError(errorMessage);
@@ -167,9 +163,9 @@ const YourModulePage = () => {
   const filteredItems = useMemo(() => {
     const itemsToFilter = items.length > 0 ? items : mockYourData;
     return itemsToFilter.filter((item) => {
-      const matchesSearch = 
+      const matchesSearch =
         item.name?.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesStatus = !selectedStatus || item.status === selectedStatus;
 
       return matchesSearch && matchesStatus;
@@ -286,12 +282,14 @@ export default YourModulePage;
 ## Step 5: Testing Your Integration
 
 1. **Start the backend server**:
+
    ```bash
    cd apps/api
    npm run start:dev
    ```
 
 2. **Start the frontend server**:
+
    ```bash
    cd apps/web
    npm run dev
@@ -321,7 +319,7 @@ const loadAllData = async () => {
 
     const [itemsRes, statsRes] = await Promise.all([
       yourModuleService.getItems({ limit: 100 }),
-      yourModuleService.getStats().catch(() => ({ data: mockStats }))
+      yourModuleService.getStats().catch(() => ({ data: mockStats })),
     ]);
 
     setItems(itemsRes.data || []);
@@ -345,7 +343,7 @@ useEffect(() => {
 const loadTabData = async () => {
   try {
     setLoading(true);
-    
+
     if (activeTab === 'items') {
       const response = await yourModuleService.getItems(filters);
       setItems(response.data || []);
@@ -364,6 +362,7 @@ const loadTabData = async () => {
 ## Examples
 
 See these integrated modules for reference:
+
 - `src/app/dashboard/patients/page.tsx` - Basic integration
 - `src/app/dashboard/laboratory/page.tsx` - Tab-based integration
 - `src/app/dashboard/inventory/page.tsx` - Multi-section integration

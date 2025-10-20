@@ -13,7 +13,7 @@ export interface MedicalRecord extends BaseEntity {
   recordDate: Date;
   visitId?: string;
   appointmentId?: string;
-  
+
   // Clinical Information
   chiefComplaint: string;
   historyOfPresentIllness: string;
@@ -22,32 +22,32 @@ export interface MedicalRecord extends BaseEntity {
   socialHistory?: string;
   allergies: Allergy[];
   medications: Medication[];
-  
+
   // Physical Examination
   vitalSigns: VitalSigns;
   physicalExamination: PhysicalExamination;
-  
+
   // Assessment and Plan
   assessment: string;
   diagnosis: Diagnosis[];
   treatmentPlan: string;
   prescriptions: Prescription[];
-  
+
   // Follow-up and Instructions
   followUpInstructions: string;
   followUpDate?: Date;
   referrals?: Referral[];
-  
+
   // Documentation
   clinicalNotes: string;
   additionalNotes?: string;
   attachments: MedicalDocument[];
-  
+
   // Status and Workflow
   status: MedicalRecordStatus;
   isConfidential: boolean;
   accessLevel: AccessLevel;
-  
+
   // Signatures and Approval
   doctorSignature?: DigitalSignature;
   isApproved: boolean;
@@ -55,7 +55,7 @@ export interface MedicalRecord extends BaseEntity {
   approvedDate?: Date;
 }
 
-export type MedicalRecordType = 
+export type MedicalRecordType =
   | 'consultation'
   | 'follow_up'
   | 'emergency'
@@ -69,7 +69,7 @@ export type MedicalRecordType =
   | 'vaccination'
   | 'physical_exam';
 
-export type MedicalRecordStatus = 
+export type MedicalRecordStatus =
   | 'draft'
   | 'pending_review'
   | 'reviewed'
@@ -77,11 +77,7 @@ export type MedicalRecordStatus =
   | 'amended'
   | 'archived';
 
-export type AccessLevel = 
-  | 'public'
-  | 'restricted'
-  | 'confidential'
-  | 'highly_confidential';
+export type AccessLevel = 'public' | 'restricted' | 'confidential' | 'highly_confidential';
 
 // Vital Signs
 export interface VitalSigns {
@@ -133,19 +129,9 @@ export interface Allergy {
   isActive: boolean;
 }
 
-export type AllergenType = 
-  | 'medication'
-  | 'food'
-  | 'environmental'
-  | 'latex'
-  | 'contrast'
-  | 'other';
+export type AllergenType = 'medication' | 'food' | 'environmental' | 'latex' | 'contrast' | 'other';
 
-export type AllergySeverity = 
-  | 'mild'
-  | 'moderate'
-  | 'severe'
-  | 'life_threatening';
+export type AllergySeverity = 'mild' | 'moderate' | 'severe' | 'life_threatening';
 
 // Medication Information
 export interface Medication {
@@ -166,7 +152,7 @@ export interface Medication {
   interactions?: string[];
 }
 
-export type MedicationRoute = 
+export type MedicationRoute =
   | 'oral'
   | 'intravenous'
   | 'intramuscular'
@@ -193,7 +179,7 @@ export interface Diagnosis {
   notes?: string;
 }
 
-export type DiagnosisType = 
+export type DiagnosisType =
   | 'primary'
   | 'secondary'
   | 'differential'
@@ -201,17 +187,9 @@ export type DiagnosisType =
   | 'chronic'
   | 'acute';
 
-export type DiagnosisCertainty = 
-  | 'confirmed'
-  | 'probable'
-  | 'possible'
-  | 'suspected';
+export type DiagnosisCertainty = 'confirmed' | 'probable' | 'possible' | 'suspected';
 
-export type DiagnosisStatus = 
-  | 'active'
-  | 'resolved'
-  | 'chronic'
-  | 'recurrent';
+export type DiagnosisStatus = 'active' | 'resolved' | 'chronic' | 'recurrent';
 
 // Prescription Information
 export interface Prescription {
@@ -243,7 +221,7 @@ export interface PrescribedMedication {
   cost?: number;
 }
 
-export type PrescriptionStatus = 
+export type PrescriptionStatus =
   | 'pending'
   | 'sent_to_pharmacy'
   | 'dispensed'
@@ -251,11 +229,7 @@ export type PrescriptionStatus =
   | 'cancelled'
   | 'expired';
 
-export type PrescriptionPriority = 
-  | 'routine'
-  | 'urgent'
-  | 'stat'
-  | 'emergency';
+export type PrescriptionPriority = 'routine' | 'urgent' | 'stat' | 'emergency';
 
 // Referral Information
 export interface Referral {
@@ -277,13 +251,9 @@ export interface Referral {
   feedback?: string;
 }
 
-export type ReferralUrgency = 
-  | 'routine'
-  | 'urgent'
-  | 'emergency'
-  | 'stat';
+export type ReferralUrgency = 'routine' | 'urgent' | 'emergency' | 'stat';
 
-export type ReferralStatus = 
+export type ReferralStatus =
   | 'pending'
   | 'approved'
   | 'scheduled'
@@ -303,41 +273,41 @@ export interface MedicalDocument extends BaseEntity {
   filePath: string;
   fileSize: number;
   mimeType: string;
-  
+
   // Document metadata
   documentDate: Date;
   uploadedBy: string;
   uploadedDate: Date;
-  
+
   // Medical context
   relatedRecordId?: string;
   relatedAppointmentId?: string;
   relatedTestId?: string;
-  
+
   // Security and Access
   isConfidential: boolean;
   accessLevel: AccessLevel;
   encryptionStatus: EncryptionStatus;
-  
+
   // Version control
   version: number;
   parentDocumentId?: string;
   isLatestVersion: boolean;
-  
+
   // Approval and signatures
   requiresApproval: boolean;
   approvalStatus?: ApprovalStatus;
   approvedBy?: string;
   approvedDate?: Date;
   digitalSignature?: DigitalSignature;
-  
+
   // Tags and categorization
   tags: string[];
   category: string;
   keywords: string[];
 }
 
-export type DocumentType = 
+export type DocumentType =
   | 'medical_report'
   | 'lab_result'
   | 'radiology_report'
@@ -353,16 +323,9 @@ export type DocumentType =
   | 'image'
   | 'other';
 
-export type EncryptionStatus = 
-  | 'not_encrypted'
-  | 'encrypted'
-  | 'highly_encrypted';
+export type EncryptionStatus = 'not_encrypted' | 'encrypted' | 'highly_encrypted';
 
-export type ApprovalStatus = 
-  | 'pending'
-  | 'approved'
-  | 'rejected'
-  | 'revision_required';
+export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'revision_required';
 
 // Digital Signature
 export interface DigitalSignature {
@@ -389,7 +352,7 @@ export interface LabResult extends BaseEntity {
   testType: LabTestType;
   testName: string;
   testCode: string;
-  
+
   // Sample Information
   sampleType: SampleType;
   sampleId: string;
@@ -397,30 +360,30 @@ export interface LabResult extends BaseEntity {
   collectionTime: string;
   collectedBy: string;
   receivedDate: Date;
-  
+
   // Test Results
   results: TestResult[];
   overallResult: string;
   interpretation: string;
   abnormalFlags: AbnormalFlag[];
-  
+
   // Reference ranges and values
   referenceRange?: string;
   units: string;
   methodology?: string;
-  
+
   // Status and workflow
   status: LabResultStatus;
   reportDate: Date;
   reportedBy: string;
   verifiedBy?: string;
   verifiedDate?: Date;
-  
+
   // Quality control
   qualityFlags: QualityFlag[];
   remarks?: string;
   technicalNotes?: string;
-  
+
   // Integration
   instrumentId?: string;
   batchNumber?: string;
@@ -438,7 +401,7 @@ export interface TestResult {
   status: TestResultStatus;
 }
 
-export type LabTestType = 
+export type LabTestType =
   | 'blood_chemistry'
   | 'hematology'
   | 'immunology'
@@ -453,7 +416,7 @@ export type LabTestType =
   | 'urinalysis'
   | 'other';
 
-export type SampleType = 
+export type SampleType =
   | 'blood'
   | 'serum'
   | 'plasma'
@@ -466,7 +429,7 @@ export type SampleType =
   | 'sputum'
   | 'other';
 
-export type AbnormalFlag = 
+export type AbnormalFlag =
   | 'high'
   | 'low'
   | 'critical_high'
@@ -475,7 +438,7 @@ export type AbnormalFlag =
   | 'positive'
   | 'negative';
 
-export type LabResultStatus = 
+export type LabResultStatus =
   | 'ordered'
   | 'collected'
   | 'in_progress'
@@ -484,13 +447,9 @@ export type LabResultStatus =
   | 'amended'
   | 'cancelled';
 
-export type TestResultStatus = 
-  | 'pending'
-  | 'completed'
-  | 'cancelled'
-  | 'repeat_required';
+export type TestResultStatus = 'pending' | 'completed' | 'cancelled' | 'repeat_required';
 
-export type QualityFlag = 
+export type QualityFlag =
   | 'hemolyzed'
   | 'lipemic'
   | 'icteric'
@@ -503,25 +462,25 @@ export interface MedicalHistory extends BaseEntity {
   historyId: string;
   patientId: string;
   patient: Patient;
-  
+
   // Past Medical History
   chronicConditions: ChronicCondition[];
   pastIllnesses: PastIllness[];
   surgicalHistory: SurgicalHistory[];
   hospitalizations: Hospitalization[];
-  
+
   // Family History
   familyHistory: FamilyHistoryItem[];
-  
+
   // Social History
   socialHistory: SocialHistory;
-  
+
   // Immunization History
   immunizations: Immunization[];
-  
+
   // Obstetric/Gynecologic History (if applicable)
   obGynHistory?: ObGynHistory;
-  
+
   // Last updated
   lastUpdated: Date;
   updatedBy: string;
@@ -580,7 +539,7 @@ export interface FamilyHistoryItem {
   notes?: string;
 }
 
-export type FamilyRelationship = 
+export type FamilyRelationship =
   | 'father'
   | 'mother'
   | 'brother'
@@ -621,26 +580,17 @@ export interface SocialHistory {
   supportSystem: string;
 }
 
-export type SmokingStatus = 
+export type SmokingStatus =
   | 'never_smoked'
   | 'former_smoker'
   | 'current_smoker'
   | 'occasional_smoker';
 
-export type AlcoholConsumption = 
-  | 'never'
-  | 'occasional'
-  | 'moderate'
-  | 'heavy'
-  | 'former_drinker';
+export type AlcoholConsumption = 'never' | 'occasional' | 'moderate' | 'heavy' | 'former_drinker';
 
-export type DrugUse = 
-  | 'never'
-  | 'former_user'
-  | 'current_user'
-  | 'occasional_user';
+export type DrugUse = 'never' | 'former_user' | 'current_user' | 'occasional_user';
 
-export type MaritalStatus = 
+export type MaritalStatus =
   | 'single'
   | 'married'
   | 'divorced'
@@ -664,7 +614,7 @@ export interface Immunization {
   notes?: string;
 }
 
-export type InjectionSite = 
+export type InjectionSite =
   | 'left_arm'
   | 'right_arm'
   | 'left_thigh'

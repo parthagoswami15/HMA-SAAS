@@ -38,7 +38,12 @@ import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 // import { DatePickerInput } from '@mantine/dates';
 import insuranceService from '../../../services/insurance.service';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleAreaChart,
+  SimpleBarChart,
+  SimpleLineChart,
+} from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -46,9 +51,9 @@ import {
   IconEye,
   // IconTrash,
   IconShield,
-  IconUser,
-  IconUsers,
-  IconCalendar,
+  // IconUser,
+  // IconUsers,
+  // IconCalendar,
   // IconClock,
   // IconStethoscope,
   // IconHeart,
@@ -62,7 +67,7 @@ import {
   // IconDroplet,
   // IconThermometer,
   // IconLungs,
-  IconFileText,
+  // IconFileText,
   IconPrinter,
   // IconDownload,
   IconRefresh,
@@ -103,7 +108,7 @@ import {
   // IconClockPause,
   // IconFileCheck,
   // IconFileX,
-  IconAlarm
+  IconAlarm,
 } from '@tabler/icons-react';
 
 // Types
@@ -200,7 +205,7 @@ interface PolicyDetails {
 }
 
 // Mock data
-const mockInsuranceProviders: InsuranceProvider[] = [
+const _mockInsuranceProviders: InsuranceProvider[] = [
   {
     id: '1',
     name: 'Star Health Insurance',
@@ -220,7 +225,7 @@ const mockInsuranceProviders: InsuranceProvider[] = [
     totalApproved: 756,
     totalRejected: 136,
     averageApprovalTime: 48,
-    approvalRate: 84.8
+    approvalRate: 84.8,
   },
   {
     id: '2',
@@ -241,7 +246,7 @@ const mockInsuranceProviders: InsuranceProvider[] = [
     totalApproved: 612,
     totalRejected: 60,
     averageApprovalTime: 36,
-    approvalRate: 91.1
+    approvalRate: 91.1,
   },
   {
     id: '3',
@@ -262,7 +267,7 @@ const mockInsuranceProviders: InsuranceProvider[] = [
     totalApproved: 1034,
     totalRejected: 90,
     averageApprovalTime: 42,
-    approvalRate: 92.0
+    approvalRate: 92.0,
   },
   {
     id: '4',
@@ -283,11 +288,11 @@ const mockInsuranceProviders: InsuranceProvider[] = [
     totalApproved: 356,
     totalRejected: 67,
     averageApprovalTime: 54,
-    approvalRate: 84.2
-  }
+    approvalRate: 84.2,
+  },
 ];
 
-const mockInsuranceClaims: InsuranceClaim[] = [
+const _mockInsuranceClaims: InsuranceClaim[] = [
   {
     id: '1',
     claimNumber: 'CLM2024001',
@@ -314,13 +319,33 @@ const mockInsuranceClaims: InsuranceClaim[] = [
     deductible: 10000,
     copayment: 15000,
     documents: [
-      { type: 'Discharge Summary', name: 'discharge_summary.pdf', uploadDate: '2024-01-15', status: 'verified' },
-      { type: 'Medical Bills', name: 'medical_bills.pdf', uploadDate: '2024-01-15', status: 'verified' }
+      {
+        type: 'Discharge Summary',
+        name: 'discharge_summary.pdf',
+        uploadDate: '2024-01-15',
+        status: 'verified',
+      },
+      {
+        type: 'Medical Bills',
+        name: 'medical_bills.pdf',
+        uploadDate: '2024-01-15',
+        status: 'verified',
+      },
     ],
     timeline: [
-      { date: '2024-01-10T08:30:00Z', status: 'submitted', description: 'Claim submitted', updatedBy: 'Hospital Staff' },
-      { date: '2024-01-12T14:20:00Z', status: 'approved', description: 'Claim approved', updatedBy: 'Insurance Officer' }
-    ]
+      {
+        date: '2024-01-10T08:30:00Z',
+        status: 'submitted',
+        description: 'Claim submitted',
+        updatedBy: 'Hospital Staff',
+      },
+      {
+        date: '2024-01-12T14:20:00Z',
+        status: 'approved',
+        description: 'Claim approved',
+        updatedBy: 'Insurance Officer',
+      },
+    ],
   },
   {
     id: '2',
@@ -347,12 +372,27 @@ const mockInsuranceClaims: InsuranceClaim[] = [
     deductible: 5000,
     copayment: 12500,
     documents: [
-      { type: 'Discharge Summary', name: 'discharge_summary.pdf', uploadDate: '2024-01-18', status: 'verified' },
-      { type: 'Medical Bills', name: 'medical_bills.pdf', uploadDate: '2024-01-18', status: 'pending' }
+      {
+        type: 'Discharge Summary',
+        name: 'discharge_summary.pdf',
+        uploadDate: '2024-01-18',
+        status: 'verified',
+      },
+      {
+        type: 'Medical Bills',
+        name: 'medical_bills.pdf',
+        uploadDate: '2024-01-18',
+        status: 'pending',
+      },
     ],
     timeline: [
-      { date: '2024-01-14T16:45:00Z', status: 'submitted', description: 'Claim submitted', updatedBy: 'Hospital Staff' }
-    ]
+      {
+        date: '2024-01-14T16:45:00Z',
+        status: 'submitted',
+        description: 'Claim submitted',
+        updatedBy: 'Hospital Staff',
+      },
+    ],
   },
   {
     id: '3',
@@ -378,17 +418,32 @@ const mockInsuranceClaims: InsuranceClaim[] = [
     deductible: 8000,
     copayment: 20000,
     documents: [
-      { type: 'Pre-authorization', name: 'preauth.pdf', uploadDate: '2024-01-13', status: 'verified' },
-      { type: 'Medical Reports', name: 'reports.pdf', uploadDate: '2024-01-13', status: 'pending' }
+      {
+        type: 'Pre-authorization',
+        name: 'preauth.pdf',
+        uploadDate: '2024-01-13',
+        status: 'verified',
+      },
+      { type: 'Medical Reports', name: 'reports.pdf', uploadDate: '2024-01-13', status: 'pending' },
     ],
     timeline: [
-      { date: '2024-01-13T11:30:00Z', status: 'submitted', description: 'Pre-authorization submitted', updatedBy: 'Hospital Staff' },
-      { date: '2024-01-14T09:15:00Z', status: 'investigating', description: 'Under medical review', updatedBy: 'Medical Officer' }
-    ]
-  }
+      {
+        date: '2024-01-13T11:30:00Z',
+        status: 'submitted',
+        description: 'Pre-authorization submitted',
+        updatedBy: 'Hospital Staff',
+      },
+      {
+        date: '2024-01-14T09:15:00Z',
+        status: 'investigating',
+        description: 'Under medical review',
+        updatedBy: 'Medical Officer',
+      },
+    ],
+  },
 ];
 
-const mockPolicyDetails: PolicyDetails[] = [
+const _mockPolicyDetails: PolicyDetails[] = [
   {
     id: '1',
     policyNumber: 'STAR123456789',
@@ -407,12 +462,12 @@ const mockPolicyDetails: PolicyDetails[] = [
     benefits: [
       { category: 'Hospitalization', coverageLimit: 500000, utilisedAmount: 125000 },
       { category: 'Day Care Procedures', coverageLimit: 50000, utilisedAmount: 0 },
-      { category: 'Maternity', coverageLimit: 75000, utilisedAmount: 0 }
+      { category: 'Maternity', coverageLimit: 75000, utilisedAmount: 0 },
     ],
     exclusions: ['Cosmetic Surgery', 'Dental Treatment', 'Pre-existing conditions (first year)'],
     claimsHistory: 2,
-    totalUtilised: 125000
-  }
+    totalUtilised: 125000,
+  },
 ];
 
 const InsuranceManagement = () => {
@@ -423,7 +478,7 @@ const InsuranceManagement = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedClaimType, setSelectedClaimType] = useState<string>('');
   const [selectedClaim, setSelectedClaim] = useState<InsuranceClaim | null>(null);
-  const [selectedPolicy, setSelectedPolicy] = useState<PolicyDetails | null>(null);
+  const [_selectedPolicy, _setSelectedPolicy] = useState<PolicyDetails | null>(null);
 
   // API data state
   const [_claims, _setClaims] = useState<InsuranceClaim[]>([]);
@@ -433,7 +488,7 @@ const InsuranceManagement = () => {
 
   useEffect(() => {
     fetchAllData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllData = async () => {
@@ -454,16 +509,17 @@ const InsuranceManagement = () => {
       const filters = {
         status: selectedStatus || undefined,
         providerId: selectedProvider || undefined,
-        search: searchQuery || undefined
+        search: searchQuery || undefined,
       };
       const response = await insuranceService.getClaims(filters);
       // Handle different response structures
-      const claimsData = Array.isArray(response.data) 
-        ? response.data 
-        : (response.data?.items || []);
+      const claimsData = Array.isArray(response.data) ? response.data : response.data?.items || [];
       _setClaims(claimsData as InsuranceClaim[]);
     } catch (err: any) {
-      console.warn('Error fetching claims (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching claims (using empty data):',
+        err.response?.data?.message || err.message
+      );
       _setClaims([]);
     }
   };
@@ -473,14 +529,17 @@ const InsuranceManagement = () => {
       const response = await insuranceService.getStats();
       _setStats(response.data);
     } catch (err: any) {
-      console.warn('Error fetching insurance stats (using default values):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching insurance stats (using default values):',
+        err.response?.data?.message || err.message
+      );
       _setStats({
         totalClaims: 0,
         pendingClaims: 0,
         approvedClaims: 0,
         rejectedClaims: 0,
         totalClaimAmount: 0,
-        approvedAmount: 0
+        approvedAmount: 0,
       });
     }
   };
@@ -489,29 +548,34 @@ const InsuranceManagement = () => {
     if (!_loading) {
       fetchClaims();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, selectedProvider, selectedStatus]);
 
   // Modal states
-  const [claimDetailOpened, { open: openClaimDetail, close: closeClaimDetail }] = useDisclosure(false);
+  const [claimDetailOpened, { open: openClaimDetail, close: closeClaimDetail }] =
+    useDisclosure(false);
   const [newClaimOpened, { open: openNewClaim, close: closeNewClaim }] = useDisclosure(false);
-  const [policyDetailOpened, { open: openPolicyDetail, close: closePolicyDetail }] = useDisclosure(false);
-  const [providerDetailOpened, { open: openProviderDetail, close: closeProviderDetail }] = useDisclosure(false);
+  const [_policyDetailOpened, { open: _openPolicyDetail, close: _closePolicyDetail }] =
+    useDisclosure(false);
+  const [_providerDetailOpened, { open: _openProviderDetail, close: _closeProviderDetail }] =
+    useDisclosure(false);
 
   // Filter claims
   const filteredClaims = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((claim) => {
-      const matchesSearch = 
-        claim.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        claim.claimNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        claim.policyNumber.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesProvider = !selectedProvider || claim.providerId === selectedProvider;
-      const matchesStatus = !selectedStatus || claim.status === selectedStatus;
-      const matchesType = !selectedClaimType || claim.claimType === selectedClaimType;
+    return [].filter(
+      /* TODO: Fetch from API */ (claim) => {
+        const matchesSearch =
+          claim.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          claim.claimNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          claim.policyNumber.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesProvider && matchesStatus && matchesType;
-    });
+        const matchesProvider = !selectedProvider || claim.providerId === selectedProvider;
+        const matchesStatus = !selectedStatus || claim.status === selectedStatus;
+        const matchesType = !selectedClaimType || claim.claimType === selectedClaimType;
+
+        return matchesSearch && matchesProvider && matchesStatus && matchesType;
+      }
+    );
   }, [searchQuery, selectedProvider, selectedStatus, selectedClaimType]);
 
   const handleViewClaim = (claim: InsuranceClaim) => {
@@ -519,16 +583,16 @@ const InsuranceManagement = () => {
     openClaimDetail();
   };
 
-  const handleViewPolicy = (policy: PolicyDetails) => {
-    setSelectedPolicy(policy);
-    openPolicyDetail();
+  const _handleViewPolicy = (policy: PolicyDetails) => {
+    _setSelectedPolicy(policy);
+    _openPolicyDetail();
   };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -538,41 +602,62 @@ const InsuranceManagement = () => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'green';
-      case 'rejected': return 'red';
-      case 'pending': return 'yellow';
-      case 'investigating': return 'orange';
-      case 'partial': return 'blue';
-      case 'settled': return 'teal';
-      default: return 'gray';
+      case 'approved':
+        return 'green';
+      case 'rejected':
+        return 'red';
+      case 'pending':
+        return 'yellow';
+      case 'investigating':
+        return 'orange';
+      case 'partial':
+        return 'blue';
+      case 'settled':
+        return 'teal';
+      default:
+        return 'gray';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'red';
-      case 'medium': return 'yellow';
-      case 'low': return 'green';
-      default: return 'gray';
+      case 'high':
+        return 'red';
+      case 'medium':
+        return 'yellow';
+      case 'low':
+        return 'green';
+      default:
+        return 'gray';
     }
   };
 
   // Insurance stats
   const insuranceStats = {
     totalClaims: 0 /* TODO: Fetch from API */,
-    pendingClaims: [].filter /* TODO: Fetch from API */(c => c.status === 'pending').length,
-    approvedClaims: [].filter /* TODO: Fetch from API */(c => c.status === 'approved').length,
-    rejectedClaims: [].filter /* TODO: Fetch from API */(c => c.status === 'rejected').length,
-    totalClaimedAmount: [].reduce /* TODO: Fetch from API */((acc, c) => acc + c.claimedAmount, 0),
-    totalApprovedAmount: [].reduce /* TODO: Fetch from API */((acc, c) => acc + c.approvedAmount, 0),
-    averageProcessingTime: Math.round([].reduce /* TODO: Fetch from API */((acc, c) => acc + (c.approvalDate ? 48 : 24), 0) / 0 /* TODO: Fetch from API */),
-    approvalRate: Math.round(([].filter /* TODO: Fetch from API */(c => c.status === 'approved').length / 0 /* TODO: Fetch from API */) * 100)
+    pendingClaims: [].filter(/* TODO: Fetch from API */ (c) => c.status === 'pending').length,
+    approvedClaims: [].filter(/* TODO: Fetch from API */ (c) => c.status === 'approved').length,
+    rejectedClaims: [].filter(/* TODO: Fetch from API */ (c) => c.status === 'rejected').length,
+    totalClaimedAmount: [].reduce(/* TODO: Fetch from API */ (acc, c) => acc + c.claimedAmount, 0),
+    totalApprovedAmount: [].reduce(
+      /* TODO: Fetch from API */ (acc, c) => acc + c.approvedAmount,
+      0
+    ),
+    averageProcessingTime: Math.round(
+      [].reduce(/* TODO: Fetch from API */ (acc, c) => acc + (c.approvalDate ? 48 : 24), 0) /
+        0 /* TODO: Fetch from API */
+    ),
+    approvalRate: Math.round(
+      ([].filter(/* TODO: Fetch from API */ (c) => c.status === 'approved').length /
+        0) /* TODO: Fetch from API */ *
+        100
+    ),
   };
 
   return (
@@ -603,8 +688,12 @@ const InsuranceManagement = () => {
               <IconClipboard size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{insuranceStats.totalClaims}</Text>
-              <Text size="xs" c="dimmed">Total Claims</Text>
+              <Text size="lg" fw={700}>
+                {insuranceStats.totalClaims}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Total Claims
+              </Text>
             </div>
           </Group>
         </Card>
@@ -615,8 +704,12 @@ const InsuranceManagement = () => {
               <IconClockHour4 size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{insuranceStats.pendingClaims}</Text>
-              <Text size="xs" c="dimmed">Pending</Text>
+              <Text size="lg" fw={700}>
+                {insuranceStats.pendingClaims}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Pending
+              </Text>
             </div>
           </Group>
         </Card>
@@ -627,8 +720,12 @@ const InsuranceManagement = () => {
               <IconCheck size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{insuranceStats.approvedClaims}</Text>
-              <Text size="xs" c="dimmed">Approved</Text>
+              <Text size="lg" fw={700}>
+                {insuranceStats.approvedClaims}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Approved
+              </Text>
             </div>
           </Group>
         </Card>
@@ -639,8 +736,12 @@ const InsuranceManagement = () => {
               <IconX size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{insuranceStats.rejectedClaims}</Text>
-              <Text size="xs" c="dimmed">Rejected</Text>
+              <Text size="lg" fw={700}>
+                {insuranceStats.rejectedClaims}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Rejected
+              </Text>
             </div>
           </Group>
         </Card>
@@ -651,8 +752,12 @@ const InsuranceManagement = () => {
               <IconCash size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>₹{(insuranceStats.totalClaimedAmount / 100000).toFixed(1)}L</Text>
-              <Text size="xs" c="dimmed">Claimed</Text>
+              <Text size="lg" fw={700}>
+                ₹{(insuranceStats.totalClaimedAmount / 100000).toFixed(1)}L
+              </Text>
+              <Text size="xs" c="dimmed">
+                Claimed
+              </Text>
             </div>
           </Group>
         </Card>
@@ -663,8 +768,12 @@ const InsuranceManagement = () => {
               <IconCreditCard size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>₹{(insuranceStats.totalApprovedAmount / 100000).toFixed(1)}L</Text>
-              <Text size="xs" c="dimmed">Approved</Text>
+              <Text size="lg" fw={700}>
+                ₹{(insuranceStats.totalApprovedAmount / 100000).toFixed(1)}L
+              </Text>
+              <Text size="xs" c="dimmed">
+                Approved
+              </Text>
             </div>
           </Group>
         </Card>
@@ -675,8 +784,12 @@ const InsuranceManagement = () => {
               <IconAlarm size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{insuranceStats.averageProcessingTime}h</Text>
-              <Text size="xs" c="dimmed">Avg Process</Text>
+              <Text size="lg" fw={700}>
+                {insuranceStats.averageProcessingTime}h
+              </Text>
+              <Text size="xs" c="dimmed">
+                Avg Process
+              </Text>
             </div>
           </Group>
         </Card>
@@ -687,8 +800,12 @@ const InsuranceManagement = () => {
               <IconPercentage size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{insuranceStats.approvalRate}%</Text>
-              <Text size="xs" c="dimmed">Approval Rate</Text>
+              <Text size="lg" fw={700}>
+                {insuranceStats.approvalRate}%
+              </Text>
+              <Text size="xs" c="dimmed">
+                Approval Rate
+              </Text>
             </div>
           </Group>
         </Card>
@@ -725,7 +842,7 @@ const InsuranceManagement = () => {
               />
               <Select
                 placeholder="Provider"
-                data={[].map /* TODO: Fetch from API */(p => ({ value: p.id, label: p.name }))}
+                data={[].map(/* TODO: Fetch from API */ (p) => ({ value: p.id, label: p.name }))}
                 value={selectedProvider}
                 onChange={setSelectedProvider}
                 clearable
@@ -737,7 +854,7 @@ const InsuranceManagement = () => {
                   { value: 'approved', label: 'Approved' },
                   { value: 'rejected', label: 'Rejected' },
                   { value: 'investigating', label: 'Investigating' },
-                  { value: 'settled', label: 'Settled' }
+                  { value: 'settled', label: 'Settled' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -747,7 +864,7 @@ const InsuranceManagement = () => {
                 placeholder="Type"
                 data={[
                   { value: 'cashless', label: 'Cashless' },
-                  { value: 'reimbursement', label: 'Reimbursement' }
+                  { value: 'reimbursement', label: 'Reimbursement' },
                 ]}
                 value={selectedClaimType}
                 onChange={setSelectedClaimType}
@@ -788,23 +905,36 @@ const InsuranceManagement = () => {
                     filteredClaims.map((claim) => (
                       <Table.Tr key={claim.id}>
                         <Table.Td>
-                          <Text fw={500} size="sm">{claim.claimNumber}</Text>
+                          <Text fw={500} size="sm">
+                            {claim.claimNumber}
+                          </Text>
                         </Table.Td>
                         <Table.Td>
                           <Group>
                             <Avatar color="blue" radius="xl" size="sm">
-                              {claim.patientName.split(' ').map(n => n[0]).join('')}
+                              {claim.patientName
+                                .split(' ')
+                                .map((n) => n[0])
+                                .join('')}
                             </Avatar>
                             <div>
-                              <Text size="sm" fw={500}>{claim.patientName}</Text>
-                              <Text size="xs" c="dimmed">{claim.patientAge}Y, {claim.patientGender}</Text>
+                              <Text size="sm" fw={500}>
+                                {claim.patientName}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {claim.patientAge}Y, {claim.patientGender}
+                              </Text>
                             </div>
                           </Group>
                         </Table.Td>
                         <Table.Td>
                           <div>
-                            <Text size="sm" fw={500}>{claim.providerName}</Text>
-                            <Text size="xs" c="dimmed">{claim.policyNumber}</Text>
+                            <Text size="sm" fw={500}>
+                              {claim.providerName}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {claim.policyNumber}
+                            </Text>
                           </div>
                         </Table.Td>
                         <Table.Td>
@@ -814,17 +944,25 @@ const InsuranceManagement = () => {
                         </Table.Td>
                         <Table.Td>
                           <div>
-                            <Text size="sm" fw={500}>{claim.diagnosis}</Text>
+                            <Text size="sm" fw={500}>
+                              {claim.diagnosis}
+                            </Text>
                             {claim.procedure && (
-                              <Text size="xs" c="dimmed">{claim.procedure}</Text>
+                              <Text size="xs" c="dimmed">
+                                {claim.procedure}
+                              </Text>
                             )}
                           </div>
                         </Table.Td>
                         <Table.Td>
                           <div>
-                            <Text size="sm" fw={500}>₹{claim.claimedAmount.toLocaleString()}</Text>
+                            <Text size="sm" fw={500}>
+                              ₹{claim.claimedAmount.toLocaleString()}
+                            </Text>
                             {claim.approvedAmount > 0 && (
-                              <Text size="xs" c="green">Approved: ₹{claim.approvedAmount.toLocaleString()}</Text>
+                              <Text size="xs" c="green">
+                                Approved: ₹{claim.approvedAmount.toLocaleString()}
+                              </Text>
                             )}
                           </div>
                         </Table.Td>
@@ -833,13 +971,15 @@ const InsuranceManagement = () => {
                             <Badge color={getStatusColor(claim.status)} variant="light" size="sm">
                               {claim.status.toUpperCase()}
                             </Badge>
-                            {claim.status === 'pending' && (
-                              <Indicator color="orange" size={8} />
-                            )}
+                            {claim.status === 'pending' && <Indicator color="orange" size={8} />}
                           </Group>
                         </Table.Td>
                         <Table.Td>
-                          <Badge color={getPriorityColor(claim.priority)} variant="outline" size="sm">
+                          <Badge
+                            color={getPriorityColor(claim.priority)}
+                            variant="outline"
+                            size="sm"
+                          >
                             {claim.priority.toUpperCase()}
                           </Badge>
                         </Table.Td>
@@ -878,82 +1018,122 @@ const InsuranceManagement = () => {
         {/* Policy Management Tab */}
         <Tabs.Panel value="policies">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Active Policies</Title>
-            
+            <Title order={3} mb="lg">
+              Active Policies
+            </Title>
+
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((policy) => (
-                <Card key={policy.id} padding="lg" radius="md" withBorder onClick={() => handleViewPolicy(policy)} style={{ cursor: 'pointer' }}>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{policy.planName}</Text>
-                      <Text size="sm" c="dimmed">{policy.policyNumber}</Text>
-                    </div>
-                    <Badge color={policy.status === 'active' ? 'green' : 'red'} variant="light">
-                      {policy.status.toUpperCase()}
-                    </Badge>
-                  </Group>
-
-                  <Group mb="md">
-                    <Avatar color="blue" size="md" radius="xl">
-                      {policy.patientName.split(' ').map(n => n[0]).join('')}
-                    </Avatar>
-                    <div>
-                      <Text size="sm" fw={500}>{policy.patientName}</Text>
-                      <Text size="xs" c="dimmed">{policy.providerName}</Text>
-                    </div>
-                  </Group>
-
-                  <div className="mb-md">
-                    <Text size="sm" c="dimmed" mb="xs">Coverage Utilization</Text>
-                    <Progress 
-                      value={(policy.totalUtilised / policy.coverageAmount) * 100} 
-                      size="lg" 
-                      color={policy.totalUtilised > policy.coverageAmount * 0.8 ? 'red' : 'blue'}
-                    />
-                    <Group justify="space-between" mt="xs">
-                      <Text size="xs" c="dimmed">
-                        ₹{policy.totalUtilised.toLocaleString()} used
-                      </Text>
-                      <Text size="xs" c="dimmed">
-                        ₹{policy.coverageAmount.toLocaleString()} total
-                      </Text>
+              {[].map(
+                /* TODO: Fetch from API */ (policy) => (
+                  <Card
+                    key={policy.id}
+                    padding="lg"
+                    radius="md"
+                    withBorder
+                    onClick={() => _handleViewPolicy(policy)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {policy.planName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {policy.policyNumber}
+                        </Text>
+                      </div>
+                      <Badge color={policy.status === 'active' ? 'green' : 'red'} variant="light">
+                        {policy.status.toUpperCase()}
+                      </Badge>
                     </Group>
-                  </div>
 
-                  <SimpleGrid cols={2} spacing="sm" mb="md">
-                    <div>
-                      <Text size="xs" c="dimmed">Policy Type</Text>
-                      <Text size="sm" fw={500} tt="capitalize">{policy.policyType}</Text>
-                    </div>
-                    <div>
-                      <Text size="xs" c="dimmed">Claims</Text>
-                      <Text size="sm" fw={500}>{policy.claimsHistory}</Text>
-                    </div>
-                    <div>
-                      <Text size="xs" c="dimmed">Start Date</Text>
-                      <Text size="sm" fw={500}>{formatDate(policy.startDate)}</Text>
-                    </div>
-                    <div>
-                      <Text size="xs" c="dimmed">End Date</Text>
-                      <Text size="sm" fw={500}>{formatDate(policy.endDate)}</Text>
-                    </div>
-                  </SimpleGrid>
-
-                  <Group justify="space-between">
-                    <Text size="sm" fw={600} c="green">
-                      ₹{policy.coverageAmount.toLocaleString()}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
+                    <Group mb="md">
+                      <Avatar color="blue" size="md" radius="xl">
+                        {policy.patientName
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')}
+                      </Avatar>
+                      <div>
+                        <Text size="sm" fw={500}>
+                          {policy.patientName}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          {policy.providerName}
+                        </Text>
+                      </div>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+
+                    <div className="mb-md">
+                      <Text size="sm" c="dimmed" mb="xs">
+                        Coverage Utilization
+                      </Text>
+                      <Progress
+                        value={(policy.totalUtilised / policy.coverageAmount) * 100}
+                        size="lg"
+                        color={policy.totalUtilised > policy.coverageAmount * 0.8 ? 'red' : 'blue'}
+                      />
+                      <Group justify="space-between" mt="xs">
+                        <Text size="xs" c="dimmed">
+                          ₹{policy.totalUtilised.toLocaleString()} used
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          ₹{policy.coverageAmount.toLocaleString()} total
+                        </Text>
+                      </Group>
+                    </div>
+
+                    <SimpleGrid cols={2} spacing="sm" mb="md">
+                      <div>
+                        <Text size="xs" c="dimmed">
+                          Policy Type
+                        </Text>
+                        <Text size="sm" fw={500} tt="capitalize">
+                          {policy.policyType}
+                        </Text>
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed">
+                          Claims
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {policy.claimsHistory}
+                        </Text>
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed">
+                          Start Date
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {formatDate(policy.startDate)}
+                        </Text>
+                      </div>
+                      <div>
+                        <Text size="xs" c="dimmed">
+                          End Date
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {formatDate(policy.endDate)}
+                        </Text>
+                      </div>
+                    </SimpleGrid>
+
+                    <Group justify="space-between">
+                      <Text size="sm" fw={600} c="green">
+                        ₹{policy.coverageAmount.toLocaleString()}
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                      </Group>
+                    </Group>
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -961,84 +1141,122 @@ const InsuranceManagement = () => {
         {/* Providers & TPA Tab */}
         <Tabs.Panel value="providers">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Insurance Providers & TPA</Title>
-            
+            <Title order={3} mb="lg">
+              Insurance Providers & TPA
+            </Title>
+
             <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((provider) => (
-                <Card key={provider.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Group mb="xs">
-                        <ThemeIcon color="blue" variant="light">
-                          <IconBuildingBank size={20} />
-                        </ThemeIcon>
-                        <div>
-                          <Text fw={600} size="lg">{provider.name}</Text>
-                          <Text size="sm" c="dimmed">{provider.code} • {provider.type.toUpperCase()}</Text>
-                        </div>
+              {[].map(
+                /* TODO: Fetch from API */ (provider) => (
+                  <Card key={provider.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Group mb="xs">
+                          <ThemeIcon color="blue" variant="light">
+                            <IconBuildingBank size={20} />
+                          </ThemeIcon>
+                          <div>
+                            <Text fw={600} size="lg">
+                              {provider.name}
+                            </Text>
+                            <Text size="sm" c="dimmed">
+                              {provider.code} • {provider.type.toUpperCase()}
+                            </Text>
+                          </div>
+                        </Group>
+                      </div>
+                      <Badge color={provider.activeStatus ? 'green' : 'red'} variant="light">
+                        {provider.activeStatus ? 'ACTIVE' : 'INACTIVE'}
+                      </Badge>
+                    </Group>
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Contact Person
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {provider.contactPerson}
+                        </Text>
                       </Group>
-                    </div>
-                    <Badge color={provider.activeStatus ? 'green' : 'red'} variant="light">
-                      {provider.activeStatus ? 'ACTIVE' : 'INACTIVE'}
-                    </Badge>
-                  </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Phone
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {provider.phone}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Cashless Limit
+                        </Text>
+                        <Text size="sm" fw={500} c="green">
+                          ₹{provider.cashlessLimit.toLocaleString()}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Approval Rate
+                        </Text>
+                        <Text
+                          size="sm"
+                          fw={500}
+                          c={provider.approvalRate > 85 ? 'green' : 'orange'}
+                        >
+                          {provider.approvalRate}%
+                        </Text>
+                      </Group>
+                    </Stack>
 
-                  <Stack gap="sm" mb="md">
+                    <Divider mb="md" />
+
+                    <SimpleGrid cols={3} spacing="sm" mb="md">
+                      <div style={{ textAlign: 'center' }}>
+                        <Text size="lg" fw={700} c="blue">
+                          {provider.totalPolicies}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Policies
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <Text size="lg" fw={700} c="orange">
+                          {provider.totalClaims}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Claims
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <Text size="lg" fw={700} c="green">
+                          {provider.totalApproved}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Approved
+                        </Text>
+                      </div>
+                    </SimpleGrid>
+
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Contact Person</Text>
-                      <Text size="sm" fw={500}>{provider.contactPerson}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Phone</Text>
-                      <Text size="sm" fw={500}>{provider.phone}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Cashless Limit</Text>
-                      <Text size="sm" fw={500} c="green">₹{provider.cashlessLimit.toLocaleString()}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Approval Rate</Text>
-                      <Text size="sm" fw={500} c={provider.approvalRate > 85 ? 'green' : 'orange'}>
-                        {provider.approvalRate}%
+                      <Text size="xs" c="dimmed">
+                        Avg Processing: {provider.averageApprovalTime}h
                       </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="purple">
+                          <IconExternalLink size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Stack>
-
-                  <Divider mb="md" />
-
-                  <SimpleGrid cols={3} spacing="sm" mb="md">
-                    <div style={{ textAlign: 'center' }}>
-                      <Text size="lg" fw={700} c="blue">{provider.totalPolicies}</Text>
-                      <Text size="xs" c="dimmed">Policies</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <Text size="lg" fw={700} c="orange">{provider.totalClaims}</Text>
-                      <Text size="xs" c="dimmed">Claims</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <Text size="lg" fw={700} c="green">{provider.totalApproved}</Text>
-                      <Text size="xs" c="dimmed">Approved</Text>
-                    </div>
-                  </SimpleGrid>
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Avg Processing: {provider.averageApprovalTime}h
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="purple">
-                        <IconExternalLink size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -1048,13 +1266,15 @@ const InsuranceManagement = () => {
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
             {/* Claims Status Distribution */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Claims Status Distribution</Title>
+              <Title order={4} mb="md">
+                Claims Status Distribution
+              </Title>
               <MantineDonutChart
                 data={[
                   { name: 'Approved', value: 1, color: 'green' },
                   { name: 'Pending', value: 1, color: 'yellow' },
                   { name: 'Rejected', value: 1, color: 'red' },
-                  { name: 'Under Review', value: 1, color: 'blue' }
+                  { name: 'Under Review', value: 1, color: 'blue' },
                 ]}
                 size={200}
                 thickness={30}
@@ -1064,13 +1284,15 @@ const InsuranceManagement = () => {
 
             {/* Provider Performance */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Provider Approval Rates</Title>
+              <Title order={4} mb="md">
+                Provider Approval Rates
+              </Title>
               <SimpleBarChart
                 data={[
                   { provider: 'Max Bupa', rate: 92.0 },
                   { provider: 'Star Health', rate: 88.5 },
                   { provider: 'ICICI Lombard', rate: 85.0 },
-                  { provider: 'HDFC Ergo', rate: 90.0 }
+                  { provider: 'HDFC Ergo', rate: 90.0 },
                 ]}
                 dataKey="provider"
                 series={[{ name: 'rate', color: 'blue.6' }]}
@@ -1079,7 +1301,9 @@ const InsuranceManagement = () => {
 
             {/* Monthly Claims Trend */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Monthly Claims Trend</Title>
+              <Title order={4} mb="md">
+                Monthly Claims Trend
+              </Title>
               <SimpleLineChart
                 data={[
                   { month: 'Jan', claims: 125, approved: 112 },
@@ -1087,19 +1311,21 @@ const InsuranceManagement = () => {
                   { month: 'Mar', claims: 145, approved: 132 },
                   { month: 'Apr', claims: 152, approved: 140 },
                   { month: 'May', claims: 160, approved: 148 },
-                  { month: 'Jun', claims: 155, approved: 142 }
+                  { month: 'Jun', claims: 155, approved: 142 },
                 ]}
                 dataKey="month"
                 series={[
                   { name: 'claims', color: 'blue.6', label: 'Claims' },
-                  { name: 'approved', color: 'green.6', label: 'Approved' }
+                  { name: 'approved', color: 'green.6', label: 'Approved' },
                 ]}
               />
             </Card>
 
             {/* Claim Amount Analysis */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Claim Amount Analysis</Title>
+              <Title order={4} mb="md">
+                Claim Amount Analysis
+              </Title>
               <SimpleAreaChart
                 data={[
                   { month: 'Jan', claimed: 2500000, approved: 2200000 },
@@ -1107,12 +1333,12 @@ const InsuranceManagement = () => {
                   { month: 'Mar', claimed: 3100000, approved: 2750000 },
                   { month: 'Apr', claimed: 2900000, approved: 2600000 },
                   { month: 'May', claimed: 3300000, approved: 2950000 },
-                  { month: 'Jun', claimed: 3500000, approved: 3100000 }
+                  { month: 'Jun', claimed: 3500000, approved: 3100000 },
                 ]}
                 dataKey="month"
                 series={[
                   { name: 'claimed', color: 'orange.6' },
-                  { name: 'approved', color: 'green.6' }
+                  { name: 'approved', color: 'green.6' },
                 ]}
               />
             </Card>
@@ -1121,12 +1347,7 @@ const InsuranceManagement = () => {
       </Tabs>
 
       {/* Claim Detail Modal */}
-      <Modal
-        opened={claimDetailOpened}
-        onClose={closeClaimDetail}
-        title="Claim Details"
-        size="xl"
-      >
+      <Modal opened={claimDetailOpened} onClose={closeClaimDetail} title="Claim Details" size="xl">
         {selectedClaim && (
           <ScrollArea h={600}>
             <Stack gap="md">
@@ -1135,7 +1356,9 @@ const InsuranceManagement = () => {
                 <Group justify="space-between" mb="md">
                   <div>
                     <Title order={3}>{selectedClaim.claimNumber}</Title>
-                    <Text c="dimmed">{selectedClaim.patientName} • {selectedClaim.providerName}</Text>
+                    <Text c="dimmed">
+                      {selectedClaim.patientName} • {selectedClaim.providerName}
+                    </Text>
                     <Group gap="xs" mt="xs">
                       <Badge color={getStatusColor(selectedClaim.status)} variant="light">
                         {selectedClaim.status.toUpperCase()}
@@ -1157,19 +1380,29 @@ const InsuranceManagement = () => {
 
                 <SimpleGrid cols={4} spacing="md">
                   <div>
-                    <Text size="sm" c="dimmed">Policy Number</Text>
+                    <Text size="sm" c="dimmed">
+                      Policy Number
+                    </Text>
                     <Text fw={500}>{selectedClaim.policyNumber}</Text>
                   </div>
                   <div>
-                    <Text size="sm" c="dimmed">Claim Type</Text>
-                    <Text fw={500} tt="capitalize">{selectedClaim.claimType}</Text>
+                    <Text size="sm" c="dimmed">
+                      Claim Type
+                    </Text>
+                    <Text fw={500} tt="capitalize">
+                      {selectedClaim.claimType}
+                    </Text>
                   </div>
                   <div>
-                    <Text size="sm" c="dimmed">Admission Date</Text>
+                    <Text size="sm" c="dimmed">
+                      Admission Date
+                    </Text>
                     <Text fw={500}>{formatDate(selectedClaim.admissionDate)}</Text>
                   </div>
                   <div>
-                    <Text size="sm" c="dimmed">Submission Date</Text>
+                    <Text size="sm" c="dimmed">
+                      Submission Date
+                    </Text>
                     <Text fw={500}>{formatDate(selectedClaim.submissionDate)}</Text>
                   </div>
                 </SimpleGrid>
@@ -1177,15 +1410,21 @@ const InsuranceManagement = () => {
 
               {/* Medical Information */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={5} mb="md">Medical Information</Title>
+                <Title order={5} mb="md">
+                  Medical Information
+                </Title>
                 <SimpleGrid cols={2} spacing="md">
                   <div>
-                    <Text size="sm" c="dimmed" fw={500} mb="xs">Diagnosis</Text>
+                    <Text size="sm" c="dimmed" fw={500} mb="xs">
+                      Diagnosis
+                    </Text>
                     <Text>{selectedClaim.diagnosis}</Text>
                   </div>
                   {selectedClaim.procedure && (
                     <div>
-                      <Text size="sm" c="dimmed" fw={500} mb="xs">Procedure</Text>
+                      <Text size="sm" c="dimmed" fw={500} mb="xs">
+                        Procedure
+                      </Text>
                       <Text>{selectedClaim.procedure}</Text>
                     </div>
                   )}
@@ -1194,23 +1433,41 @@ const InsuranceManagement = () => {
 
               {/* Financial Information */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={5} mb="md">Financial Breakdown</Title>
+                <Title order={5} mb="md">
+                  Financial Breakdown
+                </Title>
                 <SimpleGrid cols={2} spacing="md">
                   <div>
-                    <Text size="sm" c="dimmed">Total Bill Amount</Text>
-                    <Text size="xl" fw={700} c="blue">₹{selectedClaim.totalBillAmount.toLocaleString()}</Text>
+                    <Text size="sm" c="dimmed">
+                      Total Bill Amount
+                    </Text>
+                    <Text size="xl" fw={700} c="blue">
+                      ₹{selectedClaim.totalBillAmount.toLocaleString()}
+                    </Text>
                   </div>
                   <div>
-                    <Text size="sm" c="dimmed">Claimed Amount</Text>
-                    <Text size="xl" fw={700} c="orange">₹{selectedClaim.claimedAmount.toLocaleString()}</Text>
+                    <Text size="sm" c="dimmed">
+                      Claimed Amount
+                    </Text>
+                    <Text size="xl" fw={700} c="orange">
+                      ₹{selectedClaim.claimedAmount.toLocaleString()}
+                    </Text>
                   </div>
                   <div>
-                    <Text size="sm" c="dimmed">Approved Amount</Text>
-                    <Text size="xl" fw={700} c="green">₹{selectedClaim.approvedAmount.toLocaleString()}</Text>
+                    <Text size="sm" c="dimmed">
+                      Approved Amount
+                    </Text>
+                    <Text size="xl" fw={700} c="green">
+                      ₹{selectedClaim.approvedAmount.toLocaleString()}
+                    </Text>
                   </div>
                   <div>
-                    <Text size="sm" c="dimmed">Rejected Amount</Text>
-                    <Text size="xl" fw={700} c="red">₹{selectedClaim.rejectedAmount.toLocaleString()}</Text>
+                    <Text size="sm" c="dimmed">
+                      Rejected Amount
+                    </Text>
+                    <Text size="xl" fw={700} c="red">
+                      ₹{selectedClaim.rejectedAmount.toLocaleString()}
+                    </Text>
                   </div>
                 </SimpleGrid>
 
@@ -1218,11 +1475,15 @@ const InsuranceManagement = () => {
 
                 <SimpleGrid cols={2} spacing="md">
                   <div>
-                    <Text size="sm" c="dimmed">Deductible</Text>
+                    <Text size="sm" c="dimmed">
+                      Deductible
+                    </Text>
                     <Text fw={500}>₹{selectedClaim.deductible.toLocaleString()}</Text>
                   </div>
                   <div>
-                    <Text size="sm" c="dimmed">Co-payment</Text>
+                    <Text size="sm" c="dimmed">
+                      Co-payment
+                    </Text>
                     <Text fw={500}>₹{selectedClaim.copayment.toLocaleString()}</Text>
                   </div>
                 </SimpleGrid>
@@ -1230,15 +1491,36 @@ const InsuranceManagement = () => {
 
               {/* Documents */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={5} mb="md">Submitted Documents</Title>
+                <Title order={5} mb="md">
+                  Submitted Documents
+                </Title>
                 <Stack gap="sm">
                   {selectedClaim.documents.map((doc, index) => (
-                    <Group key={index} justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                    <Group
+                      key={index}
+                      justify="space-between"
+                      p="sm"
+                      style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                    >
                       <div>
-                        <Text size="sm" fw={500}>{doc.name}</Text>
-                        <Text size="xs" c="dimmed">{doc.type} • {formatDate(doc.uploadDate)}</Text>
+                        <Text size="sm" fw={500}>
+                          {doc.name}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          {doc.type} • {formatDate(doc.uploadDate)}
+                        </Text>
                       </div>
-                      <Badge color={doc.status === 'verified' ? 'green' : doc.status === 'rejected' ? 'red' : 'yellow'} variant="light" size="sm">
+                      <Badge
+                        color={
+                          doc.status === 'verified'
+                            ? 'green'
+                            : doc.status === 'rejected'
+                              ? 'red'
+                              : 'yellow'
+                        }
+                        variant="light"
+                        size="sm"
+                      >
                         {doc.status.toUpperCase()}
                       </Badge>
                     </Group>
@@ -1248,11 +1530,19 @@ const InsuranceManagement = () => {
 
               {/* Timeline */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={5} mb="md">Claim Timeline</Title>
+                <Title order={5} mb="md">
+                  Claim Timeline
+                </Title>
                 <Timeline active={selectedClaim.timeline.length - 1} bulletSize={24} lineWidth={2}>
                   {selectedClaim.timeline.map((item, index) => (
-                    <Timeline.Item key={index} bullet={<IconCheck size={12} />} title={item.status.toUpperCase()}>
-                      <Text c="dimmed" size="sm">{item.description}</Text>
+                    <Timeline.Item
+                      key={index}
+                      bullet={<IconCheck size={12} />}
+                      title={item.status.toUpperCase()}
+                    >
+                      <Text c="dimmed" size="sm">
+                        {item.description}
+                      </Text>
                       <Text size="xs" mt={4}>
                         {formatDateTime(item.date)} • {item.updatedBy}
                       </Text>
@@ -1269,9 +1559,7 @@ const InsuranceManagement = () => {
                 <Button variant="light" leftSection={<IconFileUpload size={16} />}>
                   Upload Documents
                 </Button>
-                <Button leftSection={<IconEdit size={16} />}>
-                  Update Claim
-                </Button>
+                <Button leftSection={<IconEdit size={16} />}>Update Claim</Button>
               </Group>
             </Stack>
           </ScrollArea>
@@ -1293,7 +1581,7 @@ const InsuranceManagement = () => {
               data={[
                 { value: 'P001', label: 'Rajesh Kumar' },
                 { value: 'P002', label: 'Sunita Patel' },
-                { value: 'P003', label: 'Mohammed Ali' }
+                { value: 'P003', label: 'Mohammed Ali' },
               ]}
               searchable
               required
@@ -1301,33 +1589,25 @@ const InsuranceManagement = () => {
             <Select
               label="Insurance Provider"
               placeholder="Select provider"
-              data={[].map /* TODO: Fetch from API */(p => ({ value: p.id, label: p.name }))}
+              data={[].map(/* TODO: Fetch from API */ (p) => ({ value: p.id, label: p.name }))}
               required
             />
           </SimpleGrid>
 
           <SimpleGrid cols={2} spacing="md">
-            <TextInput
-              label="Policy Number"
-              placeholder="Enter policy number"
-              required
-            />
+            <TextInput label="Policy Number" placeholder="Enter policy number" required />
             <Select
               label="Claim Type"
               placeholder="Select type"
               data={[
                 { value: 'cashless', label: 'Cashless' },
-                { value: 'reimbursement', label: 'Reimbursement' }
+                { value: 'reimbursement', label: 'Reimbursement' },
               ]}
               required
             />
           </SimpleGrid>
 
-          <Textarea
-            label="Diagnosis"
-            placeholder="Enter primary diagnosis"
-            required
-          />
+          <Textarea label="Diagnosis" placeholder="Enter primary diagnosis" required />
 
           <SimpleGrid cols={2} spacing="md">
             <NumberInput
@@ -1342,7 +1622,7 @@ const InsuranceManagement = () => {
               data={[
                 { value: 'high', label: 'High' },
                 { value: 'medium', label: 'Medium' },
-                { value: 'low', label: 'Low' }
+                { value: 'low', label: 'Low' },
               ]}
               defaultValue="medium"
               required
@@ -1353,14 +1633,16 @@ const InsuranceManagement = () => {
             <Button variant="light" onClick={closeNewClaim}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Claim Submitted',
-                message: 'Insurance claim has been successfully submitted',
-                color: 'green',
-              });
-              closeNewClaim();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Claim Submitted',
+                  message: 'Insurance claim has been successfully submitted',
+                  color: 'green',
+                });
+                closeNewClaim();
+              }}
+            >
               Submit Claim
             </Button>
           </Group>

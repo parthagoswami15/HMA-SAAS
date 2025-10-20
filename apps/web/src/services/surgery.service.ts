@@ -190,7 +190,10 @@ const surgeryService = {
   /**
    * Get upcoming surgeries
    */
-  getUpcomingSurgeries: async (): Promise<{ success: boolean; data: SurgeryResponse['data'][] }> => {
+  getUpcomingSurgeries: async (): Promise<{
+    success: boolean;
+    data: SurgeryResponse['data'][];
+  }> => {
     return enhancedApiClient.get('/surgery/schedule/upcoming');
   },
 

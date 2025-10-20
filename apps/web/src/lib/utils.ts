@@ -7,9 +7,12 @@ export const generateId = (): string => {
 };
 
 // Format date utilities
-export const formatDate = (date: Date | string, format: 'short' | 'long' | 'time' = 'short'): string => {
+export const formatDate = (
+  date: Date | string,
+  format: 'short' | 'long' | 'time' = 'short'
+): string => {
   const d = typeof date === 'string' ? new Date(date) : date;
-  
+
   if (isNaN(d.getTime())) {
     return 'Invalid Date';
   }
@@ -19,18 +22,18 @@ export const formatDate = (date: Date | string, format: 'short' | 'long' | 'time
       return d.toLocaleDateString('en-IN', {
         day: '2-digit',
         month: '2-digit',
-        year: 'numeric'
+        year: 'numeric',
       });
     case 'long':
       return d.toLocaleDateString('en-IN', {
         day: 'numeric',
         month: 'long',
-        year: 'numeric'
+        year: 'numeric',
       });
     case 'time':
       return d.toLocaleTimeString('en-IN', {
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     default:
       return d.toLocaleDateString();
@@ -39,11 +42,11 @@ export const formatDate = (date: Date | string, format: 'short' | 'long' | 'time
 
 export const formatDateTime = (date: Date | string): string => {
   const d = typeof date === 'string' ? new Date(date) : date;
-  
+
   if (isNaN(d.getTime())) {
     return 'Invalid Date';
   }
-  
+
   return `${formatDate(d, 'short')} ${formatDate(d, 'time')}`;
 };
 
@@ -79,7 +82,7 @@ export const getRelativeTime = (date: Date | string): string => {
 export const formatCurrency = (amount: number, currency: string = '₹'): string => {
   return `${currency}${amount.toLocaleString('en-IN', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   })}`;
 };
 
@@ -87,17 +90,17 @@ export const formatCurrency = (amount: number, currency: string = '₹'): string
 export const formatPhoneNumber = (phone: string): string => {
   // Remove all non-digits
   const cleaned = phone.replace(/\D/g, '');
-  
+
   // Indian mobile number format: +91 XXXXX XXXXX
   if (cleaned.length === 10) {
     return `+91 ${cleaned.slice(0, 5)} ${cleaned.slice(5)}`;
   }
-  
+
   // If already has country code
   if (cleaned.length === 12 && cleaned.startsWith('91')) {
     return `+91 ${cleaned.slice(2, 7)} ${cleaned.slice(7)}`;
   }
-  
+
   return phone; // Return as-is if format is unknown
 };
 
@@ -117,12 +120,12 @@ export const isValidPhoneNumber = (phone: string): boolean => {
 export const isValidAadhaar = (aadhaar: string): boolean => {
   // Remove spaces and hyphens
   const cleaned = aadhaar.replace(/[\s-]/g, '');
-  
+
   // Check if it's 12 digits
   if (!/^\d{12}$/.test(cleaned)) {
     return false;
   }
-  
+
   // Verhoeff algorithm for Aadhaar validation
   const verhoeffTable = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -134,9 +137,9 @@ export const isValidAadhaar = (aadhaar: string): boolean => {
     [6, 5, 9, 8, 7, 1, 0, 4, 3, 2],
     [7, 6, 5, 9, 8, 2, 1, 0, 4, 3],
     [8, 7, 6, 5, 9, 3, 2, 1, 0, 4],
-    [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+    [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
   ];
-  
+
   const permutationTable = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
     [1, 5, 7, 6, 2, 8, 3, 0, 9, 4],
@@ -145,16 +148,16 @@ export const isValidAadhaar = (aadhaar: string): boolean => {
     [9, 4, 5, 3, 1, 2, 6, 8, 7, 0],
     [4, 2, 8, 6, 5, 7, 3, 9, 0, 1],
     [2, 7, 9, 3, 8, 0, 6, 4, 1, 5],
-    [7, 0, 4, 6, 9, 1, 3, 2, 5, 8]
+    [7, 0, 4, 6, 9, 1, 3, 2, 5, 8],
   ];
-  
+
   let c = 0;
   const reversedNumber = cleaned.split('').reverse();
-  
+
   for (let i = 0; i < reversedNumber.length; i++) {
-    c = verhoeffTable[c][permutationTable[(i % 8)][parseInt(reversedNumber[i])]];
+    c = verhoeffTable[c][permutationTable[i % 8][parseInt(reversedNumber[i])]];
   }
-  
+
   return c === 0;
 };
 
@@ -164,7 +167,7 @@ export const debounce = <T extends (...args: unknown[]) => unknown>(
   delay: number
 ): ((...args: Parameters<T>) => void) => {
   let timeoutId: NodeJS.Timeout;
-  
+
   return (...args: Parameters<T>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func(...args), delay);
@@ -177,7 +180,7 @@ export const throttle = <T extends (...args: unknown[]) => unknown>(
   delay: number
 ): ((...args: Parameters<T>) => void) => {
   let lastCall = 0;
-  
+
   return (...args: Parameters<T>) => {
     const now = Date.now();
     if (now - lastCall >= delay) {
@@ -192,15 +195,15 @@ export const deepClone = <T>(obj: T): T => {
   if (obj === null || typeof obj !== 'object') {
     return obj;
   }
-  
+
   if (obj instanceof Date) {
     return new Date(obj.getTime()) as unknown as T;
   }
-  
+
   if (obj instanceof Array) {
-    return obj.map(item => deepClone(item)) as unknown as T;
+    return obj.map((item) => deepClone(item)) as unknown as T;
   }
-  
+
   if (typeof obj === 'object') {
     const cloned = {} as { [key: string]: unknown };
     for (const key in obj) {
@@ -210,7 +213,7 @@ export const deepClone = <T>(obj: T): T => {
     }
     return cloned as T;
   }
-  
+
   return obj;
 };
 
@@ -220,22 +223,22 @@ export const calculateAge = (dateOfBirth: Date | string): number => {
   const today = new Date();
   let age = today.getFullYear() - dob.getFullYear();
   const monthDiff = today.getMonth() - dob.getMonth();
-  
+
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
     age--;
   }
-  
+
   return age;
 };
 
 // File size formatting
 export const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
@@ -250,9 +253,9 @@ export const getStatusColor = (status: string): string => {
     urgent: '#ff6b6b',
     high: '#ff8787',
     medium: '#ffec99',
-    low: '#51cf66'
+    low: '#51cf66',
   };
-  
+
   return statusColors[status.toLowerCase()] || '#868e96';
 };
 
@@ -261,9 +264,9 @@ export const getPriorityColor = (priority: string): string => {
     urgent: '#ff6b6b',
     high: '#ff8787',
     medium: '#ffec99',
-    low: '#51cf66'
+    low: '#51cf66',
   };
-  
+
   return priorityColors[priority.toLowerCase()] || '#868e96';
 };
 
@@ -286,21 +289,24 @@ export const camelCaseToTitle = (text: string): string => {
 
 // Array utilities
 export const groupBy = <T>(array: T[], key: keyof T): { [key: string]: T[] } => {
-  return array.reduce((groups, item) => {
-    const groupKey = String(item[key]);
-    if (!groups[groupKey]) {
-      groups[groupKey] = [];
-    }
-    groups[groupKey].push(item);
-    return groups;
-  }, {} as { [key: string]: T[] });
+  return array.reduce(
+    (groups, item) => {
+      const groupKey = String(item[key]);
+      if (!groups[groupKey]) {
+        groups[groupKey] = [];
+      }
+      groups[groupKey].push(item);
+      return groups;
+    },
+    {} as { [key: string]: T[] }
+  );
 };
 
 export const sortBy = <T>(array: T[], key: keyof T, direction: 'asc' | 'desc' = 'asc'): T[] => {
   return [...array].sort((a, b) => {
     const aVal = a[key];
     const bVal = b[key];
-    
+
     if (aVal < bVal) return direction === 'asc' ? -1 : 1;
     if (aVal > bVal) return direction === 'asc' ? 1 : -1;
     return 0;
@@ -318,7 +324,7 @@ export const createApiResponse = <T>(
     success,
     data,
     message,
-    errors
+    errors,
   };
 };
 
@@ -326,11 +332,11 @@ export const handleApiError = (error: any): AppError => {
   if (error instanceof AppError) {
     return error;
   }
-  
+
   if (error.response?.data?.message) {
     return new AppError(error.response.data.message, error.response.status);
   }
-  
+
   return new AppError(error.message || 'An unexpected error occurred', 500);
 };
 
@@ -346,7 +352,7 @@ export const setStorageItem = (key: string, value: unknown): void => {
 export const getStorageItem = <T>(key: string, defaultValue?: T): T | null => {
   try {
     const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue ?? null;
+    return item ? JSON.parse(item) : (defaultValue ?? null);
   } catch (error) {
     console.error('Error reading from localStorage:', error);
     return defaultValue ?? null;
@@ -418,7 +424,7 @@ const utils = {
   createValidationError,
   validateRequired,
   validateEmail,
-  validatePhoneNumber
+  validatePhoneNumber,
 };
 
 export default utils;

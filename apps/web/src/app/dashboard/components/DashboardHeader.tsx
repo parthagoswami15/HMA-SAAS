@@ -10,27 +10,26 @@ interface DashboardHeaderProps {
   showBackButton?: boolean;
 }
 
-export function DashboardHeader({ 
-  title = 'Dashboard', 
+export function DashboardHeader({
+  title = 'Dashboard',
   items = [],
-  showBackButton = true
+  showBackButton = true,
 }: DashboardHeaderProps) {
   const router = useRouter();
-  
-  const breadcrumbItems = [
-    { title: 'Dashboard', href: '/dashboard' },
-    ...items
-  ].filter(Boolean);
+
+  const breadcrumbItems = [{ title: 'Dashboard', href: '/dashboard' }, ...items].filter(Boolean);
 
   return (
     <div className="mb-6">
       <Group justify="space-between" mb="md">
         <div>
-          <Text fw={700} size="xl">{title}</Text>
+          <Text fw={700} size="xl">
+            {title}
+          </Text>
           <Breadcrumbs separator={<IconChevronRight size={16} />} mt={4}>
             {breadcrumbItems.map((item, index) => (
-              <Anchor 
-                key={index} 
+              <Anchor
+                key={index}
                 href={item.href}
                 underline="never"
                 c={index === breadcrumbItems.length - 1 ? 'blue' : 'dimmed'}
@@ -41,10 +40,10 @@ export function DashboardHeader({
             ))}
           </Breadcrumbs>
         </div>
-        
+
         {showBackButton && (
-          <Button 
-            variant="light" 
+          <Button
+            variant="light"
             leftSection={<IconLayoutDashboard size={16} />}
             onClick={() => router.push('/dashboard')}
           >

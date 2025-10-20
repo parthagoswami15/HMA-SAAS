@@ -185,76 +185,57 @@ export interface LabStats {
 // Filters
 
 // Type definitions
-export type TestCategory = 
-  | 'hematology' 
-  | 'biochemistry' 
-  | 'microbiology' 
-  | 'immunology' 
-  | 'pathology' 
-  | 'molecular' 
+export type TestCategory =
+  | 'hematology'
+  | 'biochemistry'
+  | 'microbiology'
+  | 'immunology'
+  | 'pathology'
+  | 'molecular'
   | 'genetics';
 
-export type TestType = 
-  | 'routine' 
-  | 'urgent' 
-  | 'stat' 
-  | 'research';
+export type TestType = 'routine' | 'urgent' | 'stat' | 'research';
 
-export type TestStatus = 
-  | 'pending' 
-  | 'in_progress' 
-  | 'completed' 
-  | 'cancelled' 
-  | 'rejected';
+export type TestStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'rejected';
 
-export type OrderStatus = 
+export type OrderStatus =
   | 'draft'
-  | 'pending' 
-  | 'in_progress' 
-  | 'completed' 
-  | 'cancelled' 
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled'
   | 'rejected';
 
-export type SampleStatus = 
-  | 'collected' 
-  | 'received' 
-  | 'processed' 
+export type SampleStatus =
+  | 'collected'
+  | 'received'
+  | 'processed'
   | 'expired'
-  | 'contaminated' 
+  | 'contaminated'
   | 'rejected';
 
-export type SampleType = 
-  | 'blood' 
-  | 'urine' 
-  | 'stool' 
-  | 'sputum' 
-  | 'csf' 
-  | 'tissue' 
-  | 'swab' 
+export type SampleType =
+  | 'blood'
+  | 'urine'
+  | 'stool'
+  | 'sputum'
+  | 'csf'
+  | 'tissue'
+  | 'swab'
   | 'saliva'
   | 'plasma'
   | 'serum';
 
-export type EquipmentStatus = 
-  | 'operational' 
-  | 'maintenance' 
-  | 'calibration' 
-  | 'out_of_service' 
+export type EquipmentStatus =
+  | 'operational'
+  | 'maintenance'
+  | 'calibration'
+  | 'out_of_service'
   | 'repair';
 
-export type QCStatus = 
-  | 'passed' 
-  | 'failed' 
-  | 'in_review' 
-  | 'pending';
+export type QCStatus = 'passed' | 'failed' | 'in_review' | 'pending';
 
-export type ResultFlag = 
-  | 'normal' 
-  | 'high' 
-  | 'low' 
-  | 'critical_high' 
-  | 'critical_low' 
-  | 'abnormal';
+export type ResultFlag = 'normal' | 'high' | 'low' | 'critical_high' | 'critical_low' | 'abnormal';
 
 // Additional types for laboratory management
 export interface LabFilters {

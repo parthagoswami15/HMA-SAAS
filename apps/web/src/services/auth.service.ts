@@ -1,4 +1,4 @@
-import apiClient, { handleApiError } from '@/lib/api-client';
+import apiClient, { handleApiError } from '../lib/api-client';
 
 export interface LoginCredentials {
   email: string;
@@ -36,17 +36,17 @@ class AuthService {
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
       const response = await apiClient.post('/auth/register', data);
-      
+
       // Backend returns { user: {...}, tokens: { accessToken, refreshToken } }
       const { user, tokens } = response.data;
-      
+
       // Store tokens and user info
       if (typeof window !== 'undefined') {
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
         localStorage.setItem('user', JSON.stringify(user));
       }
-      
+
       return {
         user,
         accessToken: tokens.accessToken,
@@ -63,17 +63,17 @@ class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
       const response = await apiClient.post('/auth/login', credentials);
-      
+
       // Backend returns { user: {...}, tokens: { accessToken, refreshToken } }
       const { user, tokens } = response.data;
-      
+
       // Store tokens and user info
       if (typeof window !== 'undefined') {
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
         localStorage.setItem('user', JSON.stringify(user));
       }
-      
+
       return {
         user,
         accessToken: tokens.accessToken,
@@ -133,19 +133,20 @@ class AuthService {
    */
   async refreshToken(): Promise<string> {
     try {
-      const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
-      
+      const refreshToken =
+        typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
+
       if (!refreshToken) {
         throw new Error('No refresh token available');
       }
 
       const response = await apiClient.post('/auth/refresh', { refreshToken });
-      
+
       // Store new access token
       if (typeof window !== 'undefined') {
         localStorage.setItem('accessToken', response.data.accessToken);
       }
-      
+
       return response.data.accessToken;
     } catch (error) {
       this.logout();

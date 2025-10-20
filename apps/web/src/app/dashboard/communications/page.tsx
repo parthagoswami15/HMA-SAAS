@@ -27,13 +27,17 @@ import {
   Alert,
   Timeline,
   MultiSelect,
-  Indicator
+  Indicator,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
-import { MantineDonutChart, SimpleLineChart, SimpleAreaChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleLineChart,
+  SimpleAreaChart,
+} from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -61,7 +65,7 @@ import {
   IconClockPause,
   IconAlertCircle,
   IconCalendar,
-  IconCheck
+  IconCheck,
 } from '@tabler/icons-react';
 
 // Types
@@ -69,7 +73,14 @@ interface CommunicationTemplate {
   id: string;
   name: string;
   type: 'sms' | 'whatsapp' | 'email' | 'push' | 'voice';
-  category: 'appointment' | 'reminder' | 'follow-up' | 'emergency' | 'marketing' | 'billing' | 'general';
+  category:
+    | 'appointment'
+    | 'reminder'
+    | 'follow-up'
+    | 'emergency'
+    | 'marketing'
+    | 'billing'
+    | 'general';
   subject?: string;
   content: string;
   variables: string[];
@@ -137,7 +148,7 @@ interface CommunicationCampaign {
   createdDate: string;
 }
 
-interface _NotificationSettings {
+interface NotificationSettings {
   id: string;
   userId: string;
   userType: 'patient' | 'doctor' | 'admin' | 'staff';
@@ -165,32 +176,41 @@ interface _NotificationSettings {
 }
 
 // Mock data
-const _mockTemplates: CommunicationTemplate[] = [
+const mockTemplates: CommunicationTemplate[] = [
   {
     id: '1',
     name: 'Appointment Reminder',
     type: 'sms',
     category: 'reminder',
-    content: 'Dear {{patientName}}, your appointment with Dr. {{doctorName}} is scheduled for {{appointmentDate}} at {{appointmentTime}}. Please arrive 15 minutes early. For any changes, call {{hospitalPhone}}.',
+    content:
+      'Dear {{patientName}}, your appointment with Dr. {{doctorName}} is scheduled for {{appointmentDate}} at {{appointmentTime}}. Please arrive 15 minutes early. For any changes, call {{hospitalPhone}}.',
     variables: ['patientName', 'doctorName', 'appointmentDate', 'appointmentTime', 'hospitalPhone'],
     isActive: true,
     createdDate: '2024-01-01T00:00:00Z',
     lastUsed: '2024-01-15T10:30:00Z',
     usageCount: 245,
-    language: 'English'
+    language: 'English',
   },
   {
     id: '2',
     name: 'WhatsApp Appointment Confirmation',
     type: 'whatsapp',
     category: 'appointment',
-    content: '🏥 *Appointment Confirmed* ✅\n\nHello {{patientName}},\n\nYour appointment has been confirmed:\n📅 Date: {{appointmentDate}}\n⏰ Time: {{appointmentTime}}\n👨‍⚕️ Doctor: Dr. {{doctorName}}\n🏢 Department: {{department}}\n\nPlease arrive 15 minutes before your appointment.\n\n📞 For any queries, call: {{hospitalPhone}}\n\nThank you for choosing our hospital! 🙏',
-    variables: ['patientName', 'appointmentDate', 'appointmentTime', 'doctorName', 'department', 'hospitalPhone'],
+    content:
+      '🏥 *Appointment Confirmed* ✅\n\nHello {{patientName}},\n\nYour appointment has been confirmed:\n📅 Date: {{appointmentDate}}\n⏰ Time: {{appointmentTime}}\n👨‍⚕️ Doctor: Dr. {{doctorName}}\n🏢 Department: {{department}}\n\nPlease arrive 15 minutes before your appointment.\n\n📞 For any queries, call: {{hospitalPhone}}\n\nThank you for choosing our hospital! 🙏',
+    variables: [
+      'patientName',
+      'appointmentDate',
+      'appointmentTime',
+      'doctorName',
+      'department',
+      'hospitalPhone',
+    ],
     isActive: true,
     createdDate: '2024-01-01T00:00:00Z',
     lastUsed: '2024-01-15T14:20:00Z',
     usageCount: 189,
-    language: 'English'
+    language: 'English',
   },
   {
     id: '3',
@@ -198,43 +218,53 @@ const _mockTemplates: CommunicationTemplate[] = [
     type: 'email',
     category: 'billing',
     subject: 'Payment Reminder - Bill #{{billNumber}}',
-    content: 'Dear {{patientName}},\n\nThis is a friendly reminder that your bill #{{billNumber}} of ₹{{amount}} is due for payment.\n\nDue Date: {{dueDate}}\nAmount: ₹{{amount}}\n\nYou can pay online at {{paymentLink}} or visit our billing counter.\n\nThank you for your prompt attention.\n\nBest regards,\nBilling Department\n{{hospitalName}}',
+    content:
+      'Dear {{patientName}},\n\nThis is a friendly reminder that your bill #{{billNumber}} of ₹{{amount}} is due for payment.\n\nDue Date: {{dueDate}}\nAmount: ₹{{amount}}\n\nYou can pay online at {{paymentLink}} or visit our billing counter.\n\nThank you for your prompt attention.\n\nBest regards,\nBilling Department\n{{hospitalName}}',
     variables: ['patientName', 'billNumber', 'amount', 'dueDate', 'paymentLink', 'hospitalName'],
     isActive: true,
     createdDate: '2024-01-02T00:00:00Z',
     lastUsed: '2024-01-14T16:45:00Z',
     usageCount: 78,
-    language: 'English'
+    language: 'English',
   },
   {
     id: '4',
     name: 'Emergency Alert',
     type: 'sms',
     category: 'emergency',
-    content: '🚨 EMERGENCY ALERT: {{emergencyType}} reported at {{location}}. All available {{department}} staff please report immediately. Time: {{timestamp}}',
+    content:
+      '🚨 EMERGENCY ALERT: {{emergencyType}} reported at {{location}}. All available {{department}} staff please report immediately. Time: {{timestamp}}',
     variables: ['emergencyType', 'location', 'department', 'timestamp'],
     isActive: true,
     createdDate: '2024-01-03T00:00:00Z',
     lastUsed: '2024-01-10T22:15:00Z',
     usageCount: 12,
-    language: 'English'
+    language: 'English',
   },
   {
     id: '5',
     name: 'Lab Report Ready',
     type: 'whatsapp',
     category: 'follow-up',
-    content: '🔬 *Lab Report Ready* 📋\n\nDear {{patientName}},\n\nYour lab report for tests conducted on {{testDate}} is now ready.\n\n📊 Report ID: {{reportId}}\n🏥 Collected at: {{hospitalName}}\n\nYou can:\n• Collect from reception\n• Download from patient portal: {{portalLink}}\n• Request home delivery\n\n📞 Contact: {{hospitalPhone}}\n\nThank you! 🙏',
-    variables: ['patientName', 'testDate', 'reportId', 'hospitalName', 'portalLink', 'hospitalPhone'],
+    content:
+      '🔬 *Lab Report Ready* 📋\n\nDear {{patientName}},\n\nYour lab report for tests conducted on {{testDate}} is now ready.\n\n📊 Report ID: {{reportId}}\n🏥 Collected at: {{hospitalName}}\n\nYou can:\n• Collect from reception\n• Download from patient portal: {{portalLink}}\n• Request home delivery\n\n📞 Contact: {{hospitalPhone}}\n\nThank you! 🙏',
+    variables: [
+      'patientName',
+      'testDate',
+      'reportId',
+      'hospitalName',
+      'portalLink',
+      'hospitalPhone',
+    ],
     isActive: true,
     createdDate: '2024-01-04T00:00:00Z',
     lastUsed: '2024-01-15T11:30:00Z',
     usageCount: 156,
-    language: 'English'
-  }
+    language: 'English',
+  },
 ];
 
-const _mockMessages: CommunicationMessage[] = [
+const mockMessages: CommunicationMessage[] = [
   {
     id: '1',
     templateId: '1',
@@ -244,9 +274,10 @@ const _mockMessages: CommunicationMessage[] = [
       id: 'P001',
       name: 'Rajesh Kumar',
       phone: '+91 98765 43210',
-      type: 'patient'
+      type: 'patient',
     },
-    content: 'Dear Rajesh Kumar, your appointment with Dr. Sharma is scheduled for 2024-01-16 at 10:30 AM. Please arrive 15 minutes early. For any changes, call +91 98765 00000.',
+    content:
+      'Dear Rajesh Kumar, your appointment with Dr. Sharma is scheduled for 2024-01-16 at 10:30 AM. Please arrive 15 minutes early. For any changes, call +91 98765 00000.',
     status: 'delivered',
     priority: 'high',
     sentTime: '2024-01-15T10:30:00Z',
@@ -255,8 +286,8 @@ const _mockMessages: CommunicationMessage[] = [
     cost: 0.25,
     metadata: {
       patientId: 'P001',
-      appointmentId: 'APT001'
-    }
+      appointmentId: 'APT001',
+    },
   },
   {
     id: '2',
@@ -267,9 +298,10 @@ const _mockMessages: CommunicationMessage[] = [
       id: 'P002',
       name: 'Sunita Patel',
       phone: '+91 87654 32109',
-      type: 'patient'
+      type: 'patient',
     },
-    content: '🏥 *Appointment Confirmed* ✅\n\nHello Sunita Patel,\n\nYour appointment has been confirmed:\n📅 Date: 2024-01-17\n⏰ Time: 02:30 PM\n👨‍⚕️ Doctor: Dr. Mehta\n🏢 Department: Gynecology\n\nPlease arrive 15 minutes before your appointment.\n\n📞 For any queries, call: +91 98765 00000\n\nThank you for choosing our hospital! 🙏',
+    content:
+      '🏥 *Appointment Confirmed* ✅\n\nHello Sunita Patel,\n\nYour appointment has been confirmed:\n📅 Date: 2024-01-17\n⏰ Time: 02:30 PM\n👨‍⚕️ Doctor: Dr. Mehta\n🏢 Department: Gynecology\n\nPlease arrive 15 minutes before your appointment.\n\n📞 For any queries, call: +91 98765 00000\n\nThank you for choosing our hospital! 🙏',
     status: 'read',
     priority: 'medium',
     sentTime: '2024-01-15T14:20:00Z',
@@ -279,8 +311,8 @@ const _mockMessages: CommunicationMessage[] = [
     cost: 0.15,
     metadata: {
       patientId: 'P002',
-      appointmentId: 'APT002'
-    }
+      appointmentId: 'APT002',
+    },
   },
   {
     id: '3',
@@ -291,10 +323,11 @@ const _mockMessages: CommunicationMessage[] = [
       id: 'P003',
       name: 'Mohammed Ali',
       email: 'mohammed@example.com',
-      type: 'patient'
+      type: 'patient',
     },
     subject: 'Payment Reminder - Bill #INV-2024-001',
-    content: 'Dear Mohammed Ali,\n\nThis is a friendly reminder that your bill #INV-2024-001 of ₹15,500 is due for payment.\n\nDue Date: 2024-01-20\nAmount: ₹15,500\n\nYou can pay online at https://hospital.com/pay or visit our billing counter.\n\nThank you for your prompt attention.\n\nBest regards,\nBilling Department\nCity Hospital',
+    content:
+      'Dear Mohammed Ali,\n\nThis is a friendly reminder that your bill #INV-2024-001 of ₹15,500 is due for payment.\n\nDue Date: 2024-01-20\nAmount: ₹15,500\n\nYou can pay online at https://hospital.com/pay or visit our billing counter.\n\nThank you for your prompt attention.\n\nBest regards,\nBilling Department\nCity Hospital',
     status: 'sent',
     priority: 'medium',
     sentTime: '2024-01-14T16:45:00Z',
@@ -302,8 +335,8 @@ const _mockMessages: CommunicationMessage[] = [
     cost: 0.05,
     metadata: {
       patientId: 'P003',
-      billId: 'INV-2024-001'
-    }
+      billId: 'INV-2024-001',
+    },
   },
   {
     id: '4',
@@ -313,16 +346,17 @@ const _mockMessages: CommunicationMessage[] = [
     recipient: {
       id: 'D001',
       name: 'All ICU Staff',
-      type: 'group'
+      type: 'group',
     },
-    content: '🚨 EMERGENCY ALERT: Code Blue reported at ICU Room 5. All available ICU staff please report immediately. Time: 2024-01-10 22:15',
+    content:
+      '🚨 EMERGENCY ALERT: Code Blue reported at ICU Room 5. All available ICU staff please report immediately. Time: 2024-01-10 22:15',
     status: 'delivered',
     priority: 'high',
     sentTime: '2024-01-10T22:15:00Z',
     deliveredTime: '2024-01-10T22:15:05Z',
     attempts: 1,
-    cost: 2.50,
-    metadata: {}
+    cost: 2.5,
+    metadata: {},
   },
   {
     id: '5',
@@ -333,21 +367,22 @@ const _mockMessages: CommunicationMessage[] = [
       id: 'P004',
       name: 'Priya Sharma',
       phone: '+91 76543 21098',
-      type: 'patient'
+      type: 'patient',
     },
-    content: '🔬 *Lab Report Ready* 📋\n\nDear Priya Sharma,\n\nYour lab report for tests conducted on 2024-01-12 is now ready.\n\n📊 Report ID: LAB-2024-045\n🏥 Collected at: City Hospital\n\nYou can:\n• Collect from reception\n• Download from patient portal: https://portal.hospital.com\n• Request home delivery\n\n📞 Contact: +91 98765 00000\n\nThank you! 🙏',
+    content:
+      '🔬 *Lab Report Ready* 📋\n\nDear Priya Sharma,\n\nYour lab report for tests conducted on 2024-01-12 is now ready.\n\n📊 Report ID: LAB-2024-045\n🏥 Collected at: City Hospital\n\nYou can:\n• Collect from reception\n• Download from patient portal: https://portal.hospital.com\n• Request home delivery\n\n📞 Contact: +91 98765 00000\n\nThank you! 🙏',
     status: 'pending',
     priority: 'medium',
     scheduledTime: '2024-01-16T09:00:00Z',
     attempts: 0,
     cost: 0.15,
     metadata: {
-      patientId: 'P004'
-    }
-  }
+      patientId: 'P004',
+    },
+  },
 ];
 
-const _mockCampaigns: CommunicationCampaign[] = [
+const mockCampaigns: CommunicationCampaign[] = [
   {
     id: '1',
     name: 'Health Checkup Reminder Campaign',
@@ -358,7 +393,7 @@ const _mockCampaigns: CommunicationCampaign[] = [
     targetAudience: {
       type: 'age-group',
       criteria: { ageMin: 40, ageMax: 80 },
-      count: 450
+      count: 450,
     },
     status: 'completed',
     scheduledTime: '2024-01-10T09:00:00Z',
@@ -369,9 +404,9 @@ const _mockCampaigns: CommunicationCampaign[] = [
     deliveredCount: 420,
     readCount: 320,
     failedCount: 5,
-    totalCost: 67.50,
+    totalCost: 67.5,
     createdBy: 'Marketing Team',
-    createdDate: '2024-01-08T00:00:00Z'
+    createdDate: '2024-01-08T00:00:00Z',
   },
   {
     id: '2',
@@ -383,7 +418,7 @@ const _mockCampaigns: CommunicationCampaign[] = [
     targetAudience: {
       type: 'all-patients',
       criteria: {},
-      count: 1200
+      count: 1200,
     },
     status: 'running',
     scheduledTime: '2024-01-15T08:00:00Z',
@@ -393,9 +428,9 @@ const _mockCampaigns: CommunicationCampaign[] = [
     deliveredCount: 834,
     readCount: 523,
     failedCount: 22,
-    totalCost: 128.40,
+    totalCost: 128.4,
     createdBy: 'Admin',
-    createdDate: '2024-01-14T00:00:00Z'
+    createdDate: '2024-01-14T00:00:00Z',
   },
   {
     id: '3',
@@ -407,7 +442,7 @@ const _mockCampaigns: CommunicationCampaign[] = [
     targetAudience: {
       type: 'department',
       criteria: { department: 'Cardiology', isExistingPatient: true },
-      count: 180
+      count: 180,
     },
     status: 'scheduled',
     scheduledTime: '2024-01-18T10:00:00Z',
@@ -416,10 +451,10 @@ const _mockCampaigns: CommunicationCampaign[] = [
     deliveredCount: 0,
     readCount: 0,
     failedCount: 0,
-    totalCost: 9.00,
+    totalCost: 9.0,
     createdBy: 'Marketing Team',
-    createdDate: '2024-01-15T00:00:00Z'
-  }
+    createdDate: '2024-01-15T00:00:00Z',
+  },
 ];
 
 const CommunicationsManagement = () => {
@@ -428,45 +463,55 @@ const CommunicationsManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
-  const [_selectedTemplate, _setSelectedTemplate] = useState<CommunicationTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<CommunicationTemplate | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<CommunicationMessage | null>(null);
-  const [_selectedCampaign, _setSelectedCampaign] = useState<CommunicationCampaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<CommunicationCampaign | null>(null);
 
   // Modal states
-  const [messageDetailOpened, { open: openMessageDetail, close: closeMessageDetail }] = useDisclosure(false);
+  const [messageDetailOpened, { open: openMessageDetail, close: closeMessageDetail }] =
+    useDisclosure(false);
   const [newMessageOpened, { open: openNewMessage, close: closeNewMessage }] = useDisclosure(false);
-  const [_templateDetailOpened, { open: _openTemplateDetail, close: _closeTemplateDetail }] = useDisclosure(false);
-  const [_newTemplateOpened, { open: _openNewTemplate, close: _closeNewTemplate }] = useDisclosure(false);
-  const [_campaignDetailOpened, { open: _openCampaignDetail, close: _closeCampaignDetail }] = useDisclosure(false);
-  const [_newCampaignOpened, { open: _openNewCampaign, close: _closeNewCampaign }] = useDisclosure(false);
+  const [templateDetailOpened, { open: openTemplateDetail, close: closeTemplateDetail }] =
+    useDisclosure(false);
+  const [newTemplateOpened, { open: openNewTemplate, close: closeNewTemplate }] =
+    useDisclosure(false);
+  const [campaignDetailOpened, { open: openCampaignDetail, close: closeCampaignDetail }] =
+    useDisclosure(false);
+  const [newCampaignOpened, { open: openNewCampaign, close: closeNewCampaign }] =
+    useDisclosure(false);
 
   // Filter messages
   const filteredMessages = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((message) => {
-      const matchesSearch = 
-        message.recipient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        message.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (message.templateName && message.templateName.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesType = !selectedType || message.type === selectedType;
-      const matchesStatus = !selectedStatus || message.status === selectedStatus;
+    return [].filter(
+      /* TODO: Fetch from API */ (message) => {
+        const matchesSearch =
+          message.recipient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          message.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (message.templateName &&
+            message.templateName.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      return matchesSearch && matchesType && matchesStatus;
-    });
+        const matchesType = !selectedType || message.type === selectedType;
+        const matchesStatus = !selectedStatus || message.status === selectedStatus;
+
+        return matchesSearch && matchesType && matchesStatus;
+      }
+    );
   }, [searchQuery, selectedType, selectedStatus]);
 
   // Filter templates
   const filteredTemplates = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((template) => {
-      const matchesSearch = 
-        template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        template.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        template.category.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesType = !selectedType || template.type === selectedType;
+    return [].filter(
+      /* TODO: Fetch from API */ (template) => {
+        const matchesSearch =
+          template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          template.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          template.category.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesType;
-    });
+        const matchesType = !selectedType || template.type === selectedType;
+
+        return matchesSearch && matchesType;
+      }
+    );
   }, [searchQuery, selectedType]);
 
   const handleViewMessage = (message: CommunicationMessage) => {
@@ -475,20 +520,20 @@ const CommunicationsManagement = () => {
   };
 
   const handleViewTemplate = (template: CommunicationTemplate) => {
-    _setSelectedTemplate(template);
-    _openTemplateDetail();
+    setSelectedTemplate(template);
+    openTemplateDetail();
   };
 
   const handleViewCampaign = (campaign: CommunicationCampaign) => {
-    _setSelectedCampaign(campaign);
-    _openCampaignDetail();
+    setSelectedCampaign(campaign);
+    openCampaignDetail();
   };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -498,56 +543,84 @@ const CommunicationsManagement = () => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'sent': return 'blue';
-      case 'delivered': return 'green';
-      case 'read': return 'teal';
-      case 'pending': return 'yellow';
-      case 'scheduled': return 'purple';
-      case 'failed': return 'red';
-      case 'running': return 'blue';
-      case 'completed': return 'green';
-      case 'paused': return 'orange';
-      case 'draft': return 'gray';
-      default: return 'gray';
+      case 'sent':
+        return 'blue';
+      case 'delivered':
+        return 'green';
+      case 'read':
+        return 'teal';
+      case 'pending':
+        return 'yellow';
+      case 'scheduled':
+        return 'purple';
+      case 'failed':
+        return 'red';
+      case 'running':
+        return 'blue';
+      case 'completed':
+        return 'green';
+      case 'paused':
+        return 'orange';
+      case 'draft':
+        return 'gray';
+      default:
+        return 'gray';
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'sms': return <IconDeviceMobile size={16} />;
-      case 'whatsapp': return <IconBrandWhatsapp size={16} />;
-      case 'email': return <IconMail size={16} />;
-      case 'push': return <IconBell size={16} />;
-      case 'voice': return <IconPhoneCall size={16} />;
-      default: return <IconMessage size={16} />;
+      case 'sms':
+        return <IconDeviceMobile size={16} />;
+      case 'whatsapp':
+        return <IconBrandWhatsapp size={16} />;
+      case 'email':
+        return <IconMail size={16} />;
+      case 'push':
+        return <IconBell size={16} />;
+      case 'voice':
+        return <IconPhoneCall size={16} />;
+      default:
+        return <IconMessage size={16} />;
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'red';
-      case 'medium': return 'yellow';
-      case 'low': return 'green';
-      default: return 'gray';
+      case 'high':
+        return 'red';
+      case 'medium':
+        return 'yellow';
+      case 'low':
+        return 'green';
+      default:
+        return 'gray';
     }
   };
 
   // Communication stats
   const communicationStats = {
     totalMessages: 0 /* TODO: Fetch from API */,
-    sentMessages: [].filter /* TODO: Fetch from API */(m => m.status === 'sent' || m.status === 'delivered' || m.status === 'read').length,
-    pendingMessages: [].filter /* TODO: Fetch from API */(m => m.status === 'pending' || m.status === 'scheduled').length,
-    failedMessages: [].filter /* TODO: Fetch from API */(m => m.status === 'failed').length,
+    sentMessages: [].filter(
+      /* TODO: Fetch from API */ (m) =>
+        m.status === 'sent' || m.status === 'delivered' || m.status === 'read'
+    ).length,
+    pendingMessages: [].filter(
+      /* TODO: Fetch from API */ (m) => m.status === 'pending' || m.status === 'scheduled'
+    ).length,
+    failedMessages: [].filter(/* TODO: Fetch from API */ (m) => m.status === 'failed').length,
     totalTemplates: 0 /* TODO: Fetch from API */,
-    activeTemplates: [].filter /* TODO: Fetch from API */(t => t.isActive).length,
+    activeTemplates: [].filter(/* TODO: Fetch from API */ (t) => t.isActive).length,
     totalCampaigns: 0 /* TODO: Fetch from API */,
-    activeCampaigns: [].filter /* TODO: Fetch from API */(c => c.status === 'running' || c.status === 'scheduled').length
+    activeCampaigns: [].filter(
+      /* TODO: Fetch from API */ (c) => c.status === 'running' || c.status === 'scheduled'
+    ).length,
   };
 
   return (
@@ -578,8 +651,12 @@ const CommunicationsManagement = () => {
               <IconMessage size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{communicationStats.totalMessages}</Text>
-              <Text size="xs" c="dimmed">Total Messages</Text>
+              <Text size="lg" fw={700}>
+                {communicationStats.totalMessages}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Total Messages
+              </Text>
             </div>
           </Group>
         </Card>
@@ -590,8 +667,12 @@ const CommunicationsManagement = () => {
               <IconSend size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{communicationStats.sentMessages}</Text>
-              <Text size="xs" c="dimmed">Sent</Text>
+              <Text size="lg" fw={700}>
+                {communicationStats.sentMessages}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Sent
+              </Text>
             </div>
           </Group>
         </Card>
@@ -602,8 +683,12 @@ const CommunicationsManagement = () => {
               <IconClockHour4 size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{communicationStats.pendingMessages}</Text>
-              <Text size="xs" c="dimmed">Pending</Text>
+              <Text size="lg" fw={700}>
+                {communicationStats.pendingMessages}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Pending
+              </Text>
             </div>
           </Group>
         </Card>
@@ -614,8 +699,12 @@ const CommunicationsManagement = () => {
               <IconX size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{communicationStats.failedMessages}</Text>
-              <Text size="xs" c="dimmed">Failed</Text>
+              <Text size="lg" fw={700}>
+                {communicationStats.failedMessages}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Failed
+              </Text>
             </div>
           </Group>
         </Card>
@@ -626,8 +715,12 @@ const CommunicationsManagement = () => {
               <IconTemplate size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{communicationStats.totalTemplates}</Text>
-              <Text size="xs" c="dimmed">Templates</Text>
+              <Text size="lg" fw={700}>
+                {communicationStats.totalTemplates}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Templates
+              </Text>
             </div>
           </Group>
         </Card>
@@ -638,8 +731,12 @@ const CommunicationsManagement = () => {
               <IconCheckbox size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{communicationStats.activeTemplates}</Text>
-              <Text size="xs" c="dimmed">Active</Text>
+              <Text size="lg" fw={700}>
+                {communicationStats.activeTemplates}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Active
+              </Text>
             </div>
           </Group>
         </Card>
@@ -650,8 +747,12 @@ const CommunicationsManagement = () => {
               <IconTarget size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{communicationStats.totalCampaigns}</Text>
-              <Text size="xs" c="dimmed">Campaigns</Text>
+              <Text size="lg" fw={700}>
+                {communicationStats.totalCampaigns}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Campaigns
+              </Text>
             </div>
           </Group>
         </Card>
@@ -662,8 +763,12 @@ const CommunicationsManagement = () => {
               <IconActivity size={20} />
             </ThemeIcon>
             <div>
-              <Text size="lg" fw={700}>{communicationStats.activeCampaigns}</Text>
-              <Text size="xs" c="dimmed">Running</Text>
+              <Text size="lg" fw={700}>
+                {communicationStats.activeCampaigns}
+              </Text>
+              <Text size="xs" c="dimmed">
+                Running
+              </Text>
             </div>
           </Group>
         </Card>
@@ -708,7 +813,7 @@ const CommunicationsManagement = () => {
                   { value: 'whatsapp', label: 'WhatsApp' },
                   { value: 'email', label: 'Email' },
                   { value: 'push', label: 'Push Notification' },
-                  { value: 'voice', label: 'Voice Call' }
+                  { value: 'voice', label: 'Voice Call' },
                 ]}
                 value={selectedType}
                 onChange={(value) => setSelectedType(value || '')}
@@ -722,7 +827,7 @@ const CommunicationsManagement = () => {
                   { value: 'delivered', label: 'Delivered' },
                   { value: 'read', label: 'Read' },
                   { value: 'failed', label: 'Failed' },
-                  { value: 'scheduled', label: 'Scheduled' }
+                  { value: 'scheduled', label: 'Scheduled' },
                 ]}
                 value={selectedStatus}
                 onChange={(value) => setSelectedStatus(value || '')}
@@ -766,12 +871,16 @@ const CommunicationsManagement = () => {
                             <ThemeIcon size="sm" variant="light">
                               {getTypeIcon(message.type)}
                             </ThemeIcon>
-                            <Text size="sm" tt="uppercase">{message.type}</Text>
+                            <Text size="sm" tt="uppercase">
+                              {message.type}
+                            </Text>
                           </Group>
                         </Table.Td>
                         <Table.Td>
                           <div>
-                            <Text size="sm" fw={500}>{message.recipient.name}</Text>
+                            <Text size="sm" fw={500}>
+                              {message.recipient.name}
+                            </Text>
                             <Text size="xs" c="dimmed">
                               {message.recipient.phone || message.recipient.email}
                             </Text>
@@ -779,9 +888,13 @@ const CommunicationsManagement = () => {
                         </Table.Td>
                         <Table.Td>
                           <div>
-                            <Text size="sm" fw={500}>{message.templateName || 'Custom'}</Text>
+                            <Text size="sm" fw={500}>
+                              {message.templateName || 'Custom'}
+                            </Text>
                             {message.subject && (
-                              <Text size="xs" c="dimmed">{message.subject}</Text>
+                              <Text size="xs" c="dimmed">
+                                {message.subject}
+                              </Text>
                             )}
                           </div>
                         </Table.Td>
@@ -795,24 +908,31 @@ const CommunicationsManagement = () => {
                             <Badge color={getStatusColor(message.status)} variant="light" size="sm">
                               {message.status.toUpperCase()}
                             </Badge>
-                            {message.status === 'pending' && (
-                              <Indicator color="orange" size={6} />
-                            )}
+                            {message.status === 'pending' && <Indicator color="orange" size={6} />}
                           </Group>
                         </Table.Td>
                         <Table.Td>
-                          <Badge color={getPriorityColor(message.priority)} variant="outline" size="sm">
+                          <Badge
+                            color={getPriorityColor(message.priority)}
+                            variant="outline"
+                            size="sm"
+                          >
                             {message.priority.toUpperCase()}
                           </Badge>
                         </Table.Td>
                         <Table.Td>
                           <Text size="sm">
-                            {message.sentTime ? formatDateTime(message.sentTime) : 
-                             message.scheduledTime ? `Scheduled: ${formatDateTime(message.scheduledTime)}` : '-'}
+                            {message.sentTime
+                              ? formatDateTime(message.sentTime)
+                              : message.scheduledTime
+                                ? `Scheduled: ${formatDateTime(message.scheduledTime)}`
+                                : '-'}
                           </Text>
                         </Table.Td>
                         <Table.Td>
-                          <Text size="sm" fw={500}>₹{message.cost.toFixed(2)}</Text>
+                          <Text size="sm" fw={500}>
+                            ₹{message.cost.toFixed(2)}
+                          </Text>
                         </Table.Td>
                         <Table.Td>
                           <Group gap="xs">
@@ -845,23 +965,34 @@ const CommunicationsManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Message Templates</Title>
-              <Button leftSection={<IconPlus size={16} />} onClick={_openNewTemplate}>
+              <Button leftSection={<IconPlus size={16} />} onClick={openNewTemplate}>
                 New Template
               </Button>
             </Group>
-            
+
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
               {filteredTemplates.map((template) => (
-                <Card key={template.id} padding="lg" radius="md" withBorder onClick={() => handleViewTemplate(template)} style={{ cursor: 'pointer' }}>
+                <Card
+                  key={template.id}
+                  padding="lg"
+                  radius="md"
+                  withBorder
+                  onClick={() => handleViewTemplate(template)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <Group justify="space-between" mb="md">
                     <div>
                       <Group mb="xs">
                         <ThemeIcon size="sm" variant="light">
                           {getTypeIcon(template.type)}
                         </ThemeIcon>
-                        <Text fw={600} size="lg">{template.name}</Text>
+                        <Text fw={600} size="lg">
+                          {template.name}
+                        </Text>
                       </Group>
-                      <Text size="sm" c="dimmed" tt="capitalize">{template.category}</Text>
+                      <Text size="sm" c="dimmed" tt="capitalize">
+                        {template.category}
+                      </Text>
                     </div>
                     <Group>
                       <Badge color={template.isActive ? 'green' : 'red'} variant="light">
@@ -879,15 +1010,25 @@ const CommunicationsManagement = () => {
 
                   <Stack gap="xs" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Usage Count</Text>
-                      <Text size="sm" fw={500}>{template.usageCount}</Text>
+                      <Text size="sm" c="dimmed">
+                        Usage Count
+                      </Text>
+                      <Text size="sm" fw={500}>
+                        {template.usageCount}
+                      </Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Variables</Text>
-                      <Text size="sm" fw={500}>{template.variables.length}</Text>
+                      <Text size="sm" c="dimmed">
+                        Variables
+                      </Text>
+                      <Text size="sm" fw={500}>
+                        {template.variables.length}
+                      </Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Last Used</Text>
+                      <Text size="sm" c="dimmed">
+                        Last Used
+                      </Text>
                       <Text size="sm" fw={500}>
                         {template.lastUsed ? formatDate(template.lastUsed) : 'Never'}
                       </Text>
@@ -921,100 +1062,139 @@ const CommunicationsManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Communication Campaigns</Title>
-              <Button leftSection={<IconPlus size={16} />} onClick={_openNewCampaign}>
+              <Button leftSection={<IconPlus size={16} />} onClick={openNewCampaign}>
                 New Campaign
               </Button>
             </Group>
-            
+
             <Stack gap="lg">
-              {[].map /* TODO: Fetch from API */((campaign) => (
-                <Card key={campaign.id} padding="lg" radius="md" withBorder onClick={() => handleViewCampaign(campaign)} style={{ cursor: 'pointer' }}>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Title order={4}>{campaign.name}</Title>
-                      <Text c="dimmed" size="sm">{campaign.description}</Text>
-                    </div>
-                    <Group>
-                      <Badge color={getStatusColor(campaign.status)} variant="light" size="lg">
-                        {campaign.status.toUpperCase()}
-                      </Badge>
-                      <Badge variant="outline" tt="uppercase">
-                        {campaign.type}
-                      </Badge>
-                    </Group>
-                  </Group>
-
-                  <SimpleGrid cols={6} spacing="md" mb="md">
-                    <div style={{ textAlign: 'center' }}>
-                      <Text size="xl" fw={700} c="blue">{campaign.totalRecipients}</Text>
-                      <Text size="xs" c="dimmed">Total Recipients</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <Text size="xl" fw={700} c="green">{campaign.sentCount}</Text>
-                      <Text size="xs" c="dimmed">Sent</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <Text size="xl" fw={700} c="teal">{campaign.deliveredCount}</Text>
-                      <Text size="xs" c="dimmed">Delivered</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <Text size="xl" fw={700} c="cyan">{campaign.readCount}</Text>
-                      <Text size="xs" c="dimmed">Read</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <Text size="xl" fw={700} c="red">{campaign.failedCount}</Text>
-                      <Text size="xs" c="dimmed">Failed</Text>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <Text size="xl" fw={700} c="orange">₹{campaign.totalCost.toFixed(2)}</Text>
-                      <Text size="xs" c="dimmed">Total Cost</Text>
-                    </div>
-                  </SimpleGrid>
-
-                  {campaign.status === 'running' && campaign.sentCount > 0 && (
-                    <div className="mb-md">
-                      <Text size="sm" c="dimmed" mb="xs">Campaign Progress</Text>
-                      <Progress 
-                        value={(campaign.sentCount / campaign.totalRecipients) * 100} 
-                        size="lg" 
-                        color="blue"
-                      />
-                      <Group justify="space-between" mt="xs">
-                        <Text size="xs" c="dimmed">
-                          {Math.round((campaign.sentCount / campaign.totalRecipients) * 100)}% completed
+              {[].map(
+                /* TODO: Fetch from API */ (campaign) => (
+                  <Card
+                    key={campaign.id}
+                    padding="lg"
+                    radius="md"
+                    withBorder
+                    onClick={() => handleViewCampaign(campaign)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Title order={4}>{campaign.name}</Title>
+                        <Text c="dimmed" size="sm">
+                          {campaign.description}
                         </Text>
-                        <Text size="xs" c="dimmed">
-                          {campaign.totalRecipients - campaign.sentCount} remaining
-                        </Text>
+                      </div>
+                      <Group>
+                        <Badge color={getStatusColor(campaign.status)} variant="light" size="lg">
+                          {campaign.status.toUpperCase()}
+                        </Badge>
+                        <Badge variant="outline" tt="uppercase">
+                          {campaign.type}
+                        </Badge>
                       </Group>
-                    </div>
-                  )}
-
-                  <Group justify="space-between">
-                    <div>
-                      <Text size="sm" c="dimmed">
-                        Template: {campaign.templateName}
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        Target: {campaign.targetAudience.type.replace('-', ' ')} ({campaign.targetAudience.count} recipients)
-                      </Text>
-                    </div>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      {campaign.status === 'running' && (
-                        <ActionIcon variant="subtle" color="orange">
-                          <IconClockPause size={16} />
-                        </ActionIcon>
-                      )}
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+
+                    <SimpleGrid cols={6} spacing="md" mb="md">
+                      <div style={{ textAlign: 'center' }}>
+                        <Text size="xl" fw={700} c="blue">
+                          {campaign.totalRecipients}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Total Recipients
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <Text size="xl" fw={700} c="green">
+                          {campaign.sentCount}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Sent
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <Text size="xl" fw={700} c="teal">
+                          {campaign.deliveredCount}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Delivered
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <Text size="xl" fw={700} c="cyan">
+                          {campaign.readCount}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Read
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <Text size="xl" fw={700} c="red">
+                          {campaign.failedCount}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Failed
+                        </Text>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <Text size="xl" fw={700} c="orange">
+                          ₹{campaign.totalCost.toFixed(2)}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          Total Cost
+                        </Text>
+                      </div>
+                    </SimpleGrid>
+
+                    {campaign.status === 'running' && campaign.sentCount > 0 && (
+                      <div className="mb-md">
+                        <Text size="sm" c="dimmed" mb="xs">
+                          Campaign Progress
+                        </Text>
+                        <Progress
+                          value={(campaign.sentCount / campaign.totalRecipients) * 100}
+                          size="lg"
+                          color="blue"
+                        />
+                        <Group justify="space-between" mt="xs">
+                          <Text size="xs" c="dimmed">
+                            {Math.round((campaign.sentCount / campaign.totalRecipients) * 100)}%
+                            completed
+                          </Text>
+                          <Text size="xs" c="dimmed">
+                            {campaign.totalRecipients - campaign.sentCount} remaining
+                          </Text>
+                        </Group>
+                      </div>
+                    )}
+
+                    <Group justify="space-between">
+                      <div>
+                        <Text size="sm" c="dimmed">
+                          Template: {campaign.templateName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          Target: {campaign.targetAudience.type.replace('-', ' ')} (
+                          {campaign.targetAudience.count} recipients)
+                        </Text>
+                      </div>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        {campaign.status === 'running' && (
+                          <ActionIcon variant="subtle" color="orange">
+                            <IconClockPause size={16} />
+                          </ActionIcon>
+                        )}
+                      </Group>
+                    </Group>
+                  </Card>
+                )
+              )}
             </Stack>
           </Paper>
         </Tabs.Panel>
@@ -1024,7 +1204,9 @@ const CommunicationsManagement = () => {
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
             {/* Channel Settings */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Channel Configuration</Title>
+              <Title order={4} mb="md">
+                Channel Configuration
+              </Title>
               <Stack gap="md">
                 <Group justify="space-between">
                   <Group>
@@ -1066,7 +1248,9 @@ const CommunicationsManagement = () => {
 
             {/* API Settings */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">API Configuration</Title>
+              <Title order={4} mb="md">
+                API Configuration
+              </Title>
               <Stack gap="md">
                 <TextInput
                   label="SMS Gateway API Key"
@@ -1078,20 +1262,10 @@ const CommunicationsManagement = () => {
                   placeholder="Enter API token"
                   type="password"
                 />
-                <TextInput
-                  label="Email SMTP Server"
-                  placeholder="smtp.gmail.com"
-                />
+                <TextInput label="Email SMTP Server" placeholder="smtp.gmail.com" />
                 <Group grow>
-                  <TextInput
-                    label="SMTP Username"
-                    placeholder="username@domain.com"
-                  />
-                  <TextInput
-                    label="SMTP Password"
-                    placeholder="Enter password"
-                    type="password"
-                  />
+                  <TextInput label="SMTP Username" placeholder="username@domain.com" />
+                  <TextInput label="SMTP Password" placeholder="Enter password" type="password" />
                 </Group>
                 <Button variant="light" fullWidth>
                   Test Configuration
@@ -1101,7 +1275,9 @@ const CommunicationsManagement = () => {
 
             {/* Rate Limiting */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Rate Limiting</Title>
+              <Title order={4} mb="md">
+                Rate Limiting
+              </Title>
               <Stack gap="md">
                 <NumberInput
                   label="SMS per minute"
@@ -1125,14 +1301,17 @@ const CommunicationsManagement = () => {
                   max={100}
                 />
                 <Alert icon={<IconAlertCircle size="1rem" />} title="Rate Limiting Info">
-                  Rate limits help prevent service provider restrictions and ensure reliable message delivery.
+                  Rate limits help prevent service provider restrictions and ensure reliable message
+                  delivery.
                 </Alert>
               </Stack>
             </Card>
 
             {/* Notification Preferences */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">System Notifications</Title>
+              <Title order={4} mb="md">
+                System Notifications
+              </Title>
               <Stack gap="md">
                 <Group justify="space-between">
                   <Text size="sm">Failed message alerts</Text>
@@ -1166,13 +1345,15 @@ const CommunicationsManagement = () => {
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
             {/* Message Type Distribution */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Message Type Distribution</Title>
+              <Title order={4} mb="md">
+                Message Type Distribution
+              </Title>
               <MantineDonutChart
                 data={[
                   { name: 'SMS', value: 2, color: 'blue' },
                   { name: 'WhatsApp', value: 2, color: 'green' },
                   { name: 'Email', value: 1, color: 'orange' },
-                  { name: 'Push', value: 1, color: 'purple' }
+                  { name: 'Push', value: 1, color: 'purple' },
                 ]}
                 size={160}
                 thickness={30}
@@ -1182,13 +1363,15 @@ const CommunicationsManagement = () => {
 
             {/* Delivery Status */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Delivery Status Overview</Title>
+              <Title order={4} mb="md">
+                Delivery Status Overview
+              </Title>
               <MantineDonutChart
                 data={[
                   { name: 'Delivered', value: 2, color: 'green' },
                   { name: 'Read', value: 1, color: 'teal' },
                   { name: 'Pending', value: 1, color: 'yellow' },
-                  { name: 'Failed', value: 1, color: 'red' }
+                  { name: 'Failed', value: 1, color: 'red' },
                 ]}
                 size={160}
                 thickness={30}
@@ -1198,7 +1381,9 @@ const CommunicationsManagement = () => {
 
             {/* Daily Message Trends */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Daily Message Volume</Title>
+              <Title order={4} mb="md">
+                Daily Message Volume
+              </Title>
               <SimpleLineChart
                 h={200}
                 data={[
@@ -1208,35 +1393,37 @@ const CommunicationsManagement = () => {
                   { date: 'Thu', sms: 61, whatsapp: 42, email: 25 },
                   { date: 'Fri', sms: 55, whatsapp: 40, email: 23 },
                   { date: 'Sat', sms: 38, whatsapp: 28, email: 15 },
-                  { date: 'Sun', sms: 32, whatsapp: 25, email: 12 }
+                  { date: 'Sun', sms: 32, whatsapp: 25, email: 12 },
                 ]}
                 dataKey="date"
                 series={[
                   { name: 'sms', color: 'blue.6', label: 'SMS' },
                   { name: 'whatsapp', color: 'green.6', label: 'WhatsApp' },
-                  { name: 'email', color: 'orange.6', label: 'Email' }
+                  { name: 'email', color: 'orange.6', label: 'Email' },
                 ]}
               />
             </Card>
 
             {/* Cost Analysis */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Monthly Communication Costs</Title>
+              <Title order={4} mb="md">
+                Monthly Communication Costs
+              </Title>
               <SimpleAreaChart
                 h={200}
                 data={[
-                  { month: 'Jan', sms: 156.50, whatsapp: 89.30, email: 12.80 },
-                  { month: 'Feb', sms: 178.20, whatsapp: 95.60, email: 15.40 },
-                  { month: 'Mar', sms: 165.80, whatsapp: 102.40, email: 18.20 },
-                  { month: 'Apr', sms: 192.30, whatsapp: 110.80, email: 20.60 },
-                  { month: 'May', sms: 185.70, whatsapp: 98.50, email: 17.90 },
-                  { month: 'Jun', sms: 201.40, whatsapp: 115.20, email: 22.30 }
+                  { month: 'Jan', sms: 156.5, whatsapp: 89.3, email: 12.8 },
+                  { month: 'Feb', sms: 178.2, whatsapp: 95.6, email: 15.4 },
+                  { month: 'Mar', sms: 165.8, whatsapp: 102.4, email: 18.2 },
+                  { month: 'Apr', sms: 192.3, whatsapp: 110.8, email: 20.6 },
+                  { month: 'May', sms: 185.7, whatsapp: 98.5, email: 17.9 },
+                  { month: 'Jun', sms: 201.4, whatsapp: 115.2, email: 22.3 },
                 ]}
                 dataKey="month"
                 series={[
                   { name: 'sms', color: 'blue.6' },
                   { name: 'whatsapp', color: 'green.6' },
-                  { name: 'email', color: 'orange.6' }
+                  { name: 'email', color: 'orange.6' },
                 ]}
               />
             </Card>
@@ -1257,9 +1444,7 @@ const CommunicationsManagement = () => {
             <Group justify="space-between" mb="md">
               <div>
                 <Group mb="xs">
-                  <ThemeIcon variant="light">
-                    {getTypeIcon(selectedMessage.type)}
-                  </ThemeIcon>
+                  <ThemeIcon variant="light">{getTypeIcon(selectedMessage.type)}</ThemeIcon>
                   <Title order={4}>{selectedMessage.type.toUpperCase()} Message</Title>
                 </Group>
                 <Text c="dimmed">To: {selectedMessage.recipient.name}</Text>
@@ -1278,40 +1463,64 @@ const CommunicationsManagement = () => {
             <Paper p="md" radius="md" withBorder>
               {selectedMessage.subject && (
                 <div>
-                  <Text size="sm" c="dimmed" fw={500}>Subject</Text>
-                  <Text fw={600} mb="md">{selectedMessage.subject}</Text>
+                  <Text size="sm" c="dimmed" fw={500}>
+                    Subject
+                  </Text>
+                  <Text fw={600} mb="md">
+                    {selectedMessage.subject}
+                  </Text>
                 </div>
               )}
-              <Text size="sm" c="dimmed" fw={500}>Content</Text>
+              <Text size="sm" c="dimmed" fw={500}>
+                Content
+              </Text>
               <Text mt="xs">{selectedMessage.content}</Text>
             </Paper>
 
             {/* Message Timeline */}
             <Paper p="md" radius="md" withBorder>
-              <Title order={5} mb="md">Message Timeline</Title>
+              <Title order={5} mb="md">
+                Message Timeline
+              </Title>
               <Timeline bulletSize={20} lineWidth={2}>
                 {selectedMessage.scheduledTime && (
                   <Timeline.Item bullet={<IconCalendar size={12} />} title="Scheduled">
-                    <Text c="dimmed" size="sm">Message scheduled for delivery</Text>
-                    <Text size="xs" mt={4}>{formatDateTime(selectedMessage.scheduledTime)}</Text>
+                    <Text c="dimmed" size="sm">
+                      Message scheduled for delivery
+                    </Text>
+                    <Text size="xs" mt={4}>
+                      {formatDateTime(selectedMessage.scheduledTime)}
+                    </Text>
                   </Timeline.Item>
                 )}
                 {selectedMessage.sentTime && (
                   <Timeline.Item bullet={<IconSend size={12} />} title="Sent" color="blue">
-                    <Text c="dimmed" size="sm">Message sent to recipient</Text>
-                    <Text size="xs" mt={4}>{formatDateTime(selectedMessage.sentTime)}</Text>
+                    <Text c="dimmed" size="sm">
+                      Message sent to recipient
+                    </Text>
+                    <Text size="xs" mt={4}>
+                      {formatDateTime(selectedMessage.sentTime)}
+                    </Text>
                   </Timeline.Item>
                 )}
                 {selectedMessage.deliveredTime && (
                   <Timeline.Item bullet={<IconCheck size={12} />} title="Delivered" color="green">
-                    <Text c="dimmed" size="sm">Message delivered successfully</Text>
-                    <Text size="xs" mt={4}>{formatDateTime(selectedMessage.deliveredTime)}</Text>
+                    <Text c="dimmed" size="sm">
+                      Message delivered successfully
+                    </Text>
+                    <Text size="xs" mt={4}>
+                      {formatDateTime(selectedMessage.deliveredTime)}
+                    </Text>
                   </Timeline.Item>
                 )}
                 {selectedMessage.readTime && (
                   <Timeline.Item bullet={<IconEye size={12} />} title="Read" color="teal">
-                    <Text c="dimmed" size="sm">Message read by recipient</Text>
-                    <Text size="xs" mt={4}>{formatDateTime(selectedMessage.readTime)}</Text>
+                    <Text c="dimmed" size="sm">
+                      Message read by recipient
+                    </Text>
+                    <Text size="xs" mt={4}>
+                      {formatDateTime(selectedMessage.readTime)}
+                    </Text>
                   </Timeline.Item>
                 )}
               </Timeline>
@@ -1320,20 +1529,36 @@ const CommunicationsManagement = () => {
             {/* Message Stats */}
             <SimpleGrid cols={4} spacing="md">
               <div style={{ textAlign: 'center' }}>
-                <Text size="lg" fw={700}>{selectedMessage.attempts}</Text>
-                <Text size="sm" c="dimmed">Attempts</Text>
+                <Text size="lg" fw={700}>
+                  {selectedMessage.attempts}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Attempts
+                </Text>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <Text size="lg" fw={700}>₹{selectedMessage.cost.toFixed(2)}</Text>
-                <Text size="sm" c="dimmed">Cost</Text>
+                <Text size="lg" fw={700}>
+                  ₹{selectedMessage.cost.toFixed(2)}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Cost
+                </Text>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <Text size="lg" fw={700}>{selectedMessage.recipient.phone || selectedMessage.recipient.email}</Text>
-                <Text size="sm" c="dimmed">Contact</Text>
+                <Text size="lg" fw={700}>
+                  {selectedMessage.recipient.phone || selectedMessage.recipient.email}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Contact
+                </Text>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <Text size="lg" fw={700} tt="capitalize">{selectedMessage.recipient.type}</Text>
-                <Text size="sm" c="dimmed">Recipient Type</Text>
+                <Text size="lg" fw={700} tt="capitalize">
+                  {selectedMessage.recipient.type}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Recipient Type
+                </Text>
               </div>
             </SimpleGrid>
 
@@ -1343,9 +1568,7 @@ const CommunicationsManagement = () => {
                 Close
               </Button>
               {selectedMessage.status === 'failed' && (
-                <Button leftSection={<IconRefresh size={16} />}>
-                  Retry Send
-                </Button>
+                <Button leftSection={<IconRefresh size={16} />}>Retry Send</Button>
               )}
             </Group>
           </Stack>
@@ -1353,12 +1576,7 @@ const CommunicationsManagement = () => {
       </Modal>
 
       {/* New Message Modal */}
-      <Modal
-        opened={newMessageOpened}
-        onClose={closeNewMessage}
-        title="Send New Message"
-        size="lg"
-      >
+      <Modal opened={newMessageOpened} onClose={closeNewMessage} title="Send New Message" size="lg">
         <Stack gap="md">
           <SimpleGrid cols={2} spacing="md">
             <Select
@@ -1368,14 +1586,14 @@ const CommunicationsManagement = () => {
                 { value: 'sms', label: 'SMS' },
                 { value: 'whatsapp', label: 'WhatsApp' },
                 { value: 'email', label: 'Email' },
-                { value: 'push', label: 'Push Notification' }
+                { value: 'push', label: 'Push Notification' },
               ]}
               required
             />
             <Select
               label="Template"
               placeholder="Select template (optional)"
-              data={[].map /* TODO: Fetch from API */(t => ({ value: t.id, label: t.name }))}
+              data={[].map(/* TODO: Fetch from API */ (t) => ({ value: t.id, label: t.name }))}
               searchable
               clearable
             />
@@ -1389,16 +1607,13 @@ const CommunicationsManagement = () => {
               { value: 'P002', label: 'Sunita Patel - Patient' },
               { value: 'D001', label: 'Dr. Sharma - Doctor' },
               { value: 'ALL_PATIENTS', label: 'All Patients' },
-              { value: 'ICU_STAFF', label: 'ICU Staff' }
+              { value: 'ICU_STAFF', label: 'ICU Staff' },
             ]}
             searchable
             required
           />
 
-          <TextInput
-            label="Subject (Email only)"
-            placeholder="Enter subject"
-          />
+          <TextInput label="Subject (Email only)" placeholder="Enter subject" />
 
           <Textarea
             label="Message Content"
@@ -1414,7 +1629,7 @@ const CommunicationsManagement = () => {
               data={[
                 { value: 'high', label: 'High' },
                 { value: 'medium', label: 'Medium' },
-                { value: 'low', label: 'Low' }
+                { value: 'low', label: 'Low' },
               ]}
               defaultValue="medium"
               required
@@ -1430,14 +1645,17 @@ const CommunicationsManagement = () => {
             <Button variant="light" onClick={closeNewMessage}>
               Cancel
             </Button>
-            <Button leftSection={<IconSend size={16} />} onClick={() => {
-              notifications.show({
-                title: 'Message Sent',
-                message: 'Your message has been sent successfully',
-                color: 'green',
-              });
-              closeNewMessage();
-            }}>
+            <Button
+              leftSection={<IconSend size={16} />}
+              onClick={() => {
+                notifications.show({
+                  title: 'Message Sent',
+                  message: 'Your message has been sent successfully',
+                  color: 'green',
+                });
+                closeNewMessage();
+              }}
+            >
               Send Message
             </Button>
           </Group>

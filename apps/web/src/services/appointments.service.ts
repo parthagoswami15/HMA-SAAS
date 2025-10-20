@@ -88,7 +88,10 @@ const appointmentsService = {
   /**
    * Update an existing appointment
    */
-  updateAppointment: async (id: string, data: UpdateAppointmentDto): Promise<AppointmentResponse> => {
+  updateAppointment: async (
+    id: string,
+    data: UpdateAppointmentDto
+  ): Promise<AppointmentResponse> => {
     return enhancedApiClient.patch(`/appointments/${id}`, data);
   },
 

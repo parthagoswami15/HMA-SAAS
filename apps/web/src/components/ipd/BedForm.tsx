@@ -59,10 +59,12 @@ function BedForm({ opened, onClose, bed, onSubmit }: BedFormProps) {
     try {
       const response = await ipdService.getWards({ limit: 100 });
       if (response.success && response.data) {
-        setWards(response.data.items.map(ward => ({
-          value: ward.id,
-          label: `${ward.name} (${ward.location || 'No location'})`,
-        })));
+        setWards(
+          response.data.items.map((ward) => ({
+            value: ward.id,
+            label: `${ward.name} (${ward.location || 'No location'})`,
+          }))
+        );
       }
     } catch (error) {
       console.error('Error fetching wards:', error);
@@ -163,7 +165,9 @@ function BedForm({ opened, onClose, bed, onSubmit }: BedFormProps) {
             required
             data={BED_STATUS_OPTIONS}
             value={formData.status}
-            onChange={(value) => setFormData({ ...formData, status: value as any || 'AVAILABLE' })}
+            onChange={(value) =>
+              setFormData({ ...formData, status: (value as any) || 'AVAILABLE' })
+            }
           />
 
           {/* Description */}

@@ -31,12 +31,16 @@ import {
   // MultiSelect,
   // Center,
   Divider,
-  Stepper
+  Stepper,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleAreaChart, SimpleLineChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleAreaChart,
+  SimpleLineChart,
+} from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -139,11 +143,11 @@ const EmergencyManagement = () => {
   const _filteredCases = useMemo(() => {
     const cases: any[] = []; // TODO: Fetch from API
     return cases.filter((emergencyCase) => {
-      const matchesSearch = 
+      const matchesSearch =
         emergencyCase.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         emergencyCase.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         emergencyCase.caseNumber.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesTriage = !selectedTriage || emergencyCase.triageLevel === selectedTriage;
       const matchesStatus = !selectedStatus || emergencyCase.status === selectedStatus;
 
@@ -155,11 +159,10 @@ const EmergencyManagement = () => {
   const _filteredBeds = useMemo(() => {
     const beds: any[] = []; // TODO: Fetch from API
     return beds.filter((bed) => {
-      const matchesSearch = 
+      const matchesSearch =
         bed.bedNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (bed.patientName && 
-         bed.patientName.toLowerCase().includes(searchQuery.toLowerCase()));
-      
+        (bed.patientName && bed.patientName.toLowerCase().includes(searchQuery.toLowerCase()));
+
       const matchesStatus = !selectedBedStatus || bed.status === selectedBedStatus;
 
       return matchesSearch && matchesStatus;
@@ -170,22 +173,31 @@ const EmergencyManagement = () => {
   const getTriageColor = (level: number | TriageLevel) => {
     switch (level) {
       case 1:
-      case 'immediate': return 'red';    // Resuscitation/Immediate
+      case 'immediate':
+        return 'red'; // Resuscitation/Immediate
       case 2:
-      case 'urgent': return 'orange'; // Emergency/Urgent
+      case 'urgent':
+        return 'orange'; // Emergency/Urgent
       case 3:
-      case 'less_urgent': return 'yellow'; // Urgent/Less Urgent
+      case 'less_urgent':
+        return 'yellow'; // Urgent/Less Urgent
       case 4:
-      case 'non_urgent': return 'green';  // Less Urgent/Non-urgent
-      case 5: return 'blue';   // Non-urgent
-      default: return 'gray';
+      case 'non_urgent':
+        return 'green'; // Less Urgent/Non-urgent
+      case 5:
+        return 'blue'; // Non-urgent
+      default:
+        return 'gray';
     }
   };
 
   const getStatusColor = (status: CaseStatus | BedStatus | EquipmentStatus) => {
     const statusStr = status as string;
     if (['waiting', 'available', 'operational'].includes(statusStr)) return 'green';
-    if (['in_progress', 'occupied', 'maintenance', 'in_treatment', 'observation'].includes(statusStr)) return 'orange';
+    if (
+      ['in_progress', 'occupied', 'maintenance', 'in_treatment', 'observation'].includes(statusStr)
+    )
+      return 'orange';
     if (['completed', 'discharged'].includes(statusStr)) return 'blue';
     if (['cancelled', 'out_of_service'].includes(statusStr)) return 'red';
     if (['transferred', 'admitted'].includes(statusStr)) return 'purple';
@@ -195,16 +207,26 @@ const EmergencyManagement = () => {
 
   const getTriageLabel = (level: number | TriageLevel) => {
     switch (level) {
-      case 1: return 'Resuscitation';
-      case 2: return 'Emergency';
-      case 3: return 'Urgent';
-      case 4: return 'Less Urgent';
-      case 5: return 'Non-urgent';
-      case 'immediate': return 'Immediate';
-      case 'urgent': return 'Urgent';
-      case 'less_urgent': return 'Less Urgent';
-      case 'non_urgent': return 'Non-urgent';
-      default: return 'Unknown';
+      case 1:
+        return 'Resuscitation';
+      case 2:
+        return 'Emergency';
+      case 3:
+        return 'Urgent';
+      case 4:
+        return 'Less Urgent';
+      case 5:
+        return 'Non-urgent';
+      case 'immediate':
+        return 'Immediate';
+      case 'urgent':
+        return 'Urgent';
+      case 'less_urgent':
+        return 'Less Urgent';
+      case 'non_urgent':
+        return 'Non-urgent';
+      default:
+        return 'Unknown';
     }
   };
 
@@ -233,10 +255,14 @@ const EmergencyManagement = () => {
 
   const _getVitalColor = (status: string) => {
     switch (status) {
-      case 'critical': return 'red';
-      case 'warning': return 'orange';
-      case 'normal': return 'green';
-      default: return 'gray';
+      case 'critical':
+        return 'red';
+      case 'warning':
+        return 'orange';
+      case 'normal':
+        return 'green';
+      default:
+        return 'gray';
     }
   };
 
@@ -247,29 +273,29 @@ const EmergencyManagement = () => {
       value: 0,
       icon: IconUrgent,
       color: 'red',
-      trend: '+0'
+      trend: '+0',
     },
     {
       title: 'ICU Beds',
       value: `0/0`,
       icon: IconBed,
       color: 'blue',
-      trend: '0% occupied'
+      trend: '0% occupied',
     },
     {
       title: 'Average Wait Time',
       value: `0min`,
       icon: IconClockHour4,
       color: 'orange',
-      trend: '0min'
+      trend: '0min',
     },
     {
       title: 'Code Blue Today',
       value: 0,
       icon: IconAlertTriangle,
       color: 'purple',
-      trend: '+0'
-    }
+      trend: '+0',
+    },
   ];
 
   // Chart data
@@ -289,11 +315,7 @@ const EmergencyManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openAddCase}
-            color="red"
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddCase} color="red">
             Emergency Case
           </Button>
           <Button
@@ -308,10 +330,10 @@ const EmergencyManagement = () => {
       </Group>
 
       {/* Critical Alerts */}
-      <Alert 
-        variant="light" 
-        color="red" 
-        title="Critical Alerts" 
+      <Alert
+        variant="light"
+        color="red"
+        title="Critical Alerts"
         icon={<IconAlertTriangle size={16} />}
         mb="lg"
       >
@@ -342,15 +364,22 @@ const EmergencyManagement = () => {
                 </ThemeIcon>
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.includes('+') || stat.trend.includes('-') ? 
-                    (stat.trend.startsWith('+') ? 'red' : 'green') : 'blue'} 
+                <Badge
+                  color={
+                    stat.trend.includes('+') || stat.trend.includes('-')
+                      ? stat.trend.startsWith('+')
+                        ? 'red'
+                        : 'green'
+                      : 'blue'
+                  }
                   variant="light"
                   size="sm"
                 >
                   {stat.trend}
                 </Badge>
-                <Text size="xs" c="dimmed">real-time</Text>
+                <Text size="xs" c="dimmed">
+                  real-time
+                </Text>
               </Group>
             </Card>
           );
@@ -383,108 +412,136 @@ const EmergencyManagement = () => {
         {/* Dashboard Tab */}
         <Tabs.Panel value="dashboard">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Emergency Department Overview</Title>
+            <Title order={3} mb="lg">
+              Emergency Department Overview
+            </Title>
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Triage Distribution */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Triage Distribution</Title>
-                <MantineDonutChart
-                  data={triageDistribution}
-                  size={160}
-                  thickness={30}
-                />
+                <Title order={4} mb="md">
+                  Triage Distribution
+                </Title>
+                <MantineDonutChart data={triageDistribution} size={160} thickness={30} />
               </Card>
-              
+
               {/* Hourly Admissions */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Hourly Admissions</Title>
+                <Title order={4} mb="md">
+                  Hourly Admissions
+                </Title>
                 <SimpleAreaChart
                   data={hourlyAdmissions}
                   dataKey="hour"
                   series={[{ name: 'admissions', color: 'red.6' }]}
                 />
               </Card>
-              
+
               {/* ICU Bed Occupancy */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
-                <Title order={4} mb="md">ICU Bed Occupancy Trend</Title>
+                <Title order={4} mb="md">
+                  ICU Bed Occupancy Trend
+                </Title>
                 <SimpleLineChart
                   data={bedOccupancy}
                   dataKey="date"
                   series={[
                     { name: 'occupied', color: 'blue.6', label: 'Occupied' },
-                    { name: 'available', color: 'green.6', label: 'Available' }
+                    { name: 'available', color: 'green.6', label: 'Available' },
                   ]}
                 />
               </Card>
-              
+
               {/* Quick Stats */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Quick Statistics</Title>
+                <Title order={4} mb="md">
+                  Quick Statistics
+                </Title>
                 <Stack gap="md">
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Mortality Rate</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Mortality Rate
+                    </Text>
                     <Text size="sm" fw={600} c="red">
                       2.1%
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Left Without Being Seen</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Left Without Being Seen
+                    </Text>
                     <Text size="sm" fw={600} c="orange">
                       3.5%
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Door-to-Doc Time</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Door-to-Doc Time
+                    </Text>
                     <Text size="sm" fw={600}>
                       15min
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Return Rate (72h)</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Return Rate (72h)
+                    </Text>
                     <Text size="sm" fw={600} c="yellow">
                       4.2%
                     </Text>
                   </Group>
                 </Stack>
               </Card>
-              
+
               {/* Emergency Protocols */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Active Protocols</Title>
+                <Title order={4} mb="md">
+                  Active Protocols
+                </Title>
                 <Stack gap="sm">
-                  <Button 
-                    fullWidth 
+                  <Button
+                    fullWidth
                     leftSection={<IconAlertTriangle size={16} />}
-                    variant="light" 
+                    variant="light"
                     color="red"
                   >
                     Code Blue Protocol
                   </Button>
-                  <Button 
-                    fullWidth 
-                    leftSection={<IconHeart size={16} />} 
-                    variant="light" 
+                  <Button
+                    fullWidth
+                    leftSection={<IconHeart size={16} />}
+                    variant="light"
                     color="purple"
                   >
                     Cardiac Arrest
                   </Button>
-                  <Button 
-                    fullWidth 
-                    leftSection={<IconBrain size={16} />} 
-                    variant="light" 
+                  <Button
+                    fullWidth
+                    leftSection={<IconBrain size={16} />}
+                    variant="light"
                     color="orange"
                   >
                     Stroke Protocol
                   </Button>
-                  <Button 
-                    fullWidth 
-                    leftSection={<IconLungs size={16} />} 
-                    variant="light" 
+                  <Button
+                    fullWidth
+                    leftSection={<IconLungs size={16} />}
+                    variant="light"
                     color="blue"
                   >
                     Respiratory Distress
@@ -511,11 +568,7 @@ const EmergencyManagement = () => {
                 <Card key={patient.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between">
                     <Group>
-                      <ThemeIcon 
-                        color={getTriageColor(patient.triageLevel)} 
-                        size="xl" 
-                        radius="md"
-                      >
+                      <ThemeIcon color={getTriageColor(patient.triageLevel)} size="xl" radius="md">
                         <Text fw={700} c="white">
                           {patient.triageLevel}
                         </Text>
@@ -529,7 +582,7 @@ const EmergencyManagement = () => {
                         </Text>
                       </div>
                     </Group>
-                    
+
                     <Group>
                       <div style={{ textAlign: 'right' }}>
                         <Text size="sm" fw={500}>
@@ -539,16 +592,12 @@ const EmergencyManagement = () => {
                           Priority: {getTriageLabel(parseInt(patient.triageLevel))}
                         </Text>
                       </div>
-                      <Badge 
-                        color={getTriageColor(patient.triageLevel)} 
-                        variant="light" 
-                        size="lg"
-                      >
+                      <Badge color={getTriageColor(patient.triageLevel)} variant="light" size="lg">
                         #{index + 1}
                       </Badge>
                     </Group>
                   </Group>
-                  
+
                   <Group justify="space-between" mt="md">
                     <Text size="sm" c="dimmed">
                       Assigned: {patient.assignedNurse}
@@ -594,7 +643,7 @@ const EmergencyManagement = () => {
                   { value: '2', label: 'Level 2 - Emergency' },
                   { value: '3', label: 'Level 3 - Urgent' },
                   { value: '4', label: 'Level 4 - Less Urgent' },
-                  { value: '5', label: 'Level 5 - Non-urgent' }
+                  { value: '5', label: 'Level 5 - Non-urgent' },
                 ]}
                 value={selectedTriage}
                 onChange={setSelectedTriage}
@@ -607,7 +656,7 @@ const EmergencyManagement = () => {
                   { value: 'in_progress', label: 'In Progress' },
                   { value: 'completed', label: 'Completed' },
                   { value: 'transferred', label: 'Transferred' },
-                  { value: 'discharged', label: 'Discharged' }
+                  { value: 'discharged', label: 'Discharged' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -647,90 +696,92 @@ const EmergencyManagement = () => {
                     </Table.Tr>
                   ) : (
                     [].map((emergencyCase) => (
-                    <Table.Tr key={emergencyCase.id}>
-                      <Table.Td>
-                        <Text fw={500}>{emergencyCase.caseNumber}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group>
-                          <Avatar color="red" radius="xl" size="sm">
-                            {emergencyCase.patient.firstName[0]}{emergencyCase.patient.lastName[0]}
-                          </Avatar>
+                      <Table.Tr key={emergencyCase.id}>
+                        <Table.Td>
+                          <Text fw={500}>{emergencyCase.caseNumber}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group>
+                            <Avatar color="red" radius="xl" size="sm">
+                              {emergencyCase.patient.firstName[0]}
+                              {emergencyCase.patient.lastName[0]}
+                            </Avatar>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {emergencyCase.patient.firstName} {emergencyCase.patient.lastName}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                DOB: {emergencyCase.patient.dateOfBirth}
+                              </Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group>
+                            <ThemeIcon
+                              color={getTriageColor(emergencyCase.triageLevel)}
+                              size="md"
+                              radius="md"
+                            >
+                              <Text fw={700} c="white" size="xs">
+                                {emergencyCase.triageLevel}
+                              </Text>
+                            </ThemeIcon>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {getTriageLabel(emergencyCase.triageLevel)}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {emergencyCase.assignedTo}
+                              </Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm" lineClamp={2} style={{ maxWidth: 200 }}>
+                            {emergencyCase.chiefComplaint}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">
+                            {new Date(emergencyCase.arrivalTime).toLocaleTimeString()}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
                           <div>
                             <Text size="sm" fw={500}>
-                              {emergencyCase.patient.firstName} {emergencyCase.patient.lastName}
+                              {emergencyCase.assignedTo || 'Not Assigned'}
                             </Text>
                             <Text size="xs" c="dimmed">
-                              DOB: {emergencyCase.patient.dateOfBirth}
+                              Priority: {emergencyCase.priority}
                             </Text>
                           </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group>
-                          <ThemeIcon 
-                            color={getTriageColor(emergencyCase.triageLevel)} 
-                            size="md" 
-                            radius="md"
-                          >
-                            <Text fw={700} c="white" size="xs">
-                              {emergencyCase.triageLevel}
-                            </Text>
-                          </ThemeIcon>
-                          <div>
-                            <Text size="sm" fw={500}>
-                              {getTriageLabel(emergencyCase.triageLevel)}
-                            </Text>
-                            <Text size="xs" c="dimmed">
-                              {emergencyCase.assignedTo}
-                            </Text>
-                          </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm" lineClamp={2} style={{ maxWidth: 200 }}>
-                          {emergencyCase.chiefComplaint}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">
-                          {new Date(emergencyCase.arrivalTime).toLocaleTimeString()}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>
-                            {emergencyCase.assignedTo || 'Not Assigned'}
-                          </Text>
-                          <Text size="xs" c="dimmed">
-                            Priority: {emergencyCase.priority}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(emergencyCase.status)} variant="light">
-                          {emergencyCase.status.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewCase(emergencyCase)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="orange">
-                            <IconActivity size={16} />
-                          </ActionIcon>
-                        </Group>
-                      </Table.Td>
-                    </Table.Tr>
-                  )))}
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(emergencyCase.status)} variant="light">
+                            {emergencyCase.status.replace('_', ' ')}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewCase(emergencyCase)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="orange">
+                              <IconActivity size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -746,9 +797,7 @@ const EmergencyManagement = () => {
                 <Button leftSection={<IconBed size={16} />} variant="light">
                   Bed Assignment
                 </Button>
-                <Button leftSection={<IconActivity size={16} />}>
-                  Monitor Vitals
-                </Button>
+                <Button leftSection={<IconActivity size={16} />}>Monitor Vitals</Button>
               </Group>
             </Group>
 
@@ -767,7 +816,7 @@ const EmergencyManagement = () => {
                   { value: 'available', label: 'Available' },
                   { value: 'occupied', label: 'Occupied' },
                   { value: 'cleaned', label: 'Cleaned' },
-                  { value: 'maintenance', label: 'Maintenance' }
+                  { value: 'maintenance', label: 'Maintenance' },
                 ]}
                 value={selectedBedStatus}
                 onChange={setSelectedBedStatus}
@@ -781,8 +830,12 @@ const EmergencyManagement = () => {
                 <Card key={bed.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
-                      <Text fw={600} size="lg">Bed {bed.bedNumber}</Text>
-                      <Text size="sm" c="dimmed">{bed.ward} - {bed.roomNumber}</Text>
+                      <Text fw={600} size="lg">
+                        Bed {bed.bedNumber}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {bed.ward} - {bed.roomNumber}
+                      </Text>
                     </div>
                     <Badge color={getStatusColor(bed.status)} variant="light">
                       {bed.status}
@@ -793,7 +846,8 @@ const EmergencyManagement = () => {
                     <>
                       <Group mb="md">
                         <Avatar color="blue" radius="xl">
-                          {bed.patient.firstName[0]}{bed.patient.lastName[0]}
+                          {bed.patient.firstName[0]}
+                          {bed.patient.lastName[0]}
                         </Avatar>
                         <div>
                           <Text fw={500}>
@@ -805,33 +859,49 @@ const EmergencyManagement = () => {
                         </div>
                       </Group>
 
-                      <Text size="sm" fw={500} mb="sm">Current Vitals</Text>
+                      <Text size="sm" fw={500} mb="sm">
+                        Current Vitals
+                      </Text>
                       <Stack gap="xs" mb="md">
-                        <Group justify="space-between" p="xs" 
-                               style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                        <Group
+                          justify="space-between"
+                          p="xs"
+                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                        >
                           <Group gap="xs">
                             <IconHeart size={16} color="red" />
                             <Text size="sm">Heart Rate</Text>
                           </Group>
-                          <Text size="sm" fw={600}>{bed.currentVitals?.heartRate} bpm</Text>
+                          <Text size="sm" fw={600}>
+                            {bed.currentVitals?.heartRate} bpm
+                          </Text>
                         </Group>
-                        <Group justify="space-between" p="xs" 
-                               style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                        <Group
+                          justify="space-between"
+                          p="xs"
+                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                        >
                           <Group gap="xs">
                             <IconActivity size={16} color="blue" />
                             <Text size="sm">Blood Pressure</Text>
                           </Group>
                           <Text size="sm" fw={600}>
-                            {bed.currentVitals?.bloodPressure.systolic}/{bed.currentVitals?.bloodPressure.diastolic}
+                            {bed.currentVitals?.bloodPressure.systolic}/
+                            {bed.currentVitals?.bloodPressure.diastolic}
                           </Text>
                         </Group>
-                        <Group justify="space-between" p="xs" 
-                               style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                        <Group
+                          justify="space-between"
+                          p="xs"
+                          style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                        >
                           <Group gap="xs">
                             <IconLungs size={16} color="green" />
                             <Text size="sm">Oxygen</Text>
                           </Group>
-                          <Text size="sm" fw={600}>{bed.currentVitals?.oxygenSaturation}%</Text>
+                          <Text size="sm" fw={600}>
+                            {bed.currentVitals?.oxygenSaturation}%
+                          </Text>
                         </Group>
                       </Stack>
                     </>
@@ -839,14 +909,11 @@ const EmergencyManagement = () => {
 
                   <Group justify="space-between">
                     <Text size="xs" c="dimmed">
-                      Last Updated: {bed.lastUpdated ? new Date(bed.lastUpdated).toLocaleTimeString() : 'N/A'}
+                      Last Updated:{' '}
+                      {bed.lastUpdated ? new Date(bed.lastUpdated).toLocaleTimeString() : 'N/A'}
                     </Text>
                     <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewBed(bed)}
-                      >
+                      <ActionIcon variant="subtle" color="blue" onClick={() => handleViewBed(bed)}>
                         <IconEye size={16} />
                       </ActionIcon>
                       <ActionIcon variant="subtle" color="green">
@@ -868,9 +935,7 @@ const EmergencyManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Critical Care Equipment</Title>
-              <Button leftSection={<IconSettings size={16} />}>
-                Equipment Check
-              </Button>
+              <Button leftSection={<IconSettings size={16} />}>Equipment Check</Button>
             </Group>
 
             {/* Equipment Grid */}
@@ -879,8 +944,12 @@ const EmergencyManagement = () => {
                 <Card key={equipment.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
-                      <Text fw={600} size="lg">{equipment.equipmentName}</Text>
-                      <Text size="sm" c="dimmed">{equipment.location}</Text>
+                      <Text fw={600} size="lg">
+                        {equipment.equipmentName}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {equipment.location}
+                      </Text>
                     </div>
                     <Badge color={getStatusColor(equipment.status)} variant="light">
                       {equipment.status.replace('_', ' ')}
@@ -889,25 +958,32 @@ const EmergencyManagement = () => {
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Model</Text>
-                      <Text size="sm" fw={500}>{equipment.model}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Serial</Text>
-                      <Text size="sm" fw={500}>{equipment.serialNumber}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Last Maintenance</Text>
-                      <Text size="sm">
-                        {equipment.lastMaintenanceDate}
+                      <Text size="sm" c="dimmed">
+                        Model
+                      </Text>
+                      <Text size="sm" fw={500}>
+                        {equipment.model}
                       </Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Next Due</Text>
-                      <Text 
-                        size="sm" 
-                        c="dimmed"
-                      >
+                      <Text size="sm" c="dimmed">
+                        Serial
+                      </Text>
+                      <Text size="sm" fw={500}>
+                        {equipment.serialNumber}
+                      </Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        Last Maintenance
+                      </Text>
+                      <Text size="sm">{equipment.lastMaintenanceDate}</Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        Next Due
+                      </Text>
+                      <Text size="sm" c="dimmed">
                         {equipment.nextMaintenanceDate}
                       </Text>
                     </Group>
@@ -948,9 +1024,7 @@ const EmergencyManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Emergency Protocols</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Add Protocol
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Add Protocol</Button>
             </Group>
 
             {/* Emergency Protocols */}
@@ -959,8 +1033,12 @@ const EmergencyManagement = () => {
                 <Card key={protocol.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
-                      <Text fw={600} size="lg">{protocol.name}</Text>
-                      <Text size="sm" c="dimmed">{protocol.category}</Text>
+                      <Text fw={600} size="lg">
+                        {protocol.name}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {protocol.category}
+                      </Text>
                     </div>
                     <Group>
                       <Badge color="blue" variant="light">
@@ -972,17 +1050,17 @@ const EmergencyManagement = () => {
                     </Group>
                   </Group>
 
-                  <Text size="sm" mb="md">{protocol.description}</Text>
+                  <Text size="sm" mb="md">
+                    {protocol.description}
+                  </Text>
 
                   <div>
-                    <Text size="sm" fw={500} mb="sm">Protocol Steps</Text>
+                    <Text size="sm" fw={500} mb="sm">
+                      Protocol Steps
+                    </Text>
                     <Stepper active={-1}>
                       {protocol.steps.map((step, index) => (
-                        <Stepper.Step 
-                          key={index} 
-                          label={`Step ${index + 1}`} 
-                          description={step}
-                        />
+                        <Stepper.Step key={index} label={`Step ${index + 1}`} description={step} />
                       ))}
                     </Stepper>
                   </div>
@@ -1022,7 +1100,8 @@ const EmergencyManagement = () => {
             <Stack gap="md">
               <Group>
                 <Avatar color="red" size="xl" radius="xl">
-                  {selectedCase.patient.firstName[0]}{selectedCase.patient.lastName[0]}
+                  {selectedCase.patient.firstName[0]}
+                  {selectedCase.patient.lastName[0]}
                 </Avatar>
                 <div>
                   <Title order={3}>
@@ -1039,48 +1118,74 @@ const EmergencyManagement = () => {
 
               <SimpleGrid cols={2}>
                 <div>
-                  <Text size="sm" fw={500}>Triage Level</Text>
+                  <Text size="sm" fw={500}>
+                    Triage Level
+                  </Text>
                   <Group>
-                      <ThemeIcon 
-                        color={getTriageColor(selectedCase.triageLevel)} 
-                        size="sm" 
-                        radius="md"
-                      >
-                        <Text fw={700} c="white" size="xs">
-                          {selectedCase.triageLevel}
-                        </Text>
-                      </ThemeIcon>
-                      <Text size="sm">{getTriageLabel(selectedCase.triageLevel)}</Text>
+                    <ThemeIcon
+                      color={getTriageColor(selectedCase.triageLevel)}
+                      size="sm"
+                      radius="md"
+                    >
+                      <Text fw={700} c="white" size="xs">
+                        {selectedCase.triageLevel}
+                      </Text>
+                    </ThemeIcon>
+                    <Text size="sm">{getTriageLabel(selectedCase.triageLevel)}</Text>
                   </Group>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Arrival Time</Text>
+                  <Text size="sm" fw={500}>
+                    Arrival Time
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {new Date(selectedCase.arrivalTime).toLocaleString()}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Chief Complaint</Text>
-                  <Text size="sm" c="dimmed">{selectedCase.chiefComplaint}</Text>
+                  <Text size="sm" fw={500}>
+                    Chief Complaint
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedCase.chiefComplaint}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Assigned To</Text>
-                  <Text size="sm" c="dimmed">{selectedCase.assignedTo || 'Not Assigned'}</Text>
+                  <Text size="sm" fw={500}>
+                    Assigned To
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedCase.assignedTo || 'Not Assigned'}
+                  </Text>
                 </div>
               </SimpleGrid>
 
               {/* Vitals not available in simplified mock; display basic info instead */}
               <Divider />
               <div>
-                <Text size="sm" fw={500} mb="sm">Summary</Text>
+                <Text size="sm" fw={500} mb="sm">
+                  Summary
+                </Text>
                 <SimpleGrid cols={2}>
-                  <Group justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
                     <Text size="sm">Bed</Text>
-                    <Text size="sm" fw={600}>{selectedCase.bedNumber || '—'}</Text>
+                    <Text size="sm" fw={600}>
+                      {selectedCase.bedNumber || '—'}
+                    </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
                     <Text size="sm">Priority</Text>
-                    <Text size="sm" fw={600}>{selectedCase.priority ?? '—'}</Text>
+                    <Text size="sm" fw={600}>
+                      {selectedCase.priority ?? '—'}
+                    </Text>
                   </Group>
                 </SimpleGrid>
               </div>
@@ -1089,9 +1194,7 @@ const EmergencyManagement = () => {
                 <Button variant="light" onClick={closeCaseDetail}>
                   Close
                 </Button>
-                <Button>
-                  Update Case
-                </Button>
+                <Button>Update Case</Button>
               </Group>
             </Stack>
           </ScrollArea>
@@ -1099,12 +1202,7 @@ const EmergencyManagement = () => {
       </Modal>
 
       {/* Add Case Modal */}
-      <Modal
-        opened={addCaseOpened}
-        onClose={closeAddCase}
-        title="New Emergency Case"
-        size="lg"
-      >
+      <Modal opened={addCaseOpened} onClose={closeAddCase} title="New Emergency Case" size="lg">
         <Stack gap="md">
           <SimpleGrid cols={2}>
             <Select
@@ -1122,19 +1220,14 @@ const EmergencyManagement = () => {
                 { value: '2', label: 'Level 2 - Emergency' },
                 { value: '3', label: 'Level 3 - Urgent' },
                 { value: '4', label: 'Level 4 - Less Urgent' },
-                { value: '5', label: 'Level 5 - Non-urgent' }
+                { value: '5', label: 'Level 5 - Non-urgent' },
               ]}
               required
             />
           </SimpleGrid>
-          
-          <Textarea
-            label="Chief Complaint"
-            placeholder="Enter chief complaint"
-            rows={3}
-            required
-          />
-          
+
+          <Textarea label="Chief Complaint" placeholder="Enter chief complaint" rows={3} required />
+
           <Select
             label="Mode of Arrival"
             placeholder="Select mode of arrival"
@@ -1142,53 +1235,38 @@ const EmergencyManagement = () => {
               { value: 'ambulance', label: 'Ambulance' },
               { value: 'walk_in', label: 'Walk-in' },
               { value: 'police', label: 'Police' },
-              { value: 'helicopter', label: 'Helicopter' }
+              { value: 'helicopter', label: 'Helicopter' },
             ]}
             required
           />
-          
-          <Text size="sm" fw={500} mt="md">Initial Vital Signs</Text>
+
+          <Text size="sm" fw={500} mt="md">
+            Initial Vital Signs
+          </Text>
           <SimpleGrid cols={3}>
-            <NumberInput
-              label="Heart Rate (bpm)"
-              placeholder="72"
-            />
-            <TextInput
-              label="Blood Pressure"
-              placeholder="120/80"
-            />
-            <NumberInput
-              label="Temperature (°F)"
-              placeholder="98.6"
-            />
-            <NumberInput
-              label="Oxygen Saturation (%)"
-              placeholder="98"
-            />
-            <NumberInput
-              label="Respiratory Rate"
-              placeholder="16"
-            />
-            <NumberInput
-              label="Pain Scale (0-10)"
-              placeholder="0"
-              min={0}
-              max={10}
-            />
+            <NumberInput label="Heart Rate (bpm)" placeholder="72" />
+            <TextInput label="Blood Pressure" placeholder="120/80" />
+            <NumberInput label="Temperature (°F)" placeholder="98.6" />
+            <NumberInput label="Oxygen Saturation (%)" placeholder="98" />
+            <NumberInput label="Respiratory Rate" placeholder="16" />
+            <NumberInput label="Pain Scale (0-10)" placeholder="0" min={0} max={10} />
           </SimpleGrid>
-          
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddCase}>
               Cancel
             </Button>
-            <Button color="red" onClick={() => {
-              notifications.show({
-                title: 'Emergency Case Created',
-                message: 'New emergency case has been added to the system',
-                color: 'green',
-              });
-              closeAddCase();
-            }}>
+            <Button
+              color="red"
+              onClick={() => {
+                notifications.show({
+                  title: 'Emergency Case Created',
+                  message: 'New emergency case has been added to the system',
+                  color: 'green',
+                });
+                closeAddCase();
+              }}
+            >
               Create Case
             </Button>
           </Group>

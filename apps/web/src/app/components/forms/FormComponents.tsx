@@ -74,8 +74,8 @@ export const validators = {
     if (!value) return null;
     const num = parseFloat(value);
     if (isNaN(num)) return 'Must be a valid number';
-    return (num >= min && num <= max) ? null : `Must be between ${min} and ${max}`;
-  }
+    return num >= min && num <= max ? null : `Must be between ${min} and ${max}`;
+  },
 };
 
 // Form field configuration interface
@@ -83,7 +83,17 @@ export interface FieldConfig {
   name: string;
   title: string;
   label?: string;
-  type: 'text' | 'email' | 'password' | 'tel' | 'number' | 'date' | 'select' | 'textarea' | 'checkbox' | 'radio';
+  type:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'tel'
+    | 'number'
+    | 'date'
+    | 'select'
+    | 'textarea'
+    | 'checkbox'
+    | 'radio';
   placeholder?: string;
   validators?: Array<(value: any) => string | null>;
   options?: Array<{ value: string; title: string; label?: string }>;
@@ -116,20 +126,23 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
   onCancel,
   submitLabel = 'Submit',
   isLoading = false,
-  layout = 'single'
+  layout = 'single',
 }) => {
   const [values, setValues] = useState<Record<string, any>>(
-    fields.reduce((acc, field) => ({
-      ...acc,
-      [field.name]: initialValues[field.name] || (field.type === 'checkbox' ? false : '')
-    }), {})
+    fields.reduce(
+      (acc, field) => ({
+        ...acc,
+        [field.name]: initialValues[field.name] || (field.type === 'checkbox' ? false : ''),
+      }),
+      {}
+    )
   );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const validateField = (fieldName: string, value: any): string | null => {
-    const field = fields.find(f => f.name === fieldName);
+    const field = fields.find((f) => f.name === fieldName);
     if (!field?.validators) return null;
 
     for (const validator of field.validators) {
@@ -143,7 +156,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
     const newErrors: Record<string, string> = {};
     let isValid = true;
 
-    fields.forEach(field => {
+    fields.forEach((field) => {
       const error = validateField(field.name, values[field.name]);
       if (error) {
         newErrors[field.name] = error;
@@ -155,36 +168,39 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
     return isValid;
   };
 
-  const handleInputChange = (fieldName: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
-    
-    setValues(prev => ({
-      ...prev,
-      [fieldName]: value
-    }));
+  const handleInputChange =
+    (fieldName: string) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+      const value =
+        e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
 
-    // Clear error when user starts typing
-    if (errors[fieldName] && touched[fieldName]) {
-      const error = validateField(fieldName, value);
-      setErrors(prev => ({
+      setValues((prev) => ({
         ...prev,
-        [fieldName]: error || ''
+        [fieldName]: value,
       }));
-    }
-  };
+
+      // Clear error when user starts typing
+      if (errors[fieldName] && touched[fieldName]) {
+        const error = validateField(fieldName, value);
+        setErrors((prev) => ({
+          ...prev,
+          [fieldName]: error || '',
+        }));
+      }
+    };
 
   const handleBlur = (fieldName: string) => () => {
-    setTouched(prev => ({ ...prev, [fieldName]: true }));
+    setTouched((prev) => ({ ...prev, [fieldName]: true }));
     const error = validateField(fieldName, values[fieldName]);
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [fieldName]: error || ''
+      [fieldName]: error || '',
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Mark all fields as touched
     const allTouched = fields.reduce((acc, field) => ({ ...acc, [field.name]: true }), {});
     setTouched(allTouched);
@@ -208,14 +224,17 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
       case 'select':
         return (
           <div key={field.name} style={{ marginBottom: '1.5rem' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#374151'
-            }}>
-              {field.label || field.title} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#374151',
+              }}
+            >
+              {field.label || field.title}{' '}
+              {field.required && <span style={{ color: '#ef4444' }}>*</span>}
             </label>
             <select
               value={fieldValue}
@@ -231,11 +250,11 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
                 backgroundColor: field.disabled ? '#f9fafb' : 'white',
                 color: '#374151',
                 outline: 'none',
-                transition: 'border-color 0.2s ease'
+                transition: 'border-color 0.2s ease',
               }}
             >
               <option value="">Select {field.label || field.title}</option>
-              {field.options?.map(option => (
+              {field.options?.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label || option.title}
                 </option>
@@ -257,14 +276,17 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
       case 'textarea':
         return (
           <div key={field.name} style={{ marginBottom: '1.5rem' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#374151'
-            }}>
-              {field.label || field.title} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#374151',
+              }}
+            >
+              {field.label || field.title}{' '}
+              {field.required && <span style={{ color: '#ef4444' }}>*</span>}
             </label>
             <textarea
               value={fieldValue}
@@ -283,7 +305,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
                 color: '#374151',
                 outline: 'none',
                 transition: 'border-color 0.2s ease',
-                resize: 'vertical'
+                resize: 'vertical',
               }}
             />
             {fieldError && (
@@ -302,13 +324,15 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
       case 'checkbox':
         return (
           <div key={field.name} style={{ marginBottom: '1.5rem' }}>
-            <label style={{
-              display: 'flex',
-              alignItems: 'center',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              color: '#374151'
-            }}>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                color: '#374151',
+              }}
+            >
               <input
                 type="checkbox"
                 checked={fieldValue}
@@ -318,10 +342,11 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
                 style={{
                   marginRight: '0.5rem',
                   width: '1rem',
-                  height: '1rem'
+                  height: '1rem',
                 }}
               />
-              {field.label || field.title} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+              {field.label || field.title}{' '}
+              {field.required && <span style={{ color: '#ef4444' }}>*</span>}
             </label>
             {fieldError && (
               <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: '#ef4444' }}>
@@ -339,24 +364,30 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
       case 'radio':
         return (
           <div key={field.name} style={{ marginBottom: '1.5rem' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#374151'
-            }}>
-              {field.label || field.title} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#374151',
+              }}
+            >
+              {field.label || field.title}{' '}
+              {field.required && <span style={{ color: '#ef4444' }}>*</span>}
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {field.options?.map(option => (
-                <label key={option.value} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  color: '#374151'
-                }}>
+              {field.options?.map((option) => (
+                <label
+                  key={option.value}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    color: '#374151',
+                  }}
+                >
                   <input
                     type="radio"
                     name={field.name}
@@ -414,53 +445,54 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
       <form onSubmit={handleSubmit}>
         {title && (
           <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{
-              fontSize: '1.5rem',
-              fontWeight: '600',
-              color: '#1f2937',
-              marginBottom: '0.5rem'
-            }}>
+            <h2
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                color: '#1f2937',
+                marginBottom: '0.5rem',
+              }}
+            >
               {title}
             </h2>
             {description && (
-              <p style={{
-                fontSize: '1rem',
-                color: '#6b7280'
-              }}>
+              <p
+                style={{
+                  fontSize: '1rem',
+                  color: '#6b7280',
+                }}
+              >
                 {description}
               </p>
             )}
           </div>
         )}
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: layout === 'two-column' ? 'repeat(auto-fit, minmax(300px, 1fr))' : '1fr',
-          gap: '1.5rem'
-        }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns:
+              layout === 'two-column' ? 'repeat(auto-fit, minmax(300px, 1fr))' : '1fr',
+            gap: '1.5rem',
+          }}
+        >
           {fields.map(renderField)}
         </div>
 
-        <div style={{
-          display: 'flex',
-          gap: '1rem',
-          marginTop: '2rem',
-          justifyContent: 'flex-end'
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            marginTop: '2rem',
+            justifyContent: 'flex-end',
+          }}
+        >
           {onCancel && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isLoading}
-            >
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
               Cancel
             </Button>
           )}
-          <Button
-            type="submit"
-            disabled={isLoading}
-          >
+          <Button type="submit" disabled={isLoading}>
             {isLoading ? 'Loading...' : submitLabel}
           </Button>
         </div>
@@ -481,7 +513,7 @@ export const PatientRegistrationForm: React.FC = () => {
       placeholder: 'Enter first name',
       validators: [validators.required, validators.minLength(2)],
       required: true,
-      icon: '👤'
+      icon: '👤',
     },
     {
       name: 'lastName',
@@ -490,7 +522,7 @@ export const PatientRegistrationForm: React.FC = () => {
       placeholder: 'Enter last name',
       validators: [validators.required, validators.minLength(2)],
       required: true,
-      icon: '👤'
+      icon: '👤',
     },
     {
       name: 'email',
@@ -499,7 +531,7 @@ export const PatientRegistrationForm: React.FC = () => {
       placeholder: 'Enter email address',
       validators: [validators.required, validators.email],
       required: true,
-      icon: '📧'
+      icon: '📧',
     },
     {
       name: 'phone',
@@ -508,7 +540,7 @@ export const PatientRegistrationForm: React.FC = () => {
       placeholder: 'Enter phone number',
       validators: [validators.required, validators.phone],
       required: true,
-      icon: '📞'
+      icon: '📞',
     },
     {
       name: 'dateOfBirth',
@@ -516,7 +548,7 @@ export const PatientRegistrationForm: React.FC = () => {
       type: 'date',
       validators: [validators.required, validators.pastDate],
       required: true,
-      icon: '📅'
+      icon: '📅',
     },
     {
       name: 'gender',
@@ -525,10 +557,10 @@ export const PatientRegistrationForm: React.FC = () => {
       options: [
         { value: 'MALE', title: 'Male' },
         { value: 'FEMALE', title: 'Female' },
-        { value: 'OTHER', title: 'Other' }
+        { value: 'OTHER', title: 'Other' },
       ],
       validators: [validators.required],
-      required: true
+      required: true,
     },
     {
       name: 'address',
@@ -537,7 +569,7 @@ export const PatientRegistrationForm: React.FC = () => {
       placeholder: 'Enter full address',
       rows: 3,
       validators: [validators.required],
-      required: true
+      required: true,
     },
     {
       name: 'emergencyContactName',
@@ -546,7 +578,7 @@ export const PatientRegistrationForm: React.FC = () => {
       placeholder: 'Enter emergency contact name',
       validators: [validators.required],
       required: true,
-      icon: '🚨'
+      icon: '🚨',
     },
     {
       name: 'emergencyContactPhone',
@@ -555,7 +587,7 @@ export const PatientRegistrationForm: React.FC = () => {
       placeholder: 'Enter emergency contact phone',
       validators: [validators.required, validators.phone],
       required: true,
-      icon: '📞'
+      icon: '📞',
     },
     {
       name: 'insuranceNumber',
@@ -563,7 +595,7 @@ export const PatientRegistrationForm: React.FC = () => {
       type: 'text',
       placeholder: 'Enter insurance number (optional)',
       validators: [validators.alphanumeric],
-      helpText: 'Optional: Enter health insurance number if available'
+      helpText: 'Optional: Enter health insurance number if available',
     },
     {
       name: 'allergies',
@@ -571,25 +603,25 @@ export const PatientRegistrationForm: React.FC = () => {
       type: 'textarea',
       placeholder: 'List any known allergies',
       rows: 2,
-      helpText: 'Please list any known allergies or write "None"'
+      helpText: 'Please list any known allergies or write "None"',
     },
     {
       name: 'consentToTreatment',
       title: 'I consent to medical treatment',
       type: 'checkbox',
       validators: [validators.required],
-      required: true
-    }
+      required: true,
+    },
   ];
 
   const handleSubmit = async (values: Record<string, any>) => {
     setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       console.log('Patient registered:', values);
       alert('Patient registered successfully!');
-    } catch (_error) {
+    } catch {
       alert('Failed to register patient. Please try again.');
     } finally {
       setIsLoading(false);

@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Modal,
-  Button,
-  Group,
-  Stack,
-  Select,
-  Text,
-  LoadingOverlay,
-  Alert
-} from '@mantine/core';
+import { Modal, Button, Group, Stack, Select, Text, LoadingOverlay, Alert } from '@mantine/core';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import type { UpdateTriageDto } from '../../services/emergency.service';
 
@@ -25,7 +16,7 @@ export default function TriageForm({
   onClose,
   emergencyCase,
   onSubmit,
-  loading = false
+  loading = false,
 }: TriageFormProps) {
   const [triageLevel, setTriageLevel] = useState(emergencyCase?.triageLevel || 'NON_URGENT');
 
@@ -41,10 +32,26 @@ export default function TriageForm({
   };
 
   const triageLevelOptions = [
-    { value: 'CRITICAL', label: '🔴 Critical (Red) - Immediate', description: 'Life-threatening condition requiring immediate attention' },
-    { value: 'URGENT', label: '🟠 Urgent (Orange) - 10-15 mins', description: 'Serious condition requiring prompt attention' },
-    { value: 'SEMI_URGENT', label: '🟡 Semi-Urgent (Yellow) - 30-60 mins', description: 'Moderately serious condition' },
-    { value: 'NON_URGENT', label: '🟢 Non-Urgent (Green) - 1-2 hours', description: 'Minor condition, stable patient' }
+    {
+      value: 'CRITICAL',
+      label: '🔴 Critical (Red) - Immediate',
+      description: 'Life-threatening condition requiring immediate attention',
+    },
+    {
+      value: 'URGENT',
+      label: '🟠 Urgent (Orange) - 10-15 mins',
+      description: 'Serious condition requiring prompt attention',
+    },
+    {
+      value: 'SEMI_URGENT',
+      label: '🟡 Semi-Urgent (Yellow) - 30-60 mins',
+      description: 'Moderately serious condition',
+    },
+    {
+      value: 'NON_URGENT',
+      label: '🟢 Non-Urgent (Green) - 1-2 hours',
+      description: 'Minor condition, stable patient',
+    },
   ];
 
   const getTriageColor = (level: string) => {
@@ -52,7 +59,7 @@ export default function TriageForm({
       CRITICAL: 'red',
       URGENT: 'orange',
       SEMI_URGENT: 'yellow',
-      NON_URGENT: 'green'
+      NON_URGENT: 'green',
     };
     return colors[level] || 'gray';
   };
@@ -73,21 +80,22 @@ export default function TriageForm({
       padding="md"
     >
       <LoadingOverlay visible={loading} />
-      
+
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           <Alert color={getTriageColor(emergencyCase?.triageLevel)} title="Current Triage Level">
             <Text size="sm">
-              {triageLevelOptions.find(opt => opt.value === emergencyCase?.triageLevel)?.label || 'Not set'}
+              {triageLevelOptions.find((opt) => opt.value === emergencyCase?.triageLevel)?.label ||
+                'Not set'}
             </Text>
           </Alert>
 
           <Select
             label="New Triage Level"
             placeholder="Select triage level"
-            data={triageLevelOptions.map(opt => ({
+            data={triageLevelOptions.map((opt) => ({
               value: opt.value,
-              label: opt.label
+              label: opt.label,
             }))}
             value={triageLevel}
             onChange={(value) => setTriageLevel(value || 'NON_URGENT')}
@@ -96,7 +104,7 @@ export default function TriageForm({
 
           <Alert color="blue" title="Triage Guidelines">
             <Stack gap="xs">
-              {triageLevelOptions.map(opt => (
+              {triageLevelOptions.map((opt) => (
                 <Text key={opt.value} size="xs">
                   <strong>{opt.label}:</strong> {opt.description}
                 </Text>

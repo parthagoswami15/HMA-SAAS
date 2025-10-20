@@ -20,7 +20,7 @@ import {
   Alert,
   ScrollArea,
   ThemeIcon,
-  List
+  List,
 } from '@mantine/core';
 import {
   IconUser,
@@ -41,14 +41,14 @@ import {
   IconEye,
   IconCloudUpload,
   IconActivity,
-  IconMedicalCross
+  IconMedicalCross,
 } from '@tabler/icons-react';
-import { 
-  Patient, 
-  PatientVisit, 
-  PatientDocument, 
-  MedicalHistory, 
-  PatientAppointment 
+import {
+  Patient,
+  PatientVisit,
+  PatientDocument,
+  MedicalHistory,
+  PatientAppointment,
 } from '../../types/patient';
 import { formatDate, formatPhoneNumber } from '../../lib/utils';
 
@@ -73,7 +73,7 @@ function PatientDetails({
   medicalHistory = [],
   appointments = [],
   onEdit,
-  onScheduleAppointment
+  onScheduleAppointment,
 }: PatientDetailsProps) {
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -98,23 +98,31 @@ function PatientDetails({
         <Grid>
           <Grid.Col span={{ base: 12, md: 8 }}>
             <Group>
-              <Avatar 
-                size="xl" 
-                name={`${patient.firstName} ${patient.lastName}`} 
+              <Avatar
+                size="xl"
+                name={`${patient.firstName} ${patient.lastName}`}
                 color="blue"
                 styles={{
-                  root: { fontSize: '1.5rem' }
+                  root: { fontSize: '1.5rem' },
                 }}
               />
               <div>
-                <Title order={2}>{patient.firstName} {patient.lastName}</Title>
+                <Title order={2}>
+                  {patient.firstName} {patient.lastName}
+                </Title>
                 <Group gap="xs" mt="xs">
-                  <Badge color="blue" variant="light">{patient.patientId}</Badge>
+                  <Badge color="blue" variant="light">
+                    {patient.patientId}
+                  </Badge>
                   <Badge color={patient.status === 'active' ? 'green' : 'red'} variant="light">
                     {patient.status}
                   </Badge>
                   {patient.insuranceInfo?.isActive && (
-                    <Badge color="green" variant="light" leftSection={<IconShieldX size="0.8rem" />}>
+                    <Badge
+                      color="green"
+                      variant="light"
+                      leftSection={<IconShieldX size="0.8rem" />}
+                    >
                       Insured
                     </Badge>
                   )}
@@ -138,7 +146,7 @@ function PatientDetails({
               </div>
             </Group>
           </Grid.Col>
-          
+
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Stack gap="xs">
               <Button
@@ -157,18 +165,10 @@ function PatientDetails({
                 Schedule Appointment
               </Button>
               <Group grow>
-                <Button
-                  variant="subtle"
-                  size="sm"
-                  leftSection={<IconDownload size="0.8rem" />}
-                >
+                <Button variant="subtle" size="sm" leftSection={<IconDownload size="0.8rem" />}>
                   Export
                 </Button>
-                <Button
-                  variant="subtle"
-                  size="sm"
-                  leftSection={<IconPrinter size="0.8rem" />}
-                >
+                <Button variant="subtle" size="sm" leftSection={<IconPrinter size="0.8rem" />}>
                   Print
                 </Button>
               </Group>
@@ -184,38 +184,54 @@ function PatientDetails({
             <ThemeIcon size="xl" variant="light" color="blue" mb="sm" mx="auto">
               <IconActivity size="1.5rem" />
             </ThemeIcon>
-            <Text size="xl" fw={700}>{patient.totalVisits}</Text>
-            <Text size="sm" c="dimmed">Total Visits</Text>
+            <Text size="xl" fw={700}>
+              {patient.totalVisits}
+            </Text>
+            <Text size="sm" c="dimmed">
+              Total Visits
+            </Text>
           </Card>
         </Grid.Col>
-        
+
         <Grid.Col span={{ base: 6, md: 3 }}>
           <Card withBorder p="md" style={{ textAlign: 'center' }}>
             <ThemeIcon size="xl" variant="light" color="red" mb="sm" mx="auto">
               <IconAlertCircle size="1.5rem" />
             </ThemeIcon>
-            <Text size="xl" fw={700}>{patient.allergies.length}</Text>
-            <Text size="sm" c="dimmed">Allergies</Text>
+            <Text size="xl" fw={700}>
+              {patient.allergies.length}
+            </Text>
+            <Text size="sm" c="dimmed">
+              Allergies
+            </Text>
           </Card>
         </Grid.Col>
-        
+
         <Grid.Col span={{ base: 6, md: 3 }}>
           <Card withBorder p="md" style={{ textAlign: 'center' }}>
             <ThemeIcon size="xl" variant="light" color="orange" mb="sm" mx="auto">
               <IconMedicalCross size="1.5rem" />
             </ThemeIcon>
-            <Text size="xl" fw={700}>{patient.chronicDiseases.length}</Text>
-            <Text size="sm" c="dimmed">Chronic Conditions</Text>
+            <Text size="xl" fw={700}>
+              {patient.chronicDiseases.length}
+            </Text>
+            <Text size="sm" c="dimmed">
+              Chronic Conditions
+            </Text>
           </Card>
         </Grid.Col>
-        
+
         <Grid.Col span={{ base: 6, md: 3 }}>
           <Card withBorder p="md" style={{ textAlign: 'center' }}>
             <ThemeIcon size="xl" variant="light" color="green" mb="sm" mx="auto">
               <IconPill size="1.5rem" />
             </ThemeIcon>
-            <Text size="xl" fw={700}>{patient.currentMedications.length}</Text>
-            <Text size="sm" c="dimmed">Current Medications</Text>
+            <Text size="xl" fw={700}>
+              {patient.currentMedications.length}
+            </Text>
+            <Text size="sm" c="dimmed">
+              Current Medications
+            </Text>
           </Card>
         </Grid.Col>
       </Grid>
@@ -258,13 +274,17 @@ function PatientDetails({
               <Title order={4}>Address</Title>
             </Group>
             <Text size="sm">
-              {patient.address.street}<br />
-              {patient.address.city}, {patient.address.state}<br />
+              {patient.address.street}
+              <br />
+              {patient.address.city}, {patient.address.state}
+              <br />
               {patient.address.postalCode}, {patient.address.country}
               {patient.address.landmark && (
                 <>
                   <br />
-                  <Text span c="dimmed">Near: {patient.address.landmark}</Text>
+                  <Text span c="dimmed">
+                    Near: {patient.address.landmark}
+                  </Text>
                 </>
               )}
             </Text>
@@ -275,23 +295,33 @@ function PatientDetails({
       {/* Medical Alerts */}
       {(patient.allergies.length > 0 || patient.chronicDiseases.length > 0) && (
         <Paper p="md" withBorder>
-          <Title order={4} mb="md" c="red">Medical Alerts</Title>
+          <Title order={4} mb="md" c="red">
+            Medical Alerts
+          </Title>
           {patient.allergies.length > 0 && (
             <Alert color="red" mb="sm" icon={<IconAlertCircle size="1rem" />}>
-              <Text fw={500} size="sm">Allergies:</Text>
+              <Text fw={500} size="sm">
+                Allergies:
+              </Text>
               <Group gap="xs" mt="xs">
                 {patient.allergies.map((allergy, index) => (
-                  <Badge key={index} color="red" variant="light">{allergy}</Badge>
+                  <Badge key={index} color="red" variant="light">
+                    {allergy}
+                  </Badge>
                 ))}
               </Group>
             </Alert>
           )}
           {patient.chronicDiseases.length > 0 && (
             <Alert color="orange" icon={<IconMedicalCross size="1rem" />}>
-              <Text fw={500} size="sm">Chronic Conditions:</Text>
+              <Text fw={500} size="sm">
+                Chronic Conditions:
+              </Text>
               <Group gap="xs" mt="xs">
                 {patient.chronicDiseases.map((condition, index) => (
-                  <Badge key={index} color="orange" variant="light">{condition}</Badge>
+                  <Badge key={index} color="orange" variant="light">
+                    {condition}
+                  </Badge>
                 ))}
               </Group>
             </Alert>
@@ -306,13 +336,17 @@ function PatientDetails({
     <Stack gap="lg">
       <Group justify="space-between">
         <Title order={4}>Visit History</Title>
-        <Text size="sm" c="dimmed">{visits.length} visits</Text>
+        <Text size="sm" c="dimmed">
+          {visits.length} visits
+        </Text>
       </Group>
 
       {visits.length === 0 ? (
         <Paper p="xl" withBorder style={{ textAlign: 'center' }}>
           <IconHistory size="3rem" color="var(--mantine-color-gray-5)" />
-          <Text mt="md" c="dimmed">No visits recorded yet</Text>
+          <Text mt="md" c="dimmed">
+            No visits recorded yet
+          </Text>
         </Paper>
       ) : (
         <Timeline active={visits.length} bulletSize={24} lineWidth={2}>
@@ -323,11 +357,17 @@ function PatientDetails({
               title={
                 <Group justify="space-between">
                   <Text fw={500}>{visit.chiefComplaint}</Text>
-                  <Badge color={
-                    visit.status === 'completed' ? 'green' :
-                    visit.status === 'in_progress' ? 'blue' :
-                    visit.status === 'cancelled' ? 'red' : 'gray'
-                  }>
+                  <Badge
+                    color={
+                      visit.status === 'completed'
+                        ? 'green'
+                        : visit.status === 'in_progress'
+                          ? 'blue'
+                          : visit.status === 'cancelled'
+                            ? 'red'
+                            : 'gray'
+                    }
+                  >
                     {visit.status}
                   </Badge>
                 </Group>
@@ -345,14 +385,18 @@ function PatientDetails({
                         <IconUser size="0.9rem" />
                         <Text size="sm">{visit.doctorName}</Text>
                       </Group>
-                      <Text size="sm" c="dimmed">{visit.departmentName}</Text>
+                      <Text size="sm" c="dimmed">
+                        {visit.departmentName}
+                      </Text>
                     </Stack>
                   </Grid.Col>
-                  
+
                   <Grid.Col span={{ base: 12, md: 6 }}>
                     {visit.diagnosis.length > 0 && (
                       <div>
-                        <Text size="sm" fw={500} mb="xs">Diagnosis:</Text>
+                        <Text size="sm" fw={500} mb="xs">
+                          Diagnosis:
+                        </Text>
                         <List size="sm">
                           {visit.diagnosis.map((diag, idx) => (
                             <List.Item key={idx}>{diag}</List.Item>
@@ -366,19 +410,30 @@ function PatientDetails({
                 {visit.vitals && (
                   <div>
                     <Divider my="sm" />
-                    <Text size="sm" fw={500} mb="xs">Vitals:</Text>
+                    <Text size="sm" fw={500} mb="xs">
+                      Vitals:
+                    </Text>
                     <Grid>
                       <Grid.Col span={6}>
-                        <Text size="xs" c="dimmed">BP: {visit.vitals.bloodPressureSystolic}/{visit.vitals.bloodPressureDiastolic} mmHg</Text>
+                        <Text size="xs" c="dimmed">
+                          BP: {visit.vitals.bloodPressureSystolic}/
+                          {visit.vitals.bloodPressureDiastolic} mmHg
+                        </Text>
                       </Grid.Col>
                       <Grid.Col span={6}>
-                        <Text size="xs" c="dimmed">HR: {visit.vitals.heartRate} bpm</Text>
+                        <Text size="xs" c="dimmed">
+                          HR: {visit.vitals.heartRate} bpm
+                        </Text>
                       </Grid.Col>
                       <Grid.Col span={6}>
-                        <Text size="xs" c="dimmed">Temp: {visit.vitals.temperature}Â°F</Text>
+                        <Text size="xs" c="dimmed">
+                          Temp: {visit.vitals.temperature}Â°F
+                        </Text>
                       </Grid.Col>
                       <Grid.Col span={6}>
-                        <Text size="xs" c="dimmed">SpO2: {visit.vitals.oxygenSaturation}%</Text>
+                        <Text size="xs" c="dimmed">
+                          SpO2: {visit.vitals.oxygenSaturation}%
+                        </Text>
                       </Grid.Col>
                     </Grid>
                   </div>
@@ -387,7 +442,9 @@ function PatientDetails({
                 {visit.prescriptions.length > 0 && (
                   <div>
                     <Divider my="sm" />
-                    <Text size="sm" fw={500} mb="xs">Prescriptions:</Text>
+                    <Text size="sm" fw={500} mb="xs">
+                      Prescriptions:
+                    </Text>
                     <List size="sm">
                       {visit.prescriptions.map((rx, idx) => (
                         <List.Item key={idx}>
@@ -401,8 +458,12 @@ function PatientDetails({
                 {visit.notes && (
                   <div>
                     <Divider my="sm" />
-                    <Text size="sm" fw={500} mb="xs">Notes:</Text>
-                    <Text size="sm" c="dimmed">{visit.notes}</Text>
+                    <Text size="sm" fw={500} mb="xs">
+                      Notes:
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                      {visit.notes}
+                    </Text>
                   </div>
                 )}
               </Paper>
@@ -418,10 +479,7 @@ function PatientDetails({
     <Stack gap="lg">
       <Group justify="space-between">
         <Title order={4}>Documents</Title>
-        <Button
-          size="sm"
-          leftSection={<IconCloudUpload size="0.9rem" />}
-        >
+        <Button size="sm" leftSection={<IconCloudUpload size="0.9rem" />}>
           Upload Document
         </Button>
       </Group>
@@ -429,7 +487,9 @@ function PatientDetails({
       {documents.length === 0 ? (
         <Paper p="xl" withBorder style={{ textAlign: 'center' }}>
           <IconFileText size="3rem" color="var(--mantine-color-gray-5)" />
-          <Text mt="md" c="dimmed">No documents uploaded yet</Text>
+          <Text mt="md" c="dimmed">
+            No documents uploaded yet
+          </Text>
         </Paper>
       ) : (
         <Grid>
@@ -440,24 +500,36 @@ function PatientDetails({
                   <Group>
                     <IconFileText size="1.2rem" />
                     <div>
-                      <Text fw={500} size="sm">{doc.title}</Text>
-                      <Text size="xs" c="dimmed">{doc.documentType.replace('_', ' ')}</Text>
+                      <Text fw={500} size="sm">
+                        {doc.title}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {doc.documentType.replace('_', ' ')}
+                      </Text>
                     </div>
                   </Group>
                   <Badge color={doc.accessLevel === 'confidential' ? 'red' : 'blue'} size="sm">
                     {doc.accessLevel}
                   </Badge>
                 </Group>
-                
+
                 {doc.description && (
-                  <Text size="sm" c="dimmed" mb="sm">{doc.description}</Text>
+                  <Text size="sm" c="dimmed" mb="sm">
+                    {doc.description}
+                  </Text>
                 )}
-                
+
                 <Group justify="space-between" align="center">
                   <Group>
-                    <Text size="xs" c="dimmed">{formatDate(doc.uploadedAt)}</Text>
-                    <Text size="xs" c="dimmed">â€¢</Text>
-                    <Text size="xs" c="dimmed">{(doc.fileSize / 1024).toFixed(1)} KB</Text>
+                    <Text size="xs" c="dimmed">
+                      {formatDate(doc.uploadedAt)}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      â€¢
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {(doc.fileSize / 1024).toFixed(1)} KB
+                    </Text>
                   </Group>
                   <Group gap="xs">
                     <ActionIcon size="sm" variant="subtle">
@@ -481,10 +553,7 @@ function PatientDetails({
     <Stack gap="lg">
       <Group justify="space-between">
         <Title order={4}>Medical History</Title>
-        <Button
-          size="sm"
-          leftSection={<IconFileText size="0.9rem" />}
-        >
+        <Button size="sm" leftSection={<IconFileText size="0.9rem" />}>
           Add History
         </Button>
       </Group>
@@ -492,7 +561,9 @@ function PatientDetails({
       {medicalHistory.length === 0 ? (
         <Paper p="xl" withBorder style={{ textAlign: 'center' }}>
           <IconMedicalCross size="3rem" color="var(--mantine-color-gray-5)" />
-          <Text mt="md" c="dimmed">No medical history recorded yet</Text>
+          <Text mt="md" c="dimmed">
+            No medical history recorded yet
+          </Text>
         </Paper>
       ) : (
         <Stack gap="md">
@@ -500,28 +571,43 @@ function PatientDetails({
             <Paper key={history.id} p="md" withBorder>
               <Group justify="space-between" mb="sm">
                 <Group>
-                  <Badge color={
-                    history.historyType === 'allergy' ? 'red' :
-                    history.historyType === 'medical' ? 'blue' :
-                    history.historyType === 'surgical' ? 'orange' :
-                    history.historyType === 'family' ? 'purple' : 'gray'
-                  }>
+                  <Badge
+                    color={
+                      history.historyType === 'allergy'
+                        ? 'red'
+                        : history.historyType === 'medical'
+                          ? 'blue'
+                          : history.historyType === 'surgical'
+                            ? 'orange'
+                            : history.historyType === 'family'
+                              ? 'purple'
+                              : 'gray'
+                    }
+                  >
                     {history.historyType}
                   </Badge>
                   <Text fw={500}>{history.title}</Text>
                 </Group>
                 {history.severity && (
-                  <Badge color={
-                    history.severity === 'severe' ? 'red' :
-                    history.severity === 'moderate' ? 'orange' : 'yellow'
-                  } variant="light">
+                  <Badge
+                    color={
+                      history.severity === 'severe'
+                        ? 'red'
+                        : history.severity === 'moderate'
+                          ? 'orange'
+                          : 'yellow'
+                    }
+                    variant="light"
+                  >
                     {history.severity}
                   </Badge>
                 )}
               </Group>
-              
-              <Text size="sm" mb="sm">{history.description}</Text>
-              
+
+              <Text size="sm" mb="sm">
+                {history.description}
+              </Text>
+
               <Group>
                 {history.date && (
                   <Text size="xs" c="dimmed">
@@ -559,7 +645,9 @@ function PatientDetails({
       {appointments.length === 0 ? (
         <Paper p="xl" withBorder style={{ textAlign: 'center' }}>
           <IconCalendar size="3rem" color="var(--mantine-color-gray-5)" />
-          <Text mt="md" c="dimmed">No appointments scheduled</Text>
+          <Text mt="md" c="dimmed">
+            No appointments scheduled
+          </Text>
         </Paper>
       ) : (
         <Stack gap="md">
@@ -568,30 +656,42 @@ function PatientDetails({
               <Grid>
                 <Grid.Col span={{ base: 12, md: 8 }}>
                   <Group mb="sm">
-                    <Badge color={
-                      appointment.status === 'completed' ? 'green' :
-                      appointment.status === 'confirmed' ? 'blue' :
-                      appointment.status === 'cancelled' ? 'red' : 'gray'
-                    }>
+                    <Badge
+                      color={
+                        appointment.status === 'completed'
+                          ? 'green'
+                          : appointment.status === 'cancelled'
+                            ? 'red'
+                            : 'gray'
+                      }
+                    >
                       {appointment.status}
                     </Badge>
                     <Text fw={500}>{appointment.appointmentType.replace('_', ' ')}</Text>
                   </Group>
-                  
+
                   <Group>
                     <IconCalendar size="1rem" />
-                    <Text>{formatDate(appointment.appointmentDate)} at {appointment.appointmentTime}</Text>
+                    <Text>
+                      {formatDate(appointment.appointmentDate)} at {appointment.appointmentTime}
+                    </Text>
                   </Group>
-                  
+
                   {appointment.chiefComplaint && (
-                    <Text size="sm" mt="xs">{appointment.chiefComplaint}</Text>
+                    <Text size="sm" mt="xs">
+                      {appointment.chiefComplaint}
+                    </Text>
                   )}
                 </Grid.Col>
-                
+
                 <Grid.Col span={{ base: 12, md: 4 }}>
-                  <Text size="sm" c="dimmed">Duration: {appointment.duration} min</Text>
+                  <Text size="sm" c="dimmed">
+                    Duration: {appointment.duration} min
+                  </Text>
                   {appointment.reminderSent && (
-                    <Text size="xs" c="green">âœ“ Reminder sent</Text>
+                    <Text size="xs" c="green">
+                      âœ“ Reminder sent
+                    </Text>
                   )}
                 </Grid.Col>
               </Grid>

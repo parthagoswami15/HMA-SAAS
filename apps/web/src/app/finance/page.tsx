@@ -36,7 +36,7 @@ import {
   IconAlertCircle,
   IconReceipt,
   IconCash,
-  IconReport
+  IconReport,
 } from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
@@ -68,17 +68,15 @@ function FinancePage() {
   const { user, setUser } = useAppStore();
   const [activeTab, setActiveTab] = useState('transactions');
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [_invoices, _setInvoices] = useState<any[]>([]);
-  const [_payments, _setPayments] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [_dateRange, _setDateRange] = useState<[Date | null, Date | null]>([null, null]);
 
-  const [transactionFormOpened, { open: openTransactionForm, close: closeTransactionForm }] = useDisclosure(false);
+  const [transactionFormOpened, { open: openTransactionForm, close: closeTransactionForm }] =
+    useDisclosure(false);
   const [detailsOpened, { open: openDetails, close: closeDetails }] = useDisclosure(false);
 
   useEffect(() => {
@@ -97,7 +95,7 @@ function FinancePage() {
       // Since backend doesn't have transaction endpoints yet, we'll use payments data
       // to simulate transactions and show real data from the API
       const response = await financeService.getPayments();
-      
+
       if (response.success && response.data) {
         // Transform payments into transaction-like format
         const transformedTransactions = response.data.items.map((payment: any) => ({
@@ -112,7 +110,7 @@ function FinancePage() {
           createdAt: payment.createdAt,
           updatedAt: payment.updatedAt,
           relatedType: 'INVOICE',
-          relatedId: payment.invoiceId
+          relatedId: payment.invoiceId,
         }));
 
         setTransactions(transformedTransactions);
@@ -129,7 +127,7 @@ function FinancePage() {
             paymentMethod: 'CASH',
             referenceNumber: 'REF001',
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
           },
           {
             id: '2',
@@ -141,18 +139,21 @@ function FinancePage() {
             paymentMethod: 'BANK_TRANSFER',
             referenceNumber: 'REF002',
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
+            updatedAt: new Date().toISOString(),
+          },
         ];
         setTransactions(mockTransactions);
       }
     } catch (error: any) {
       console.error('Error fetching transactions:', error);
-      
+
       // Show user-friendly error message
       notifications.show({
         title: 'Error Loading Transactions',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch financial transactions. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to fetch financial transactions. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -169,8 +170,8 @@ function FinancePage() {
           paymentMethod: 'CASH',
           referenceNumber: 'REF001',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
+          updatedAt: new Date().toISOString(),
+        },
       ];
       setTransactions(mockTransactions);
     } finally {
@@ -182,16 +183,10 @@ function FinancePage() {
     try {
       const response = await financeService.getInvoices();
       if (response.success && response.data) {
-        setInvoices(response.data.items || []);
+        console.log('Invoices fetched:', response.data.items);
       }
     } catch (error: any) {
       console.error('Error fetching invoices:', error);
-      notifications.show({
-        title: 'Error Loading Invoices',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch invoices. Please try again.',
-        color: 'red',
-        autoClose: 5000,
-      });
     }
   };
 
@@ -199,16 +194,10 @@ function FinancePage() {
     try {
       const response = await financeService.getPayments();
       if (response.success && response.data) {
-        setPayments(response.data.items || []);
+        console.log('Payments fetched:', response.data.items);
       }
     } catch (error: any) {
       console.error('Error fetching payments:', error);
-      notifications.show({
-        title: 'Error Loading Payments',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch payments. Please try again.',
-        color: 'red',
-        autoClose: 5000,
-      });
     }
   };
 
@@ -222,7 +211,10 @@ function FinancePage() {
       console.error('Error fetching stats:', error);
       notifications.show({
         title: 'Error Loading Statistics',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch financial statistics. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to fetch financial statistics. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -236,17 +228,17 @@ function FinancePage() {
         id: Date.now().toString(),
         ...data,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
-      setTransactions(prev => [newTransaction, ...prev]);
-      
+      setTransactions((prev) => [newTransaction, ...prev]);
+
       notifications.show({
         title: 'Success',
         message: 'Transaction created successfully',
         color: 'green',
       });
-      
+
       closeTransactionForm();
     } catch (error: any) {
       console.error('Error creating transaction:', error);
@@ -266,11 +258,11 @@ function FinancePage() {
       const updatedTransaction = {
         ...selectedTransaction,
         ...data,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
-      setTransactions(prev => 
-        prev.map(t => t.id === selectedTransaction.id ? updatedTransaction : t)
+      setTransactions((prev) =>
+        prev.map((t) => (t.id === selectedTransaction.id ? updatedTransaction : t))
       );
 
       notifications.show({
@@ -278,7 +270,7 @@ function FinancePage() {
         message: 'Transaction updated successfully',
         color: 'green',
       });
-      
+
       closeTransactionForm();
       setSelectedTransaction(null);
     } catch (error: any) {
@@ -298,8 +290,8 @@ function FinancePage() {
     }
 
     try {
-      setTransactions(prev => prev.filter(t => t.id !== transaction.id));
-      
+      setTransactions((prev) => prev.filter((t) => t.id !== transaction.id));
+
       notifications.show({
         title: 'Success',
         message: 'Transaction deleted successfully',
@@ -344,7 +336,7 @@ function FinancePage() {
   };
 
   const formatCategory = (category: string) => {
-    return category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return category.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   const transactionColumns: TableColumn[] = [
@@ -354,12 +346,8 @@ function FinancePage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const transaction = record as any;
-        return (
-          <Badge color={getTypeColor(transaction.type)}>
-            {transaction.type}
-          </Badge>
-        );
-      }
+        return <Badge color={getTypeColor(transaction.type)}>{transaction.type}</Badge>;
+      },
     },
     {
       key: 'category',
@@ -367,10 +355,8 @@ function FinancePage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const transaction = record as any;
-        return (
-          <Text fw={500}>{formatCategory(transaction.category)}</Text>
-        );
-      }
+        return <Text fw={500}>{formatCategory(transaction.category)}</Text>;
+      },
     },
     {
       key: 'amount',
@@ -380,32 +366,27 @@ function FinancePage() {
         const transaction = record as any;
         return (
           <Text fw={600} c={getTypeColor(transaction.type)}>
-            {transaction.type === 'EXPENSE' ? '-' : '+'}{formatCurrency(transaction.amount)}
+            {transaction.type === 'EXPENSE' ? '-' : '+'}
+            {formatCurrency(transaction.amount)}
           </Text>
         );
-      }
+      },
     },
     {
       key: 'description',
       title: 'Description',
       render: (value: unknown, record: Record<string, unknown>) => {
         const transaction = record as any;
-        return (
-          <Text lineClamp={2}>{transaction.description}</Text>
-        );
-      }
+        return <Text lineClamp={2}>{transaction.description}</Text>;
+      },
     },
     {
       key: 'paymentMethod',
       title: 'Method',
       render: (value: unknown, record: Record<string, unknown>) => {
         const transaction = record as any;
-        return (
-          <Badge variant="light">
-            {transaction.paymentMethod?.replace(/_/g, ' ')}
-          </Badge>
-        );
-      }
+        return <Badge variant="light">{transaction.paymentMethod?.replace(/_/g, ' ')}</Badge>;
+      },
     },
     {
       key: 'date',
@@ -413,10 +394,8 @@ function FinancePage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const transaction = record as any;
-        return (
-          <Text size="sm">{formatDate(transaction.date)}</Text>
-        );
-      }
+        return <Text size="sm">{formatDate(transaction.date)}</Text>;
+      },
     },
     {
       key: 'actions',
@@ -425,16 +404,10 @@ function FinancePage() {
         const transaction = record as any;
         return (
           <Group gap="xs">
-            <ActionIcon
-              variant="subtle"
-              onClick={() => handleViewTransaction(transaction)}
-            >
+            <ActionIcon variant="subtle" onClick={() => handleViewTransaction(transaction)}>
               <IconEye size={16} />
             </ActionIcon>
-            <ActionIcon
-              variant="subtle"
-              onClick={() => handleEditTransaction(transaction)}
-            >
+            <ActionIcon variant="subtle" onClick={() => handleEditTransaction(transaction)}>
               <IconEdit size={16} />
             </ActionIcon>
             <Menu position="bottom-end">
@@ -468,17 +441,39 @@ function FinancePage() {
             </Menu>
           </Group>
         );
-      }
-    }
+      },
+    },
   ];
 
   // Calculate mock stats from transactions
-  const totalIncome = transactions.filter(t => t.type === 'INCOME').reduce((sum, t) => sum + t.amount, 0);
-  const totalExpenses = transactions.filter(t => t.type === 'EXPENSE').reduce((sum, t) => sum + t.amount, 0);
+  const totalIncome = transactions
+    .filter((t) => t.type === 'INCOME')
+    .reduce((sum, t) => sum + t.amount, 0);
+  const totalExpenses = transactions
+    .filter((t) => t.type === 'EXPENSE')
+    .reduce((sum, t) => sum + t.amount, 0);
   const netProfit = totalIncome - totalExpenses;
 
   return (
-    <Layout user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : { id: mockUser.id, name: `${mockUser.firstName} ${mockUser.lastName}`, email: mockUser.email, role: mockUser.role }} notifications={0} onLogout={() => {}}>
+    <Layout
+      user={
+        user
+          ? {
+              id: user.id,
+              name: `${user.firstName} ${user.lastName}`,
+              email: user.email,
+              role: user.role,
+            }
+          : {
+              id: mockUser.id,
+              name: `${mockUser.firstName} ${mockUser.lastName}`,
+              email: mockUser.email,
+              role: mockUser.role,
+            }
+      }
+      notifications={0}
+      onLogout={() => {}}
+    >
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -489,10 +484,7 @@ function FinancePage() {
                 Manage financial transactions, invoices, and reports
               </Text>
             </div>
-            <Button
-              leftSection={<IconPlus size={16} />}
-              onClick={handleNewTransaction}
-            >
+            <Button leftSection={<IconPlus size={16} />} onClick={handleNewTransaction}>
               Add Transaction
             </Button>
           </Group>
@@ -588,7 +580,7 @@ function FinancePage() {
                       data={[
                         { value: '', label: 'All Types' },
                         { value: 'INCOME', label: 'Income' },
-                        { value: 'EXPENSE', label: 'Expense' }
+                        { value: 'EXPENSE', label: 'Expense' },
                       ]}
                       value={typeFilter}
                       onChange={(value) => setTypeFilter(value || '')}
@@ -601,7 +593,7 @@ function FinancePage() {
                         { value: '', label: 'All Categories' },
                         { value: 'CONSULTATION_FEES', label: 'Consultation Fees' },
                         { value: 'MEDICAL_SUPPLIES', label: 'Medical Supplies' },
-                        { value: 'STAFF_SALARIES', label: 'Staff Salaries' }
+                        { value: 'STAFF_SALARIES', label: 'Staff Salaries' },
                       ]}
                       value={categoryFilter}
                       onChange={(value) => setCategoryFilter(value || '')}
@@ -619,28 +611,30 @@ function FinancePage() {
               <Paper withBorder>
                 <LoadingOverlay visible={loading} />
                 {transactions.length === 0 && !loading ? (
-                  <Alert icon={<IconAlertCircle size={16} />} title="No transactions found" color="blue">
+                  <Alert
+                    icon={<IconAlertCircle size={16} />}
+                    title="No transactions found"
+                    color="blue"
+                  >
                     No financial transactions match your current filters.
                   </Alert>
                 ) : (
-                  <DataTable
-                    columns={transactionColumns}
-                    data={transactions}
-                    loading={loading}
-                  />
+                  <DataTable columns={transactionColumns} data={transactions} loading={loading} />
                 )}
               </Paper>
             </Tabs.Panel>
 
             <Tabs.Panel value="invoices" pt="md">
               <Alert color="blue" title="Invoices">
-                Invoice management is handled in the Billing module. This section shows financial overview of invoices.
+                Invoice management is handled in the Billing module. This section shows financial
+                overview of invoices.
               </Alert>
             </Tabs.Panel>
 
             <Tabs.Panel value="payments" pt="md">
               <Alert color="blue" title="Payments">
-                Payment management is handled in the Billing module. This section shows financial overview of payments.
+                Payment management is handled in the Billing module. This section shows financial
+                overview of payments.
               </Alert>
             </Tabs.Panel>
           </Tabs>

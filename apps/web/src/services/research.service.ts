@@ -128,7 +128,10 @@ const researchService = {
   /**
    * Update research project
    */
-  updateProject: async (id: string, data: UpdateResearchProjectDto): Promise<ResearchProjectResponse> => {
+  updateProject: async (
+    id: string,
+    data: UpdateResearchProjectDto
+  ): Promise<ResearchProjectResponse> => {
     return enhancedApiClient.patch(`/research/projects/${id}`, data);
   },
 

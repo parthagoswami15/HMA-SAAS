@@ -331,7 +331,10 @@ const radiologyService = {
   /**
    * Update radiology order
    */
-  updateOrder: async (id: string, data: UpdateRadiologyOrderDto): Promise<RadiologyOrderResponse> => {
+  updateOrder: async (
+    id: string,
+    data: UpdateRadiologyOrderDto
+  ): Promise<RadiologyOrderResponse> => {
     return enhancedApiClient.patch(`/radiology/orders/${id}`, data);
   },
 

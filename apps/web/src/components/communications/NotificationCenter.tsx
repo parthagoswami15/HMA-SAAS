@@ -10,7 +10,7 @@ import {
   Button,
   Divider,
   Card,
-  Indicator
+  Indicator,
 } from '@mantine/core';
 import {
   IconBell,
@@ -19,7 +19,7 @@ import {
   IconInfoCircle,
   IconAlertTriangle,
   IconCircleCheck,
-  IconX
+  IconX,
 } from '@tabler/icons-react';
 
 interface NotificationCenterProps {
@@ -37,7 +37,7 @@ export default function NotificationCenter({
   onMarkAsRead,
   onMarkAllAsRead,
   onDelete,
-  onViewAll
+  onViewAll,
 }: NotificationCenterProps) {
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -60,7 +60,7 @@ export default function NotificationCenter({
       INFO: 'blue',
       APPOINTMENT: 'cyan',
       BILLING: 'orange',
-      SYSTEM: 'gray'
+      SYSTEM: 'gray',
     };
     return colors[type] || 'blue';
   };
@@ -83,13 +83,7 @@ export default function NotificationCenter({
   return (
     <Popover width={400} position="bottom-end" shadow="md">
       <Popover.Target>
-        <Indicator
-          inline
-          label={unreadCount}
-          size={16}
-          disabled={unreadCount === 0}
-          color="red"
-        >
+        <Indicator inline label={unreadCount} size={16} disabled={unreadCount === 0} color="red">
           <ActionIcon variant="subtle" size="lg">
             <IconBell size={20} />
           </ActionIcon>
@@ -136,12 +130,12 @@ export default function NotificationCenter({
                     style={{
                       backgroundColor: notification.read ? 'transparent' : '#f8f9fa',
                       borderBottom: '1px solid #e9ecef',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
                     }}
                   >
                     <Group align="flex-start" gap="xs" wrap="nowrap">
                       {getNotificationIcon(notification.type)}
-                      
+
                       <Stack gap={4} style={{ flex: 1 }}>
                         <Group justify="space-between" wrap="nowrap">
                           <Text size="sm" fw={notification.read ? 400 : 600} lineClamp={1}>
@@ -151,16 +145,16 @@ export default function NotificationCenter({
                             {notification.type}
                           </Badge>
                         </Group>
-                        
+
                         <Text size="xs" c="dimmed" lineClamp={2}>
                           {notification.message}
                         </Text>
-                        
+
                         <Group justify="space-between" mt={4}>
                           <Text size="xs" c="dimmed">
                             {formatTime(notification.createdAt)}
                           </Text>
-                          
+
                           <Group gap={4}>
                             {!notification.read && (
                               <ActionIcon
@@ -199,12 +193,7 @@ export default function NotificationCenter({
           {notifications.length > 0 && (
             <>
               <Divider />
-              <Button
-                variant="subtle"
-                fullWidth
-                onClick={onViewAll}
-                size="sm"
-              >
+              <Button variant="subtle" fullWidth onClick={onViewAll} size="sm">
                 View All Notifications
               </Button>
             </>

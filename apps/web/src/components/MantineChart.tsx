@@ -29,13 +29,17 @@ interface LineChartProps {
 export function MantineDonutChart({ data }: MantineChartProps) {
   // Safety check: ensure data is an array
   const safeData = Array.isArray(data) ? data : [];
-  
+
   if (safeData.length === 0) {
-    return <Text size="sm" c="dimmed">No data available</Text>;
+    return (
+      <Text size="sm" c="dimmed">
+        No data available
+      </Text>
+    );
   }
-  
+
   const total = safeData.reduce((sum, item) => sum + item.value, 0);
-  
+
   return (
     <Stack gap="sm">
       {safeData.map((item, index) => (
@@ -46,13 +50,15 @@ export function MantineDonutChart({ data }: MantineChartProps) {
               h={12}
               style={{
                 backgroundColor: item.color,
-                borderRadius: '2px'
+                borderRadius: '2px',
               }}
             />
             <Text size="sm">{item.name}</Text>
           </Group>
           <Group gap="xs">
-            <Text size="sm" fw={600}>{item.value}</Text>
+            <Text size="sm" fw={600}>
+              {item.value}
+            </Text>
             <Text size="xs" c="dimmed">
               ({Math.round((item.value / total) * 100)}%)
             </Text>
@@ -66,24 +72,26 @@ export function MantineDonutChart({ data }: MantineChartProps) {
 export function SimpleAreaChart({ data, series }: AreaChartProps) {
   // Safety check: ensure data is an array
   const safeData = Array.isArray(data) ? data : [];
-  
+
   if (safeData.length === 0) {
-    return <Text size="sm" c="dimmed">No data available</Text>;
+    return (
+      <Text size="sm" c="dimmed">
+        No data available
+      </Text>
+    );
   }
-  
-  const maxValue = Math.max(...safeData.map(item => item[series[0].name]));
-  
+
+  const maxValue = Math.max(...safeData.map((item) => item[series[0].name]));
+
   return (
     <Stack gap="xs">
       {safeData.slice(-6).map((item, index) => (
         <Group key={index} justify="space-between">
-          <Text size="sm" w={60}>{item.hour || item.date}</Text>
+          <Text size="sm" w={60}>
+            {item.hour || item.date}
+          </Text>
           <Box style={{ flex: 1 }}>
-            <Progress
-              value={(item[series[0].name] / maxValue) * 100}
-              color="red"
-              size="sm"
-            />
+            <Progress value={(item[series[0].name] / maxValue) * 100} color="red" size="sm" />
           </Box>
           <Text size="sm" fw={600} w={30}>
             {item[series[0].name]}
@@ -97,33 +105,39 @@ export function SimpleAreaChart({ data, series }: AreaChartProps) {
 export function SimpleLineChart({ data, series }: LineChartProps) {
   // Safety check: ensure data is an array
   const safeData = Array.isArray(data) ? data : [];
-  
+
   if (safeData.length === 0) {
-    return <Text size="sm" c="dimmed">No data available</Text>;
+    return (
+      <Text size="sm" c="dimmed">
+        No data available
+      </Text>
+    );
   }
-  
-  const maxValue = Math.max(...safeData.flatMap(item => 
-    series.map(s => item[s.name])
-  ));
-  
+
+  const maxValue = Math.max(...safeData.flatMap((item) => series.map((s) => item[s.name])));
+
   return (
     <Stack gap="xs">
       {safeData.map((item, index) => (
         <Group key={index} justify="space-between">
-          <Text size="sm" w={60}>{item.date}</Text>
+          <Text size="sm" w={60}>
+            {item.date}
+          </Text>
           <Box style={{ flex: 1 }}>
             <Stack gap={2}>
-              {series.map(s => (
+              {series.map((s) => (
                 <Group key={s.name} gap="xs">
                   <Box
                     w={8}
                     h={8}
                     style={{
                       backgroundColor: s.color.includes('.') ? s.color.split('.')[0] : s.color,
-                      borderRadius: '50%'
+                      borderRadius: '50%',
                     }}
                   />
-                  <Text size="xs" w={60}>{s.label}</Text>
+                  <Text size="xs" w={60}>
+                    {s.label}
+                  </Text>
                   <Progress
                     value={(item[s.name] / maxValue) * 100}
                     color={s.color.includes('.') ? s.color.split('.')[0] : s.color}
@@ -153,22 +167,30 @@ interface BarChartProps {
 export function SimpleBarChart({ data, series }: BarChartProps) {
   // Safety check: ensure data is an array
   const safeData = Array.isArray(data) ? data : [];
-  
+
   if (safeData.length === 0) {
-    return <Text size="sm" c="dimmed">No data available</Text>;
+    return (
+      <Text size="sm" c="dimmed">
+        No data available
+      </Text>
+    );
   }
-  
-  const maxValue = Math.max(...safeData.map(item => item[series[0].name]));
-  
+
+  const maxValue = Math.max(...safeData.map((item) => item[series[0].name]));
+
   return (
     <Stack gap="sm">
       {safeData.map((item, index) => (
         <Group key={index} justify="space-between">
-          <Text size="sm" w={120}>{item.category || item[Object.keys(item)[0]]}</Text>
+          <Text size="sm" w={120}>
+            {item.category || item[Object.keys(item)[0]]}
+          </Text>
           <Box style={{ flex: 1 }}>
             <Progress
               value={(item[series[0].name] / maxValue) * 100}
-              color={series[0].color.includes('.') ? series[0].color.split('.')[0] : series[0].color}
+              color={
+                series[0].color.includes('.') ? series[0].color.split('.')[0] : series[0].color
+              }
               size="lg"
             />
           </Box>

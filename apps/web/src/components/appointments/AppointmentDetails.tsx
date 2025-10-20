@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-  Modal,
-  Text,
-  Group,
-  Stack,
-  Badge,
-  Button,
-  Divider,
-  Grid,
-  Card
-} from '@mantine/core';
+import { Modal, Text, Group, Stack, Badge, Button, Divider, Grid, Card } from '@mantine/core';
 import {
   IconCalendar,
   IconClock,
@@ -21,7 +11,7 @@ import {
   IconCheck,
   IconX,
   IconPhone,
-  IconMail
+  IconMail,
 } from '@tabler/icons-react';
 
 interface AppointmentDetailsProps {
@@ -39,7 +29,7 @@ export default function AppointmentDetails({
   appointment,
   onEdit,
   onDelete,
-  onStatusChange
+  onStatusChange,
 }: AppointmentDetailsProps) {
   if (!appointment) return null;
 
@@ -51,7 +41,7 @@ export default function AppointmentDetails({
       COMPLETED: 'green',
       CANCELLED: 'red',
       NO_SHOW: 'gray',
-      RESCHEDULED: 'orange'
+      RESCHEDULED: 'orange',
     };
     return colors[status] || 'gray';
   };
@@ -62,7 +52,7 @@ export default function AppointmentDetails({
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -70,7 +60,7 @@ export default function AppointmentDetails({
     const date = new Date(dateString);
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -105,7 +95,9 @@ export default function AppointmentDetails({
               <Group gap="xs">
                 <IconCalendar size={20} color="#228be6" />
                 <div>
-                  <Text size="xs" c="dimmed">Date</Text>
+                  <Text size="xs" c="dimmed">
+                    Date
+                  </Text>
                   <Text fw={500}>{formatDate(appointment.startTime)}</Text>
                 </div>
               </Group>
@@ -114,7 +106,9 @@ export default function AppointmentDetails({
               <Group gap="xs">
                 <IconClock size={20} color="#228be6" />
                 <div>
-                  <Text size="xs" c="dimmed">Time</Text>
+                  <Text size="xs" c="dimmed">
+                    Time
+                  </Text>
                   <Text fw={500}>
                     {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                   </Text>
@@ -133,20 +127,26 @@ export default function AppointmentDetails({
           <Divider mb="sm" />
           <Stack gap="xs">
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Name:</Text>
+              <Text size="sm" c="dimmed">
+                Name:
+              </Text>
               <Text fw={500}>
                 {patient.firstName} {patient.lastName}
               </Text>
             </Group>
             {patient.medicalRecordNumber && (
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">MRN:</Text>
+                <Text size="sm" c="dimmed">
+                  MRN:
+                </Text>
                 <Text fw={500}>{patient.medicalRecordNumber}</Text>
               </Group>
             )}
             {patient.phone && (
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Phone:</Text>
+                <Text size="sm" c="dimmed">
+                  Phone:
+                </Text>
                 <Group gap="xs">
                   <IconPhone size={16} />
                   <Text fw={500}>{patient.phone}</Text>
@@ -155,7 +155,9 @@ export default function AppointmentDetails({
             )}
             {patient.email && (
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Email:</Text>
+                <Text size="sm" c="dimmed">
+                  Email:
+                </Text>
                 <Group gap="xs">
                   <IconMail size={16} />
                   <Text fw={500}>{patient.email}</Text>
@@ -174,7 +176,9 @@ export default function AppointmentDetails({
           <Divider mb="sm" />
           <Stack gap="xs">
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Name:</Text>
+              <Text size="sm" c="dimmed">
+                Name:
+              </Text>
               <Text fw={500}>
                 Dr. {doctor.firstName} {doctor.lastName}
               </Text>
@@ -192,13 +196,17 @@ export default function AppointmentDetails({
           <Stack gap="xs">
             {appointment.reason && (
               <div>
-                <Text size="sm" c="dimmed" mb={4}>Reason for Visit:</Text>
+                <Text size="sm" c="dimmed" mb={4}>
+                  Reason for Visit:
+                </Text>
                 <Text>{appointment.reason}</Text>
               </div>
             )}
             {appointment.notes && (
               <div>
-                <Text size="sm" c="dimmed" mb={4}>Additional Notes:</Text>
+                <Text size="sm" c="dimmed" mb={4}>
+                  Additional Notes:
+                </Text>
                 <Text>{appointment.notes}</Text>
               </div>
             )}
@@ -208,7 +216,9 @@ export default function AppointmentDetails({
         {/* Status Actions */}
         {onStatusChange && appointment.status === 'SCHEDULED' && (
           <Card withBorder padding="md" bg="blue.0">
-            <Text size="sm" fw={600} mb="sm">Quick Actions</Text>
+            <Text size="sm" fw={600} mb="sm">
+              Quick Actions
+            </Text>
             <Group>
               <Button
                 size="xs"

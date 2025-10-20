@@ -8,7 +8,16 @@ import { enhancedApiClient } from '../lib/api-client';
 // Types
 export interface CreateMedicalRecordDto {
   patientId: string;
-  recordType: 'CONSULTATION' | 'DIAGNOSIS' | 'PRESCRIPTION' | 'LAB_RESULT' | 'IMAGING' | 'PROCEDURE' | 'VACCINATION' | 'ALLERGY' | 'OTHER';
+  recordType:
+    | 'CONSULTATION'
+    | 'DIAGNOSIS'
+    | 'PRESCRIPTION'
+    | 'LAB_RESULT'
+    | 'IMAGING'
+    | 'PROCEDURE'
+    | 'VACCINATION'
+    | 'ALLERGY'
+    | 'OTHER';
   title: string;
   description: string;
   date?: string;
@@ -93,7 +102,10 @@ const emrService = {
   /**
    * Update medical record
    */
-  updateRecord: async (id: string, data: UpdateMedicalRecordDto): Promise<MedicalRecordResponse> => {
+  updateRecord: async (
+    id: string,
+    data: UpdateMedicalRecordDto
+  ): Promise<MedicalRecordResponse> => {
     return enhancedApiClient.patch(`/emr/records/${id}`, data);
   },
 

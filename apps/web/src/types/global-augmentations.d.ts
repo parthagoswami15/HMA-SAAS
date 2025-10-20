@@ -13,15 +13,15 @@ declare module '@mantine/core' {
   export interface InputProps {
     [key: string]: any;
   }
-  
+
   export interface MenuItemProps {
     [key: string]: any;
   }
-  
+
   export interface SelectProps {
     [key: string]: any;
   }
-  
+
   export interface ButtonProps {
     [key: string]: any;
   }

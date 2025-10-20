@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { MantineProvider } from '@mantine/core';
 import { QueryProvider } from '@/lib/api/queryClient';
@@ -8,9 +8,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <MantineProvider>
       <QueryProvider>
-        <RBACProvider>
-          {children}
-        </RBACProvider>
+        <RBACProvider>{children}</RBACProvider>
       </QueryProvider>
     </MantineProvider>
   );

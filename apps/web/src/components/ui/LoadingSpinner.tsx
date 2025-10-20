@@ -9,50 +9,56 @@ interface LoadingSpinnerProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export default function LoadingSpinner({ 
-  fullScreen = false, 
-  message = 'Loading...', 
-  size = 'lg' 
+export default function LoadingSpinner({
+  fullScreen = false,
+  message = 'Loading...',
+  size = 'lg',
 }: LoadingSpinnerProps) {
   const content = (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '1rem',
-      padding: '2rem'
-    }}>
-      <div style={{
-        position: 'relative',
-        width: size === 'xl' ? '80px' : size === 'lg' ? '60px' : '40px',
-        height: size === 'xl' ? '80px' : size === 'lg' ? '60px' : '40px'
-      }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '1rem',
+        padding: '2rem',
+      }}
+    >
+      <div
+        style={{
+          position: 'relative',
+          width: size === 'xl' ? '80px' : size === 'lg' ? '60px' : '40px',
+          height: size === 'xl' ? '80px' : size === 'lg' ? '60px' : '40px',
+        }}
+      >
         <div className="pulse-ring" />
         <div className="pulse-ring" style={{ animationDelay: '0.2s' }} />
         <div className="pulse-ring" style={{ animationDelay: '0.4s' }} />
-        <Loader 
-          size={size} 
+        <Loader
+          size={size}
           style={{
             position: 'absolute',
             top: '50%',
             left: '50%',
-            transform: 'translate(-50%, -50%)'
+            transform: 'translate(-50%, -50%)',
           }}
         />
       </div>
       {message && (
-        <p style={{
-          color: fullScreen ? 'white' : '#667eea',
-          fontSize: '1rem',
-          fontWeight: 500,
-          margin: 0,
-          animation: 'fadeIn 0.5s ease-in-out'
-        }}>
+        <p
+          style={{
+            color: fullScreen ? 'white' : '#667eea',
+            fontSize: '1rem',
+            fontWeight: 500,
+            margin: 0,
+            animation: 'fadeIn 0.5s ease-in-out',
+          }}
+        >
           {message}
         </p>
       )}
-      
+
       <style jsx>{`
         @keyframes pulse {
           0% {
@@ -64,7 +70,7 @@ export default function LoadingSpinner({
             opacity: 0;
           }
         }
-        
+
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -75,7 +81,7 @@ export default function LoadingSpinner({
             transform: translateY(0);
           }
         }
-        
+
         .pulse-ring {
           position: absolute;
           top: 0;
@@ -92,7 +98,7 @@ export default function LoadingSpinner({
 
   if (fullScreen) {
     return (
-      <div 
+      <div
         role="alert"
         aria-busy="true"
         aria-live="polite"
@@ -106,7 +112,7 @@ export default function LoadingSpinner({
           alignItems: 'center',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          zIndex: 9999
+          zIndex: 9999,
         }}
       >
         {content}

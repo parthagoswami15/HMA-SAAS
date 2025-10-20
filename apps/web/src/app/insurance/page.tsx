@@ -41,7 +41,11 @@ import InsuranceClaimDetails from '../../components/insurance/InsuranceClaimDeta
 import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn } from '../../types/common';
 import insuranceService from '../../services/insurance.service';
-import type { CreateInsuranceClaimDto, UpdateInsuranceClaimDto, InsuranceFilters } from '../../services/insurance.service';
+import type {
+  CreateInsuranceClaimDto,
+  UpdateInsuranceClaimDto,
+  InsuranceFilters,
+} from '../../services/insurance.service';
 
 const mockUser: User = {
   id: '1',
@@ -78,7 +82,7 @@ function InsurancePage() {
     }
     fetchClaims();
     fetchStats();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchClaims = async () => {
@@ -96,11 +100,14 @@ function InsurancePage() {
 
         // Apply search filter
         if (searchQuery) {
-          filteredClaims = filteredClaims.filter(c =>
-            `${c.patient?.firstName} ${c.patient?.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            c.policyNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (c.claimNumber && c.claimNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            c.insuranceProvider.toLowerCase().includes(searchQuery.toLowerCase())
+          filteredClaims = filteredClaims.filter(
+            (c) =>
+              `${c.patient?.firstName} ${c.patient?.lastName}`
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase()) ||
+              c.policyNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              (c.claimNumber && c.claimNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
+              c.insuranceProvider.toLowerCase().includes(searchQuery.toLowerCase())
           );
         }
 
@@ -110,7 +117,10 @@ function InsurancePage() {
       console.error('Error fetching claims:', error);
       notifications.show({
         title: 'Error Loading Claims',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch insurance claims. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to fetch insurance claims. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -129,7 +139,10 @@ function InsurancePage() {
       console.error('Error fetching stats:', error);
       notifications.show({
         title: 'Error Loading Statistics',
-        message: error?.response?.data?.message || error?.message || 'Failed to fetch insurance statistics. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to fetch insurance statistics. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -139,7 +152,7 @@ function InsurancePage() {
   const handleCreateClaim = async (data: CreateInsuranceClaimDto) => {
     try {
       const response = await insuranceService.createClaim(data);
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -147,7 +160,7 @@ function InsurancePage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         closeClaimForm();
         fetchClaims();
         fetchStats();
@@ -156,7 +169,10 @@ function InsurancePage() {
       console.error('Error creating claim:', error);
       notifications.show({
         title: 'Error Creating Claim',
-        message: error?.response?.data?.message || error?.message || 'Failed to create insurance claim. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to create insurance claim. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -169,7 +185,7 @@ function InsurancePage() {
 
     try {
       const response = await insuranceService.updateClaim(selectedClaim.id, data);
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -177,7 +193,7 @@ function InsurancePage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         closeClaimForm();
         setSelectedClaim(null);
         fetchClaims();
@@ -187,7 +203,10 @@ function InsurancePage() {
       console.error('Error updating claim:', error);
       notifications.show({
         title: 'Error Updating Claim',
-        message: error?.response?.data?.message || error?.message || 'Failed to update insurance claim. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to update insurance claim. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -198,7 +217,7 @@ function InsurancePage() {
   const handleStatusChange = async (claim: any, status: string) => {
     try {
       const response = await insuranceService.updateClaimStatus(claim.id, status as any);
-      
+
       if (response.success) {
         notifications.show({
           title: 'Success',
@@ -206,7 +225,7 @@ function InsurancePage() {
           color: 'green',
           autoClose: 3000,
         });
-        
+
         fetchClaims();
         fetchStats();
       }
@@ -214,7 +233,10 @@ function InsurancePage() {
       console.error('Error updating status:', error);
       notifications.show({
         title: 'Error Updating Status',
-        message: error?.response?.data?.message || error?.message || 'Failed to update claim status. Please try again.',
+        message:
+          error?.response?.data?.message ||
+          error?.message ||
+          'Failed to update claim status. Please try again.',
         color: 'red',
         autoClose: 5000,
       });
@@ -263,7 +285,7 @@ function InsurancePage() {
   };
 
   const formatProvider = (provider: string) => {
-    return provider.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return provider.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   const claimColumns: TableColumn[] = [
@@ -273,10 +295,8 @@ function InsurancePage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const claim = record as any;
-        return (
-          <Text fw={500}>{claim.claimNumber || 'N/A'}</Text>
-        );
-      }
+        return <Text fw={500}>{claim.claimNumber || 'N/A'}</Text>;
+      },
     },
     {
       key: 'patient',
@@ -286,11 +306,15 @@ function InsurancePage() {
         const claim = record as any;
         return (
           <div>
-            <Text fw={600}>{claim.patient?.firstName} {claim.patient?.lastName}</Text>
-            <Text size="xs" c="dimmed">{claim.policyNumber}</Text>
+            <Text fw={600}>
+              {claim.patient?.firstName} {claim.patient?.lastName}
+            </Text>
+            <Text size="xs" c="dimmed">
+              {claim.policyNumber}
+            </Text>
           </div>
         );
-      }
+      },
     },
     {
       key: 'insuranceProvider',
@@ -298,10 +322,8 @@ function InsurancePage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const claim = record as any;
-        return (
-          <Text>{formatProvider(claim.insuranceProvider)}</Text>
-        );
-      }
+        return <Text>{formatProvider(claim.insuranceProvider)}</Text>;
+      },
     },
     {
       key: 'amount',
@@ -314,7 +336,7 @@ function InsurancePage() {
             {formatCurrency(claim.amount)}
           </Text>
         );
-      }
+      },
     },
     {
       key: 'status',
@@ -323,11 +345,9 @@ function InsurancePage() {
       render: (value: unknown, record: Record<string, unknown>) => {
         const claim = record as any;
         return (
-          <Badge color={getStatusColor(claim.status)}>
-            {claim.status.replace(/_/g, ' ')}
-          </Badge>
+          <Badge color={getStatusColor(claim.status)}>{claim.status.replace(/_/g, ' ')}</Badge>
         );
-      }
+      },
     },
     {
       key: 'submittedAt',
@@ -335,10 +355,8 @@ function InsurancePage() {
       sortable: true,
       render: (value: unknown, record: Record<string, unknown>) => {
         const claim = record as any;
-        return (
-          <Text size="sm">{formatDate(claim.submittedAt)}</Text>
-        );
-      }
+        return <Text size="sm">{formatDate(claim.submittedAt)}</Text>;
+      },
     },
     {
       key: 'actions',
@@ -347,16 +365,10 @@ function InsurancePage() {
         const claim = record as any;
         return (
           <Group gap="xs">
-            <ActionIcon
-              variant="subtle"
-              onClick={() => handleViewClaim(claim)}
-            >
+            <ActionIcon variant="subtle" onClick={() => handleViewClaim(claim)}>
               <IconEye size={16} />
             </ActionIcon>
-            <ActionIcon
-              variant="subtle"
-              onClick={() => handleEditClaim(claim)}
-            >
+            <ActionIcon variant="subtle" onClick={() => handleEditClaim(claim)}>
               <IconEdit size={16} />
             </ActionIcon>
             <Menu position="bottom-end">
@@ -382,12 +394,30 @@ function InsurancePage() {
             </Menu>
           </Group>
         );
-      }
-    }
+      },
+    },
   ];
 
   return (
-    <Layout user={user ? { id: user.id, name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role } : { id: mockUser.id, name: `${mockUser.firstName} ${mockUser.lastName}`, email: mockUser.email, role: mockUser.role }} notifications={0} onLogout={() => {}}>
+    <Layout
+      user={
+        user
+          ? {
+              id: user.id,
+              name: `${user.firstName} ${user.lastName}`,
+              email: user.email,
+              role: user.role,
+            }
+          : {
+              id: mockUser.id,
+              name: `${mockUser.firstName} ${mockUser.lastName}`,
+              email: mockUser.email,
+              role: mockUser.role,
+            }
+      }
+      notifications={0}
+      onLogout={() => {}}
+    >
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -398,10 +428,7 @@ function InsurancePage() {
                 Manage insurance claims and track reimbursements
               </Text>
             </div>
-            <Button
-              leftSection={<IconPlus size={16} />}
-              onClick={handleNewClaim}
-            >
+            <Button leftSection={<IconPlus size={16} />} onClick={handleNewClaim}>
               New Claim
             </Button>
           </Group>
@@ -522,11 +549,7 @@ function InsurancePage() {
                 No insurance claims match your current filters. Try adjusting your search criteria.
               </Alert>
             ) : (
-              <DataTable
-                columns={claimColumns}
-                data={claims}
-                loading={loading}
-              />
+              <DataTable columns={claimColumns} data={claims} loading={loading} />
             )}
           </Paper>
         </Stack>

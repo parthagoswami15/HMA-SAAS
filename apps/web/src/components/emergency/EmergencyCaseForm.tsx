@@ -12,10 +12,13 @@ import {
   Text,
   LoadingOverlay,
   Divider,
-  Card
+  Card,
 } from '@mantine/core';
 import { IconAlertTriangle, IconUser } from '@tabler/icons-react';
-import type { CreateEmergencyCaseDto, UpdateEmergencyCaseDto } from '../../services/emergency.service';
+import type {
+  CreateEmergencyCaseDto,
+  UpdateEmergencyCaseDto,
+} from '../../services/emergency.service';
 
 interface EmergencyCaseFormProps {
   opened: boolean;
@@ -34,7 +37,7 @@ export default function EmergencyCaseForm({
   onSubmit,
   loading = false,
   patients = [],
-  doctors = []
+  doctors = [],
 }: EmergencyCaseFormProps) {
   const [formData, setFormData] = useState({
     patientId: '',
@@ -48,18 +51,19 @@ export default function EmergencyCaseForm({
       heartRate: 0,
       temperature: 0,
       respiratoryRate: 0,
-      oxygenSaturation: 0
-    }
+      oxygenSaturation: 0,
+    },
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (emergencyCase) {
-      const vitalSigns = typeof emergencyCase.vitalSigns === 'string' 
-        ? JSON.parse(emergencyCase.vitalSigns) 
-        : emergencyCase.vitalSigns || {};
-      
+      const vitalSigns =
+        typeof emergencyCase.vitalSigns === 'string'
+          ? JSON.parse(emergencyCase.vitalSigns)
+          : emergencyCase.vitalSigns || {};
+
       setFormData({
         patientId: emergencyCase.patientId || '',
         chiefComplaint: emergencyCase.chiefComplaint || '',
@@ -72,8 +76,8 @@ export default function EmergencyCaseForm({
           heartRate: vitalSigns.heartRate || 0,
           temperature: vitalSigns.temperature || 0,
           respiratoryRate: vitalSigns.respiratoryRate || 0,
-          oxygenSaturation: vitalSigns.oxygenSaturation || 0
-        }
+          oxygenSaturation: vitalSigns.oxygenSaturation || 0,
+        },
       });
     } else {
       resetForm();
@@ -93,8 +97,8 @@ export default function EmergencyCaseForm({
         heartRate: 0,
         temperature: 0,
         respiratoryRate: 0,
-        oxygenSaturation: 0
-      }
+        oxygenSaturation: 0,
+      },
     });
     setErrors({});
   };
@@ -127,7 +131,7 @@ export default function EmergencyCaseForm({
       const submitData: any = {
         chiefComplaint: formData.chiefComplaint,
         triageLevel: formData.triageLevel,
-        vitalSigns: formData.vitalSigns
+        vitalSigns: formData.vitalSigns,
       };
 
       if (!emergencyCase) {
@@ -151,21 +155,21 @@ export default function EmergencyCaseForm({
     onClose();
   };
 
-  const patientOptions = patients.map(p => ({
+  const patientOptions = patients.map((p) => ({
     value: p.id,
-    label: `${p.firstName} ${p.lastName} - ${p.medicalRecordNumber || p.id}`
+    label: `${p.firstName} ${p.lastName} - ${p.medicalRecordNumber || p.id}`,
   }));
 
-  const doctorOptions = doctors.map(d => ({
+  const doctorOptions = doctors.map((d) => ({
     value: d.id,
-    label: `Dr. ${d.firstName} ${d.lastName}`
+    label: `Dr. ${d.firstName} ${d.lastName}`,
   }));
 
   const triageLevelOptions = [
     { value: 'CRITICAL', label: 'Critical (Red)', color: 'red' },
     { value: 'URGENT', label: 'Urgent (Orange)', color: 'orange' },
     { value: 'SEMI_URGENT', label: 'Semi-Urgent (Yellow)', color: 'yellow' },
-    { value: 'NON_URGENT', label: 'Non-Urgent (Green)', color: 'green' }
+    { value: 'NON_URGENT', label: 'Non-Urgent (Green)', color: 'green' },
   ];
 
   const statusOptions = [
@@ -173,7 +177,7 @@ export default function EmergencyCaseForm({
     { value: 'IN_TREATMENT', label: 'In Treatment' },
     { value: 'DISCHARGED', label: 'Discharged' },
     { value: 'ADMITTED', label: 'Admitted' },
-    { value: 'TRANSFERRED', label: 'Transferred' }
+    { value: 'TRANSFERRED', label: 'Transferred' },
   ];
 
   return (
@@ -192,7 +196,7 @@ export default function EmergencyCaseForm({
       padding="md"
     >
       <LoadingOverlay visible={loading} />
-      
+
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           {/* Patient Selection (only for new cases) */}
@@ -277,10 +281,12 @@ export default function EmergencyCaseForm({
                     label="Blood Pressure"
                     placeholder="120/80"
                     value={formData.vitalSigns.bloodPressure}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      vitalSigns: { ...formData.vitalSigns, bloodPressure: e.target.value }
-                    })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        vitalSigns: { ...formData.vitalSigns, bloodPressure: e.target.value },
+                      })
+                    }
                   />
                 </Grid.Col>
                 <Grid.Col span={6}>
@@ -288,10 +294,12 @@ export default function EmergencyCaseForm({
                     label="Heart Rate (bpm)"
                     placeholder="72"
                     value={formData.vitalSigns.heartRate}
-                    onChange={(value) => setFormData({
-                      ...formData,
-                      vitalSigns: { ...formData.vitalSigns, heartRate: value || 0 }
-                    })}
+                    onChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        vitalSigns: { ...formData.vitalSigns, heartRate: Number(value) || 0 },
+                      })
+                    }
                     min={0}
                     max={300}
                   />
@@ -301,10 +309,12 @@ export default function EmergencyCaseForm({
                     label="Temperature (°F)"
                     placeholder="98.6"
                     value={formData.vitalSigns.temperature}
-                    onChange={(value) => setFormData({
-                      ...formData,
-                      vitalSigns: { ...formData.vitalSigns, temperature: value || 0 }
-                    })}
+                    onChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        vitalSigns: { ...formData.vitalSigns, temperature: Number(value) || 0 },
+                      })
+                    }
                     min={0}
                     max={120}
                     decimalScale={1}
@@ -315,10 +325,12 @@ export default function EmergencyCaseForm({
                     label="Respiratory Rate"
                     placeholder="16"
                     value={formData.vitalSigns.respiratoryRate}
-                    onChange={(value) => setFormData({
-                      ...formData,
-                      vitalSigns: { ...formData.vitalSigns, respiratoryRate: value || 0 }
-                    })}
+                    onChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        vitalSigns: { ...formData.vitalSigns, respiratoryRate: Number(value) || 0 },
+                      })
+                    }
                     min={0}
                     max={100}
                   />
@@ -328,10 +340,12 @@ export default function EmergencyCaseForm({
                     label="O2 Saturation (%)"
                     placeholder="98"
                     value={formData.vitalSigns.oxygenSaturation}
-                    onChange={(value) => setFormData({
-                      ...formData,
-                      vitalSigns: { ...formData.vitalSigns, oxygenSaturation: value || 0 }
-                    })}
+                    onChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        vitalSigns: { ...formData.vitalSigns, oxygenSaturation: Number(value) || 0 },
+                      })
+                    }
                     min={0}
                     max={100}
                   />

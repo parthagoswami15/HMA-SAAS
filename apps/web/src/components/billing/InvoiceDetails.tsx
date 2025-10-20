@@ -10,7 +10,7 @@ import {
   Grid,
   Card,
   Table,
-  Timeline
+  Timeline,
 } from '@mantine/core';
 import {
   IconCurrencyRupee,
@@ -21,7 +21,7 @@ import {
   IconReceipt,
   IconPrinter,
   IconDownload,
-  IconCash
+  IconCash,
 } from '@tabler/icons-react';
 
 interface InvoiceDetailsProps {
@@ -41,7 +41,7 @@ export default function InvoiceDetails({
   onEdit,
   onDelete,
   onRecordPayment,
-  onPrint
+  onPrint,
 }: InvoiceDetailsProps) {
   if (!invoice) return null;
 
@@ -51,7 +51,7 @@ export default function InvoiceDetails({
       PARTIALLY_PAID: 'orange',
       PAID: 'green',
       OVERDUE: 'red',
-      CANCELLED: 'gray'
+      CANCELLED: 'gray',
     };
     return colors[status] || 'gray';
   };
@@ -61,7 +61,7 @@ export default function InvoiceDetails({
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -119,14 +119,18 @@ export default function InvoiceDetails({
             <Grid.Col span={6}>
               <Stack gap="xs">
                 <Group justify="space-between">
-                  <Text size="sm" c="dimmed">Name:</Text>
+                  <Text size="sm" c="dimmed">
+                    Name:
+                  </Text>
                   <Text fw={500}>
                     {patient.firstName} {patient.lastName}
                   </Text>
                 </Group>
                 {patient.medicalRecordNumber && (
                   <Group justify="space-between">
-                    <Text size="sm" c="dimmed">MRN:</Text>
+                    <Text size="sm" c="dimmed">
+                      MRN:
+                    </Text>
                     <Text fw={500}>{patient.medicalRecordNumber}</Text>
                   </Group>
                 )}
@@ -136,13 +140,17 @@ export default function InvoiceDetails({
               <Stack gap="xs">
                 {patient.phone && (
                   <Group justify="space-between">
-                    <Text size="sm" c="dimmed">Phone:</Text>
+                    <Text size="sm" c="dimmed">
+                      Phone:
+                    </Text>
                     <Text fw={500}>{patient.phone}</Text>
                   </Group>
                 )}
                 {patient.email && (
                   <Group justify="space-between">
-                    <Text size="sm" c="dimmed">Email:</Text>
+                    <Text size="sm" c="dimmed">
+                      Email:
+                    </Text>
                     <Text fw={500}>{patient.email}</Text>
                   </Group>
                 )}
@@ -161,13 +169,17 @@ export default function InvoiceDetails({
           <Grid>
             <Grid.Col span={6}>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Invoice Date:</Text>
+                <Text size="sm" c="dimmed">
+                  Invoice Date:
+                </Text>
                 <Text fw={500}>{formatDate(invoice.date)}</Text>
               </Group>
             </Grid.Col>
             <Grid.Col span={6}>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Due Date:</Text>
+                <Text size="sm" c="dimmed">
+                  Due Date:
+                </Text>
                 <Text fw={500}>{formatDate(invoice.dueDate)}</Text>
               </Group>
             </Grid.Col>
@@ -176,7 +188,9 @@ export default function InvoiceDetails({
 
         {/* Invoice Items */}
         <Card withBorder padding="md">
-          <Text fw={600} mb="sm">Invoice Items</Text>
+          <Text fw={600} mb="sm">
+            Invoice Items
+          </Text>
           <Table>
             <Table.Thead>
               <Table.Tr>
@@ -216,30 +230,46 @@ export default function InvoiceDetails({
           <Stack gap="xs">
             <Group justify="space-between">
               <Text size="sm">Subtotal:</Text>
-              <Text size="sm" fw={500}>{formatCurrency(invoice.subTotal)}</Text>
+              <Text size="sm" fw={500}>
+                {formatCurrency(invoice.subTotal)}
+              </Text>
             </Group>
             <Group justify="space-between">
               <Text size="sm">Tax:</Text>
-              <Text size="sm" fw={500}>{formatCurrency(invoice.taxAmount)}</Text>
+              <Text size="sm" fw={500}>
+                {formatCurrency(invoice.taxAmount)}
+              </Text>
             </Group>
             <Group justify="space-between">
               <Text size="sm">Discount:</Text>
-              <Text size="sm" fw={500}>-{formatCurrency(invoice.discountAmount)}</Text>
+              <Text size="sm" fw={500}>
+                -{formatCurrency(invoice.discountAmount)}
+              </Text>
             </Group>
             <Divider />
             <Group justify="space-between">
-              <Text size="lg" fw={700}>Total Amount:</Text>
+              <Text size="lg" fw={700}>
+                Total Amount:
+              </Text>
               <Badge size="xl" color="blue">
                 {formatCurrency(invoice.totalAmount)}
               </Badge>
             </Group>
             <Group justify="space-between">
-              <Text size="sm" c="green">Paid:</Text>
-              <Text size="sm" fw={600} c="green">{formatCurrency(totalPaid)}</Text>
+              <Text size="sm" c="green">
+                Paid:
+              </Text>
+              <Text size="sm" fw={600} c="green">
+                {formatCurrency(totalPaid)}
+              </Text>
             </Group>
             <Group justify="space-between">
-              <Text size="sm" c="orange">Remaining:</Text>
-              <Text size="sm" fw={600} c="orange">{formatCurrency(remainingAmount)}</Text>
+              <Text size="sm" c="orange">
+                Remaining:
+              </Text>
+              <Text size="sm" fw={600} c="orange">
+                {formatCurrency(remainingAmount)}
+              </Text>
             </Group>
           </Stack>
         </Card>
@@ -279,7 +309,9 @@ export default function InvoiceDetails({
         {/* Notes */}
         {invoice.notes && (
           <Card withBorder padding="md">
-            <Text fw={600} mb="xs">Notes</Text>
+            <Text fw={600} mb="xs">
+              Notes
+            </Text>
             <Text size="sm">{invoice.notes}</Text>
           </Card>
         )}
@@ -296,10 +328,7 @@ export default function InvoiceDetails({
                 Print
               </Button>
             )}
-            <Button
-              variant="light"
-              leftSection={<IconDownload size={16} />}
-            >
+            <Button variant="light" leftSection={<IconDownload size={16} />}>
               Download PDF
             </Button>
           </Group>

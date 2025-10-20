@@ -140,7 +140,7 @@ export interface RevenueReportResponse {
 
 const billingService = {
   // ==================== INVOICE OPERATIONS ====================
-  
+
   /**
    * Create a new invoice
    */

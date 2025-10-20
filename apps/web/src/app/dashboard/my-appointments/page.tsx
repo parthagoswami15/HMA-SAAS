@@ -12,7 +12,7 @@ export default function MyAppointmentsPage() {
       doctor: 'Dr. Sarah Johnson',
       speciality: 'General Physician',
       location: 'Building A, Room 203',
-      status: 'Confirmed'
+      status: 'Confirmed',
     },
     {
       id: 2,
@@ -21,8 +21,8 @@ export default function MyAppointmentsPage() {
       doctor: 'Dr. Michael Chen',
       speciality: 'Cardiologist',
       location: 'Building B, Room 105',
-      status: 'Pending'
-    }
+      status: 'Pending',
+    },
   ];
 
   const pastAppointments = [
@@ -32,7 +32,7 @@ export default function MyAppointmentsPage() {
       time: '11:00 AM',
       doctor: 'Dr. Sarah Johnson',
       speciality: 'General Physician',
-      status: 'Completed'
+      status: 'Completed',
     },
     {
       id: 4,
@@ -40,20 +40,22 @@ export default function MyAppointmentsPage() {
       time: '3:00 PM',
       doctor: 'Dr. Emily Rodriguez',
       speciality: 'Dermatologist',
-      status: 'Completed'
-    }
+      status: 'Completed',
+    },
   ];
 
   return (
     <Stack gap="xl">
       <div>
-        <Title order={2} mb="xs">My Appointments</Title>
+        <Title order={2} mb="xs">
+          My Appointments
+        </Title>
         <Text c="dimmed">Manage your upcoming and past appointments</Text>
       </div>
 
       {/* Quick Actions */}
       <Group>
-        <Button 
+        <Button
           leftSection={<IconCalendarEvent size={16} />}
           style={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -71,7 +73,9 @@ export default function MyAppointmentsPage() {
         <Card shadow="sm" padding="lg" radius="md" withBorder style={{ flex: 1 }}>
           <Group justify="apart">
             <div>
-              <Text size="sm" c="dimmed">Upcoming</Text>
+              <Text size="sm" c="dimmed">
+                Upcoming
+              </Text>
               <Title order={3}>{upcomingAppointments.length}</Title>
             </div>
             <IconCalendarEvent size={32} color="#667eea" />
@@ -81,7 +85,9 @@ export default function MyAppointmentsPage() {
         <Card shadow="sm" padding="lg" radius="md" withBorder style={{ flex: 1 }}>
           <Group justify="apart">
             <div>
-              <Text size="sm" c="dimmed">Completed</Text>
+              <Text size="sm" c="dimmed">
+                Completed
+              </Text>
               <Title order={3}>{pastAppointments.length}</Title>
             </div>
             <IconClock size={32} color="#10b981" />
@@ -91,7 +97,9 @@ export default function MyAppointmentsPage() {
 
       {/* Upcoming Appointments */}
       <div>
-        <Title order={4} mb="md">Upcoming Appointments</Title>
+        <Title order={4} mb="md">
+          Upcoming Appointments
+        </Title>
         <Stack gap="md">
           {upcomingAppointments.map((appointment) => (
             <Card key={appointment.id} shadow="sm" padding="lg" radius="md" withBorder>
@@ -99,41 +107,49 @@ export default function MyAppointmentsPage() {
                 <Stack gap="xs" style={{ flex: 1 }}>
                   <Group gap="xs">
                     <IconCalendarEvent size={20} color="#667eea" />
-                    <Text fw={600} size="lg">{appointment.doctor}</Text>
-                    <Badge 
+                    <Text fw={600} size="lg">
+                      {appointment.doctor}
+                    </Text>
+                    <Badge
                       color={appointment.status === 'Confirmed' ? 'green' : 'yellow'}
                       variant="light"
                     >
                       {appointment.status}
                     </Badge>
                   </Group>
-                  
+
                   <Group gap="xl">
                     <Group gap="xs">
                       <IconCalendarEvent size={16} color="#6b7280" />
                       <Text size="sm" c="dimmed">
-                        {new Date(appointment.date).toLocaleDateString('en-US', { 
-                          weekday: 'long', 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
+                        {new Date(appointment.date).toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
                         })}
                       </Text>
                     </Group>
                     <Group gap="xs">
                       <IconClock size={16} color="#6b7280" />
-                      <Text size="sm" c="dimmed">{appointment.time}</Text>
+                      <Text size="sm" c="dimmed">
+                        {appointment.time}
+                      </Text>
                     </Group>
                   </Group>
 
                   <Group gap="xl">
                     <Group gap="xs">
                       <IconUser size={16} color="#6b7280" />
-                      <Text size="sm" c="dimmed">{appointment.speciality}</Text>
+                      <Text size="sm" c="dimmed">
+                        {appointment.speciality}
+                      </Text>
                     </Group>
                     <Group gap="xs">
                       <IconMapPin size={16} color="#6b7280" />
-                      <Text size="sm" c="dimmed">{appointment.location}</Text>
+                      <Text size="sm" c="dimmed">
+                        {appointment.location}
+                      </Text>
                     </Group>
                   </Group>
                 </Stack>
@@ -154,7 +170,9 @@ export default function MyAppointmentsPage() {
 
       {/* Past Appointments */}
       <div>
-        <Title order={4} mb="md">Past Appointments</Title>
+        <Title order={4} mb="md">
+          Past Appointments
+        </Title>
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Table highlightOnHover>
             <Table.Thead>
@@ -170,9 +188,7 @@ export default function MyAppointmentsPage() {
             <Table.Tbody>
               {pastAppointments.map((appointment) => (
                 <Table.Tr key={appointment.id}>
-                  <Table.Td>
-                    {new Date(appointment.date).toLocaleDateString()}
-                  </Table.Td>
+                  <Table.Td>{new Date(appointment.date).toLocaleDateString()}</Table.Td>
                   <Table.Td>{appointment.time}</Table.Td>
                   <Table.Td>{appointment.doctor}</Table.Td>
                   <Table.Td>{appointment.speciality}</Table.Td>

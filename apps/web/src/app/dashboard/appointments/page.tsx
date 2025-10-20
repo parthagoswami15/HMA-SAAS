@@ -26,10 +26,9 @@ import {
   Timeline,
   Alert,
   Progress,
-  Flex,
   // Anchor,
   NumberInput,
-  Textarea
+  Textarea,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
@@ -69,10 +68,10 @@ import {
 } from '@tabler/icons-react';
 
 // Import types and services
-import { 
-  Appointment, 
-  AppointmentStatus, 
-  AppointmentType, 
+import {
+  Appointment,
+  AppointmentStatus,
+  AppointmentType,
   AppointmentPriority,
   // AppointmentSearchFilters,
   // AppointmentStats
@@ -85,14 +84,14 @@ const AppointmentManagement = () => {
     return new Date(date).toLocaleDateString('en-CA'); // YYYY-MM-DD format
   };
 
-  const _formatDateTime = (date: string | Date) => {
+  const formatDateTime = (date: string | Date) => {
     return new Date(date).toLocaleString('en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     });
   };
 
@@ -107,7 +106,7 @@ const AppointmentManagement = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [appointmentStats, setAppointmentStats] = useState<any>(null);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Handle hydration
@@ -115,7 +114,7 @@ const AppointmentManagement = () => {
     setIsClient(true);
     fetchAppointments();
     fetchStats();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch appointments from API
@@ -126,7 +125,7 @@ const AppointmentManagement = () => {
         doctorId: selectedDoctor || undefined,
         status: selectedStatus || undefined,
         startDate: selectedDate ? selectedDate.toISOString() : undefined,
-        search: searchQuery || undefined
+        search: searchQuery || undefined,
       };
       const response = await appointmentsService.getAppointments(filters);
       console.log('Appointments API response:', response);
@@ -149,14 +148,17 @@ const AppointmentManagement = () => {
       console.log('Appointment stats API response:', response);
       setAppointmentStats(response.data);
     } catch (err: any) {
-      console.warn('Error fetching appointment stats (using default values):', err.response?.data?.message || err.message);
-      setAppointmentStats({ 
-        total: 0, 
-        today: 0, 
-        pending: 0, 
+      console.warn(
+        'Error fetching appointment stats (using default values):',
+        err.response?.data?.message || err.message
+      );
+      setAppointmentStats({
+        total: 0,
+        today: 0,
+        pending: 0,
         completed: 0,
         scheduled: 0,
-        cancelled: 0
+        cancelled: 0,
       });
     }
   };
@@ -166,13 +168,16 @@ const AppointmentManagement = () => {
     if (isClient) {
       fetchAppointments();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDoctor, selectedStatus, selectedDate, searchQuery]);
 
   // Modal states
-  const [appointmentDetailOpened, { open: openAppointmentDetail, close: closeAppointmentDetail }] = useDisclosure(false);
-  const [bookAppointmentOpened, { open: openBookAppointment, close: closeBookAppointment }] = useDisclosure(false);
-  const [_rescheduleOpened, { open: openReschedule, close: _closeReschedule }] = useDisclosure(false);
+  const [appointmentDetailOpened, { open: openAppointmentDetail, close: closeAppointmentDetail }] =
+    useDisclosure(false);
+  const [bookAppointmentOpened, { open: openBookAppointment, close: closeBookAppointment }] =
+    useDisclosure(false);
+  const [rescheduleOpened, { open: openReschedule, close: closeReschedule }] =
+    useDisclosure(false);
 
   // Filter appointments - now using API data
   const filteredAppointments = useMemo(() => {
@@ -185,36 +190,56 @@ const AppointmentManagement = () => {
   // Helper functions
   const getStatusColor = (status: AppointmentStatus) => {
     switch (status) {
-      case 'SCHEDULED': return 'blue';
-      case 'ARRIVED': return 'teal';
-      case 'IN_PROGRESS': return 'yellow';
-      case 'COMPLETED': return 'green';
-      case 'CANCELLED': return 'red';
-      case 'NO_SHOW': return 'gray';
-      case 'RESCHEDULED': return 'orange';
-      default: return 'gray';
+      case 'SCHEDULED':
+        return 'blue';
+      case 'ARRIVED':
+        return 'teal';
+      case 'IN_PROGRESS':
+        return 'yellow';
+      case 'COMPLETED':
+        return 'green';
+      case 'CANCELLED':
+        return 'red';
+      case 'NO_SHOW':
+        return 'gray';
+      case 'RESCHEDULED':
+        return 'orange';
+      default:
+        return 'gray';
     }
   };
 
   const getTypeColor = (type: AppointmentType) => {
     switch (type) {
-      case 'emergency': return 'red';
-      case 'consultation': return 'blue';
-      case 'follow_up': return 'green';
-      case 'surgery_consultation': return 'purple';
-      case 'telemedicine': return 'cyan';
-      default: return 'gray';
+      case 'emergency':
+        return 'red';
+      case 'consultation':
+        return 'blue';
+      case 'follow_up':
+        return 'green';
+      case 'surgery_consultation':
+        return 'purple';
+      case 'telemedicine':
+        return 'cyan';
+      default:
+        return 'gray';
     }
   };
 
   const getPriorityColor = (priority: AppointmentPriority) => {
     switch (priority) {
-      case 'emergency': return 'red';
-      case 'urgent': return 'orange';
-      case 'high': return 'yellow';
-      case 'normal': return 'blue';
-      case 'low': return 'gray';
-      default: return 'gray';
+      case 'emergency':
+        return 'red';
+      case 'urgent':
+        return 'orange';
+      case 'high':
+        return 'yellow';
+      case 'normal':
+        return 'blue';
+      case 'low':
+        return 'gray';
+      default:
+        return 'gray';
     }
   };
 
@@ -242,7 +267,11 @@ const AppointmentManagement = () => {
   };
 
   const handleCancelAppointment = async (appointment: Appointment) => {
-    if (!window.confirm(`Cancel appointment for ${appointment.patient.firstName} ${appointment.patient.lastName}?`)) {
+    if (
+      !window.confirm(
+        `Cancel appointment for ${appointment.patient.firstName} ${appointment.patient.lastName}?`
+      )
+    ) {
       return;
     }
 
@@ -264,36 +293,38 @@ const AppointmentManagement = () => {
   };
 
   // Statistics cards
-  const statsCards = appointmentStats ? [
-    {
-      title: 'Total',
-      value: appointmentStats.total || 0,
-      icon: IconCalendarEvent,
-      color: 'blue',
-      trend: null
-    },
-    {
-      title: 'Today',
-      value: appointmentStats.today || 0,
-      icon: IconClock,
-      color: 'green',
-      trend: null
-    },
-    {
-      title: 'Pending',
-      value: appointmentStats.pending || 0,
-      icon: IconClockHour3,
-      color: 'yellow',
-      trend: null
-    },
-    {
-      title: 'Completed',
-      value: appointmentStats.completed || 0,
-      icon: IconCheck,
-      color: 'teal',
-      trend: null
-    }
-  ] : [];
+  const statsCards = appointmentStats
+    ? [
+        {
+          title: 'Total',
+          value: appointmentStats.total || 0,
+          icon: IconCalendarEvent,
+          color: 'blue',
+          trend: null,
+        },
+        {
+          title: 'Today',
+          value: appointmentStats.today || 0,
+          icon: IconClock,
+          color: 'green',
+          trend: null,
+        },
+        {
+          title: 'Pending',
+          value: appointmentStats.pending || 0,
+          icon: IconClockHour3,
+          color: 'yellow',
+          trend: null,
+        },
+        {
+          title: 'Completed',
+          value: appointmentStats.completed || 0,
+          icon: IconCheck,
+          color: 'teal',
+          trend: null,
+        },
+      ]
+    : [];
 
   return (
     <Container size="xl" py="md">
@@ -306,10 +337,7 @@ const AppointmentManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openBookAppointment}
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openBookAppointment}>
             Book Appointment
           </Button>
         </Group>
@@ -317,7 +345,13 @@ const AppointmentManagement = () => {
 
       {/* Error Display */}
       {error && (
-        <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red" variant="light" mb="lg">
+        <Alert
+          icon={<IconAlertCircle size="1rem" />}
+          title="Error"
+          color="red"
+          variant="light"
+          mb="lg"
+        >
           {error}
         </Alert>
       )}
@@ -397,7 +431,7 @@ const AppointmentManagement = () => {
                   { value: 'completed', label: 'Completed' },
                   { value: 'cancelled', label: 'Cancelled' },
                   { value: 'no_show', label: 'No Show' },
-                  { value: 'rescheduled', label: 'Rescheduled' }
+                  { value: 'rescheduled', label: 'Rescheduled' },
                 ]}
                 value={selectedStatus}
                 onChange={(value) => setSelectedStatus(value || '')}
@@ -409,7 +443,7 @@ const AppointmentManagement = () => {
                   { value: 'consultation', label: 'Consultation' },
                   { value: 'follow_up', label: 'Follow-up' },
                   { value: 'emergency', label: 'Emergency' },
-                  { value: 'telemedicine', label: 'Telemedicine' }
+                  { value: 'telemedicine', label: 'Telemedicine' },
                 ]}
                 value={selectedType}
                 onChange={(value) => setSelectedType(value || '')}
@@ -445,132 +479,138 @@ const AppointmentManagement = () => {
                         <EmptyState
                           icon={<IconCalendar size={48} />}
                           title="No appointments found"
-                          description={searchQuery || selectedDoctor || selectedStatus ? 
-                            "No appointments match your search criteria. Try adjusting your filters." :
-                            "No appointments scheduled yet. Book your first appointment to get started."
+                          description={
+                            searchQuery || selectedDoctor || selectedStatus
+                              ? 'No appointments match your search criteria. Try adjusting your filters.'
+                              : 'No appointments scheduled yet. Book your first appointment to get started.'
                           }
-                          action={!searchQuery && !selectedDoctor && !selectedStatus ? {
-                            label: "Book Appointment",
-                            onClick: openBookAppointment
-                          } : undefined}
+                          action={
+                            !searchQuery && !selectedDoctor && !selectedStatus
+                              ? {
+                                  label: 'Book Appointment',
+                                  onClick: openBookAppointment,
+                                }
+                              : undefined
+                          }
                           size="sm"
                         />
                       </Table.Td>
                     </Table.Tr>
                   ) : (
                     filteredAppointments.map((appointment) => (
-                    <Table.Tr key={appointment.id}>
-                      <Table.Td>
-                        <Group>
-                          <Avatar color="blue" radius="xl">
-                            {appointment.patient.firstName[0]}{appointment.patient.lastName[0]}
-                          </Avatar>
+                      <Table.Tr key={appointment.id}>
+                        <Table.Td>
+                          <Group>
+                            <Avatar color="blue" radius="xl">
+                              {appointment.patient.firstName[0]}
+                              {appointment.patient.lastName[0]}
+                            </Avatar>
+                            <div>
+                              <Text fw={500}>
+                                {appointment.patient.firstName} {appointment.patient.lastName}
+                              </Text>
+                              <Text size="sm" c="dimmed">
+                                {appointment.appointmentNumber}
+                              </Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
                           <div>
                             <Text fw={500}>
-                              {appointment.patient.firstName} {appointment.patient.lastName}
+                              {appointment.doctor.firstName} {appointment.doctor.lastName}
                             </Text>
                             <Text size="sm" c="dimmed">
-                              {appointment.appointmentNumber}
+                              {appointment.department}
                             </Text>
                           </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text fw={500}>
-                            {appointment.doctor.firstName} {appointment.doctor.lastName}
-                          </Text>
-                          <Text size="sm" c="dimmed">
-                            {appointment.department}
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text fw={500}>
-                            {isClient ? formatDate(appointment.appointmentDate) : 'Loading...'}
-                          </Text>
-                          <Text size="sm" c="dimmed">
-                            {appointment.appointmentTime} ({appointment.duration} min)
-                          </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getTypeColor(appointment.appointmentType)} variant="light">
-                          {appointment.appointmentType.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(appointment.status)} variant="light">
-                          {appointment.status.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getPriorityColor(appointment.priority)} variant="light" size="sm">
-                          {appointment.priority}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text fw={500}>₹{appointment.consultationFee}</Text>
-                          <Badge 
-                            color={appointment.isPaid ? 'green' : 'red'} 
-                            variant="light" 
-                            size="xs"
-                          >
-                            {appointment.isPaid ? 'Paid' : 'Pending'}
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text fw={500}>
+                              {isClient ? formatDate(appointment.appointmentDate) : 'Loading...'}
+                            </Text>
+                            <Text size="sm" c="dimmed">
+                              {appointment.appointmentTime} ({appointment.duration} min)
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getTypeColor(appointment.appointmentType)} variant="light">
+                            {appointment.appointmentType.replace('_', ' ')}
                           </Badge>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewAppointment(appointment)}
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(appointment.status)} variant="light">
+                            {appointment.status.replace('_', ' ')}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge
+                            color={getPriorityColor(appointment.priority)}
+                            variant="light"
+                            size="sm"
                           >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon
-                            variant="subtle"
-                            color="green"
-                            onClick={openReschedule}
-                          >
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <Menu>
-                            <Menu.Target>
-                              <ActionIcon variant="subtle" color="gray">
-                                <IconDotsVertical size={16} />
-                              </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Menu.Item 
-                                leftSection={<IconCheck size={14} />}
-                                onClick={() => handleStatusUpdate(appointment.id, 'ARRIVED')}
-                              >
-                                Confirm
-                              </Menu.Item>
-                              <Menu.Item 
-                                leftSection={<IconUserCheck size={14} />}
-                                onClick={() => handleStatusUpdate(appointment.id, 'ARRIVED')}
-                              >
-                                Check In
-                              </Menu.Item>
-                              <Menu.Item 
-                                leftSection={<IconX size={14} />}
-                                color="red"
-                                onClick={() => handleCancelAppointment(appointment)}
-                              >
-                                Cancel
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
-                        </Group>
-                      </Table.Td>
-                    </Table.Tr>
-                  )))
-                  }
+                            {appointment.priority}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text fw={500}>₹{appointment.consultationFee}</Text>
+                            <Badge
+                              color={appointment.isPaid ? 'green' : 'red'}
+                              variant="light"
+                              size="xs"
+                            >
+                              {appointment.isPaid ? 'Paid' : 'Pending'}
+                            </Badge>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewAppointment(appointment)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green" onClick={openReschedule}>
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <Menu>
+                              <Menu.Target>
+                                <ActionIcon variant="subtle" color="gray">
+                                  <IconDotsVertical size={16} />
+                                </ActionIcon>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Item
+                                  leftSection={<IconCheck size={14} />}
+                                  onClick={() => handleStatusUpdate(appointment.id, 'ARRIVED')}
+                                >
+                                  Confirm
+                                </Menu.Item>
+                                <Menu.Item
+                                  leftSection={<IconUserCheck size={14} />}
+                                  onClick={() => handleStatusUpdate(appointment.id, 'ARRIVED')}
+                                >
+                                  Check In
+                                </Menu.Item>
+                                <Menu.Item
+                                  leftSection={<IconX size={14} />}
+                                  color="red"
+                                  onClick={() => handleCancelAppointment(appointment)}
+                                >
+                                  Cancel
+                                </Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -585,37 +625,42 @@ const AppointmentManagement = () => {
               <Group>
                 <Select
                   placeholder="Select Doctor"
-                  data={[].map /* TODO: Fetch from API */(doctor => ({ 
-                    value: doctor.staffId, 
-                    label: `${doctor.firstName} ${doctor.lastName}` 
-                  }))}
+                  data={[].map(
+                    /* TODO: Fetch from API */ (doctor) => ({
+                      value: doctor.staffId,
+                      label: `${doctor.firstName} ${doctor.lastName}`,
+                    })
+                  )}
                   value={selectedDoctor}
                   onChange={(value) => setSelectedDoctor(value || '')}
                 />
-                <Button leftSection={<IconPlus size={16} />}>
-                  Add Slot
-                </Button>
+                <Button leftSection={<IconPlus size={16} />}>Add Slot</Button>
               </Group>
             </Group>
 
             <SimpleGrid cols={{ base: 1, lg: 2 }}>
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Calendar</Title>
-                <Calendar 
+                <Title order={4} mb="md">
+                  Calendar
+                </Title>
+                <Calendar
                   size="md"
                   static
                   renderDay={(date) => {
                     const dateObj = new Date(date as any);
-                    const hasAppointments = appointments.some(apt => 
-                      new Date(apt.appointmentDate).toDateString() === dateObj.toDateString()
+                    const hasAppointments = appointments.some(
+                      (apt) =>
+                        new Date(apt.appointmentDate).toDateString() === dateObj.toDateString()
                     );
                     return (
-                      <div style={{ 
-                        width: '100%', 
-                        height: '100%',
-                        backgroundColor: hasAppointments ? '#e3f2fd' : 'transparent',
-                        borderRadius: '4px'
-                      }}>
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: hasAppointments ? '#e3f2fd' : 'transparent',
+                          borderRadius: '4px',
+                        }}
+                      >
                         {dateObj.getDate()}
                       </div>
                     );
@@ -624,29 +669,36 @@ const AppointmentManagement = () => {
               </Card>
 
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Today&apos;s Schedule</Title>
+                <Title order={4} mb="md">
+                  Today&apos;s Schedule
+                </Title>
                 <Stack gap="sm">
                   {appointments
-                    .filter(apt => 
-                      new Date(apt.appointmentDate).toDateString() === new Date().toDateString()
+                    .filter(
+                      (apt) =>
+                        new Date(apt.appointmentDate).toDateString() === new Date().toDateString()
                     )
                     .map((appointment) => (
-                    <Group key={appointment.id} justify="space-between" p="sm" 
-                           style={{ border: '1px solid #e9ecef', borderRadius: '8px' }}>
-                      <div>
-                        <Text fw={500}>{appointment.appointmentTime}</Text>
-                        <Text size="sm" c="dimmed">
-                          {appointment.patient.firstName} {appointment.patient.lastName}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          {appointment.doctor.firstName} {appointment.doctor.lastName}
-                        </Text>
-                      </div>
-                      <Badge color={getStatusColor(appointment.status)} variant="light" size="sm">
-                        {appointment.status}
-                      </Badge>
-                    </Group>
-                  ))}
+                      <Group
+                        key={appointment.id}
+                        justify="space-between"
+                        p="sm"
+                        style={{ border: '1px solid #e9ecef', borderRadius: '8px' }}
+                      >
+                        <div>
+                          <Text fw={500}>{appointment.appointmentTime}</Text>
+                          <Text size="sm" c="dimmed">
+                            {appointment.patient.firstName} {appointment.patient.lastName}
+                          </Text>
+                          <Text size="xs" c="dimmed">
+                            {appointment.doctor.firstName} {appointment.doctor.lastName}
+                          </Text>
+                        </div>
+                        <Badge color={getStatusColor(appointment.status)} variant="light" size="sm">
+                          {appointment.status}
+                        </Badge>
+                      </Group>
+                    ))}
                 </Stack>
               </Card>
             </SimpleGrid>
@@ -656,8 +708,10 @@ const AppointmentManagement = () => {
         {/* Queue Management Tab */}
         <Tabs.Panel value="queue">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Queue Management</Title>
-            
+            <Title order={3} mb="lg">
+              Queue Management
+            </Title>
+
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} mb="lg">
               <Card padding="md" radius="md" withBorder>
                 <Group justify="center">
@@ -665,62 +719,83 @@ const AppointmentManagement = () => {
                     <IconUsers size={24} />
                   </ThemeIcon>
                 </Group>
-                <Text ta="center" fw={600} size="lg" mt="sm">8</Text>
-                <Text ta="center" size="sm" c="dimmed">Waiting</Text>
+                <Text ta="center" fw={600} size="lg" mt="sm">
+                  8
+                </Text>
+                <Text ta="center" size="sm" c="dimmed">
+                  Waiting
+                </Text>
               </Card>
-              
+
               <Card padding="md" radius="md" withBorder>
                 <Group justify="center">
                   <ThemeIcon size="xl" color="green" variant="light">
                     <IconStethoscope size={24} />
                   </ThemeIcon>
                 </Group>
-                <Text ta="center" fw={600} size="lg" mt="sm">3</Text>
-                <Text ta="center" size="sm" c="dimmed">In Consultation</Text>
+                <Text ta="center" fw={600} size="lg" mt="sm">
+                  3
+                </Text>
+                <Text ta="center" size="sm" c="dimmed">
+                  In Consultation
+                </Text>
               </Card>
-              
+
               <Card padding="md" radius="md" withBorder>
                 <Group justify="center">
                   <ThemeIcon size="xl" color="orange" variant="light">
                     <IconClockHour3 size={24} />
                   </ThemeIcon>
                 </Group>
-                <Text ta="center" fw={600} size="lg" mt="sm">15 min</Text>
-                <Text ta="center" size="sm" c="dimmed">Avg Wait Time</Text>
+                <Text ta="center" fw={600} size="lg" mt="sm">
+                  15 min
+                </Text>
+                <Text ta="center" size="sm" c="dimmed">
+                  Avg Wait Time
+                </Text>
               </Card>
             </SimpleGrid>
 
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Current Queue</Title>
+              <Title order={4} mb="md">
+                Current Queue
+              </Title>
               {appointments
-                .filter(apt => apt.status === 'SCHEDULED' || apt.status === 'ARRIVED')
+                .filter((apt) => apt.status === 'SCHEDULED' || apt.status === 'ARRIVED')
                 .slice(0, 5) // Show first 5 appointments as a simple queue
                 .map((appointment, index) => (
-                <Group key={appointment.id} justify="space-between" 
-                       p="md" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                  <Group>
-                    <Badge color="blue" variant="light" size="lg">
-                      {index + 1}
-                    </Badge>
-                    <div>
-                      <Text fw={500}>
-                        {appointment.patient.firstName} {appointment.patient.lastName}
-                      </Text>
+                  <Group
+                    key={appointment.id}
+                    justify="space-between"
+                    p="md"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}
+                  >
+                    <Group>
+                      <Badge color="blue" variant="light" size="lg">
+                        {index + 1}
+                      </Badge>
+                      <div>
+                        <Text fw={500}>
+                          {appointment.patient.firstName} {appointment.patient.lastName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {appointment.reason || 'Consultation'}
+                        </Text>
+                      </div>
+                    </Group>
+                    <Group>
                       <Text size="sm" c="dimmed">
-                        {appointment.reason || 'Consultation'}
+                        Est. {appointment.appointmentTime}
                       </Text>
-                    </div>
+                      <Badge
+                        color={appointment.status === 'ARRIVED' ? 'green' : 'blue'}
+                        variant="light"
+                      >
+                        {appointment.status}
+                      </Badge>
+                    </Group>
                   </Group>
-                  <Group>
-                    <Text size="sm" c="dimmed">
-                      Est. {appointment.appointmentTime}
-                    </Text>
-                    <Badge color={appointment.status === 'ARRIVED' ? 'green' : 'blue'} variant="light">
-                      {appointment.status}
-                    </Badge>
-                  </Group>
-                </Group>
-              ))}
+                ))}
             </Card>
           </Paper>
         </Tabs.Panel>
@@ -730,43 +805,71 @@ const AppointmentManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Appointment Reminders</Title>
-              <Button leftSection={<IconBell size={16} />}>
-                Configure Reminders
-              </Button>
+              <Button leftSection={<IconBell size={16} />}>Configure Reminders</Button>
             </Group>
 
             <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Reminder Settings</Title>
+                <Title order={4} mb="md">
+                  Reminder Settings
+                </Title>
                 <Stack gap="md">
                   <Group justify="space-between">
                     <Text>24-hour reminder</Text>
-                    <Badge color="green" variant="light">Enabled</Badge>
+                    <Badge color="green" variant="light">
+                      Enabled
+                    </Badge>
                   </Group>
                   <Group justify="space-between">
                     <Text>2-hour reminder</Text>
-                    <Badge color="green" variant="light">Enabled</Badge>
+                    <Badge color="green" variant="light">
+                      Enabled
+                    </Badge>
                   </Group>
                   <Group justify="space-between">
                     <Text>SMS notifications</Text>
-                    <Badge color="blue" variant="light">Active</Badge>
+                    <Badge color="blue" variant="light">
+                      Active
+                    </Badge>
                   </Group>
                   <Group justify="space-between">
                     <Text>Email notifications</Text>
-                    <Badge color="blue" variant="light">Active</Badge>
+                    <Badge color="blue" variant="light">
+                      Active
+                    </Badge>
                   </Group>
                 </Stack>
               </Card>
 
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Recent Reminders</Title>
+                <Title order={4} mb="md">
+                  Recent Reminders
+                </Title>
                 <Timeline>
                   {[
-                    { id: '1', reminderType: 'appointment_reminder', message: 'Upcoming appointment in 2 hours', scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), status: 'sent' },
-                    { id: '2', reminderType: 'follow_up', message: 'Follow-up appointment reminder', scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), status: 'pending' },
-                    { id: '3', reminderType: 'appointment_reminder', message: 'Appointment confirmation sent', scheduledTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(), status: 'sent' }
+                    {
+                      id: '1',
+                      reminderType: 'appointment_reminder',
+                      message: 'Upcoming appointment in 2 hours',
+                      scheduledTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+                      status: 'sent',
+                    },
+                    {
+                      id: '2',
+                      reminderType: 'follow_up',
+                      message: 'Follow-up appointment reminder',
+                      scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                      status: 'pending',
+                    },
+                    {
+                      id: '3',
+                      reminderType: 'appointment_reminder',
+                      message: 'Appointment confirmation sent',
+                      scheduledTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+                      status: 'sent',
+                    },
                   ].map((reminder) => (
-                    <Timeline.Item 
+                    <Timeline.Item
                       key={reminder.id}
                       bullet={<IconBell size={12} />}
                       title={reminder.reminderType.replace('_', ' ').toUpperCase()}
@@ -777,10 +880,10 @@ const AppointmentManagement = () => {
                       <Text size="xs" c="dimmed" mt="xs">
                         {new Date(reminder.scheduledTime).toLocaleString()}
                       </Text>
-                      <Badge 
-                        color={reminder.status === 'sent' ? 'green' : 'blue'} 
-                        variant="light" 
-                        size="xs" 
+                      <Badge
+                        color={reminder.status === 'sent' ? 'green' : 'blue'}
+                        variant="light"
+                        size="xs"
                         mt="xs"
                       >
                         {reminder.status}
@@ -796,65 +899,83 @@ const AppointmentManagement = () => {
         {/* Analytics Tab */}
         <Tabs.Panel value="analytics">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Appointment Analytics</Title>
-            
+            <Title order={3} mb="lg">
+              Appointment Analytics
+            </Title>
+
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Appointments by Status */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Appointments by Status</Title>
+                <Title order={4} mb="md">
+                  Appointments by Status
+                </Title>
                 <Text c="dimmed" ta="center" p="xl">
                   Chart component temporarily disabled
                 </Text>
               </Card>
-              
+
               {/* Appointments by Type */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Appointments by Type</Title>
+                <Title order={4} mb="md">
+                  Appointments by Type
+                </Title>
                 <Text c="dimmed" ta="center" p="xl">
                   Chart component temporarily disabled
                 </Text>
               </Card>
-              
+
               {/* Daily Appointments Trend */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
-                <Title order={4} mb="md">Daily Appointments</Title>
+                <Title order={4} mb="md">
+                  Daily Appointments
+                </Title>
                 <Text c="dimmed" ta="center" p="xl">
                   Chart component temporarily disabled
                 </Text>
               </Card>
-              
+
               {/* Peak Hours */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Peak Hours</Title>
+                <Title order={4} mb="md">
+                  Peak Hours
+                </Title>
                 <Text c="dimmed" ta="center" p="xl">
                   Chart component temporarily disabled
                 </Text>
               </Card>
-              
+
               {/* Revenue Metrics */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Revenue Overview</Title>
+                <Title order={4} mb="md">
+                  Revenue Overview
+                </Title>
                 <Stack gap="md">
                   <div>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm">Total Revenue</Text>
-                      <Text size="sm" fw={500}>₹{(appointmentStats?.totalRevenue || 0).toLocaleString()}</Text>
+                      <Text size="sm" fw={500}>
+                        ₹{(appointmentStats?.totalRevenue || 0).toLocaleString()}
+                      </Text>
                     </Group>
                     <Progress value={85} color="green" />
                   </div>
-                  
+
                   <div>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm">Pending Payments</Text>
-                      <Text size="sm" fw={500}>₹{(appointmentStats?.pendingPayments || 0).toLocaleString()}</Text>
+                      <Text size="sm" fw={500}>
+                        ₹{(appointmentStats?.pendingPayments || 0).toLocaleString()}
+                      </Text>
                     </Group>
                     <Progress value={15} color="red" />
                   </div>
-                  
+
                   <div>
                     <Group justify="space-between" mb="xs">
                       <Text size="sm">Average Fee</Text>
-                      <Text size="sm" fw={500}>₹{appointmentStats?.averageFee || 0}</Text>
+                      <Text size="sm" fw={500}>
+                        ₹{appointmentStats?.averageFee || 0}
+                      </Text>
                     </Group>
                     <Progress value={75} color="blue" />
                   </div>
@@ -877,7 +998,8 @@ const AppointmentManagement = () => {
             {/* Basic Info */}
             <Group>
               <Avatar size="xl" color="blue" radius="xl">
-                {selectedAppointment.patient.firstName[0]}{selectedAppointment.patient.lastName[0]}
+                {selectedAppointment.patient.firstName[0]}
+                {selectedAppointment.patient.lastName[0]}
               </Avatar>
               <div>
                 <Title order={3}>
@@ -895,34 +1017,59 @@ const AppointmentManagement = () => {
             {/* Appointment Details */}
             <SimpleGrid cols={2}>
               <div>
-                <Text size="sm" fw={500}>Doctor</Text>
+                <Text size="sm" fw={500}>
+                  Doctor
+                </Text>
                 <Text size="sm" c="dimmed">
                   {selectedAppointment.doctor.firstName} {selectedAppointment.doctor.lastName}
                 </Text>
               </div>
               <div>
-                <Text size="sm" fw={500}>Department</Text>
-                <Text size="sm" c="dimmed">{selectedAppointment.department}</Text>
-              </div>
-              <div>
-                <Text size="sm" fw={500}>Date & Time</Text>
+                <Text size="sm" fw={500}>
+                  Department
+                </Text>
                 <Text size="sm" c="dimmed">
-                  {new Date(selectedAppointment.appointmentDate).toLocaleDateString()} at {selectedAppointment.appointmentTime}
+                  {selectedAppointment.department}
                 </Text>
               </div>
               <div>
-                <Text size="sm" fw={500}>Duration</Text>
-                <Text size="sm" c="dimmed">{selectedAppointment.duration} minutes</Text>
+                <Text size="sm" fw={500}>
+                  Date & Time
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {new Date(selectedAppointment.appointmentDate).toLocaleDateString()} at{' '}
+                  {selectedAppointment.appointmentTime}
+                </Text>
               </div>
               <div>
-                <Text size="sm" fw={500}>Type</Text>
-                <Badge color={getTypeColor(selectedAppointment.appointmentType)} variant="light" size="sm">
+                <Text size="sm" fw={500}>
+                  Duration
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {selectedAppointment.duration} minutes
+                </Text>
+              </div>
+              <div>
+                <Text size="sm" fw={500}>
+                  Type
+                </Text>
+                <Badge
+                  color={getTypeColor(selectedAppointment.appointmentType)}
+                  variant="light"
+                  size="sm"
+                >
                   {selectedAppointment.appointmentType.replace('_', ' ')}
                 </Badge>
               </div>
               <div>
-                <Text size="sm" fw={500}>Priority</Text>
-                <Badge color={getPriorityColor(selectedAppointment.priority)} variant="light" size="sm">
+                <Text size="sm" fw={500}>
+                  Priority
+                </Text>
+                <Badge
+                  color={getPriorityColor(selectedAppointment.priority)}
+                  variant="light"
+                  size="sm"
+                >
                   {selectedAppointment.priority}
                 </Badge>
               </div>
@@ -930,25 +1077,37 @@ const AppointmentManagement = () => {
 
             {/* Reason and Notes */}
             <div>
-              <Text size="sm" fw={500}>Reason for Visit</Text>
-              <Text size="sm" c="dimmed">{selectedAppointment.reason}</Text>
+              <Text size="sm" fw={500}>
+                Reason for Visit
+              </Text>
+              <Text size="sm" c="dimmed">
+                {selectedAppointment.reason}
+              </Text>
             </div>
 
             {selectedAppointment.notes && (
               <div>
-                <Text size="sm" fw={500}>Notes</Text>
-                <Text size="sm" c="dimmed">{selectedAppointment.notes}</Text>
+                <Text size="sm" fw={500}>
+                  Notes
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {selectedAppointment.notes}
+                </Text>
               </div>
             )}
 
             {/* Payment Info */}
             <div>
-              <Text size="sm" fw={500}>Consultation Fee</Text>
+              <Text size="sm" fw={500}>
+                Consultation Fee
+              </Text>
               <Group>
-                <Text size="sm" c="dimmed">₹{selectedAppointment.consultationFee}</Text>
-                <Badge 
-                  color={selectedAppointment.isPaid ? 'green' : 'red'} 
-                  variant="light" 
+                <Text size="sm" c="dimmed">
+                  ₹{selectedAppointment.consultationFee}
+                </Text>
+                <Badge
+                  color={selectedAppointment.isPaid ? 'green' : 'red'}
+                  variant="light"
                   size="sm"
                 >
                   {selectedAppointment.isPaid ? 'Paid' : 'Pending'}
@@ -960,9 +1119,7 @@ const AppointmentManagement = () => {
               <Button variant="light" onClick={closeAppointmentDetail}>
                 Close
               </Button>
-              <Button onClick={openReschedule}>
-                Reschedule
-              </Button>
+              <Button onClick={openReschedule}>Reschedule</Button>
             </Group>
           </Stack>
         )}
@@ -992,7 +1149,7 @@ const AppointmentManagement = () => {
               required
             />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
             <DatePickerInput
               label="Appointment Date"
@@ -1009,12 +1166,12 @@ const AppointmentManagement = () => {
                 { value: '09:00', label: '09:00 AM' },
                 { value: '09:30', label: '09:30 AM' },
                 { value: '10:00', label: '10:00 AM' },
-                { value: '10:30', label: '10:30 AM' }
+                { value: '10:30', label: '10:30 AM' },
               ]}
               required
             />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
             <Select
               label="Appointment Type"
@@ -1023,7 +1180,7 @@ const AppointmentManagement = () => {
                 { value: 'consultation', label: 'Consultation' },
                 { value: 'follow_up', label: 'Follow-up' },
                 { value: 'emergency', label: 'Emergency' },
-                { value: 'routine_checkup', label: 'Routine Checkup' }
+                { value: 'routine_checkup', label: 'Routine Checkup' },
               ]}
               required
             />
@@ -1034,38 +1191,35 @@ const AppointmentManagement = () => {
                 { value: 'normal', label: 'Normal' },
                 { value: 'high', label: 'High' },
                 { value: 'urgent', label: 'Urgent' },
-                { value: 'emergency', label: 'Emergency' }
+                { value: 'emergency', label: 'Emergency' },
               ]}
               required
             />
           </SimpleGrid>
-          
+
           <Textarea
             label="Reason for Visit"
             placeholder="Describe the reason for the appointment"
             required
           />
-          
-          <NumberInput
-            label="Consultation Fee"
-            placeholder="Enter fee amount"
-            min={0}
-            prefix="₹"
-          />
-          
+
+          <NumberInput label="Consultation Fee" placeholder="Enter fee amount" min={0} prefix="₹" />
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeBookAppointment}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              // notifications.show({
-              //   title: 'Success',
-              //   message: 'Appointment booked successfully',
-              //   color: 'green',
-              // });
-              console.log('Appointment booked successfully');
-              closeBookAppointment();
-            }}>
+            <Button
+              onClick={() => {
+                // notifications.show({
+                //   title: 'Success',
+                //   message: 'Appointment booked successfully',
+                //   color: 'green',
+                // });
+                console.log('Appointment booked successfully');
+                closeBookAppointment();
+              }}
+            >
               Book Appointment
             </Button>
           </Group>

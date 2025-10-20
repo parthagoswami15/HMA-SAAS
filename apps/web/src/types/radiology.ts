@@ -47,7 +47,14 @@ export interface RadiologyStats {
   averageTurnaroundTime: number;
 }
 
-export type StudyType = 'x_ray' | 'ct_scan' | 'mri' | 'ultrasound' | 'mammography' | 'fluoroscopy' | 'pet_scan';
+export type StudyType =
+  | 'x_ray'
+  | 'ct_scan'
+  | 'mri'
+  | 'ultrasound'
+  | 'mammography'
+  | 'fluoroscopy'
+  | 'pet_scan';
 export type Modality = 'XR' | 'CT' | 'MR' | 'US' | 'MG' | 'FL' | 'PT';
 export type Priority = 'routine' | 'urgent' | 'stat' | 'emergency';
 export type OrderStatus = 'ordered' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled';

@@ -16,7 +16,7 @@ import {
   TextInput,
   Select,
   LoadingOverlay,
-  Alert
+  Alert,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
@@ -31,7 +31,7 @@ import {
   IconEye,
   IconCalendarEvent,
   IconCheck,
-  IconAlertCircle
+  IconAlertCircle,
 } from '@tabler/icons-react';
 import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
@@ -41,7 +41,11 @@ import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn } from '../../types/common';
 import appointmentsService from '../../services/appointments.service';
 import patientsService from '../../services/patients.service';
-import type { CreateAppointmentDto, UpdateAppointmentDto, AppointmentFilters } from '../../services/appointments.service';
+import type {
+  CreateAppointmentDto,
+  UpdateAppointmentDto,
+  AppointmentFilters,
+} from '../../services/appointments.service';
 
 const mockUser: User = {
   id: '1',
@@ -64,7 +68,7 @@ function AppointmentsPage() {
   const { user, setUser } = useAppStore();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
-  const [doctors, _setDoctors] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
@@ -82,7 +86,7 @@ function AppointmentsPage() {
     fetchAppointments();
     fetchStats();
     fetchPatients();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setUser]);
 
   const fetchAppointments = async () => {
@@ -257,7 +261,7 @@ function AppointmentsPage() {
       COMPLETED: 'green',
       CANCELLED: 'red',
       NO_SHOW: 'gray',
-      RESCHEDULED: 'orange'
+      RESCHEDULED: 'orange',
     };
     return colors[status] || 'gray';
   };
@@ -266,7 +270,7 @@ function AppointmentsPage() {
     const date = new Date(dateString);
     return {
       date: date.toLocaleDateString(),
-      time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
   };
 
@@ -284,7 +288,7 @@ function AppointmentsPage() {
             {appointment.patient?.medicalRecordNumber || appointment.patient?.id}
           </Text>
         </div>
-      )
+      ),
     },
     {
       key: 'doctor',
@@ -294,7 +298,7 @@ function AppointmentsPage() {
         <Text>
           Dr. {appointment.doctor?.firstName} {appointment.doctor?.lastName}
         </Text>
-      )
+      ),
     },
     {
       key: 'dateTime',
@@ -305,27 +309,25 @@ function AppointmentsPage() {
         return (
           <div>
             <Text fw={500}>{date}</Text>
-            <Text size="xs" c="dimmed">{time}</Text>
+            <Text size="xs" c="dimmed">
+              {time}
+            </Text>
           </div>
         );
-      }
+      },
     },
     {
       key: 'reason',
       title: 'Reason',
-      render: (appointment: any) => (
-        <Text lineClamp={2}>{appointment.reason}</Text>
-      )
+      render: (appointment: any) => <Text lineClamp={2}>{appointment.reason}</Text>,
     },
     {
       key: 'status',
       title: 'Status',
       sortable: true,
       render: (appointment: any) => (
-        <Badge color={getStatusColor(appointment.status)}>
-          {appointment.status}
-        </Badge>
-      )
+        <Badge color={getStatusColor(appointment.status)}>{appointment.status}</Badge>
+      ),
     },
     {
       key: 'actions',
@@ -358,24 +360,34 @@ function AppointmentsPage() {
             Delete
           </Button>
         </Group>
-      )
-    }
+      ),
+    },
   ];
 
   return (
-    <Layout user={user ? { 
-      id: user.id, 
-      name: `${user.firstName} ${user.lastName}`, 
-      email: user.email, 
-      role: user.role,
-      avatar: undefined 
-    } : mockUser ? {
-      id: mockUser.id,
-      name: `${mockUser.firstName} ${mockUser.lastName}`,
-      email: mockUser.email,
-      role: mockUser.role,
-      avatar: undefined
-    } : undefined} notifications={0} onLogout={() => {}}>
+    <Layout
+      user={
+        user
+          ? {
+              id: user.id,
+              name: `${user.firstName} ${user.lastName}`,
+              email: user.email,
+              role: user.role,
+              avatar: undefined,
+            }
+          : mockUser
+            ? {
+                id: mockUser.id,
+                name: `${mockUser.firstName} ${mockUser.lastName}`,
+                email: mockUser.email,
+                role: mockUser.role,
+                avatar: undefined,
+              }
+            : undefined
+      }
+      notifications={0}
+      onLogout={() => {}}
+    >
       <Container size="xl" py="xl">
         <Stack gap="lg">
           {/* Header */}
@@ -386,10 +398,7 @@ function AppointmentsPage() {
                 Manage and schedule patient appointments
               </Text>
             </div>
-            <Button
-              leftSection={<IconPlus size={16} />}
-              onClick={handleNewAppointment}
-            >
+            <Button leftSection={<IconPlus size={16} />} onClick={handleNewAppointment}>
               Book Appointment
             </Button>
           </Group>
@@ -475,7 +484,7 @@ function AppointmentsPage() {
                     { value: 'ARRIVED', label: 'Arrived' },
                     { value: 'IN_PROGRESS', label: 'In Progress' },
                     { value: 'COMPLETED', label: 'Completed' },
-                    { value: 'CANCELLED', label: 'Cancelled' }
+                    { value: 'CANCELLED', label: 'Cancelled' },
                   ]}
                   value={statusFilter}
                   onChange={(value) => setStatusFilter(value || '')}
@@ -502,15 +511,16 @@ function AppointmentsPage() {
           <Paper withBorder>
             <LoadingOverlay visible={loading} />
             {appointments.length === 0 && !loading ? (
-              <Alert icon={<IconAlertCircle size={16} />} title="No appointments found" color="blue">
-                No appointments match your current filters. Try adjusting your search criteria or book a new appointment.
+              <Alert
+                icon={<IconAlertCircle size={16} />}
+                title="No appointments found"
+                color="blue"
+              >
+                No appointments match your current filters. Try adjusting your search criteria or
+                book a new appointment.
               </Alert>
             ) : (
-              <DataTable
-                columns={columns}
-                data={appointments}
-                loading={loading}
-              />
+              <DataTable columns={columns} data={appointments} loading={loading} />
             )}
           </Paper>
         </Stack>

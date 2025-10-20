@@ -1,14 +1,30 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  Card, Title, Text, Stack, Group, Button, TextInput, 
-  Select, Tabs, Switch, ColorInput, FileInput,
-  NumberInput, Badge
+import {
+  Card,
+  Title,
+  Text,
+  Stack,
+  Group,
+  Button,
+  TextInput,
+  Select,
+  Tabs,
+  Switch,
+  ColorInput,
+  FileInput,
+  NumberInput,
+  Badge,
 } from '@mantine/core';
-import { 
-  IconBuilding, IconPalette, IconUsers, IconBell, 
-  IconShield, IconUpload, IconDeviceFloppy
+import {
+  IconBuilding,
+  IconPalette,
+  IconUsers,
+  IconBell,
+  IconShield,
+  IconUpload,
+  IconDeviceFloppy,
 } from '@tabler/icons-react';
 
 export default function HospitalSettingsPage() {
@@ -20,7 +36,7 @@ export default function HospitalSettingsPage() {
     email: 'admin@citygeneral.com',
     phone: '+1 (555) 123-4567',
     website: 'https://www.citygeneral.com',
-    
+
     // Address
     addressLine1: '123 Main Street',
     addressLine2: 'Suite 100',
@@ -28,19 +44,19 @@ export default function HospitalSettingsPage() {
     state: 'NY',
     postalCode: '10001',
     country: 'United States',
-    
+
     // Branding
     logoUrl: '',
     primaryColor: '#667eea',
     secondaryColor: '#764ba2',
-    
+
     // Configuration
     timezone: 'America/New_York',
     dateFormat: 'MM/DD/YYYY',
     timeFormat: '12h',
     currency: 'USD',
     language: 'en',
-    
+
     // Features
     appointmentsEnabled: true,
     laboratoryEnabled: true,
@@ -48,13 +64,13 @@ export default function HospitalSettingsPage() {
     billingEnabled: true,
     inventoryEnabled: true,
     reportingEnabled: true,
-    
+
     // Limits
     maxUsers: 100,
     maxPatients: 10000,
     maxAppointments: 500,
     storageGB: 100,
-    
+
     // Notifications
     emailNotifications: true,
     smsNotifications: false,
@@ -75,10 +91,12 @@ export default function HospitalSettingsPage() {
       {/* Header */}
       <Group justify="space-between">
         <div>
-          <Title order={2} mb="xs">Hospital Settings</Title>
+          <Title order={2} mb="xs">
+            Hospital Settings
+          </Title>
           <Text c="dimmed">Manage your hospital configuration and preferences</Text>
         </div>
-        <Button 
+        <Button
           leftSection={<IconDeviceFloppy size={16} />}
           onClick={handleSave}
           style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
@@ -110,7 +128,9 @@ export default function HospitalSettingsPage() {
         {/* General Settings */}
         <Tabs.Panel value="general" pt="xl">
           <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Title order={4} mb="md">Basic Information</Title>
+            <Title order={4} mb="md">
+              Basic Information
+            </Title>
             <Stack gap="md">
               <TextInput
                 label="Hospital Name"
@@ -169,7 +189,9 @@ export default function HospitalSettingsPage() {
           </Card>
 
           <Card shadow="sm" padding="lg" radius="md" withBorder mt="xl">
-            <Title order={4} mb="md">Address</Title>
+            <Title order={4} mb="md">
+              Address
+            </Title>
             <Stack gap="md">
               <TextInput
                 label="Address Line 1"
@@ -211,7 +233,9 @@ export default function HospitalSettingsPage() {
           </Card>
 
           <Card shadow="sm" padding="lg" radius="md" withBorder mt="xl">
-            <Title order={4} mb="md">Regional Settings</Title>
+            <Title order={4} mb="md">
+              Regional Settings
+            </Title>
             <Stack gap="md">
               <Group grow>
                 <Select
@@ -265,7 +289,9 @@ export default function HospitalSettingsPage() {
         {/* Branding */}
         <Tabs.Panel value="branding" pt="xl">
           <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Title order={4} mb="md">Visual Identity</Title>
+            <Title order={4} mb="md">
+              Visual Identity
+            </Title>
             <Stack gap="md">
               <FileInput
                 label="Hospital Logo"
@@ -293,30 +319,34 @@ export default function HospitalSettingsPage() {
                 Preview your brand colors:
               </Text>
               <Group>
-                <div style={{
-                  width: '100px',
-                  height: '100px',
-                  background: settings.primaryColor,
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontWeight: 600
-                }}>
+                <div
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    background: settings.primaryColor,
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontWeight: 600,
+                  }}
+                >
                   Primary
                 </div>
-                <div style={{
-                  width: '100px',
-                  height: '100px',
-                  background: settings.secondaryColor,
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontWeight: 600
-                }}>
+                <div
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    background: settings.secondaryColor,
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontWeight: 600,
+                  }}
+                >
                   Secondary
                 </div>
               </Group>
@@ -327,43 +357,57 @@ export default function HospitalSettingsPage() {
         {/* Features & Limits */}
         <Tabs.Panel value="features" pt="xl">
           <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Title order={4} mb="md">Enabled Features</Title>
+            <Title order={4} mb="md">
+              Enabled Features
+            </Title>
             <Stack gap="md">
               <Switch
                 label="Appointments Module"
                 description="Enable online appointment booking and scheduling"
                 checked={settings.appointmentsEnabled}
-                onChange={(e) => setSettings({ ...settings, appointmentsEnabled: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, appointmentsEnabled: e.currentTarget.checked })
+                }
               />
               <Switch
                 label="Laboratory Module"
                 description="Lab tests, results, and management"
                 checked={settings.laboratoryEnabled}
-                onChange={(e) => setSettings({ ...settings, laboratoryEnabled: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, laboratoryEnabled: e.currentTarget.checked })
+                }
               />
               <Switch
                 label="Pharmacy Module"
                 description="Medicine inventory and dispensing"
                 checked={settings.pharmacyEnabled}
-                onChange={(e) => setSettings({ ...settings, pharmacyEnabled: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, pharmacyEnabled: e.currentTarget.checked })
+                }
               />
               <Switch
                 label="Billing Module"
                 description="Invoicing, payments, and financial tracking"
                 checked={settings.billingEnabled}
-                onChange={(e) => setSettings({ ...settings, billingEnabled: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, billingEnabled: e.currentTarget.checked })
+                }
               />
               <Switch
                 label="Inventory Module"
                 description="Medical supplies and equipment management"
                 checked={settings.inventoryEnabled}
-                onChange={(e) => setSettings({ ...settings, inventoryEnabled: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, inventoryEnabled: e.currentTarget.checked })
+                }
               />
               <Switch
                 label="Reporting & Analytics"
                 description="Advanced reports and data visualization"
                 checked={settings.reportingEnabled}
-                onChange={(e) => setSettings({ ...settings, reportingEnabled: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, reportingEnabled: e.currentTarget.checked })
+                }
               />
             </Stack>
           </Card>
@@ -371,11 +415,15 @@ export default function HospitalSettingsPage() {
           <Card shadow="sm" padding="lg" radius="md" withBorder mt="xl">
             <Group justify="space-between" mb="md">
               <Title order={4}>Usage Limits</Title>
-              <Badge size="lg" color="violet">PROFESSIONAL PLAN</Badge>
+              <Badge size="lg" color="violet">
+                PROFESSIONAL PLAN
+              </Badge>
             </Group>
             <Stack gap="md">
               <div>
-                <Text size="sm" fw={500} mb="xs">Maximum Users</Text>
+                <Text size="sm" fw={500} mb="xs">
+                  Maximum Users
+                </Text>
                 <NumberInput
                   value={settings.maxUsers}
                   onChange={(value) => setSettings({ ...settings, maxUsers: value as number })}
@@ -386,7 +434,9 @@ export default function HospitalSettingsPage() {
                 />
               </div>
               <div>
-                <Text size="sm" fw={500} mb="xs">Maximum Patients</Text>
+                <Text size="sm" fw={500} mb="xs">
+                  Maximum Patients
+                </Text>
                 <NumberInput
                   value={settings.maxPatients}
                   onChange={(value) => setSettings({ ...settings, maxPatients: value as number })}
@@ -397,7 +447,9 @@ export default function HospitalSettingsPage() {
                 />
               </div>
               <div>
-                <Text size="sm" fw={500} mb="xs">Storage (GB)</Text>
+                <Text size="sm" fw={500} mb="xs">
+                  Storage (GB)
+                </Text>
                 <NumberInput
                   value={settings.storageGB}
                   onChange={(value) => setSettings({ ...settings, storageGB: value as number })}
@@ -414,31 +466,41 @@ export default function HospitalSettingsPage() {
         {/* Notifications */}
         <Tabs.Panel value="notifications" pt="xl">
           <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Title order={4} mb="md">Notification Preferences</Title>
+            <Title order={4} mb="md">
+              Notification Preferences
+            </Title>
             <Stack gap="md">
               <Switch
                 label="Email Notifications"
                 description="Receive notifications via email"
                 checked={settings.emailNotifications}
-                onChange={(e) => setSettings({ ...settings, emailNotifications: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, emailNotifications: e.currentTarget.checked })
+                }
               />
               <Switch
                 label="SMS Notifications"
                 description="Receive notifications via SMS"
                 checked={settings.smsNotifications}
-                onChange={(e) => setSettings({ ...settings, smsNotifications: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, smsNotifications: e.currentTarget.checked })
+                }
               />
               <Switch
                 label="Appointment Reminders"
                 description="Send automatic appointment reminders to patients"
                 checked={settings.appointmentReminders}
-                onChange={(e) => setSettings({ ...settings, appointmentReminders: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, appointmentReminders: e.currentTarget.checked })
+                }
               />
               <Switch
                 label="Billing Alerts"
                 description="Get notified about pending payments and invoices"
                 checked={settings.billingAlerts}
-                onChange={(e) => setSettings({ ...settings, billingAlerts: e.currentTarget.checked })}
+                onChange={(e) =>
+                  setSettings({ ...settings, billingAlerts: e.currentTarget.checked })
+                }
               />
             </Stack>
           </Card>
@@ -447,7 +509,9 @@ export default function HospitalSettingsPage() {
         {/* Security */}
         <Tabs.Panel value="security" pt="xl">
           <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Title order={4} mb="md">Security Settings</Title>
+            <Title order={4} mb="md">
+              Security Settings
+            </Title>
             <Stack gap="md">
               <Text size="sm" c="dimmed">
                 Contact your system administrator to modify security settings

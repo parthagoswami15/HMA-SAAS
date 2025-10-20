@@ -15,7 +15,7 @@ import {
   Badge,
   Indicator,
   Container,
-  Stack
+  Stack,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -34,7 +34,7 @@ import {
   IconShieldCheck,
   IconFileText,
   IconAmbulance,
-  IconMessage
+  IconMessage,
 } from '@tabler/icons-react';
 import { UserRole } from '../../types/common';
 
@@ -64,7 +64,7 @@ const navigationItems: NavigationItem[] = [
   {
     label: 'Dashboard',
     icon: <IconLayoutGrid size="1.2rem" />,
-    href: '/dashboard'
+    href: '/dashboard',
   },
   {
     label: 'Patient Management',
@@ -73,8 +73,8 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Patient Registry', icon: <IconUsers size="1rem" />, href: '/patients/registry' },
       { label: 'Medical Records', icon: <IconFileText size="1rem" />, href: '/patients/records' },
-      { label: 'Patient Portal', icon: <IconUser size="1rem" />, href: '/patients/portal' }
-    ]
+      { label: 'Patient Portal', icon: <IconUser size="1rem" />, href: '/patients/portal' },
+    ],
   },
   {
     label: 'Staff Management',
@@ -84,8 +84,8 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Staff Directory', icon: <IconUsers size="1rem" />, href: '/staff/directory' },
       { label: 'Schedules', icon: <IconCalendar size="1rem" />, href: '/staff/schedules' },
-      { label: 'Performance', icon: <IconChartBar size="1rem" />, href: '/staff/performance' }
-    ]
+      { label: 'Performance', icon: <IconChartBar size="1rem" />, href: '/staff/performance' },
+    ],
   },
   {
     label: 'OPD Management',
@@ -94,8 +94,8 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Consultations', icon: <IconStethoscope size="1rem" />, href: '/opd/consultations' },
       { label: 'Queue Management', icon: <IconCalendar size="1rem" />, href: '/opd/queue' },
-      { label: 'Prescriptions', icon: <IconPill size="1rem" />, href: '/opd/prescriptions' }
-    ]
+      { label: 'Prescriptions', icon: <IconPill size="1rem" />, href: '/opd/prescriptions' },
+    ],
   },
   {
     label: 'IPD Management',
@@ -104,8 +104,8 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Admissions', icon: <IconSettings size="1rem" />, href: '/ipd/admissions' },
       { label: 'Bed Management', icon: <IconSettings size="1rem" />, href: '/ipd/beds' },
-      { label: 'Nursing Charts', icon: <IconSettings size="1rem" />, href: '/ipd/nursing' }
-    ]
+      { label: 'Nursing Charts', icon: <IconSettings size="1rem" />, href: '/ipd/nursing' },
+    ],
   },
   {
     label: 'Laboratory',
@@ -114,8 +114,8 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Test Orders', icon: <IconSettings size="1rem" />, href: '/laboratory/orders' },
       { label: 'Results', icon: <IconSettings size="1rem" />, href: '/laboratory/results' },
-      { label: 'Quality Control', icon: <IconShieldCheck size="1rem" />, href: '/laboratory/qc' }
-    ]
+      { label: 'Quality Control', icon: <IconShieldCheck size="1rem" />, href: '/laboratory/qc' },
+    ],
   },
   {
     label: 'Radiology & PACS',
@@ -124,8 +124,8 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Imaging Orders', icon: <IconSettings size="1rem" />, href: '/radiology/orders' },
       { label: 'PACS Viewer', icon: <IconSettings size="1rem" />, href: '/radiology/viewer' },
-      { label: 'Reports', icon: <IconSettings size="1rem" />, href: '/radiology/reports' }
-    ]
+      { label: 'Reports', icon: <IconSettings size="1rem" />, href: '/radiology/reports' },
+    ],
   },
   {
     label: 'Pharmacy',
@@ -134,8 +134,8 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Inventory', icon: <IconSettings size="1rem" />, href: '/pharmacy/inventory' },
       { label: 'Dispensing', icon: <IconPill size="1rem" />, href: '/pharmacy/dispensing' },
-      { label: 'Procurement', icon: <IconSettings size="1rem" />, href: '/pharmacy/procurement' }
-    ]
+      { label: 'Procurement', icon: <IconSettings size="1rem" />, href: '/pharmacy/procurement' },
+    ],
   },
   {
     label: 'Billing & Revenue',
@@ -144,8 +144,8 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Invoicing', icon: <IconFileText size="1rem" />, href: '/billing/invoices' },
       { label: 'Payments', icon: <IconCurrency size="1rem" />, href: '/billing/payments' },
-      { label: 'Insurance Claims', icon: <IconShieldX size="1rem" />, href: '/billing/insurance' }
-    ]
+      { label: 'Insurance Claims', icon: <IconShieldX size="1rem" />, href: '/billing/insurance' },
+    ],
   },
   {
     label: 'Appointments',
@@ -154,17 +154,25 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Schedule', icon: <IconCalendar size="1rem" />, href: '/appointments/schedule' },
       { label: 'Queue Management', icon: <IconUsers size="1rem" />, href: '/appointments/queue' },
-      { label: 'Walk-ins', icon: <IconUser size="1rem" />, href: '/appointments/walkins' }
-    ]
+      { label: 'Walk-ins', icon: <IconUser size="1rem" />, href: '/appointments/walkins' },
+    ],
   },
   {
     label: 'Telemedicine',
     icon: <IconSettings size="1.2rem" />,
     href: '/telemedicine',
     children: [
-      { label: 'Video Consultations', icon: <IconSettings size="1rem" />, href: '/telemedicine/consultations' },
-      { label: 'Remote Monitoring', icon: <IconSettings size="1rem" />, href: '/telemedicine/monitoring' }
-    ]
+      {
+        label: 'Video Consultations',
+        icon: <IconSettings size="1rem" />,
+        href: '/telemedicine/consultations',
+      },
+      {
+        label: 'Remote Monitoring',
+        icon: <IconSettings size="1rem" />,
+        href: '/telemedicine/monitoring',
+      },
+    ],
   },
   {
     label: 'Emergency',
@@ -174,28 +182,48 @@ const navigationItems: NavigationItem[] = [
     children: [
       { label: 'Triage', icon: <IconSettings size="1rem" />, href: '/emergency/triage' },
       { label: 'Critical Care', icon: <IconSettings size="1rem" />, href: '/emergency/critical' },
-      { label: 'Bed Availability', icon: <IconSettings size="1rem" />, href: '/emergency/beds' }
-    ]
+      { label: 'Bed Availability', icon: <IconSettings size="1rem" />, href: '/emergency/beds' },
+    ],
   },
   {
     label: 'Reports & Analytics',
     icon: <IconChartBar size="1.2rem" />,
     href: '/reports',
     children: [
-      { label: 'Financial Reports', icon: <IconCurrency size="1rem" />, href: '/reports/financial' },
-      { label: 'Clinical Reports', icon: <IconStethoscope size="1rem" />, href: '/reports/clinical' },
-      { label: 'Operational KPIs', icon: <IconChartBar size="1rem" />, href: '/reports/operational' }
-    ]
+      {
+        label: 'Financial Reports',
+        icon: <IconCurrency size="1rem" />,
+        href: '/reports/financial',
+      },
+      {
+        label: 'Clinical Reports',
+        icon: <IconStethoscope size="1rem" />,
+        href: '/reports/clinical',
+      },
+      {
+        label: 'Operational KPIs',
+        icon: <IconChartBar size="1rem" />,
+        href: '/reports/operational',
+      },
+    ],
   },
   {
     label: 'Communications',
     icon: <IconMessage size="1.2rem" />,
     href: '/communications',
     children: [
-      { label: 'SMS/WhatsApp', icon: <IconMessage size="1rem" />, href: '/communications/messaging' },
-      { label: 'Notifications', icon: <IconBell size="1rem" />, href: '/communications/notifications' },
-      { label: 'Campaigns', icon: <IconMessage size="1rem" />, href: '/communications/campaigns' }
-    ]
+      {
+        label: 'SMS/WhatsApp',
+        icon: <IconMessage size="1rem" />,
+        href: '/communications/messaging',
+      },
+      {
+        label: 'Notifications',
+        icon: <IconBell size="1rem" />,
+        href: '/communications/notifications',
+      },
+      { label: 'Campaigns', icon: <IconMessage size="1rem" />, href: '/communications/campaigns' },
+    ],
   },
   {
     label: 'AI Assistant',
@@ -203,9 +231,17 @@ const navigationItems: NavigationItem[] = [
     href: '/ai-assistant',
     badge: 'BETA',
     children: [
-      { label: 'Clinical Decision Support', icon: <IconSettings size="1rem" />, href: '/ai-assistant/clinical' },
-      { label: 'Predictive Analytics', icon: <IconSettings size="1rem" />, href: '/ai-assistant/analytics' }
-    ]
+      {
+        label: 'Clinical Decision Support',
+        icon: <IconSettings size="1rem" />,
+        href: '/ai-assistant/clinical',
+      },
+      {
+        label: 'Predictive Analytics',
+        icon: <IconSettings size="1rem" />,
+        href: '/ai-assistant/analytics',
+      },
+    ],
   },
   {
     label: 'Administration',
@@ -216,22 +252,22 @@ const navigationItems: NavigationItem[] = [
       { label: 'Tenant Management', icon: <IconSettings size="1rem" />, href: '/admin/tenants' },
       { label: 'User Management', icon: <IconUsers size="1rem" />, href: '/admin/users' },
       { label: 'System Settings', icon: <IconSettings size="1rem" />, href: '/admin/settings' },
-      { label: 'Audit Logs', icon: <IconFileText size="1rem" />, href: '/admin/audit' }
-    ]
-  }
+      { label: 'Audit Logs', icon: <IconFileText size="1rem" />, href: '/admin/audit' },
+    ],
+  },
 ];
 
 export default function Layout({ children, user, notifications = 0, onLogout }: LayoutProps) {
   const [opened, { toggle }] = useDisclosure(false);
   const [activeItem, setActiveItem] = useState<string>('');
 
-  const filteredNavItems = navigationItems.filter(item => 
-    !item.roles || (user?.role && item.roles.includes(user.role))
+  const filteredNavItems = navigationItems.filter(
+    (item) => !item.roles || (user?.role && item.roles.includes(user.role))
   );
 
   const NavItem = ({ item, level = 0 }: { item: NavigationItem; level?: number }) => {
     const isActive = activeItem === item.href;
-    
+
     return (
       <Box key={item.href}>
         <UnstyledButton
@@ -240,13 +276,13 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
             display: 'block',
             width: '100%',
             padding: '8px 12px',
-            paddingLeft: 12 + (level * 20),
+            paddingLeft: 12 + level * 20,
             borderRadius: 4,
             color: isActive ? '#1976d2' : '#333',
             backgroundColor: isActive ? '#e3f2fd' : 'transparent',
             textDecoration: 'none',
             fontSize: '14px',
-            marginBottom: 2
+            marginBottom: 2,
           }}
         >
           <Group gap="sm">
@@ -261,7 +297,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
             )}
           </Group>
         </UnstyledButton>
-        
+
         {item.children && (
           <Box ml="md" mt="xs">
             {item.children.map((child) => (
@@ -278,7 +314,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
       navbar={{
         width: 280,
         breakpoint: 'sm',
-        collapsed: { mobile: !opened }
+        collapsed: { mobile: !opened },
       }}
       header={{ height: 60 }}
       padding="md"
@@ -287,7 +323,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
         <Group h="100%" px="md" justify="space-between">
           <Group>
             <Burger hiddenFrom="sm" opened={opened} onClick={toggle} size="sm" />
-            
+
             <Group gap="sm">
               <Box
                 style={{
@@ -300,19 +336,21 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                   justifyContent: 'center',
                   color: 'white',
                   fontSize: '14px',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
                 }}
               >
                 HMS
               </Box>
-              <Text fw={600} size="lg">Hospital Management System</Text>
+              <Text fw={600} size="lg">
+                Hospital Management System
+              </Text>
             </Group>
           </Group>
 
           <Group>
-            <Indicator 
-              inline 
-              label={notifications > 0 ? notifications : null} 
+            <Indicator
+              inline
+              label={notifications > 0 ? notifications : null}
               size={16}
               disabled={notifications === 0}
             >
@@ -326,12 +364,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                 <Menu.Target>
                   <UnstyledButton>
                     <Group gap="sm">
-                      <Avatar
-                        src={user.avatar}
-                        alt={user.name}
-                        radius="xl"
-                        size="sm"
-                      />
+                      <Avatar src={user.avatar} alt={user.name} radius="xl" size="sm" />
                       <Box style={{ flex: 1 }}>
                         <Text size="sm" fw={500}>
                           {user.name}
@@ -346,24 +379,20 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                 </Menu.Target>
 
                 <Menu.Dropdown>
-                  <Menu.Item 
+                  <Menu.Item
                     icon={<IconUser size="0.9rem" />}
                     onClick={() => setActiveItem('/profile')}
                   >
                     Profile
                   </Menu.Item>
-                  <Menu.Item 
+                  <Menu.Item
                     icon={<IconSettings size="0.9rem" />}
                     onClick={() => setActiveItem('/settings')}
                   >
                     Settings
                   </Menu.Item>
                   <Menu.Divider />
-                  <Menu.Item
-                    color="red"
-                    icon={<IconX size="0.9rem" />}
-                    onClick={onLogout}
-                  >
+                  <Menu.Item color="red" icon={<IconX size="0.9rem" />} onClick={onLogout}>
                     Logout
                   </Menu.Item>
                 </Menu.Dropdown>
@@ -384,9 +413,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <Container fluid>
-          {children}
-        </Container>
+        <Container fluid>{children}</Container>
       </AppShell.Main>
     </AppShell>
   );

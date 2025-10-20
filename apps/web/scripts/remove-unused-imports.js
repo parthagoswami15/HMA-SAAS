@@ -62,7 +62,7 @@ console.log(`📁 Processing ${filesToProcess.length} files...\n`);
 
 filesToProcess.forEach((file, index) => {
   const filePath = path.join(process.cwd(), file);
-  
+
   if (!fs.existsSync(filePath)) {
     console.log(`⏭️  [${index + 1}/${filesToProcess.length}] Skipping ${file} (not found)`);
     return;
@@ -70,16 +70,15 @@ filesToProcess.forEach((file, index) => {
 
   try {
     console.log(`🔄 [${index + 1}/${filesToProcess.length}] Processing ${file}...`);
-    
+
     // Run ESLint fix on the file
-    execSync(`npx eslint "${file}" --fix`, { 
+    execSync(`npx eslint "${file}" --fix`, {
       stdio: 'pipe',
-      cwd: process.cwd()
+      cwd: process.cwd(),
     });
-    
+
     totalFixed++;
     console.log(`✅ [${index + 1}/${filesToProcess.length}] Fixed ${file}`);
-    
   } catch (error) {
     totalErrors++;
     console.log(`⚠️  [${index + 1}/${filesToProcess.length}] Issues in ${file} (check manually)`);

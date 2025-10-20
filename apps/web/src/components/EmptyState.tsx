@@ -18,11 +18,11 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   title,
   description,
   action,
-  size = 'md'
+  size = 'md',
 }) => {
   const iconSize = size === 'sm' ? 48 : size === 'md' ? 64 : 80;
   const titleSize = size === 'sm' ? 'lg' : size === 'md' ? 'xl' : 'h2';
-  
+
   return (
     <Box
       style={{
@@ -30,31 +30,26 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: size === 'sm' ? '200px' : size === 'md' ? '300px' : '400px',
-        padding: '2rem'
+        padding: '2rem',
       }}
     >
       <Stack align="center" gap="md" style={{ maxWidth: '400px', textAlign: 'center' }}>
-        <ThemeIcon
-          size={iconSize}
-          radius="xl"
-          variant="light"
-          color="gray"
-        >
+        <ThemeIcon size={iconSize} radius="xl" variant="light" color="gray">
           {icon || <IconInbox size={iconSize * 0.6} />}
         </ThemeIcon>
-        
+
         <Stack gap="xs" align="center">
           <Text size={titleSize} fw={600} c="dimmed">
             {title}
           </Text>
-          
+
           {description && (
             <Text size="sm" c="dimmed">
               {description}
             </Text>
           )}
         </Stack>
-        
+
         {action && (
           <Button onClick={action.onClick} mt="sm">
             {action.label}

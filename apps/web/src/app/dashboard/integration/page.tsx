@@ -109,7 +109,7 @@ import {
   IconLink,
   IconUserCircle,
   IconClock,
-  IconPlug
+  IconPlug,
 } from '@tabler/icons-react';
 
 // Import types and mock data
@@ -127,7 +127,7 @@ import {
   Alert as AlertType,
   APIKey,
   SystemConnector,
-  IntegrationStats
+  IntegrationStats,
 } from '../../../types/integration';
 // Mock data imports removed
 
@@ -144,45 +144,60 @@ const IntegrationHub = () => {
   const [selectedModel, setSelectedModel] = useState<PredictiveModel | null>(null);
 
   // Modal states
-  const [integrationDetailOpened, { open: openIntegrationDetail, close: closeIntegrationDetail }] = useDisclosure(false);
-  const [createIntegrationOpened, { open: openCreateIntegration, close: closeCreateIntegration }] = useDisclosure(false);
-  const [endpointDetailOpened, { open: openEndpointDetail, close: closeEndpointDetail }] = useDisclosure(false);
-  const [dashboardDetailOpened, { open: openDashboardDetail, close: closeDashboardDetail }] = useDisclosure(false);
-  const [modelDetailOpened, { open: openModelDetail, close: closeModelDetail }] = useDisclosure(false);
+  const [integrationDetailOpened, { open: openIntegrationDetail, close: closeIntegrationDetail }] =
+    useDisclosure(false);
+  const [createIntegrationOpened, { open: openCreateIntegration, close: closeCreateIntegration }] =
+    useDisclosure(false);
+  const [endpointDetailOpened, { open: openEndpointDetail, close: closeEndpointDetail }] =
+    useDisclosure(false);
+  const [dashboardDetailOpened, { open: openDashboardDetail, close: closeDashboardDetail }] =
+    useDisclosure(false);
+  const [modelDetailOpened, { open: openModelDetail, close: closeModelDetail }] =
+    useDisclosure(false);
   const [apiKeyOpened, { open: openApiKey, close: closeApiKey }] = useDisclosure(false);
 
   // Filter integrations
   const filteredIntegrations = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((integration) => {
-      const matchesSearch = 
-        integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        integration.description.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedStatus || integration.status === selectedStatus;
-      const matchesType = !selectedType || integration.type === selectedType;
+    return [].filter(
+      /* TODO: Fetch from API */ (integration) => {
+        const matchesSearch =
+          integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          integration.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesStatus && matchesType;
-    });
+        const matchesStatus = !selectedStatus || integration.status === selectedStatus;
+        const matchesType = !selectedType || integration.type === selectedType;
+
+        return matchesSearch && matchesStatus && matchesType;
+      }
+    );
   }, [searchQuery, selectedStatus, selectedType]);
 
   // Filter API endpoints
   const filteredEndpoints = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((endpoint) => 
-      endpoint.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      endpoint.description.toLowerCase().includes(searchQuery.toLowerCase())
+    return [].filter(
+      /* TODO: Fetch from API */ (endpoint) =>
+        endpoint.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        endpoint.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [searchQuery]);
 
   // Helper functions
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'green';
-      case 'inactive': return 'gray';
-      case 'error': return 'red';
-      case 'warning': return 'yellow';
-      case 'pending': return 'orange';
-      case 'updating': return 'blue';
-      default: return 'gray';
+      case 'active':
+        return 'green';
+      case 'inactive':
+        return 'gray';
+      case 'error':
+        return 'red';
+      case 'warning':
+        return 'yellow';
+      case 'pending':
+        return 'orange';
+      case 'updating':
+        return 'blue';
+      default:
+        return 'gray';
     }
   };
 
@@ -195,12 +210,12 @@ const IntegrationHub = () => {
     setSelectedEndpoint(endpoint);
     openEndpointDetail();
   };
-  
+
   const handleViewDashboard = (dashboard: Dashboard) => {
     setSelectedDashboard(dashboard);
     openDashboardDetail();
   };
-  
+
   const handleViewModel = (model: PredictiveModel) => {
     setSelectedModel(model);
     openModelDetail();
@@ -212,7 +227,7 @@ const IntegrationHub = () => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -222,26 +237,26 @@ const IntegrationHub = () => {
       title: 'Active Integrations',
       value: 0 /* TODO: Fetch from API */,
       icon: IconArrowsRightLeft,
-      color: 'blue'
+      color: 'blue',
     },
     {
       title: 'Data Sources',
       value: 0 /* TODO: Fetch from API */,
       icon: IconDatabase,
-      color: 'green'
+      color: 'green',
     },
     {
       title: 'API Endpoints',
       value: 0 /* TODO: Fetch from API */,
       icon: IconApi,
-      color: 'violet'
+      color: 'violet',
     },
     {
       title: 'ML Models',
       value: 0 /* TODO: Fetch from API */,
       icon: IconBrain,
-      color: 'orange'
-    }
+      color: 'orange',
+    },
   ];
 
   return (
@@ -255,16 +270,10 @@ const IntegrationHub = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconApi size={16} />}
-            onClick={openApiKey}
-          >
+          <Button leftSection={<IconApi size={16} />} onClick={openApiKey}>
             API Keys
           </Button>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openCreateIntegration}
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openCreateIntegration}>
             New Integration
           </Button>
         </Group>
@@ -322,7 +331,9 @@ const IntegrationHub = () => {
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
             {/* Integration Status */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Integration Status</Title>
+              <Title order={4} mb="md">
+                Integration Status
+              </Title>
               <Stack gap="md">
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -331,7 +342,9 @@ const IntegrationHub = () => {
                     </ThemeIcon>
                     <Text size="sm">Active</Text>
                   </Group>
-                  <Text size="sm" fw={600}>24</Text>
+                  <Text size="sm" fw={600}>
+                    24
+                  </Text>
                 </Group>
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -340,7 +353,9 @@ const IntegrationHub = () => {
                     </ThemeIcon>
                     <Text size="sm">Error</Text>
                   </Group>
-                  <Text size="sm" fw={600}>3</Text>
+                  <Text size="sm" fw={600}>
+                    3
+                  </Text>
                 </Group>
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -349,7 +364,9 @@ const IntegrationHub = () => {
                     </ThemeIcon>
                     <Text size="sm">Warning</Text>
                   </Group>
-                  <Text size="sm" fw={600}>5</Text>
+                  <Text size="sm" fw={600}>
+                    5
+                  </Text>
                 </Group>
                 <Group justify="space-between">
                   <Group gap="xs">
@@ -358,14 +375,18 @@ const IntegrationHub = () => {
                     </ThemeIcon>
                     <Text size="sm">Pending</Text>
                   </Group>
-                  <Text size="sm" fw={600}>8</Text>
+                  <Text size="sm" fw={600}>
+                    8
+                  </Text>
                 </Group>
               </Stack>
             </Card>
 
             {/* API Usage */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">API Usage (Last 7 days)</Title>
+              <Title order={4} mb="md">
+                API Usage (Last 7 days)
+              </Title>
               <Stack gap="xs">
                 {[
                   { date: 'Mon', calls: 1200 },
@@ -374,13 +395,21 @@ const IntegrationHub = () => {
                   { date: 'Thu', calls: 2200 },
                   { date: 'Fri', calls: 2400 },
                   { date: 'Sat', calls: 1500 },
-                  { date: 'Sun', calls: 1300 }
+                  { date: 'Sun', calls: 1300 },
                 ].map((item) => (
                   <Group key={item.date} justify="space-between">
-                    <Text size="sm" c="dimmed">{item.date}</Text>
+                    <Text size="sm" c="dimmed">
+                      {item.date}
+                    </Text>
                     <Group gap="xs">
-                      <Progress value={(item.calls / 2400) * 100} style={{ width: 100 }} size="sm" />
-                      <Text size="sm" fw={500}>{item.calls.toLocaleString()}</Text>
+                      <Progress
+                        value={(item.calls / 2400) * 100}
+                        style={{ width: 100 }}
+                        size="sm"
+                      />
+                      <Text size="sm" fw={500}>
+                        {item.calls.toLocaleString()}
+                      </Text>
                     </Group>
                   </Group>
                 ))}
@@ -389,7 +418,9 @@ const IntegrationHub = () => {
 
             {/* Recent Integrations */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Recent Integrations</Title>
+              <Title order={4} mb="md">
+                Recent Integrations
+              </Title>
               <Timeline active={3} bulletSize={24} lineWidth={2}>
                 {[].slice(0, 4).map((integration) => (
                   <Timeline.Item
@@ -401,8 +432,12 @@ const IntegrationHub = () => {
                     }
                     title={integration.name}
                   >
-                    <Text size="sm" c="dimmed">{integration.type}</Text>
-                    <Text size="xs" c="dimmed">{formatDate(integration.lastSync)}</Text>
+                    <Text size="sm" c="dimmed">
+                      {integration.type}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {formatDate(integration.lastSync)}
+                    </Text>
                   </Timeline.Item>
                 ))}
               </Timeline>
@@ -410,20 +445,30 @@ const IntegrationHub = () => {
 
             {/* Data Processing Metrics */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Data Processing</Title>
+              <Title order={4} mb="md">
+                Data Processing
+              </Title>
               <Stack gap="md">
-                {['ETL Jobs', 'Warehouse Queries', 'API Response Time', 'ML Predictions'].map((metric, index) => {
-                  const values = [92, 85, 98, 78];
-                  return (
-                    <div key={metric}>
-                      <Group justify="space-between" mb="xs">
-                        <Text size="sm" fw={500}>{metric}</Text>
-                        <Text size="sm">{values[index]}%</Text>
-                      </Group>
-                      <Progress value={values[index]} size="md" color={values[index] > 90 ? 'green' : 'blue'} />
-                    </div>
-                  );
-                })}
+                {['ETL Jobs', 'Warehouse Queries', 'API Response Time', 'ML Predictions'].map(
+                  (metric, index) => {
+                    const values = [92, 85, 98, 78];
+                    return (
+                      <div key={metric}>
+                        <Group justify="space-between" mb="xs">
+                          <Text size="sm" fw={500}>
+                            {metric}
+                          </Text>
+                          <Text size="sm">{values[index]}%</Text>
+                        </Group>
+                        <Progress
+                          value={values[index]}
+                          size="md"
+                          color={values[index] > 90 ? 'green' : 'blue'}
+                        />
+                      </div>
+                    );
+                  }
+                )}
               </Stack>
             </Card>
           </SimpleGrid>
@@ -435,9 +480,7 @@ const IntegrationHub = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>API Endpoints</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />}>
-                  Add Endpoint
-                </Button>
+                <Button leftSection={<IconPlus size={16} />}>Add Endpoint</Button>
                 <Button variant="light" leftSection={<IconDownload size={16} />}>
                   Export Swagger
                 </Button>
@@ -486,12 +529,17 @@ const IntegrationHub = () => {
                           <Code>{endpoint.path}</Code>
                         </Table.Td>
                         <Table.Td>
-                          <Badge 
+                          <Badge
                             color={
-                              endpoint.method === 'GET' ? 'blue' :
-                              endpoint.method === 'POST' ? 'green' :
-                              endpoint.method === 'PUT' ? 'orange' :
-                              endpoint.method === 'DELETE' ? 'red' : 'gray'
+                              endpoint.method === 'GET'
+                                ? 'blue'
+                                : endpoint.method === 'POST'
+                                  ? 'green'
+                                  : endpoint.method === 'PUT'
+                                    ? 'orange'
+                                    : endpoint.method === 'DELETE'
+                                      ? 'red'
+                                      : 'gray'
                             }
                           >
                             {endpoint.method}
@@ -499,7 +547,9 @@ const IntegrationHub = () => {
                         </Table.Td>
                         <Table.Td>{endpoint.version}</Table.Td>
                         <Table.Td>
-                          <Text size="sm" lineClamp={2}>{endpoint.description}</Text>
+                          <Text size="sm" lineClamp={2}>
+                            {endpoint.description}
+                          </Text>
                         </Table.Td>
                         <Table.Td>
                           <Group>
@@ -592,8 +642,12 @@ const IntegrationHub = () => {
                 <Card key={integration.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
-                      <Text fw={600} size="lg">{integration.name}</Text>
-                      <Text size="sm" c="dimmed">{integration.type}</Text>
+                      <Text fw={600} size="lg">
+                        {integration.name}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {integration.type}
+                      </Text>
                     </div>
                     <Badge color={getStatusColor(integration.status)} variant="light">
                       {integration.status.toUpperCase()}
@@ -606,25 +660,27 @@ const IntegrationHub = () => {
 
                   <Stack gap="xs" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Last Sync</Text>
+                      <Text size="sm" c="dimmed">
+                        Last Sync
+                      </Text>
                       <Text size="sm">{formatDate(integration.lastSync)}</Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Data Flow</Text>
+                      <Text size="sm" c="dimmed">
+                        Data Flow
+                      </Text>
                       <Text size="sm">{integration.dataDirection}</Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Authentication</Text>
+                      <Text size="sm" c="dimmed">
+                        Authentication
+                      </Text>
                       <Text size="sm">{integration.authMethod}</Text>
                     </Group>
                   </Stack>
 
                   <Group justify="space-between">
-                    <Button 
-                      variant="light" 
-                      size="xs"
-                      leftSection={<IconRefresh size={14} />}
-                    >
+                    <Button variant="light" size="xs" leftSection={<IconRefresh size={14} />}>
                       Sync Now
                     </Button>
                     <Group gap="xs">
@@ -652,13 +708,8 @@ const IntegrationHub = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Data Warehouse</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />}>
-                  Add Data Source
-                </Button>
-                <Button 
-                  variant="light" 
-                  leftSection={<IconCloudUpload size={16} />}
-                >
+                <Button leftSection={<IconPlus size={16} />}>Add Data Source</Button>
+                <Button variant="light" leftSection={<IconCloudUpload size={16} />}>
                   ETL Jobs
                 </Button>
               </Group>
@@ -668,57 +719,83 @@ const IntegrationHub = () => {
             <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg" mb="lg">
               {/* Data Sources */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Data Sources</Title>
+                <Title order={4} mb="md">
+                  Data Sources
+                </Title>
                 <Stack gap="md">
-                  {[].map /* TODO: Fetch from API */((source) => (
-                    <Group key={source.id} justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                      <Group>
-                        <ThemeIcon color={getStatusColor(source.status)} size="md" radius="xl">
-                          <IconDatabase size={16} />
-                        </ThemeIcon>
-                        <div>
-                          <Text size="sm" fw={500}>{source.name}</Text>
-                          <Text size="xs" c="dimmed">{source.type}</Text>
-                        </div>
+                  {[].map(
+                    /* TODO: Fetch from API */ (source) => (
+                      <Group
+                        key={source.id}
+                        justify="space-between"
+                        p="sm"
+                        style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}
+                      >
+                        <Group>
+                          <ThemeIcon color={getStatusColor(source.status)} size="md" radius="xl">
+                            <IconDatabase size={16} />
+                          </ThemeIcon>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {source.name}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {source.type}
+                            </Text>
+                          </div>
+                        </Group>
+                        <Badge color={getStatusColor(source.status)}>{source.status}</Badge>
                       </Group>
-                      <Badge color={getStatusColor(source.status)}>
-                        {source.status}
-                      </Badge>
-                    </Group>
-                  ))}
+                    )
+                  )}
                 </Stack>
               </Card>
-              
+
               {/* Warehouses */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Data Warehouses</Title>
+                <Title order={4} mb="md">
+                  Data Warehouses
+                </Title>
                 <Stack gap="md">
-                  {[].map /* TODO: Fetch from API */((warehouse) => (
-                    <Group key={warehouse.id} justify="space-between" p="sm" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-                      <Group>
-                        <ThemeIcon color="blue" size="md" radius="xl">
-                          <IconBuildingWarehouse size={16} />
-                        </ThemeIcon>
-                        <div>
-                          <Text size="sm" fw={500}>{warehouse.name}</Text>
-                          <Text size="xs" c="dimmed">{warehouse.provider}</Text>
-                        </div>
+                  {[].map(
+                    /* TODO: Fetch from API */ (warehouse) => (
+                      <Group
+                        key={warehouse.id}
+                        justify="space-between"
+                        p="sm"
+                        style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}
+                      >
+                        <Group>
+                          <ThemeIcon color="blue" size="md" radius="xl">
+                            <IconBuildingWarehouse size={16} />
+                          </ThemeIcon>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {warehouse.name}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {warehouse.provider}
+                            </Text>
+                          </div>
+                        </Group>
+                        <Group>
+                          <Text size="xs" c="dimmed">
+                            Size: {warehouse.size}
+                          </Text>
+                          <Badge color={getStatusColor(warehouse.status)}>{warehouse.status}</Badge>
+                        </Group>
                       </Group>
-                      <Group>
-                        <Text size="xs" c="dimmed">Size: {warehouse.size}</Text>
-                        <Badge color={getStatusColor(warehouse.status)}>
-                          {warehouse.status}
-                        </Badge>
-                      </Group>
-                    </Group>
-                  ))}
+                    )
+                  )}
                 </Stack>
               </Card>
             </SimpleGrid>
 
             {/* Data Pipelines */}
             <Card padding="lg" radius="md" withBorder mb="lg">
-              <Title order={4} mb="md">Data Pipelines</Title>
+              <Title order={4} mb="md">
+                Data Pipelines
+              </Title>
               <ScrollArea>
                 <Table striped highlightOnHover>
                   <Table.Thead>
@@ -733,39 +810,41 @@ const IntegrationHub = () => {
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
-                    {[].map /* TODO: Fetch from API */((pipeline) => (
-                      <Table.Tr key={pipeline.id}>
-                        <Table.Td>
-                          <Text fw={500}>{pipeline.name}</Text>
-                        </Table.Td>
-                        <Table.Td>{pipeline.source}</Table.Td>
-                        <Table.Td>{pipeline.destination}</Table.Td>
-                        <Table.Td>{pipeline.frequency}</Table.Td>
-                        <Table.Td>
-                          <Group>
-                            <Text size="sm">{formatDate(pipeline.lastRun)}</Text>
-                          </Group>
-                        </Table.Td>
-                        <Table.Td>
-                          <Badge color={getStatusColor(pipeline.status)} variant="light">
-                            {pipeline.status.toUpperCase()}
-                          </Badge>
-                        </Table.Td>
-                        <Table.Td>
-                          <Group gap="xs">
-                            <ActionIcon variant="subtle" color="blue">
-                              <IconEye size={16} />
-                            </ActionIcon>
-                            <ActionIcon variant="subtle" color="green">
-                              <IconEdit size={16} />
-                            </ActionIcon>
-                            <ActionIcon variant="subtle" color="orange">
-                              <IconRefresh size={16} />
-                            </ActionIcon>
-                          </Group>
-                        </Table.Td>
-                      </Table.Tr>
-                    ))}
+                    {[].map(
+                      /* TODO: Fetch from API */ (pipeline) => (
+                        <Table.Tr key={pipeline.id}>
+                          <Table.Td>
+                            <Text fw={500}>{pipeline.name}</Text>
+                          </Table.Td>
+                          <Table.Td>{pipeline.source}</Table.Td>
+                          <Table.Td>{pipeline.destination}</Table.Td>
+                          <Table.Td>{pipeline.frequency}</Table.Td>
+                          <Table.Td>
+                            <Group>
+                              <Text size="sm">{formatDate(pipeline.lastRun)}</Text>
+                            </Group>
+                          </Table.Td>
+                          <Table.Td>
+                            <Badge color={getStatusColor(pipeline.status)} variant="light">
+                              {pipeline.status.toUpperCase()}
+                            </Badge>
+                          </Table.Td>
+                          <Table.Td>
+                            <Group gap="xs">
+                              <ActionIcon variant="subtle" color="blue">
+                                <IconEye size={16} />
+                              </ActionIcon>
+                              <ActionIcon variant="subtle" color="green">
+                                <IconEdit size={16} />
+                              </ActionIcon>
+                              <ActionIcon variant="subtle" color="orange">
+                                <IconRefresh size={16} />
+                              </ActionIcon>
+                            </Group>
+                          </Table.Td>
+                        </Table.Tr>
+                      )
+                    )}
                   </Table.Tbody>
                 </Table>
               </ScrollArea>
@@ -785,72 +864,82 @@ const IntegrationHub = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Analytics Dashboards</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Create Dashboard
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Create Dashboard</Button>
             </Group>
 
             {/* Dashboards Grid */}
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((dashboard) => (
-                <Card key={dashboard.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{dashboard.title}</Text>
-                      <Text size="sm" c="dimmed">{dashboard.category}</Text>
-                    </div>
-                    <ThemeIcon color="blue" radius="xl" variant="light">
-                      <IconDashboard size={18} />
-                    </ThemeIcon>
-                  </Group>
-
-                  {dashboard.thumbnail && (
-                    <div style={{ 
-                      height: 120, 
-                      background: `url(${dashboard.thumbnail})`, 
-                      backgroundSize: 'cover', 
-                      backgroundPosition: 'center', 
-                      borderRadius: '8px',
-                      marginBottom: '16px'
-                    }} />
-                  )}
-
-                  <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-                    {dashboard.description}
-                  </Text>
-
-                  <Group justify="space-between" mb="xs">
-                    <Text size="sm" c="dimmed">Last Updated</Text>
-                    <Text size="sm">{formatDate(dashboard.lastUpdated)}</Text>
-                  </Group>
-
-                  <Group justify="space-between">
-                    <Group gap="xs">
-                      <IconUserCircle size={16} />
-                      <Text size="sm">{dashboard.owner}</Text>
+              {[].map(
+                /* TODO: Fetch from API */ (dashboard) => (
+                  <Card key={dashboard.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {dashboard.title}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {dashboard.category}
+                        </Text>
+                      </div>
+                      <ThemeIcon color="blue" radius="xl" variant="light">
+                        <IconDashboard size={18} />
+                      </ThemeIcon>
                     </Group>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewDashboard(dashboard)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconExternalLink size={16} />
-                      </ActionIcon>
+
+                    {dashboard.thumbnail && (
+                      <div
+                        style={{
+                          height: 120,
+                          background: `url(${dashboard.thumbnail})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                          borderRadius: '8px',
+                          marginBottom: '16px',
+                        }}
+                      />
+                    )}
+
+                    <Text size="sm" c="dimmed" lineClamp={2} mb="md">
+                      {dashboard.description}
+                    </Text>
+
+                    <Group justify="space-between" mb="xs">
+                      <Text size="sm" c="dimmed">
+                        Last Updated
+                      </Text>
+                      <Text size="sm">{formatDate(dashboard.lastUpdated)}</Text>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+
+                    <Group justify="space-between">
+                      <Group gap="xs">
+                        <IconUserCircle size={16} />
+                        <Text size="sm">{dashboard.owner}</Text>
+                      </Group>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewDashboard(dashboard)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconExternalLink size={16} />
+                        </ActionIcon>
+                      </Group>
+                    </Group>
+                  </Card>
+                )
+              )}
             </SimpleGrid>
 
             {/* Reports Section */}
-            <Title order={3} mt="xl" mb="lg">Reports</Title>
+            <Title order={3} mt="xl" mb="lg">
+              Reports
+            </Title>
             <ScrollArea>
               <Table striped highlightOnHover>
                 <Table.Thead>
@@ -864,37 +953,39 @@ const IntegrationHub = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {[].map /* TODO: Fetch from API */((report) => (
-                    <Table.Tr key={report.id}>
-                      <Table.Td>
-                        <Text fw={500}>{report.name}</Text>
-                      </Table.Td>
-                      <Table.Td>{report.category}</Table.Td>
-                      <Table.Td>{report.schedule}</Table.Td>
-                      <Table.Td>{formatDate(report.lastGenerated)}</Table.Td>
-                      <Table.Td>
-                        <Group>
-                          {report.format === 'PDF' && <IconFileText size={16} />}
-                          {report.format === 'CSV' && <IconTable size={16} />}
-                          {report.format === 'EXCEL' && <IconClipboardData size={16} />}
-                          <Text size="sm">{report.format}</Text>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon variant="subtle" color="green">
-                            <IconDownload size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="blue">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="gray">
-                            <IconRefresh size={16} />
-                          </ActionIcon>
-                        </Group>
-                      </Table.Td>
-                    </Table.Tr>
-                  ))}
+                  {[].map(
+                    /* TODO: Fetch from API */ (report) => (
+                      <Table.Tr key={report.id}>
+                        <Table.Td>
+                          <Text fw={500}>{report.name}</Text>
+                        </Table.Td>
+                        <Table.Td>{report.category}</Table.Td>
+                        <Table.Td>{report.schedule}</Table.Td>
+                        <Table.Td>{formatDate(report.lastGenerated)}</Table.Td>
+                        <Table.Td>
+                          <Group>
+                            {report.format === 'PDF' && <IconFileText size={16} />}
+                            {report.format === 'CSV' && <IconTable size={16} />}
+                            {report.format === 'EXCEL' && <IconClipboardData size={16} />}
+                            <Text size="sm">{report.format}</Text>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon variant="subtle" color="green">
+                              <IconDownload size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="blue">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="gray">
+                              <IconRefresh size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    )
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -906,117 +997,154 @@ const IntegrationHub = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Predictive Analytics</Title>
-              <Button leftSection={<IconBrain size={16} />}>
-                Deploy New Model
-              </Button>
+              <Button leftSection={<IconBrain size={16} />}>Deploy New Model</Button>
             </Group>
 
             {/* Predictive Models */}
             <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((model) => (
-                <Card key={model.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{model.name}</Text>
-                      <Text size="sm" c="dimmed">{model.modelType}</Text>
-                    </div>
-                    <Badge color={getStatusColor(model.status)} variant="light">
-                      {model.status.toUpperCase()}
-                    </Badge>
-                  </Group>
-
-                  <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-                    {model.description}
-                  </Text>
-
-                  <Group justify="space-between" mb="xs">
-                    <Text size="sm" c="dimmed">Accuracy</Text>
-                    <Group>
-                      <Progress 
-                        value={model.accuracy * 100} 
-                        size="sm" 
-                        style={{ width: 100 }}
-                        color={model.accuracy > 0.9 ? 'green' : model.accuracy > 0.75 ? 'blue' : 'orange'}
-                      />
-                      <Text size="sm">{(model.accuracy * 100).toFixed(1)}%</Text>
+              {[].map(
+                /* TODO: Fetch from API */ (model) => (
+                  <Card key={model.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {model.name}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {model.modelType}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(model.status)} variant="light">
+                        {model.status.toUpperCase()}
+                      </Badge>
                     </Group>
-                  </Group>
 
-                  <Group justify="space-between" mb="xs">
-                    <Text size="sm" c="dimmed">Last Trained</Text>
-                    <Text size="sm">{formatDate(model.lastTrained)}</Text>
-                  </Group>
+                    <Text size="sm" c="dimmed" lineClamp={2} mb="md">
+                      {model.description}
+                    </Text>
 
-                  <Group justify="space-between" mb="md">
-                    <Text size="sm" c="dimmed">Framework</Text>
-                    <Group>
-                      {model.framework === 'TensorFlow' && <IconBrandPython size={16} />}
-                      {model.framework === 'PyTorch' && <IconBrandPython size={16} />}
-                      {model.framework === 'scikit-learn' && <IconBrandPython size={16} />}
-                      <Text size="sm">{model.framework}</Text>
+                    <Group justify="space-between" mb="xs">
+                      <Text size="sm" c="dimmed">
+                        Accuracy
+                      </Text>
+                      <Group>
+                        <Progress
+                          value={model.accuracy * 100}
+                          size="sm"
+                          style={{ width: 100 }}
+                          color={
+                            model.accuracy > 0.9
+                              ? 'green'
+                              : model.accuracy > 0.75
+                                ? 'blue'
+                                : 'orange'
+                          }
+                        />
+                        <Text size="sm">{(model.accuracy * 100).toFixed(1)}%</Text>
+                      </Group>
                     </Group>
-                  </Group>
 
-                  <Group justify="space-between">
-                    <Button 
-                      variant="light" 
-                      size="xs"
-                      leftSection={<IconWand size={14} />}
-                    >
-                      Test Predict
-                    </Button>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewModel(model)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconRefresh size={16} />
-                      </ActionIcon>
+                    <Group justify="space-between" mb="xs">
+                      <Text size="sm" c="dimmed">
+                        Last Trained
+                      </Text>
+                      <Text size="sm">{formatDate(model.lastTrained)}</Text>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+
+                    <Group justify="space-between" mb="md">
+                      <Text size="sm" c="dimmed">
+                        Framework
+                      </Text>
+                      <Group>
+                        {model.framework === 'TensorFlow' && <IconBrandPython size={16} />}
+                        {model.framework === 'PyTorch' && <IconBrandPython size={16} />}
+                        {model.framework === 'scikit-learn' && <IconBrandPython size={16} />}
+                        <Text size="sm">{model.framework}</Text>
+                      </Group>
+                    </Group>
+
+                    <Group justify="space-between">
+                      <Button variant="light" size="xs" leftSection={<IconWand size={14} />}>
+                        Test Predict
+                      </Button>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => handleViewModel(model)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconRefresh size={16} />
+                        </ActionIcon>
+                      </Group>
+                    </Group>
+                  </Card>
+                )
+              )}
             </SimpleGrid>
 
             {/* ML Model Metrics Chart */}
             <Card padding="lg" radius="md" withBorder mt="xl">
-              <Title order={4} mb="md">Model Performance Metrics</Title>
+              <Title order={4} mb="md">
+                Model Performance Metrics
+              </Title>
               <SimpleGrid cols={2}>
                 <Stack gap="md">
                   {[
                     { model: 'Readmission', accuracy: 0.92, precision: 0.89, recall: 0.87 },
                     { model: 'LOS Prediction', accuracy: 0.85, precision: 0.83, recall: 0.81 },
                     { model: 'Disease Risk', accuracy: 0.88, precision: 0.86, recall: 0.84 },
-                    { model: 'Cost Prediction', accuracy: 0.79, precision: 0.76, recall: 0.75 }
+                    { model: 'Cost Prediction', accuracy: 0.79, precision: 0.76, recall: 0.75 },
                   ].map((item) => (
                     <div key={item.model}>
-                      <Text size="sm" fw={500} mb="xs">{item.model}</Text>
+                      <Text size="sm" fw={500} mb="xs">
+                        {item.model}
+                      </Text>
                       <Stack gap={4}>
                         <Group justify="space-between">
-                          <Text size="xs" c="dimmed">Accuracy</Text>
+                          <Text size="xs" c="dimmed">
+                            Accuracy
+                          </Text>
                           <Group gap="xs">
-                            <Progress value={item.accuracy * 100} color="green" style={{ width: 80 }} size="xs" />
+                            <Progress
+                              value={item.accuracy * 100}
+                              color="green"
+                              style={{ width: 80 }}
+                              size="xs"
+                            />
                             <Text size="xs">{(item.accuracy * 100).toFixed(0)}%</Text>
                           </Group>
                         </Group>
                         <Group justify="space-between">
-                          <Text size="xs" c="dimmed">Precision</Text>
+                          <Text size="xs" c="dimmed">
+                            Precision
+                          </Text>
                           <Group gap="xs">
-                            <Progress value={item.precision * 100} color="blue" style={{ width: 80 }} size="xs" />
+                            <Progress
+                              value={item.precision * 100}
+                              color="blue"
+                              style={{ width: 80 }}
+                              size="xs"
+                            />
                             <Text size="xs">{(item.precision * 100).toFixed(0)}%</Text>
                           </Group>
                         </Group>
                         <Group justify="space-between">
-                          <Text size="xs" c="dimmed">Recall</Text>
+                          <Text size="xs" c="dimmed">
+                            Recall
+                          </Text>
                           <Group gap="xs">
-                            <Progress value={item.recall * 100} color="violet" style={{ width: 80 }} size="xs" />
+                            <Progress
+                              value={item.recall * 100}
+                              color="violet"
+                              style={{ width: 80 }}
+                              size="xs"
+                            />
                             <Text size="xs">{(item.recall * 100).toFixed(0)}%</Text>
                           </Group>
                         </Group>
@@ -1027,12 +1155,14 @@ const IntegrationHub = () => {
                 <Stack gap="md" justify="center">
                   <Alert color="blue" variant="light" title="AI-Driven Insights">
                     <Text size="sm">
-                      The readmission prediction model has shown a 15% improvement in accuracy after the latest training with expanded patient history features.
+                      The readmission prediction model has shown a 15% improvement in accuracy after
+                      the latest training with expanded patient history features.
                     </Text>
                   </Alert>
                   <Alert color="green" variant="light" title="Action Recommended">
                     <Text size="sm">
-                      Consider deploying the Cost Prediction model to production as it has reached stable performance metrics in the last 3 evaluation cycles.
+                      Consider deploying the Cost Prediction model to production as it has reached
+                      stable performance metrics in the last 3 evaluation cycles.
                     </Text>
                   </Alert>
                 </Stack>
@@ -1043,16 +1173,12 @@ const IntegrationHub = () => {
       </Tabs>
 
       {/* API Key Modal */}
-      <Modal
-        opened={apiKeyOpened}
-        onClose={closeApiKey}
-        title="API Key Management"
-        size="lg"
-      >
+      <Modal opened={apiKeyOpened} onClose={closeApiKey} title="API Key Management" size="lg">
         <Stack gap="md">
           <Alert color="blue" variant="light">
             <Text size="sm">
-              API keys are used to authenticate requests to the API. Keep your API keys secure and never share them publicly.
+              API keys are used to authenticate requests to the API. Keep your API keys secure and
+              never share them publicly.
             </Text>
           </Alert>
 
@@ -1069,32 +1195,34 @@ const IntegrationHub = () => {
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {[].map /* TODO: Fetch from API */((key) => (
-                  <Table.Tr key={key.id}>
-                    <Table.Td>{key.name}</Table.Td>
-                    <Table.Td>
-                      <Badge color={key.keyType === 'production' ? 'red' : 'blue'}>
-                        {key.keyType}
-                      </Badge>
-                    </Table.Td>
-                    <Table.Td>{formatDate(key.created)}</Table.Td>
-                    <Table.Td>{formatDate(key.lastUsed)}</Table.Td>
-                    <Table.Td>
-                      <Group gap="xs">
-                        <Tooltip label="Revoke Key">
-                          <ActionIcon color="red" variant="light">
-                            <IconX size={16} />
-                          </ActionIcon>
-                        </Tooltip>
-                        <Tooltip label="View Usage">
-                          <ActionIcon color="blue" variant="light">
-                            <IconChartBar size={16} />
-                          </ActionIcon>
-                        </Tooltip>
-                      </Group>
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
+                {[].map(
+                  /* TODO: Fetch from API */ (key) => (
+                    <Table.Tr key={key.id}>
+                      <Table.Td>{key.name}</Table.Td>
+                      <Table.Td>
+                        <Badge color={key.keyType === 'production' ? 'red' : 'blue'}>
+                          {key.keyType}
+                        </Badge>
+                      </Table.Td>
+                      <Table.Td>{formatDate(key.created)}</Table.Td>
+                      <Table.Td>{formatDate(key.lastUsed)}</Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          <Tooltip label="Revoke Key">
+                            <ActionIcon color="red" variant="light">
+                              <IconX size={16} />
+                            </ActionIcon>
+                          </Tooltip>
+                          <Tooltip label="View Usage">
+                            <ActionIcon color="blue" variant="light">
+                              <IconChartBar size={16} />
+                            </ActionIcon>
+                          </Tooltip>
+                        </Group>
+                      </Table.Td>
+                    </Table.Tr>
+                  )
+                )}
               </Table.Tbody>
             </Table>
           </ScrollArea>
@@ -1103,17 +1231,13 @@ const IntegrationHub = () => {
 
           <Title order={4}>Generate New API Key</Title>
           <SimpleGrid cols={2}>
-            <TextInput
-              label="Key Name"
-              placeholder="My Application Key"
-              required
-            />
+            <TextInput label="Key Name" placeholder="My Application Key" required />
             <Select
               label="Key Type"
               placeholder="Select type"
               data={[
                 { value: 'development', label: 'Development' },
-                { value: 'production', label: 'Production' }
+                { value: 'production', label: 'Production' },
               ]}
               required
             />
@@ -1125,7 +1249,7 @@ const IntegrationHub = () => {
             data={[
               { value: 'read', label: 'Read Only' },
               { value: 'write', label: 'Read & Write' },
-              { value: 'admin', label: 'Admin (Full Access)' }
+              { value: 'admin', label: 'Admin (Full Access)' },
             ]}
             required
           />
@@ -1134,16 +1258,19 @@ const IntegrationHub = () => {
             <Button variant="light" onClick={closeApiKey}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'API Key Generated',
-                message: 'Your new API key has been created. Make sure to copy it now as it won\'t be shown again',
-                color: 'green',
-              });
-              // Simulate API key generation (in real app, would come from server)
-              const simulatedKey = 'hcm_' + Math.random().toString(36).substring(2, 15);
-              // Would show this key in a separate modal or in UI
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'API Key Generated',
+                  message:
+                    "Your new API key has been created. Make sure to copy it now as it won't be shown again",
+                  color: 'green',
+                });
+                // Simulate API key generation (in real app, would come from server)
+                const simulatedKey = 'hcm_' + Math.random().toString(36).substring(2, 15);
+                // Would show this key in a separate modal or in UI
+              }}
+            >
               Generate Key
             </Button>
           </Group>
@@ -1158,12 +1285,8 @@ const IntegrationHub = () => {
         size="lg"
       >
         <Stack gap="md">
-          <TextInput
-            label="Integration Name"
-            placeholder="Enter integration name"
-            required
-          />
-          
+          <TextInput label="Integration Name" placeholder="Enter integration name" required />
+
           <Select
             label="Integration Type"
             placeholder="Select type"
@@ -1177,13 +1300,9 @@ const IntegrationHub = () => {
             ]}
             required
           />
-          
-          <Textarea
-            label="Description"
-            placeholder="Describe this integration"
-            rows={3}
-          />
-          
+
+          <Textarea label="Description" placeholder="Describe this integration" rows={3} />
+
           <SimpleGrid cols={2}>
             <Select
               label="Data Direction"
@@ -1191,10 +1310,10 @@ const IntegrationHub = () => {
               data={[
                 { value: 'inbound', label: 'Inbound' },
                 { value: 'outbound', label: 'Outbound' },
-                { value: 'bidirectional', label: 'Bidirectional' }
+                { value: 'bidirectional', label: 'Bidirectional' },
               ]}
             />
-            
+
             <Select
               label="Authentication Method"
               placeholder="Select method"
@@ -1202,38 +1321,37 @@ const IntegrationHub = () => {
                 { value: 'api_key', label: 'API Key' },
                 { value: 'oauth2', label: 'OAuth 2.0' },
                 { value: 'jwt', label: 'JWT' },
-                { value: 'basic', label: 'Basic Auth' }
+                { value: 'basic', label: 'Basic Auth' },
               ]}
             />
           </SimpleGrid>
-          
-          <TextInput
-            label="API Endpoint URL"
-            placeholder="https://api.example.com/v1/"
-          />
-          
+
+          <TextInput label="API Endpoint URL" placeholder="https://api.example.com/v1/" />
+
           <PasswordInput
             label="API Secret/Key"
             placeholder="Enter API key or leave blank to configure later"
           />
-          
+
           <Switch
             label="Enable Webhook Notifications"
             description="Receive real-time notifications when data changes"
           />
-          
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeCreateIntegration}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Integration Created',
-                message: 'Your new integration has been successfully created',
-                color: 'green',
-              });
-              closeCreateIntegration();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Integration Created',
+                  message: 'Your new integration has been successfully created',
+                  color: 'green',
+                });
+                closeCreateIntegration();
+              }}
+            >
               Create Integration
             </Button>
           </Group>

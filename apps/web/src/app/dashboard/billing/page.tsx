@@ -38,7 +38,11 @@ import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleAreaChart,
+  SimpleBarChart,
+} from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
@@ -100,13 +104,13 @@ const BillingManagement = () => {
   const [selectedPatient, setSelectedPatient] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
-  const [_dateRange, _setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const [_selectedClaim, _setSelectedClaim] = useState<InsuranceClaim | null>(null);
+  const [selectedClaim, setSelectedClaim] = useState<InsuranceClaim | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
-  const [_statsError, setStatsError] = useState<string | null>(null);
+  const [statsError, setStatsError] = useState<string | null>(null);
 
   // Data state
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -116,15 +120,17 @@ const BillingManagement = () => {
   const [revenueData, setRevenueData] = useState<any[]>([]);
 
   // Modal states
-  const [invoiceDetailOpened, { open: openInvoiceDetail, close: closeInvoiceDetail }] = useDisclosure(false);
+  const [invoiceDetailOpened, { open: openInvoiceDetail, close: closeInvoiceDetail }] =
+    useDisclosure(false);
   const [addInvoiceOpened, { open: openAddInvoice, close: closeAddInvoice }] = useDisclosure(false);
   const [addPaymentOpened, { open: openAddPayment, close: closeAddPayment }] = useDisclosure(false);
-  const [_claimDetailOpened, { open: _openClaimDetail, close: _closeClaimDetail }] = useDisclosure(false);
+  const [claimDetailOpened, { open: openClaimDetail, close: closeClaimDetail }] =
+    useDisclosure(false);
 
   // Load all data on mount
   useEffect(() => {
     loadAllData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load data based on active tab
@@ -138,7 +144,7 @@ const BillingManagement = () => {
     } else if (activeTab === 'reports') {
       loadReportsData();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, searchQuery, selectedPatient, selectedStatus, selectedPaymentMethod]);
 
   const loadAllData = async () => {
@@ -147,12 +153,7 @@ const BillingManagement = () => {
       setError(null);
 
       // Load stats and initial data in parallel
-      await Promise.all([
-        loadStats(),
-        loadInvoices(),
-        loadPayments(),
-        loadInsuranceClaims()
-      ]);
+      await Promise.all([loadStats(), loadInvoices(), loadPayments(), loadInsuranceClaims()]);
     } catch (err) {
       const errorMessage = handleApiError(err);
       setError(errorMessage);
@@ -173,7 +174,10 @@ const BillingManagement = () => {
       const response = await billingService.getBillingStats();
       setBillingStats(response.data);
     } catch (err: any) {
-      console.warn('Error loading billing stats (using default values):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error loading billing stats (using default values):',
+        err.response?.data?.message || err.message
+      );
       setStatsError(null);
       // Set default stats when backend is unavailable
       setBillingStats({
@@ -182,7 +186,7 @@ const BillingManagement = () => {
         paidInvoices: 0,
         unpaidInvoices: 0,
         totalInvoices: 0,
-        totalPayments: 0
+        totalPayments: 0,
       });
     } finally {
       setStatsLoading(false);
@@ -194,13 +198,16 @@ const BillingManagement = () => {
       const filters = {
         search: searchQuery || undefined,
         patientId: selectedPatient || undefined,
-        status: selectedStatus || undefined
+        status: selectedStatus || undefined,
       };
 
       const response = await billingService.getInvoices(filters);
       setInvoices(response.data || []);
     } catch (err: any) {
-      console.warn('Error loading invoices (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error loading invoices (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setInvoices([]);
     }
   };
@@ -210,13 +217,16 @@ const BillingManagement = () => {
       const filters = {
         search: searchQuery || undefined,
         patientId: selectedPatient || undefined,
-        paymentMethod: selectedPaymentMethod || undefined
+        paymentMethod: selectedPaymentMethod || undefined,
       };
 
       const response = await billingService.getPayments(filters);
       setPayments(response.data || []);
     } catch (err: any) {
-      console.warn('Error loading payments (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error loading payments (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setPayments([]);
     }
   };
@@ -243,13 +253,18 @@ const BillingManagement = () => {
       );
       setRevenueData(response.data?.invoices || []);
     } catch (err: any) {
-      console.warn('Error loading reports data (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error loading reports data (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setRevenueData([]);
     }
   };
 
   // Helper functions
-  const getStatusColor = (status: InvoiceStatus | PaymentStatus | ClaimStatus | PaymentTransactionStatus) => {
+  const getStatusColor = (
+    status: InvoiceStatus | PaymentStatus | ClaimStatus | PaymentTransactionStatus
+  ) => {
     switch (status) {
       // InvoiceStatus
       case 'DRAFT':
@@ -294,15 +309,24 @@ const BillingManagement = () => {
 
   const getPaymentMethodIcon = (method: PaymentMethod) => {
     switch (method) {
-      case 'CASH': return <IconCash size={16} />;
-      case 'CREDIT_CARD': return <IconCreditCard size={16} />;
-      case 'DEBIT_CARD': return <IconCreditCard size={16} />;
-      case 'BANK_TRANSFER': return <IconBuildingBank size={16} />;
-      case 'UPI': return <IconBrandPaypal size={16} />;
-      case 'NET_BANKING': return <IconBuildingBank size={16} />;
-      case 'CHEQUE': return <IconCopyright size={16} />;
-      case 'WALLET': return <IconWallet size={16} />;
-      default: return <IconWallet size={16} />;
+      case 'CASH':
+        return <IconCash size={16} />;
+      case 'CREDIT_CARD':
+        return <IconCreditCard size={16} />;
+      case 'DEBIT_CARD':
+        return <IconCreditCard size={16} />;
+      case 'BANK_TRANSFER':
+        return <IconBuildingBank size={16} />;
+      case 'UPI':
+        return <IconBrandPaypal size={16} />;
+      case 'NET_BANKING':
+        return <IconBuildingBank size={16} />;
+      case 'CHEQUE':
+        return <IconCopyright size={16} />;
+      case 'WALLET':
+        return <IconWallet size={16} />;
+      default:
+        return <IconWallet size={16} />;
     }
   };
 
@@ -312,8 +336,8 @@ const BillingManagement = () => {
   };
 
   const handleViewClaim = (claim: InsuranceClaim) => {
-    _setSelectedClaim(claim);
-    _openClaimDetail();
+    setSelectedClaim(claim);
+    openClaimDetail();
   };
 
   const clearFilters = () => {
@@ -321,13 +345,13 @@ const BillingManagement = () => {
     setSelectedPatient('');
     setSelectedStatus('');
     setSelectedPaymentMethod('');
-    _setDateRange([null, null]);
+    setDateRange([null, null]);
   };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
@@ -340,70 +364,82 @@ const BillingManagement = () => {
   };
 
   // Statistics cards
-  const statsCards = billingStats ? [
-    {
-      title: 'Total Revenue',
-      value: formatCurrency(billingStats.totalRevenue || 0),
-      icon: IconCurrencyDollar,
-      color: 'green',
-      trend: '+15.3%'
-    },
-    {
-      title: 'Outstanding Amount',
-      value: formatCurrency(billingStats.totalOutstanding || 0),
-      icon: IconAlertCircle,
-      color: 'red',
-      trend: '-8.2%'
-    },
-    {
-      title: 'Insurance Claims',
-      value: billingStats.totalClaims || 0,
-      icon: IconShield,
-      color: 'blue',
-      trend: '+12%'
-    },
-    {
-      title: 'Collection Rate',
-      value: `${billingStats.collectionRate || 0}%`,
-      icon: IconTrendingUp,
-      color: 'purple',
-      trend: '+2.1%'
-    }
-  ] : [];
+  const statsCards = billingStats
+    ? [
+        {
+          title: 'Total Revenue',
+          value: formatCurrency(billingStats.totalRevenue || 0),
+          icon: IconCurrencyDollar,
+          color: 'green',
+          trend: '+15.3%',
+        },
+        {
+          title: 'Outstanding Amount',
+          value: formatCurrency(billingStats.totalOutstanding || 0),
+          icon: IconAlertCircle,
+          color: 'red',
+          trend: '-8.2%',
+        },
+        {
+          title: 'Insurance Claims',
+          value: billingStats.totalClaims || 0,
+          icon: IconShield,
+          color: 'blue',
+          trend: '+12%',
+        },
+        {
+          title: 'Collection Rate',
+          value: `${billingStats.collectionRate || 0}%`,
+          icon: IconTrendingUp,
+          color: 'purple',
+          trend: '+2.1%',
+        },
+      ]
+    : [];
 
   // Chart data
-  const _revenueChartData = revenueData.length > 0 ? revenueData.map(item => ({
-    month: item.month,
-    revenue: item.totalRevenue,
-    collections: item.collections
-  })) : [];
+  const revenueChartData =
+    revenueData.length > 0
+      ? revenueData.map((item) => ({
+          month: item.month,
+          revenue: item.totalRevenue,
+          collections: item.collections,
+        }))
+      : [];
 
   const getPaymentMethodColor = (method: PaymentMethod) => {
     switch (method) {
-      case 'CASH': return 'green.6';
-      case 'CREDIT_CARD': return 'blue.6';
-      case 'DEBIT_CARD': return 'cyan.6';
-      case 'BANK_TRANSFER': return 'indigo.6';
-      case 'UPI': return 'teal.6';
-      case 'NET_BANKING': return 'violet.6';
-      case 'CHEQUE': return 'orange.6';
-      case 'WALLET': return 'grape.6';
-      default: return 'gray.6';
+      case 'CASH':
+        return 'green.6';
+      case 'CREDIT_CARD':
+        return 'blue.6';
+      case 'DEBIT_CARD':
+        return 'cyan.6';
+      case 'BANK_TRANSFER':
+        return 'indigo.6';
+      case 'UPI':
+        return 'teal.6';
+      case 'NET_BANKING':
+        return 'violet.6';
+      case 'CHEQUE':
+        return 'orange.6';
+      case 'WALLET':
+        return 'grape.6';
+      default:
+        return 'gray.6';
     }
   };
 
-  const paymentMethodData = billingStats?.paymentMethodDistribution ?
-    Object.entries(billingStats.paymentMethodDistribution)
-      .map(([method, amount]) => ({
+  const paymentMethodData = billingStats?.paymentMethodDistribution
+    ? Object.entries(billingStats.paymentMethodDistribution).map(([method, amount]) => ({
         name: method.replace('_', ' ').toUpperCase(),
         value: amount as number,
-        color: getPaymentMethodColor(method as PaymentMethod)
-      })) :
-    Object.entries(0 /* TODO: Fetch from API */)
-      .map(([method, amount]) => ({
+        color: getPaymentMethodColor(method as PaymentMethod),
+      }))
+    : Object.entries(0 /* TODO: Fetch from API */).map(([method, amount]) => ({
         name: method.replace('_', ' ').toUpperCase(),
         value: amount as number,
-        color: getPaymentMethodColor(method as PaymentMethod)
+        color: getPaymentMethodColor(method as PaymentMethod),
       }));
 
   const claimStatusCounts: Record<string, number> = {};
@@ -412,7 +448,7 @@ const BillingManagement = () => {
   });
   const claimStatusData = Object.entries(claimStatusCounts).map(([status, count]) => ({
     status: status.replace('_', ' '),
-    count
+    count,
   }));
 
   // Filter functions now use API data
@@ -437,7 +473,8 @@ const BillingManagement = () => {
         payment.paymentId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         payment.invoice?.invoiceNumber?.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesMethod = !selectedPaymentMethod || payment.paymentMethod === selectedPaymentMethod;
+      const matchesMethod =
+        !selectedPaymentMethod || payment.paymentMethod === selectedPaymentMethod;
       const matchesStatus = !selectedStatus || payment.status === selectedStatus;
 
       return matchesSearch && matchesMethod && matchesStatus;
@@ -469,10 +506,7 @@ const BillingManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={openAddInvoice}
-          >
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddInvoice}>
             New Invoice
           </Button>
           <Button
@@ -487,7 +521,13 @@ const BillingManagement = () => {
 
       {/* Error Display */}
       {error && (
-        <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red" variant="light" mb="lg">
+        <Alert
+          icon={<IconAlertCircle size="1rem" />}
+          title="Error"
+          color="red"
+          variant="light"
+          mb="lg"
+        >
           {error} - Using cached data
         </Alert>
       )}
@@ -499,14 +539,50 @@ const BillingManagement = () => {
             <Card key={i} padding="lg" radius="md" withBorder>
               <Group justify="space-between">
                 <div>
-                  <div style={{ height: '1rem', width: '100px', backgroundColor: '#e9ecef', borderRadius: '4px', marginBottom: '8px' }} />
-                  <div style={{ height: '2rem', width: '80px', backgroundColor: '#e9ecef', borderRadius: '4px' }} />
+                  <div
+                    style={{
+                      height: '1rem',
+                      width: '100px',
+                      backgroundColor: '#e9ecef',
+                      borderRadius: '4px',
+                      marginBottom: '8px',
+                    }}
+                  />
+                  <div
+                    style={{
+                      height: '2rem',
+                      width: '80px',
+                      backgroundColor: '#e9ecef',
+                      borderRadius: '4px',
+                    }}
+                  />
                 </div>
-                <div style={{ width: '40px', height: '40px', backgroundColor: '#e9ecef', borderRadius: '8px' }} />
+                <div
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    backgroundColor: '#e9ecef',
+                    borderRadius: '8px',
+                  }}
+                />
               </Group>
               <Group justify="space-between" mt="sm">
-                <div style={{ height: '1rem', width: '50px', backgroundColor: '#e9ecef', borderRadius: '4px' }} />
-                <div style={{ height: '0.75rem', width: '80px', backgroundColor: '#e9ecef', borderRadius: '4px' }} />
+                <div
+                  style={{
+                    height: '1rem',
+                    width: '50px',
+                    backgroundColor: '#e9ecef',
+                    borderRadius: '4px',
+                  }}
+                />
+                <div
+                  style={{
+                    height: '0.75rem',
+                    width: '80px',
+                    backgroundColor: '#e9ecef',
+                    borderRadius: '4px',
+                  }}
+                />
               </Group>
             </Card>
           ))}
@@ -538,7 +614,9 @@ const BillingManagement = () => {
                   >
                     {stat.trend}
                   </Badge>
-                  <Text size="xs" c="dimmed">vs last month</Text>
+                  <Text size="xs" c="dimmed">
+                    vs last month
+                  </Text>
                 </Group>
               </Card>
             );
@@ -577,10 +655,12 @@ const BillingManagement = () => {
               />
               <Select
                 placeholder="Patient"
-                data={[].map /* TODO: Fetch from API */(patient => ({
-                  value: patient.id,
-                  label: `${patient.firstName} ${patient.lastName}`
-                }))}
+                data={[].map(
+                  /* TODO: Fetch from API */ (patient) => ({
+                    value: patient.id,
+                    label: `${patient.firstName} ${patient.lastName}`,
+                  })
+                )}
                 value={selectedPatient}
                 onChange={(v) => setSelectedPatient(v || '')}
                 clearable
@@ -591,7 +671,7 @@ const BillingManagement = () => {
                   { value: 'draft', label: 'Draft' },
                   { value: 'pending', label: 'Pending' },
                   { value: 'paid', label: 'Paid' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedStatus}
                 onChange={(v) => setSelectedStatus(v || '')}
@@ -604,10 +684,29 @@ const BillingManagement = () => {
 
             {/* Loading State for Invoices */}
             {loading && invoices.length === 0 ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '200px',
+                }}
+              >
                 <div>
-                  <div style={{ width: '40px', height: '40px', border: '3px solid #e9ecef', borderTop: '3px solid #228be6', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
-                  <Text c="dimmed" ta="center">Loading invoices...</Text>
+                  <div
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      border: '3px solid #e9ecef',
+                      borderTop: '3px solid #228be6',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite',
+                      margin: '0 auto 16px',
+                    }}
+                  />
+                  <Text c="dimmed" ta="center">
+                    Loading invoices...
+                  </Text>
                 </div>
               </div>
             ) : (
@@ -641,103 +740,106 @@ const BillingManagement = () => {
                         </Table.Tr>
                       ) : (
                         filteredInvoices.map((invoice) => (
-                        <Table.Tr key={invoice.id}>
-                          <Table.Td>
-                            <Text fw={500}>{invoice.invoiceNumber}</Text>
-                          </Table.Td>
-                          <Table.Td>
-                            <Group>
-                              <Avatar color="blue" radius="xl" size="sm">
-                                {invoice.patient?.firstName?.[0]}{invoice.patient?.lastName?.[0]}
-                              </Avatar>
-                              <div>
-                                <Text size="sm" fw={500}>
-                                  {invoice.patient?.firstName} {invoice.patient?.lastName}
-                                </Text>
-                                <Text size="xs" c="dimmed">
-                                  {invoice.patient?.patientId}
-                                </Text>
-                              </div>
-                            </Group>
-                          </Table.Td>
-                          <Table.Td>
-                            <Text size="sm">
-                              {formatDate(invoice.invoiceDate)}
-                            </Text>
-                          </Table.Td>
-                          <Table.Td>
-                            <Text
-                              size="sm"
-                              c={new Date(invoice.dueDate) < new Date() ? 'red' : 'dimmed'}
-                            >
-                              {formatDate(invoice.dueDate)}
-                            </Text>
-                          </Table.Td>
-                          <Table.Td>
-                            <Text fw={600}>{formatCurrency(invoice.totalAmount)}</Text>
-                          </Table.Td>
-                          <Table.Td>
-                            <Badge color={getStatusColor(invoice.status)} variant="light">
-                              {invoice.status.replace('_', ' ')}
-                            </Badge>
-                          </Table.Td>
-                          <Table.Td>
-                            <Group gap="xs">
-                              <Text size="sm">
-                                {formatCurrency(invoice.paidAmount || 0)} / {formatCurrency(invoice.totalAmount)}
+                          <Table.Tr key={invoice.id}>
+                            <Table.Td>
+                              <Text fw={500}>{invoice.invoiceNumber}</Text>
+                            </Table.Td>
+                            <Table.Td>
+                              <Group>
+                                <Avatar color="blue" radius="xl" size="sm">
+                                  {invoice.patient?.firstName?.[0]}
+                                  {invoice.patient?.lastName?.[0]}
+                                </Avatar>
+                                <div>
+                                  <Text size="sm" fw={500}>
+                                    {invoice.patient?.firstName} {invoice.patient?.lastName}
+                                  </Text>
+                                  <Text size="xs" c="dimmed">
+                                    {invoice.patient?.patientId}
+                                  </Text>
+                                </div>
+                              </Group>
+                            </Table.Td>
+                            <Table.Td>
+                              <Text size="sm">{formatDate(invoice.invoiceDate)}</Text>
+                            </Table.Td>
+                            <Table.Td>
+                              <Text
+                                size="sm"
+                                c={new Date(invoice.dueDate) < new Date() ? 'red' : 'dimmed'}
+                              >
+                                {formatDate(invoice.dueDate)}
                               </Text>
-                              <Progress
-                                value={invoice.totalAmount > 0 ? ((invoice.paidAmount || 0) / invoice.totalAmount) * 100 : 0}
-                                size="xs"
-                                w={60}
-                                color={(invoice.paidAmount || 0) >= invoice.totalAmount ? 'green' : 'blue'}
-                              />
-                            </Group>
-                          </Table.Td>
-                          <Table.Td>
-                            <Group gap="xs">
-                              <ActionIcon
-                                variant="subtle"
-                                color="blue"
-                                onClick={() => handleViewInvoice(invoice)}
-                              >
-                                <IconEye size={16} />
-                              </ActionIcon>
-                              <ActionIcon
-                                variant="subtle"
-                                color="green"
-                              >
-                                <IconEdit size={16} />
-                              </ActionIcon>
-                              <Menu>
-                                <Menu.Target>
-                                  <ActionIcon variant="subtle" color="gray">
-                                    <IconDotsVertical size={16} />
-                                  </ActionIcon>
-                                </Menu.Target>
-                                <Menu.Dropdown>
-                                  <Menu.Item leftSection={<IconDownload size={14} />}>
-                                    Download PDF
-                                  </Menu.Item>
-                                  <Menu.Item leftSection={<IconPrinter size={14} />}>
-                                    Print
-                                  </Menu.Item>
-                                  <Menu.Item leftSection={<IconMail size={14} />}>
-                                    Send Email
-                                  </Menu.Item>
-                                  <Menu.Divider />
-                                  <Menu.Item
-                                    leftSection={<IconTrash size={14} />}
-                                    color="red"
-                                  >
-                                    Delete
-                                  </Menu.Item>
-                                </Menu.Dropdown>
-                              </Menu>
-                            </Group>
-                          </Table.Td>
-                        </Table.Tr>
-                      )))}
+                            </Table.Td>
+                            <Table.Td>
+                              <Text fw={600}>{formatCurrency(invoice.totalAmount)}</Text>
+                            </Table.Td>
+                            <Table.Td>
+                              <Badge color={getStatusColor(invoice.status)} variant="light">
+                                {invoice.status.replace('_', ' ')}
+                              </Badge>
+                            </Table.Td>
+                            <Table.Td>
+                              <Group gap="xs">
+                                <Text size="sm">
+                                  {formatCurrency(invoice.paidAmount || 0)} /{' '}
+                                  {formatCurrency(invoice.totalAmount)}
+                                </Text>
+                                <Progress
+                                  value={
+                                    invoice.totalAmount > 0
+                                      ? ((invoice.paidAmount || 0) / invoice.totalAmount) * 100
+                                      : 0
+                                  }
+                                  size="xs"
+                                  w={60}
+                                  color={
+                                    (invoice.paidAmount || 0) >= invoice.totalAmount
+                                      ? 'green'
+                                      : 'blue'
+                                  }
+                                />
+                              </Group>
+                            </Table.Td>
+                            <Table.Td>
+                              <Group gap="xs">
+                                <ActionIcon
+                                  variant="subtle"
+                                  color="blue"
+                                  onClick={() => handleViewInvoice(invoice)}
+                                >
+                                  <IconEye size={16} />
+                                </ActionIcon>
+                                <ActionIcon variant="subtle" color="green">
+                                  <IconEdit size={16} />
+                                </ActionIcon>
+                                <Menu>
+                                  <Menu.Target>
+                                    <ActionIcon variant="subtle" color="gray">
+                                      <IconDotsVertical size={16} />
+                                    </ActionIcon>
+                                  </Menu.Target>
+                                  <Menu.Dropdown>
+                                    <Menu.Item leftSection={<IconDownload size={14} />}>
+                                      Download PDF
+                                    </Menu.Item>
+                                    <Menu.Item leftSection={<IconPrinter size={14} />}>
+                                      Print
+                                    </Menu.Item>
+                                    <Menu.Item leftSection={<IconMail size={14} />}>
+                                      Send Email
+                                    </Menu.Item>
+                                    <Menu.Divider />
+                                    <Menu.Item leftSection={<IconTrash size={14} />} color="red">
+                                      Delete
+                                    </Menu.Item>
+                                  </Menu.Dropdown>
+                                </Menu>
+                              </Group>
+                            </Table.Td>
+                          </Table.Tr>
+                        ))
+                      )}
                     </Table.Tbody>
                   </Table>
                 </ScrollArea>
@@ -776,7 +878,7 @@ const BillingManagement = () => {
                   { value: 'net_banking', label: 'Net Banking' },
                   { value: 'cheque', label: 'Cheque' },
                   { value: 'wallet', label: 'Wallet' },
-                  { value: 'other', label: 'Other' }
+                  { value: 'other', label: 'Other' },
                 ]}
                 value={selectedPaymentMethod}
                 onChange={(v) => setSelectedPaymentMethod(v || '')}
@@ -789,7 +891,7 @@ const BillingManagement = () => {
                   { value: 'completed', label: 'Completed' },
                   { value: 'failed', label: 'Failed' },
                   { value: 'refunded', label: 'Refunded' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedStatus}
                 onChange={(v) => setSelectedStatus(v || '')}
@@ -803,7 +905,9 @@ const BillingManagement = () => {
                 <Card key={payment.id} padding="lg" radius="md" withBorder>
                   <Group justify="space-between" mb="md">
                     <div>
-                      <Text fw={600} size="lg">{payment.paymentId}</Text>
+                      <Text fw={600} size="lg">
+                        {payment.paymentId}
+                      </Text>
                       <Text size="sm" c="dimmed">
                         {formatDate(payment.paymentDate)}
                       </Text>
@@ -815,12 +919,18 @@ const BillingManagement = () => {
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Amount</Text>
-                      <Text fw={600} size="lg">{formatCurrency(payment.amount)}</Text>
+                      <Text size="sm" c="dimmed">
+                        Amount
+                      </Text>
+                      <Text fw={600} size="lg">
+                        {formatCurrency(payment.amount)}
+                      </Text>
                     </Group>
-                    
+
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Payment Method</Text>
+                      <Text size="sm" c="dimmed">
+                        Payment Method
+                      </Text>
                       <Group gap="xs">
                         {getPaymentMethodIcon(payment.paymentMethod)}
                         <Text size="sm" fw={500}>
@@ -831,7 +941,9 @@ const BillingManagement = () => {
 
                     {payment.invoiceNumber && (
                       <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Invoice</Text>
+                        <Text size="sm" c="dimmed">
+                          Invoice
+                        </Text>
                         <Anchor size="sm" fw={500}>
                           {payment.invoiceNumber}
                         </Anchor>
@@ -840,18 +952,26 @@ const BillingManagement = () => {
 
                     {payment.transactionId && (
                       <Group justify="space-between">
-                        <Text size="sm" c="dimmed">Transaction ID</Text>
-                        <Text size="sm" fw={500}>{payment.transactionId}</Text>
+                        <Text size="sm" c="dimmed">
+                          Transaction ID
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {payment.transactionId}
+                        </Text>
                       </Group>
                     )}
                   </Stack>
 
                   {payment.notes && (
-                    <Text size="sm" c="dimmed" style={{ 
-                      backgroundColor: '#f8f9fa', 
-                      padding: '8px', 
-                      borderRadius: '4px' 
-                    }}>
+                    <Text
+                      size="sm"
+                      c="dimmed"
+                      style={{
+                        backgroundColor: '#f8f9fa',
+                        padding: '8px',
+                        borderRadius: '4px',
+                      }}
+                    >
                       <strong>Notes:</strong> {payment.notes}
                     </Text>
                   )}
@@ -866,9 +986,7 @@ const BillingManagement = () => {
           <Paper p="md" radius="md" withBorder mt="md">
             <Group justify="space-between" mb="lg">
               <Title order={3}>Insurance Claims</Title>
-              <Button leftSection={<IconPlus size={16} />}>
-                Submit Claim
-              </Button>
+              <Button leftSection={<IconPlus size={16} />}>Submit Claim</Button>
             </Group>
 
             {/* Claims Table */}
@@ -895,7 +1013,8 @@ const BillingManagement = () => {
                       <Table.Td>
                         <Group>
                           <Avatar color="blue" radius="xl" size="sm">
-                            {claim.patient.firstName[0]}{claim.patient.lastName[0]}
+                            {claim.patient.firstName[0]}
+                            {claim.patient.lastName[0]}
                           </Avatar>
                           <div>
                             <Text size="sm" fw={500}>
@@ -909,14 +1028,20 @@ const BillingManagement = () => {
                       </Table.Td>
                       <Table.Td>
                         <div>
-                          <Text size="sm" fw={500}>{claim.insuranceProvider?.providerName || claim.insurance.providerName}</Text>
+                          <Text size="sm" fw={500}>
+                            {claim.insuranceProvider?.providerName || claim.insurance.providerName}
+                          </Text>
                           {claim.policyNumber && (
-                            <Text size="xs" c="dimmed">{claim.policyNumber}</Text>
+                            <Text size="xs" c="dimmed">
+                              {claim.policyNumber}
+                            </Text>
                           )}
                         </div>
                       </Table.Td>
                       <Table.Td>
-                        <Text fw={600}>{formatCurrency((claim.claimAmount ?? claim.claimedAmount) as number)}</Text>
+                        <Text fw={600}>
+                          {formatCurrency((claim.claimAmount ?? claim.claimedAmount) as number)}
+                        </Text>
                       </Table.Td>
                       <Table.Td>
                         <Text fw={600} c={claim.approvedAmount ? 'green' : 'dimmed'}>
@@ -929,9 +1054,7 @@ const BillingManagement = () => {
                         </Badge>
                       </Table.Td>
                       <Table.Td>
-                        <Text size="sm">
-                          {formatDate(claim.submissionDate)}
-                        </Text>
+                        <Text size="sm">{formatDate(claim.submissionDate)}</Text>
                       </Table.Td>
                       <Table.Td>
                         <Group gap="xs">
@@ -961,81 +1084,108 @@ const BillingManagement = () => {
         {/* Financial Reports Tab */}
         <Tabs.Panel value="reports">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Financial Reports & Analytics</Title>
-            
+            <Title order={3} mb="lg">
+              Financial Reports & Analytics
+            </Title>
+
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Revenue Trends */}
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
-                <Title order={4} mb="md">Monthly Revenue & Collections</Title>
+                <Title order={4} mb="md">
+                  Monthly Revenue & Collections
+                </Title>
                 <SimpleAreaChart
                   data={revenueData}
                   dataKey="month"
                   series={[
                     { name: 'revenue', color: 'blue.6' },
-                    { name: 'collections', color: 'green.6' }
+                    { name: 'collections', color: 'green.6' },
                   ]}
                 />
               </Card>
-              
+
               {/* Payment Methods Distribution */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Payment Methods</Title>
-                <MantineDonutChart
-                  data={paymentMethodData}
-                  size={160}
-                  thickness={30}
-                  withLabels
-                />
+                <Title order={4} mb="md">
+                  Payment Methods
+                </Title>
+                <MantineDonutChart data={paymentMethodData} size={160} thickness={30} withLabels />
               </Card>
-              
+
               {/* Claim Status Distribution */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Insurance Claims Status</Title>
+                <Title order={4} mb="md">
+                  Insurance Claims Status
+                </Title>
                 <SimpleBarChart
                   data={claimStatusData}
                   dataKey="status"
                   series={[{ name: 'count', color: 'orange.6' }]}
                 />
               </Card>
-              
+
               {/* Key Metrics */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Key Financial Metrics</Title>
+                <Title order={4} mb="md">
+                  Key Financial Metrics
+                </Title>
                 <Stack gap="md">
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Average Invoice Amount</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Average Invoice Amount
+                    </Text>
                     <Text size="sm" fw={600}>
                       {formatCurrency(0 /* TODO: Fetch from API */)}
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Days Sales Outstanding</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Days Sales Outstanding
+                    </Text>
                     <Text size="sm" fw={600}>
                       {0 /* TODO: Fetch from API */} days
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Insurance Coverage Rate</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Insurance Coverage Rate
+                    </Text>
                     <Text size="sm" fw={600}>
                       {0 /* TODO: Fetch from API */}%
                     </Text>
                   </Group>
-                  <Group justify="space-between" p="sm" 
-                         style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                    <Text size="sm" fw={500}>Bad Debt Rate</Text>
+                  <Group
+                    justify="space-between"
+                    p="sm"
+                    style={{ backgroundColor: '#f8f9fa', borderRadius: '6px' }}
+                  >
+                    <Text size="sm" fw={500}>
+                      Bad Debt Rate
+                    </Text>
                     <Text size="sm" fw={600} c="red">
                       {formatCurrency(0 /* TODO: Fetch from API */)}
                     </Text>
                   </Group>
                 </Stack>
               </Card>
-              
+
               {/* Quick Actions */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Quick Actions</Title>
+                <Title order={4} mb="md">
+                  Quick Actions
+                </Title>
                 <Stack gap="sm">
                   <Button fullWidth leftSection={<IconDownload size={16} />} variant="light">
                     Export Revenue Report
@@ -1070,9 +1220,7 @@ const BillingManagement = () => {
               <Group justify="space-between">
                 <div>
                   <Title order={3}>{selectedInvoice.invoiceNumber}</Title>
-                  <Text c="dimmed">
-                    {formatDate(selectedInvoice.invoiceDate)}
-                  </Text>
+                  <Text c="dimmed">{formatDate(selectedInvoice.invoiceDate)}</Text>
                 </div>
                 <Badge color={getStatusColor(selectedInvoice.status)} variant="light" size="lg">
                   {selectedInvoice.status.replace('_', ' ')}
@@ -1084,29 +1232,40 @@ const BillingManagement = () => {
               {/* Patient & Billing Info */}
               <SimpleGrid cols={2}>
                 <div>
-                  <Text size="sm" fw={500} mb="sm">Bill To:</Text>
+                  <Text size="sm" fw={500} mb="sm">
+                    Bill To:
+                  </Text>
                   <Stack gap={4}>
                     <Text size="sm">
                       {selectedInvoice.patient.firstName} {selectedInvoice.patient.lastName}
                     </Text>
-                    <Text size="sm" c="dimmed">{selectedInvoice.patient.patientId}</Text>
+                    <Text size="sm" c="dimmed">
+                      {selectedInvoice.patient.patientId}
+                    </Text>
                     {selectedInvoice.billingAddress && (
-                      <Text size="sm" c="dimmed">{selectedInvoice.billingAddress.street}</Text>
+                      <Text size="sm" c="dimmed">
+                        {selectedInvoice.billingAddress.street}
+                      </Text>
                     )}
                     {selectedInvoice.billingAddress && (
                       <Text size="sm" c="dimmed">
-                        {selectedInvoice.billingAddress.city}, {selectedInvoice.billingAddress.state}
+                        {selectedInvoice.billingAddress.city},{' '}
+                        {selectedInvoice.billingAddress.state}
                       </Text>
                     )}
                   </Stack>
                 </div>
                 <div>
-                  <Text size="sm" fw={500} mb="sm">Invoice Details:</Text>
+                  <Text size="sm" fw={500} mb="sm">
+                    Invoice Details:
+                  </Text>
                   <Stack gap={4}>
                     <Text size="sm">Due Date: {formatDate(selectedInvoice.dueDate)}</Text>
                     <Text size="sm">Terms: {selectedInvoice.paymentTerms} days</Text>
                     {selectedInvoice.insuranceClaim && (
-                      <Text size="sm">Insurance Claim: {selectedInvoice.insuranceClaim.claimNumber}</Text>
+                      <Text size="sm">
+                        Insurance Claim: {selectedInvoice.insuranceClaim.claimNumber}
+                      </Text>
                     )}
                   </Stack>
                 </div>
@@ -1116,7 +1275,9 @@ const BillingManagement = () => {
 
               {/* Invoice Items */}
               <div>
-                <Text size="sm" fw={500} mb="sm">Items & Services</Text>
+                <Text size="sm" fw={500} mb="sm">
+                  Items & Services
+                </Text>
                 <Table>
                   <Table.Thead>
                     <Table.Tr>
@@ -1131,15 +1292,21 @@ const BillingManagement = () => {
                       <Table.Tr key={item.id}>
                         <Table.Td>
                           <div>
-                            <Text size="sm" fw={500}>{item.description}</Text>
+                            <Text size="sm" fw={500}>
+                              {item.description}
+                            </Text>
                             {item.itemCode && (
-                              <Text size="xs" c="dimmed">Code: {item.itemCode}</Text>
+                              <Text size="xs" c="dimmed">
+                                Code: {item.itemCode}
+                              </Text>
                             )}
                           </div>
                         </Table.Td>
                         <Table.Td>{item.quantity}</Table.Td>
                         <Table.Td>{formatCurrency(item.unitPrice)}</Table.Td>
-                        <Table.Td>{formatCurrency((item.totalAmount ?? item.totalPrice) as number)}</Table.Td>
+                        <Table.Td>
+                          {formatCurrency((item.totalAmount ?? item.totalPrice) as number)}
+                        </Table.Td>
                       </Table.Tr>
                     ))}
                   </Table.Tbody>
@@ -1153,22 +1320,34 @@ const BillingManagement = () => {
                 <Stack gap="xs" align="flex-end">
                   <Group>
                     <Text size="sm">Subtotal:</Text>
-                    <Text size="sm" fw={600}>{formatCurrency(selectedInvoice.subtotal)}</Text>
+                    <Text size="sm" fw={600}>
+                      {formatCurrency(selectedInvoice.subtotal)}
+                    </Text>
                   </Group>
                   <Group>
                     <Text size="sm">Tax ({selectedInvoice.taxRate ?? 0}%):</Text>
-                    <Text size="sm" fw={600}>{formatCurrency(selectedInvoice.taxAmount ?? 0)}</Text>
+                    <Text size="sm" fw={600}>
+                      {formatCurrency(selectedInvoice.taxAmount ?? 0)}
+                    </Text>
                   </Group>
                   <Group>
                     <Text fw={700}>Total Amount:</Text>
-                    <Text fw={700} size="lg">{formatCurrency(selectedInvoice.totalAmount)}</Text>
+                    <Text fw={700} size="lg">
+                      {formatCurrency(selectedInvoice.totalAmount)}
+                    </Text>
                   </Group>
                   <Group>
-                    <Text size="sm" c="green">Paid Amount:</Text>
-                    <Text size="sm" fw={600} c="green">{formatCurrency(selectedInvoice.paidAmount)}</Text>
+                    <Text size="sm" c="green">
+                      Paid Amount:
+                    </Text>
+                    <Text size="sm" fw={600} c="green">
+                      {formatCurrency(selectedInvoice.paidAmount)}
+                    </Text>
                   </Group>
                   <Group>
-                    <Text size="sm" c="red">Outstanding:</Text>
+                    <Text size="sm" c="red">
+                      Outstanding:
+                    </Text>
                     <Text size="sm" fw={600} c="red">
                       {formatCurrency(selectedInvoice.totalAmount - selectedInvoice.paidAmount)}
                     </Text>
@@ -1180,9 +1359,7 @@ const BillingManagement = () => {
                 <Button variant="light" onClick={closeInvoiceDetail}>
                   Close
                 </Button>
-                <Button leftSection={<IconDownload size={16} />}>
-                  Download PDF
-                </Button>
+                <Button leftSection={<IconDownload size={16} />}>Download PDF</Button>
                 <Button leftSection={<IconMail size={16} />} variant="outline">
                   Send Email
                 </Button>
@@ -1204,19 +1381,17 @@ const BillingManagement = () => {
             <Select
               label="Patient"
               placeholder="Select patient"
-              data={[].map /* TODO: Fetch from API */(patient => ({ 
-                value: patient.id, 
-                label: `${patient.firstName} ${patient.lastName}` 
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (patient) => ({
+                  value: patient.id,
+                  label: `${patient.firstName} ${patient.lastName}`,
+                })
+              )}
               required
             />
-            <DatePickerInput
-              label="Due Date"
-              placeholder="Select due date"
-              required
-            />
+            <DatePickerInput label="Due Date" placeholder="Select due date" required />
           </SimpleGrid>
-          
+
           <NumberInput
             label="Payment Terms (Days)"
             placeholder="30"
@@ -1224,35 +1399,21 @@ const BillingManagement = () => {
             min={0}
             max={365}
           />
-          
+
           <Divider label="Invoice Items" labelPosition="center" />
-          
+
           <SimpleGrid cols={3}>
-            <TextInput
-              label="Service/Item"
-              placeholder="Consultation fee"
-              required
-            />
-            <NumberInput
-              label="Quantity"
-              placeholder="1"
-              min={1}
-              defaultValue={1}
-            />
-            <NumberInput
-              label="Unit Price"
-              placeholder="500"
-              min={0}
-              leftSection="₹"
-            />
+            <TextInput label="Service/Item" placeholder="Consultation fee" required />
+            <NumberInput label="Quantity" placeholder="1" min={1} defaultValue={1} />
+            <NumberInput label="Unit Price" placeholder="500" min={0} leftSection="₹" />
           </SimpleGrid>
-          
+
           <Button variant="light" leftSection={<IconPlus size={16} />}>
             Add More Items
           </Button>
-          
+
           <Divider />
-          
+
           <SimpleGrid cols={2}>
             <NumberInput
               label="Tax Rate (%)"
@@ -1261,32 +1422,25 @@ const BillingManagement = () => {
               max={100}
               defaultValue={18}
             />
-            <NumberInput
-              label="Discount Amount"
-              placeholder="0"
-              min={0}
-              leftSection="₹"
-            />
+            <NumberInput label="Discount Amount" placeholder="0" min={0} leftSection="₹" />
           </SimpleGrid>
-          
-          <Textarea
-            label="Notes"
-            placeholder="Additional notes or terms..."
-            rows={3}
-          />
-          
+
+          <Textarea label="Notes" placeholder="Additional notes or terms..." rows={3} />
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddInvoice}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Success',
-                message: 'Invoice created successfully',
-                color: 'green',
-              });
-              closeAddInvoice();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Success',
+                  message: 'Invoice created successfully',
+                  color: 'green',
+                });
+                closeAddInvoice();
+              }}
+            >
               Create Invoice
             </Button>
           </Group>
@@ -1294,23 +1448,20 @@ const BillingManagement = () => {
       </Modal>
 
       {/* Add Payment Modal */}
-      <Modal
-        opened={addPaymentOpened}
-        onClose={closeAddPayment}
-        title="Record Payment"
-        size="md"
-      >
+      <Modal opened={addPaymentOpened} onClose={closeAddPayment} title="Record Payment" size="md">
         <Stack gap="md">
           <Select
             label="Invoice"
             placeholder="Select invoice"
-            data={[].map /* TODO: Fetch from API */(invoice => ({ 
-              value: invoice.id, 
-              label: `${invoice.invoiceNumber} - ${formatCurrency(invoice.totalAmount - invoice.paidAmount)}` 
-            }))}
+            data={[].map(
+              /* TODO: Fetch from API */ (invoice) => ({
+                value: invoice.id,
+                label: `${invoice.invoiceNumber} - ${formatCurrency(invoice.totalAmount - invoice.paidAmount)}`,
+              })
+            )}
             required
           />
-          
+
           <NumberInput
             label="Payment Amount"
             placeholder="Enter amount"
@@ -1318,7 +1469,7 @@ const BillingManagement = () => {
             min={0}
             required
           />
-          
+
           <Select
             label="Payment Method"
             placeholder="Select method"
@@ -1327,40 +1478,31 @@ const BillingManagement = () => {
               { value: 'credit_card', label: 'Credit Card' },
               { value: 'debit_card', label: 'Debit Card' },
               { value: 'bank_transfer', label: 'Bank Transfer' },
-              { value: 'online', label: 'Online Payment' }
+              { value: 'online', label: 'Online Payment' },
             ]}
             required
           />
-          
-          <TextInput
-            label="Transaction ID"
-            placeholder="Enter transaction reference"
-          />
-          
-          <DatePickerInput
-            label="Payment Date"
-            placeholder="Select date"
-            value={new Date()}
-          />
-          
-          <Textarea
-            label="Notes"
-            placeholder="Payment notes..."
-            rows={3}
-          />
-          
+
+          <TextInput label="Transaction ID" placeholder="Enter transaction reference" />
+
+          <DatePickerInput label="Payment Date" placeholder="Select date" value={new Date()} />
+
+          <Textarea label="Notes" placeholder="Payment notes..." rows={3} />
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddPayment}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Success',
-                message: 'Payment recorded successfully',
-                color: 'green',
-              });
-              closeAddPayment();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Success',
+                  message: 'Payment recorded successfully',
+                  color: 'green',
+                });
+                closeAddPayment();
+              }}
+            >
               Record Payment
             </Button>
           </Group>

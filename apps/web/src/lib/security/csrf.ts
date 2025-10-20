@@ -63,7 +63,10 @@ export function addCSRFHeader(headers: HeadersInit = {}): HeadersInit {
  * Validate CSRF token from request
  * This should be called on the backend
  */
-export function validateCSRFToken(requestToken: string | null, sessionToken: string | null): boolean {
+export function validateCSRFToken(
+  requestToken: string | null,
+  sessionToken: string | null
+): boolean {
   if (!requestToken || !sessionToken) {
     return false;
   }
@@ -75,7 +78,7 @@ export function validateCSRFToken(requestToken: string | null, sessionToken: str
  */
 export async function secureFetch(url: string, options: RequestInit = {}): Promise<Response> {
   const headers = addCSRFHeader(options.headers);
-  
+
   return fetch(url, {
     ...options,
     headers,

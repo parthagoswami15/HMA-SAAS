@@ -1,5 +1,0 @@
-# Ignore script files
-fix-eslint.js
-scripts/
-*.config.js
-*.config.mjs

@@ -12,7 +12,7 @@ import {
   LoadingOverlay,
   Alert,
   Badge,
-  Card
+  Card,
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { IconCalendar, IconCurrencyRupee, IconAlertCircle } from '@tabler/icons-react';
@@ -31,35 +31,36 @@ export default function PaymentForm({
   onClose,
   invoice,
   onSubmit,
-  loading = false
+  loading = false,
 }: PaymentFormProps) {
   const [formData, setFormData] = useState({
     amount: 0,
     paymentMethod: 'CASH',
     paymentDate: new Date(),
     referenceNumber: '',
-    notes: ''
+    notes: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (invoice && opened) {
-      const totalPaid = invoice.payments?.reduce((sum: number, payment: any) => {
-        if (payment.status === 'COMPLETED') {
-          return sum + payment.amount;
-        }
-        return sum;
-      }, 0) || 0;
+      const totalPaid =
+        invoice.payments?.reduce((sum: number, payment: any) => {
+          if (payment.status === 'COMPLETED') {
+            return sum + payment.amount;
+          }
+          return sum;
+        }, 0) || 0;
 
       const remainingAmount = invoice.totalAmount - totalPaid;
-      
+
       setFormData({
         amount: remainingAmount,
         paymentMethod: 'CASH',
         paymentDate: new Date(),
         referenceNumber: '',
-        notes: ''
+        notes: '',
       });
     }
   }, [invoice, opened]);
@@ -70,7 +71,7 @@ export default function PaymentForm({
       paymentMethod: 'CASH',
       paymentDate: new Date(),
       referenceNumber: '',
-      notes: ''
+      notes: '',
     });
     setErrors({});
   };
@@ -82,12 +83,13 @@ export default function PaymentForm({
       newErrors.amount = 'Amount must be greater than 0';
     }
 
-    const totalPaid = invoice.payments?.reduce((sum: number, payment: any) => {
-      if (payment.status === 'COMPLETED') {
-        return sum + payment.amount;
-      }
-      return sum;
-    }, 0) || 0;
+    const totalPaid =
+      invoice.payments?.reduce((sum: number, payment: any) => {
+        if (payment.status === 'COMPLETED') {
+          return sum + payment.amount;
+        }
+        return sum;
+      }, 0) || 0;
 
     const remainingAmount = invoice.totalAmount - totalPaid;
 
@@ -99,7 +101,10 @@ export default function PaymentForm({
       newErrors.paymentMethod = 'Payment method is required';
     }
 
-    if (['CARD', 'UPI', 'BANK_TRANSFER', 'CHEQUE'].includes(formData.paymentMethod) && !formData.referenceNumber) {
+    if (
+      ['CARD', 'UPI', 'BANK_TRANSFER', 'CHEQUE'].includes(formData.paymentMethod) &&
+      !formData.referenceNumber
+    ) {
       newErrors.referenceNumber = 'Reference number is required for this payment method';
     }
 
@@ -121,7 +126,7 @@ export default function PaymentForm({
         paymentMethod: formData.paymentMethod,
         paymentDate: formData.paymentDate.toISOString(),
         referenceNumber: formData.referenceNumber || undefined,
-        notes: formData.notes || undefined
+        notes: formData.notes || undefined,
       };
 
       await onSubmit(submitData);
@@ -139,12 +144,13 @@ export default function PaymentForm({
 
   if (!invoice) return null;
 
-  const totalPaid = invoice.payments?.reduce((sum: number, payment: any) => {
-    if (payment.status === 'COMPLETED') {
-      return sum + payment.amount;
-    }
-    return sum;
-  }, 0) || 0;
+  const totalPaid =
+    invoice.payments?.reduce((sum: number, payment: any) => {
+      if (payment.status === 'COMPLETED') {
+        return sum + payment.amount;
+      }
+      return sum;
+    }, 0) || 0;
 
   const remainingAmount = invoice.totalAmount - totalPaid;
 
@@ -155,7 +161,7 @@ export default function PaymentForm({
     { value: 'BANK_TRANSFER', label: 'Bank Transfer' },
     { value: 'CHEQUE', label: 'Cheque' },
     { value: 'INSURANCE', label: 'Insurance' },
-    { value: 'OTHER', label: 'Other' }
+    { value: 'OTHER', label: 'Other' },
   ];
 
   return (
@@ -174,32 +180,48 @@ export default function PaymentForm({
       padding="md"
     >
       <LoadingOverlay visible={loading} />
-      
+
       <form onSubmit={handleSubmit}>
         <Stack gap="md">
           {/* Invoice Info */}
           <Card withBorder bg="blue.0">
             <Stack gap="xs">
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Invoice Number:</Text>
-                <Text size="sm" fw={600}>{invoice.invoiceNumber}</Text>
+                <Text size="sm" c="dimmed">
+                  Invoice Number:
+                </Text>
+                <Text size="sm" fw={600}>
+                  {invoice.invoiceNumber}
+                </Text>
               </Group>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Patient:</Text>
+                <Text size="sm" c="dimmed">
+                  Patient:
+                </Text>
                 <Text size="sm" fw={500}>
                   {invoice.patient?.firstName} {invoice.patient?.lastName}
                 </Text>
               </Group>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Total Amount:</Text>
-                <Text size="sm" fw={600}>₹{invoice.totalAmount.toFixed(2)}</Text>
+                <Text size="sm" c="dimmed">
+                  Total Amount:
+                </Text>
+                <Text size="sm" fw={600}>
+                  ₹{invoice.totalAmount.toFixed(2)}
+                </Text>
               </Group>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Paid:</Text>
-                <Text size="sm" fw={500} c="green">₹{totalPaid.toFixed(2)}</Text>
+                <Text size="sm" c="dimmed">
+                  Paid:
+                </Text>
+                <Text size="sm" fw={500} c="green">
+                  ₹{totalPaid.toFixed(2)}
+                </Text>
               </Group>
               <Group justify="space-between">
-                <Text size="sm" c="dimmed">Remaining:</Text>
+                <Text size="sm" c="dimmed">
+                  Remaining:
+                </Text>
                 <Badge size="lg" color={remainingAmount > 0 ? 'orange' : 'green'}>
                   ₹{remainingAmount.toFixed(2)}
                 </Badge>
@@ -218,7 +240,7 @@ export default function PaymentForm({
             label="Payment Amount"
             placeholder="Enter amount"
             value={formData.amount}
-            onChange={(value) => setFormData({ ...formData, amount: value || 0 })}
+            onChange={(value) => setFormData({ ...formData, amount: Number(value) || 0 })}
             error={errors.amount}
             required
             min={0}
@@ -244,7 +266,7 @@ export default function PaymentForm({
             label="Payment Date"
             placeholder="Select date"
             value={formData.paymentDate}
-            onChange={(value) => setFormData({ ...formData, paymentDate: value || new Date() })}
+            onChange={(value) => setFormData({ ...formData, paymentDate: value ? new Date(value) : new Date() })}
             leftSection={<IconCalendar size={16} />}
             maxDate={new Date()}
           />
@@ -276,11 +298,7 @@ export default function PaymentForm({
             <Button variant="subtle" onClick={handleClose} disabled={loading}>
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              loading={loading}
-              disabled={remainingAmount <= 0}
-            >
+            <Button type="submit" loading={loading} disabled={remainingAmount <= 0}>
               Record Payment
             </Button>
           </Group>

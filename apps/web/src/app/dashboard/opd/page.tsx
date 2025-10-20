@@ -28,7 +28,7 @@ import {
   Divider,
   Alert,
   Timeline,
-  List
+  List,
 } from '@mantine/core';
 import { DatePickerInput, TimeInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
@@ -75,7 +75,7 @@ import {
   IconReport,
   IconBrandWhatsapp,
   IconMessage,
-  IconBell
+  IconBell,
 } from '@tabler/icons-react';
 
 // Types
@@ -148,9 +148,9 @@ const mockOPDVisits: OPDVisit[] = [
       heartRate: 85,
       temperature: 98.6,
       weight: 75,
-      height: 170
+      height: 170,
     },
-    waitingTime: 15
+    waitingTime: 15,
   },
   {
     id: '2',
@@ -168,7 +168,7 @@ const mockOPDVisits: OPDVisit[] = [
     consultationFee: 350,
     paymentStatus: 'insurance',
     actualArrivalTime: '2024-01-15T10:25:00Z',
-    waitingTime: 5
+    waitingTime: 5,
   },
   {
     id: '3',
@@ -184,7 +184,7 @@ const mockOPDVisits: OPDVisit[] = [
     visitType: 'new',
     chiefComplaint: 'Knee pain and stiffness',
     consultationFee: 600,
-    paymentStatus: 'pending'
+    paymentStatus: 'pending',
   },
   {
     id: '4',
@@ -207,8 +207,8 @@ const mockOPDVisits: OPDVisit[] = [
     consultationFee: 500,
     paymentStatus: 'paid',
     consultationDuration: 30,
-    waitingTime: 5
-  }
+    waitingTime: 5,
+  },
 ];
 
 const mockDoctors: Doctor[] = [
@@ -222,7 +222,7 @@ const mockDoctors: Doctor[] = [
     consultationFee: 500,
     availableSlots: ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30'],
     currentPatients: 8,
-    maxPatientsPerDay: 20
+    maxPatientsPerDay: 20,
   },
   {
     id: 'D002',
@@ -234,7 +234,7 @@ const mockDoctors: Doctor[] = [
     consultationFee: 350,
     availableSlots: ['10:00', '10:30', '11:00', '11:30', '14:00', '14:30'],
     currentPatients: 15,
-    maxPatientsPerDay: 25
+    maxPatientsPerDay: 25,
   },
   {
     id: 'D003',
@@ -246,8 +246,8 @@ const mockDoctors: Doctor[] = [
     consultationFee: 600,
     availableSlots: ['14:00', '14:30', '15:00', '15:30', '16:00'],
     currentPatients: 6,
-    maxPatientsPerDay: 15
-  }
+    maxPatientsPerDay: 15,
+  },
 ];
 
 const OPDManagement = () => {
@@ -266,10 +266,13 @@ const OPDManagement = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Modal states
-  const [visitDetailOpened, { open: openVisitDetail, close: closeVisitDetail }] = useDisclosure(false);
+  const [visitDetailOpened, { open: openVisitDetail, close: closeVisitDetail }] =
+    useDisclosure(false);
   const [newVisitOpened, { open: openNewVisit, close: closeNewVisit }] = useDisclosure(false);
-  const [doctorScheduleOpened, { open: openDoctorSchedule, close: closeDoctorSchedule }] = useDisclosure(false);
-  const [prescriptionOpened, { open: openPrescription, close: closePrescription }] = useDisclosure(false);
+  const [doctorScheduleOpened, { open: openDoctorSchedule, close: closeDoctorSchedule }] =
+    useDisclosure(false);
+  const [prescriptionOpened, { open: openPrescription, close: closePrescription }] =
+    useDisclosure(false);
 
   useEffect(() => {
     fetchAllData();
@@ -293,16 +296,17 @@ const OPDManagement = () => {
     try {
       const filters = {
         status: selectedStatus || undefined,
-        search: searchQuery || undefined
+        search: searchQuery || undefined,
       };
       const response = await opdService.getVisits(filters);
       // Handle different response structures
-      const visits = Array.isArray(response.data) 
-        ? response.data 
-        : (response.data?.items || []);
+      const visits = Array.isArray(response.data) ? response.data : response.data?.items || [];
       setOpdVisits(visits as OPDVisit[]);
     } catch (err: any) {
-      console.warn('Error fetching OPD visits (using empty data):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching OPD visits (using empty data):',
+        err.response?.data?.message || err.message
+      );
       setOpdVisits([]);
     }
   };
@@ -312,14 +316,17 @@ const OPDManagement = () => {
       const response = await opdService.getStats();
       setOpdStats(response.data);
     } catch (err: any) {
-      console.warn('Error fetching OPD stats (using default values):', err.response?.data?.message || err.message);
+      console.warn(
+        'Error fetching OPD stats (using default values):',
+        err.response?.data?.message || err.message
+      );
       // Set default stats when backend is unavailable
       setOpdStats({
         totalVisits: 0,
         todayVisits: 0,
         completed: 0,
         inProgress: 0,
-        averageWaitTime: 0
+        averageWaitTime: 0,
       });
     }
   };
@@ -333,11 +340,11 @@ const OPDManagement = () => {
   // Filter visits
   const filteredVisits = useMemo(() => {
     return opdVisits.filter((visit) => {
-      const matchesSearch = 
+      const matchesSearch =
         visit.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         visit.visitNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         visit.doctorName.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesDepartment = !selectedDepartment || visit.department === selectedDepartment;
       const matchesStatus = !selectedStatus || visit.status === selectedStatus;
 
@@ -358,7 +365,7 @@ const OPDManagement = () => {
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString('en-IN', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -366,28 +373,39 @@ const OPDManagement = () => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'scheduled': return 'blue';
-      case 'arrived': return 'orange';
-      case 'in_consultation': return 'yellow';
-      case 'completed': return 'green';
-      case 'no_show': return 'red';
-      case 'cancelled': return 'gray';
-      default: return 'gray';
+      case 'scheduled':
+        return 'blue';
+      case 'arrived':
+        return 'orange';
+      case 'in_consultation':
+        return 'yellow';
+      case 'completed':
+        return 'green';
+      case 'no_show':
+        return 'red';
+      case 'cancelled':
+        return 'gray';
+      default:
+        return 'gray';
     }
   };
 
   const getPaymentStatusColor = (status: string) => {
     switch (status) {
-      case 'paid': return 'green';
-      case 'pending': return 'red';
-      case 'insurance': return 'blue';
-      default: return 'gray';
+      case 'paid':
+        return 'green';
+      case 'pending':
+        return 'red';
+      case 'insurance':
+        return 'blue';
+      default:
+        return 'gray';
     }
   };
 
@@ -397,7 +415,7 @@ const OPDManagement = () => {
     waiting: 0,
     inConsultation: 0,
     completed: 0,
-    cancelled: 0
+    cancelled: 0,
   };
 
   return (
@@ -422,67 +440,87 @@ const OPDManagement = () => {
 
       {/* Quick Stats */}
       {opdStats && (
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 5 }} mb="lg">
-        <Card padding="lg" radius="md" withBorder>
-          <Group justify="space-between">
-            <div>
-              <Text c="dimmed" size="sm" fw={500}>Total Visits</Text>
-              <Text fw={700} size="xl">{opdStats.totalVisits || 0}</Text>
-            </div>
-            <ThemeIcon color="blue" size="xl" radius="md" variant="light">
-              <IconUsers size={24} />
-            </ThemeIcon>
-          </Group>
-        </Card>
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 5 }} mb="lg">
+          <Card padding="lg" radius="md" withBorder>
+            <Group justify="space-between">
+              <div>
+                <Text c="dimmed" size="sm" fw={500}>
+                  Total Visits
+                </Text>
+                <Text fw={700} size="xl">
+                  {opdStats.totalVisits || 0}
+                </Text>
+              </div>
+              <ThemeIcon color="blue" size="xl" radius="md" variant="light">
+                <IconUsers size={24} />
+              </ThemeIcon>
+            </Group>
+          </Card>
 
-        <Card padding="lg" radius="md" withBorder>
-          <Group justify="space-between">
-            <div>
-              <Text c="dimmed" size="sm" fw={500}>Today&apos;s Visits</Text>
-              <Text fw={700} size="xl">{opdStats.todayVisits || 0}</Text>
-            </div>
-            <ThemeIcon color="green" size="xl" radius="md" variant="light">
-              <IconCalendar size={24} />
-            </ThemeIcon>
-          </Group>
-        </Card>
+          <Card padding="lg" radius="md" withBorder>
+            <Group justify="space-between">
+              <div>
+                <Text c="dimmed" size="sm" fw={500}>
+                  Today&apos;s Visits
+                </Text>
+                <Text fw={700} size="xl">
+                  {opdStats.todayVisits || 0}
+                </Text>
+              </div>
+              <ThemeIcon color="green" size="xl" radius="md" variant="light">
+                <IconCalendar size={24} />
+              </ThemeIcon>
+            </Group>
+          </Card>
 
-        <Card padding="lg" radius="md" withBorder>
-          <Group justify="space-between">
-            <div>
-              <Text c="dimmed" size="sm" fw={500}>Completed</Text>
-              <Text fw={700} size="xl">{opdStats.completed || 0}</Text>
-            </div>
-            <ThemeIcon color="cyan" size="xl" radius="md" variant="light">
-              <IconCheck size={24} />
-            </ThemeIcon>
-          </Group>
-        </Card>
+          <Card padding="lg" radius="md" withBorder>
+            <Group justify="space-between">
+              <div>
+                <Text c="dimmed" size="sm" fw={500}>
+                  Completed
+                </Text>
+                <Text fw={700} size="xl">
+                  {opdStats.completed || 0}
+                </Text>
+              </div>
+              <ThemeIcon color="cyan" size="xl" radius="md" variant="light">
+                <IconCheck size={24} />
+              </ThemeIcon>
+            </Group>
+          </Card>
 
-        <Card padding="lg" radius="md" withBorder>
-          <Group justify="space-between">
-            <div>
-              <Text c="dimmed" size="sm" fw={500}>In Progress</Text>
-              <Text fw={700} size="xl">{opdStats.inProgress || 0}</Text>
-            </div>
-            <ThemeIcon color="orange" size="xl" radius="md" variant="light">
-              <IconActivity size={24} />
-            </ThemeIcon>
-          </Group>
-        </Card>
+          <Card padding="lg" radius="md" withBorder>
+            <Group justify="space-between">
+              <div>
+                <Text c="dimmed" size="sm" fw={500}>
+                  In Progress
+                </Text>
+                <Text fw={700} size="xl">
+                  {opdStats.inProgress || 0}
+                </Text>
+              </div>
+              <ThemeIcon color="orange" size="xl" radius="md" variant="light">
+                <IconActivity size={24} />
+              </ThemeIcon>
+            </Group>
+          </Card>
 
-        <Card padding="lg" radius="md" withBorder>
-          <Group justify="space-between">
-            <div>
-              <Text c="dimmed" size="sm" fw={500}>Avg Wait Time</Text>
-              <Text fw={700} size="xl">{opdStats.averageWaitTime || 0}min</Text>
-            </div>
-            <ThemeIcon color="red" size="xl" radius="md" variant="light">
-              <IconClock size={24} />
-            </ThemeIcon>
-          </Group>
-        </Card>
-      </SimpleGrid>
+          <Card padding="lg" radius="md" withBorder>
+            <Group justify="space-between">
+              <div>
+                <Text c="dimmed" size="sm" fw={500}>
+                  Avg Wait Time
+                </Text>
+                <Text fw={700} size="xl">
+                  {opdStats.averageWaitTime || 0}min
+                </Text>
+              </div>
+              <ThemeIcon color="red" size="xl" radius="md" variant="light">
+                <IconClock size={24} />
+              </ThemeIcon>
+            </Group>
+          </Card>
+        </SimpleGrid>
       )}
 
       {/* Main Content Tabs */}
@@ -518,7 +556,7 @@ const OPDManagement = () => {
                   { value: 'General Medicine', label: 'General Medicine' },
                   { value: 'Orthopedics', label: 'Orthopedics' },
                   { value: 'Pediatrics', label: 'Pediatrics' },
-                  { value: 'Gynecology', label: 'Gynecology' }
+                  { value: 'Gynecology', label: 'Gynecology' },
                 ]}
                 value={selectedDepartment}
                 onChange={setSelectedDepartment}
@@ -532,7 +570,7 @@ const OPDManagement = () => {
                   { value: 'in_consultation', label: 'In Consultation' },
                   { value: 'completed', label: 'Completed' },
                   { value: 'no_show', label: 'No Show' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -570,74 +608,97 @@ const OPDManagement = () => {
                     </Table.Tr>
                   ) : (
                     filteredVisits.map((visit) => (
-                    <Table.Tr key={visit.id}>
-                      <Table.Td>
-                        <Text fw={500} size="sm">{visit.visitNumber}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group>
-                          <Avatar color="blue" radius="xl" size="sm">
-                            {visit.patientName.split(' ').map(n => n[0]).join('')}
-                          </Avatar>
+                      <Table.Tr key={visit.id}>
+                        <Table.Td>
+                          <Text fw={500} size="sm">
+                            {visit.visitNumber}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group>
+                            <Avatar color="blue" radius="xl" size="sm">
+                              {visit.patientName
+                                .split(' ')
+                                .map((n) => n[0])
+                                .join('')}
+                            </Avatar>
+                            <div>
+                              <Text size="sm" fw={500}>
+                                {visit.patientName}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {visit.patientPhone}
+                              </Text>
+                            </div>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
                           <div>
-                            <Text size="sm" fw={500}>{visit.patientName}</Text>
-                            <Text size="xs" c="dimmed">{visit.patientPhone}</Text>
+                            <Text size="sm" fw={500}>
+                              {visit.doctorName}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {visit.department}
+                            </Text>
                           </div>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>{visit.doctorName}</Text>
-                          <Text size="xs" c="dimmed">{visit.department}</Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge variant="light" size="sm">
-                          {visit.department}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">{formatTime(visit.appointmentTime)}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(visit.status)} variant="light" size="sm">
-                          {visit.status.replace('_', ' ').toUpperCase()}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <Badge color={getPaymentStatusColor(visit.paymentStatus)} variant="light" size="sm">
-                            {visit.paymentStatus.toUpperCase()}
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge variant="light" size="sm">
+                            {visit.department}
                           </Badge>
-                          <Text size="xs" c="dimmed">₹{visit.consultationFee}</Text>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm" c={visit.waitingTime && visit.waitingTime > 30 ? 'red' : 'dimmed'}>
-                          {visit.waitingTime ? `${visit.waitingTime}min` : '-'}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewVisit(visit)}
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{formatTime(visit.appointmentTime)}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(visit.status)} variant="light" size="sm">
+                            {visit.status.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <Badge
+                              color={getPaymentStatusColor(visit.paymentStatus)}
+                              variant="light"
+                              size="sm"
+                            >
+                              {visit.paymentStatus.toUpperCase()}
+                            </Badge>
+                            <Text size="xs" c="dimmed">
+                              ₹{visit.consultationFee}
+                            </Text>
+                          </Group>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text
+                            size="sm"
+                            c={visit.waitingTime && visit.waitingTime > 30 ? 'red' : 'dimmed'}
                           >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          {visit.status === 'completed' && (
-                            <ActionIcon variant="subtle" color="purple">
-                              <IconPrescription size={16} />
+                            {visit.waitingTime ? `${visit.waitingTime}min` : '-'}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewVisit(visit)}
+                            >
+                              <IconEye size={16} />
                             </ActionIcon>
-                          )}
-                        </Group>
-                      </Table.Td>
-                    </Table.Tr>
-                  )))}
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            {visit.status === 'completed' && (
+                              <ActionIcon variant="subtle" color="purple">
+                                <IconPrescription size={16} />
+                              </ActionIcon>
+                            )}
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -647,68 +708,90 @@ const OPDManagement = () => {
         {/* Doctor Schedule Tab */}
         <Tabs.Panel value="doctors">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">Doctor Schedules & Availability</Title>
-            
+            <Title order={3} mb="lg">
+              Doctor Schedules & Availability
+            </Title>
+
             <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((doctor) => (
-                <Card key={doctor.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{doctor.name}</Text>
-                      <Text size="sm" c="dimmed">{doctor.specialization}</Text>
-                      <Text size="xs" c="dimmed">{doctor.qualification}</Text>
+              {[].map(
+                /* TODO: Fetch from API */ (doctor) => (
+                  <Card key={doctor.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {doctor.name}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {doctor.specialization}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          {doctor.qualification}
+                        </Text>
+                      </div>
+                      <ThemeIcon color="blue" size="xl" radius="xl" variant="light">
+                        <IconStethoscope size={20} />
+                      </ThemeIcon>
+                    </Group>
+
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Department
+                        </Text>
+                        <Badge variant="light">{doctor.department}</Badge>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Experience
+                        </Text>
+                        <Text size="sm">{doctor.experience} years</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Consultation Fee
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          ₹{doctor.consultationFee}
+                        </Text>
+                      </Group>
+                    </Stack>
+
+                    <div style={{ marginBottom: 'var(--mantine-spacing-md)' }}>
+                      <Text size="sm" c="dimmed" mb="xs">
+                        Today&apos;s Load
+                      </Text>
+                      <Progress
+                        value={(doctor.currentPatients / doctor.maxPatientsPerDay) * 100}
+                        size="lg"
+                        color={
+                          doctor.currentPatients > doctor.maxPatientsPerDay * 0.8 ? 'red' : 'blue'
+                        }
+                      />
+                      <Text size="xs" c="dimmed" mt="xs">
+                        {doctor.currentPatients} / {doctor.maxPatientsPerDay} patients
+                      </Text>
                     </div>
-                    <ThemeIcon color="blue" size="xl" radius="xl" variant="light">
-                      <IconStethoscope size={20} />
-                    </ThemeIcon>
-                  </Group>
 
-                  <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Department</Text>
-                      <Badge variant="light">{doctor.department}</Badge>
+                      <Button
+                        variant="light"
+                        size="xs"
+                        onClick={() => handleViewDoctorSchedule(doctor)}
+                      >
+                        View Schedule
+                      </Button>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconCalendarEvent size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconMessage size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Experience</Text>
-                      <Text size="sm">{doctor.experience} years</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Consultation Fee</Text>
-                      <Text size="sm" fw={500}>₹{doctor.consultationFee}</Text>
-                    </Group>
-                  </Stack>
-
-                  <div style={{ marginBottom: 'var(--mantine-spacing-md)' }}>
-                    <Text size="sm" c="dimmed" mb="xs">Today&apos;s Load</Text>
-                    <Progress
-                      value={(doctor.currentPatients / doctor.maxPatientsPerDay) * 100} 
-                      size="lg" 
-                      color={doctor.currentPatients > doctor.maxPatientsPerDay * 0.8 ? 'red' : 'blue'}
-                    />
-                    <Text size="xs" c="dimmed" mt="xs">
-                      {doctor.currentPatients} / {doctor.maxPatientsPerDay} patients
-                    </Text>
-                  </div>
-
-                  <Group justify="space-between">
-                    <Button 
-                      variant="light" 
-                      size="xs"
-                      onClick={() => handleViewDoctorSchedule(doctor)}
-                    >
-                      View Schedule
-                    </Button>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconCalendarEvent size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconMessage size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -718,7 +801,9 @@ const OPDManagement = () => {
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
             {/* Daily Visit Trends */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Daily Visit Trends</Title>
+              <Title order={4} mb="md">
+                Daily Visit Trends
+              </Title>
               <Text c="dimmed" ta="center" p="xl">
                 Chart component temporarily disabled
               </Text>
@@ -726,7 +811,9 @@ const OPDManagement = () => {
 
             {/* Department Distribution */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Department-wise Visits</Title>
+              <Title order={4} mb="md">
+                Department-wise Visits
+              </Title>
               <Text c="dimmed" ta="center" p="xl">
                 Chart component temporarily disabled
               </Text>
@@ -734,7 +821,9 @@ const OPDManagement = () => {
 
             {/* Wait Time Analysis */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">Average Wait Times by Department</Title>
+              <Title order={4} mb="md">
+                Average Wait Times by Department
+              </Title>
               <Text c="dimmed" ta="center" p="xl">
                 Chart component temporarily disabled
               </Text>
@@ -742,7 +831,9 @@ const OPDManagement = () => {
 
             {/* Revenue Analysis */}
             <Card padding="lg" radius="md" withBorder>
-              <Title order={4} mb="md">OPD Revenue Trends</Title>
+              <Title order={4} mb="md">
+                OPD Revenue Trends
+              </Title>
               <Text c="dimmed" ta="center" p="xl">
                 Chart component temporarily disabled
               </Text>
@@ -772,31 +863,43 @@ const OPDManagement = () => {
 
             <SimpleGrid cols={2} spacing="md">
               <div>
-                <Text size="sm" c="dimmed" fw={500}>Doctor</Text>
+                <Text size="sm" c="dimmed" fw={500}>
+                  Doctor
+                </Text>
                 <Text>{selectedVisit.doctorName}</Text>
               </div>
               <div>
-                <Text size="sm" c="dimmed" fw={500}>Department</Text>
+                <Text size="sm" c="dimmed" fw={500}>
+                  Department
+                </Text>
                 <Text>{selectedVisit.department}</Text>
               </div>
               <div>
-                <Text size="sm" c="dimmed" fw={500}>Appointment Time</Text>
+                <Text size="sm" c="dimmed" fw={500}>
+                  Appointment Time
+                </Text>
                 <Text>{formatTime(selectedVisit.appointmentTime)}</Text>
               </div>
               <div>
-                <Text size="sm" c="dimmed" fw={500}>Visit Type</Text>
+                <Text size="sm" c="dimmed" fw={500}>
+                  Visit Type
+                </Text>
                 <Text tt="capitalize">{selectedVisit.visitType.replace('_', ' ')}</Text>
               </div>
             </SimpleGrid>
 
             <div>
-              <Text size="sm" c="dimmed" fw={500} mb="xs">Chief Complaint</Text>
+              <Text size="sm" c="dimmed" fw={500} mb="xs">
+                Chief Complaint
+              </Text>
               <Text>{selectedVisit.chiefComplaint}</Text>
             </div>
 
             {selectedVisit.vitalSigns && (
               <div>
-                <Text size="sm" c="dimmed" fw={500} mb="xs">Vital Signs</Text>
+                <Text size="sm" c="dimmed" fw={500} mb="xs">
+                  Vital Signs
+                </Text>
                 <SimpleGrid cols={3} spacing="sm">
                   <Text size="sm">BP: {selectedVisit.vitalSigns.bloodPressure}</Text>
                   <Text size="sm">HR: {selectedVisit.vitalSigns.heartRate} bpm</Text>
@@ -809,14 +912,18 @@ const OPDManagement = () => {
 
             {selectedVisit.diagnosis && (
               <div>
-                <Text size="sm" c="dimmed" fw={500} mb="xs">Diagnosis</Text>
+                <Text size="sm" c="dimmed" fw={500} mb="xs">
+                  Diagnosis
+                </Text>
                 <Text>{selectedVisit.diagnosis}</Text>
               </div>
             )}
 
             {selectedVisit.prescription && selectedVisit.prescription.length > 0 && (
               <div>
-                <Text size="sm" c="dimmed" fw={500} mb="xs">Prescription</Text>
+                <Text size="sm" c="dimmed" fw={500} mb="xs">
+                  Prescription
+                </Text>
                 <List size="sm">
                   {selectedVisit.prescription.map((med, index) => (
                     <List.Item key={index}>{med}</List.Item>
@@ -827,7 +934,9 @@ const OPDManagement = () => {
 
             <Group justify="space-between">
               <Group>
-                <Text size="sm" c="dimmed">Fee: ₹{selectedVisit.consultationFee}</Text>
+                <Text size="sm" c="dimmed">
+                  Fee: ₹{selectedVisit.consultationFee}
+                </Text>
                 <Badge color={getPaymentStatusColor(selectedVisit.paymentStatus)} size="sm">
                   {selectedVisit.paymentStatus.toUpperCase()}
                 </Badge>
@@ -836,9 +945,7 @@ const OPDManagement = () => {
                 <Button variant="light" leftSection={<IconPrinter size={16} />}>
                   Print
                 </Button>
-                <Button onClick={closeVisitDetail}>
-                  Close
-                </Button>
+                <Button onClick={closeVisitDetail}>Close</Button>
               </Group>
             </Group>
           </Stack>
@@ -860,7 +967,7 @@ const OPDManagement = () => {
               data={[
                 { value: 'P001', label: 'Rajesh Kumar' },
                 { value: 'P002', label: 'Sunita Patel' },
-                { value: 'P003', label: 'Mohammed Ali' }
+                { value: 'P003', label: 'Mohammed Ali' },
               ]}
               searchable
               required
@@ -871,7 +978,7 @@ const OPDManagement = () => {
               data={[
                 { value: 'new', label: 'New Patient' },
                 { value: 'follow_up', label: 'Follow-up' },
-                { value: 'emergency', label: 'Emergency' }
+                { value: 'emergency', label: 'Emergency' },
               ]}
               required
             />
@@ -884,7 +991,7 @@ const OPDManagement = () => {
               data={[
                 { value: 'cardiology', label: 'Cardiology' },
                 { value: 'general', label: 'General Medicine' },
-                { value: 'orthopedics', label: 'Orthopedics' }
+                { value: 'orthopedics', label: 'Orthopedics' },
               ]}
               required
             />
@@ -894,45 +1001,34 @@ const OPDManagement = () => {
               data={[
                 { value: 'D001', label: 'Dr. Sharma (Cardiology)' },
                 { value: 'D002', label: 'Dr. Reddy (General Medicine)' },
-                { value: 'D003', label: 'Dr. Singh (Orthopedics)' }
+                { value: 'D003', label: 'Dr. Singh (Orthopedics)' },
               ]}
               required
             />
           </SimpleGrid>
 
           <SimpleGrid cols={2} spacing="md">
-            <DatePickerInput
-              label="Appointment Date"
-              placeholder="Select date"
-              required
-            />
-            <TimeInput
-              label="Appointment Time"
-              placeholder="Select time"
-              required
-            />
+            <DatePickerInput label="Appointment Date" placeholder="Select date" required />
+            <TimeInput label="Appointment Time" placeholder="Select time" required />
           </SimpleGrid>
 
-          <Textarea
-            label="Chief Complaint"
-            placeholder="Enter chief complaint"
-            rows={3}
-            required
-          />
+          <Textarea label="Chief Complaint" placeholder="Enter chief complaint" rows={3} required />
 
           <Group justify="flex-end">
             <Button variant="light" onClick={closeNewVisit}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              // notifications.show({
-              //   title: 'OPD Visit Scheduled',
-              //   message: 'New OPD visit has been successfully scheduled',
-              //   color: 'green',
-              // });
-              console.log('OPD Visit Scheduled');
-              closeNewVisit();
-            }}>
+            <Button
+              onClick={() => {
+                // notifications.show({
+                //   title: 'OPD Visit Scheduled',
+                //   message: 'New OPD visit has been successfully scheduled',
+                //   color: 'green',
+                // });
+                console.log('OPD Visit Scheduled');
+                closeNewVisit();
+              }}
+            >
               Schedule Visit
             </Button>
           </Group>

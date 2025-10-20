@@ -2,21 +2,21 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 
 // Run ESLint and get JSON output
-const result = execSync('npx eslint src --ext .ts,.tsx --format json', { 
+const result = execSync('npx eslint src --ext .ts,.tsx --format json', {
   encoding: 'utf8',
-  maxBuffer: 50 * 1024 * 1024 // 50MB buffer
+  maxBuffer: 50 * 1024 * 1024, // 50MB buffer
 });
 
 const data = JSON.parse(result);
 
 // Filter files with warnings/errors and sort by problem count
 const filesWithIssues = data
-  .filter(file => file.warningCount > 0 || file.errorCount > 0)
-  .map(file => ({
+  .filter((file) => file.warningCount > 0 || file.errorCount > 0)
+  .map((file) => ({
     path: file.filePath.replace(/\\/g, '/').split('/src/')[1],
     warnings: file.warningCount,
     errors: file.errorCount,
-    total: file.warningCount + file.errorCount
+    total: file.warningCount + file.errorCount,
   }))
   .sort((a, b) => b.total - a.total);
 
@@ -29,8 +29,9 @@ filesWithIssues.slice(0, 50).forEach((file, index) => {
 });
 
 // Save full list to file
-fs.writeFileSync('files-with-issues.txt', 
-  filesWithIssues.map(f => `${f.path} (${f.total} issues)`).join('\n')
+fs.writeFileSync(
+  'files-with-issues.txt',
+  filesWithIssues.map((f) => `${f.path} (${f.total} issues)`).join('\n')
 );
 
 console.log(`\nFull list saved to files-with-issues.txt`);

@@ -46,12 +46,17 @@ import {
   // Radio,
   // PasswordInput,
   MultiSelect,
-  SimpleGrid
+  SimpleGrid,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { MantineDonutChart, SimpleAreaChart, SimpleBarChart, SimpleLineChart } from '../../../components/MantineChart';
+import {
+  MantineDonutChart,
+  SimpleAreaChart,
+  SimpleBarChart,
+  SimpleLineChart,
+} from '../../../components/MantineChart';
 // import { Calendar, DatePickerInput } from '@mantine/dates';
 import {
   IconPlus,
@@ -92,7 +97,7 @@ import {
   // IconBuilding,
   IconCertificate,
   IconSend,
-  IconBriefcase
+  IconBriefcase,
 } from '@tabler/icons-react';
 
 // Import types and mock data
@@ -104,16 +109,16 @@ import {
   Shift,
   ShiftStatus,
   // Payroll,
-  // PayrollStatus,
+  PayrollStatus,
   PerformanceReview,
   ReviewStatus,
   LeaveRequest,
   LeaveStatus,
   LeaveType,
   // Training,
-  // TrainingStatus,
+  TrainingStatus,
   // Attendance,
-  // AttendanceStatus,
+  AttendanceStatus,
   // HRStats,
   // HRFilters
 } from '../../../types/hr';
@@ -134,106 +139,151 @@ const HRManagement = () => {
   const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
 
   // Modal states
-  const [employeeDetailOpened, { open: openEmployeeDetail, close: closeEmployeeDetail }] = useDisclosure(false);
-  const [addEmployeeOpened, { open: openAddEmployee, close: closeAddEmployee }] = useDisclosure(false);
-  const [shiftDetailOpened, { open: openShiftDetail, close: closeShiftDetail }] = useDisclosure(false);
-  const [reviewDetailOpened, { open: openReviewDetail, close: closeReviewDetail }] = useDisclosure(false);
-  const [leaveDetailOpened, { open: openLeaveDetail, close: closeLeaveDetail }] = useDisclosure(false);
-  const [_payrollDetailOpened, { open: _openPayrollDetail, close: _closePayrollDetail }] = useDisclosure(false);
+  const [employeeDetailOpened, { open: openEmployeeDetail, close: closeEmployeeDetail }] =
+    useDisclosure(false);
+  const [addEmployeeOpened, { open: openAddEmployee, close: closeAddEmployee }] =
+    useDisclosure(false);
+  const [shiftDetailOpened, { open: openShiftDetail, close: closeShiftDetail }] =
+    useDisclosure(false);
+  const [_reviewDetailOpened, { open: _openReviewDetail, close: _closeReviewDetail }] =
+    useDisclosure(false);
+  const [_leaveDetailOpened, { open: _openLeaveDetail, close: _closeLeaveDetail }] =
+    useDisclosure(false);
+  const [_payrollDetailOpened, { open: _openPayrollDetail, close: _closePayrollDetail }] =
+    useDisclosure(false);
   const [_addShiftOpened, { open: _openAddShift, close: _closeAddShift }] = useDisclosure(false);
-  const [_createReviewOpened, { open: _openCreateReview, close: _closeCreateReview }] = useDisclosure(false);
+  const [_createReviewOpened, { open: _openCreateReview, close: _closeCreateReview }] =
+    useDisclosure(false);
 
   // Filter employees
   const filteredEmployees = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((employee) => {
-      const matchesSearch = 
-        employee.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        employee.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        employee.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        employee.email.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesDepartment = !selectedDepartment || (employee.department as any)?.name === selectedDepartment;
-      const matchesRole = !selectedRole || (employee as any).role === selectedRole;
-      const matchesStatus = !selectedStatus || employee.status === selectedStatus;
+    return [].filter(
+      /* TODO: Fetch from API */ (employee) => {
+        const matchesSearch =
+          employee.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          employee.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          employee.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          employee.email.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesDepartment && matchesRole && matchesStatus;
-    });
+        const matchesDepartment =
+          !selectedDepartment || (employee.department as any)?.name === selectedDepartment;
+        const matchesRole = !selectedRole || (employee as any).role === selectedRole;
+        const matchesStatus = !selectedStatus || employee.status === selectedStatus;
+
+        return matchesSearch && matchesDepartment && matchesRole && matchesStatus;
+      }
+    );
   }, [searchQuery, selectedDepartment, selectedRole, selectedStatus]);
 
   // Filter shifts
   const filteredShifts = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((shift) => {
-      const matchesSearch = 
-        shift.employee.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        shift.employee.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        shift.shiftId.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedShiftStatus || shift.status === selectedShiftStatus;
+    return [].filter(
+      /* TODO: Fetch from API */ (shift) => {
+        const matchesSearch =
+          shift.employee.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          shift.employee.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          shift.shiftId.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesStatus;
-    });
+        const matchesStatus = !selectedShiftStatus || shift.status === selectedShiftStatus;
+
+        return matchesSearch && matchesStatus;
+      }
+    );
   }, [searchQuery, selectedShiftStatus]);
 
   // Filter leave requests
   const filteredLeaveRequests = useMemo(() => {
-    return [].filter /* TODO: Fetch from API */((leave) => {
-      const matchesSearch = 
-        (leave as any).employee?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (leave as any).employee?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesStatus = !selectedLeaveStatus || leave.status === selectedLeaveStatus;
+    return [].filter(
+      /* TODO: Fetch from API */ (leave) => {
+        const matchesSearch =
+          (leave as any).employee?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (leave as any).employee?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch && matchesStatus;
-    });
+        const matchesStatus = !selectedLeaveStatus || leave.status === selectedLeaveStatus;
+
+        return matchesSearch && matchesStatus;
+      }
+    );
   }, [searchQuery, selectedLeaveStatus]);
 
   // Helper functions
-  const getStatusColor = (status: EmployeeStatus | ShiftStatus | PayrollStatus | ReviewStatus | LeaveStatus | TrainingStatus | AttendanceStatus) => {
+  const getStatusColor = (
+    status:
+      | EmployeeStatus
+      | ShiftStatus
+      | PayrollStatus
+      | ReviewStatus
+      | LeaveStatus
+      | TrainingStatus
+      | AttendanceStatus
+  ) => {
     switch (status) {
       case 'active':
       case 'scheduled':
       case 'processed':
       case 'completed':
       case 'approved':
-      case 'present': return 'green';
+      case 'present':
+        return 'green';
       case 'inactive':
       case 'cancelled':
       case 'rejected':
-      case 'absent': return 'red';
+      case 'absent':
+        return 'red';
       case 'on_leave':
       case 'pending':
       case 'draft':
       case 'in_progress':
-      case 'late': return 'orange';
-      case 'terminated': return 'gray';
-      default: return 'blue';
+      case 'late':
+        return 'orange';
+      case 'terminated':
+        return 'gray';
+      default:
+        return 'blue';
     }
   };
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'Doctor': return 'blue';
-      case 'Nurse': return 'green';
-      case 'Technician': return 'orange';
-      case 'Administrator': return 'purple';
-      case 'Receptionist': return 'cyan';
-      case 'Pharmacist': return 'pink';
-      case 'Therapist': return 'indigo';
-      case 'Support Staff': return 'gray';
-      default: return 'blue';
+      case 'Doctor':
+        return 'blue';
+      case 'Nurse':
+        return 'green';
+      case 'Technician':
+        return 'orange';
+      case 'Administrator':
+        return 'purple';
+      case 'Receptionist':
+        return 'cyan';
+      case 'Pharmacist':
+        return 'pink';
+      case 'Therapist':
+        return 'indigo';
+      case 'Support Staff':
+        return 'gray';
+      default:
+        return 'blue';
     }
   };
 
   const getLeaveTypeColor = (type: string) => {
     switch (type) {
-      case 'sick': return 'red';
-      case 'vacation': return 'blue';
-      case 'personal': return 'green';
-      case 'emergency': return 'orange';
-      case 'maternity': return 'pink';
-      case 'paternity': return 'cyan';
-      case 'study': return 'purple';
-      default: return 'gray';
+      case 'sick':
+        return 'red';
+      case 'vacation':
+        return 'blue';
+      case 'personal':
+        return 'green';
+      case 'emergency':
+        return 'orange';
+      case 'maternity':
+        return 'pink';
+      case 'paternity':
+        return 'cyan';
+      case 'study':
+        return 'purple';
+      default:
+        return 'gray';
     }
   };
 
@@ -242,9 +292,9 @@ const HRManagement = () => {
     openEmployeeDetail();
   };
 
-  const handleDeleteEmployee = (employee: any) => {
-    setSelectedEmployee(employee);
-    openEmployeeDetail();
+  const _handleDeleteEmployee = (_id: string) => {
+    // TODO: Implement delete employee functionality
+    console.log('Delete employee:', _id);
   };
 
   const handleViewShift = (shift: Shift) => {
@@ -252,14 +302,14 @@ const HRManagement = () => {
     openShiftDetail();
   };
 
-  const handleViewReview = (review: PerformanceReview) => {
+  const _handleViewReview = (review: PerformanceReview) => {
     setSelectedReview(review);
-    openReviewDetail();
+    _openReviewDetail();
   };
 
-  const handleViewLeave = (leave: LeaveRequest) => {
+  const _handleViewLeave = (leave: LeaveRequest) => {
     setSelectedLeave(leave);
-    openLeaveDetail();
+    _openLeaveDetail();
   };
 
   const clearFilters = () => {
@@ -274,7 +324,7 @@ const HRManagement = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
@@ -293,37 +343,39 @@ const HRManagement = () => {
       value: 0 /* TODO: Fetch from API */,
       icon: IconUsers,
       color: 'blue',
-      trend: '+5.2%'
+      trend: '+5.2%',
     },
     {
       title: 'Active Staff',
       value: 0 /* TODO: Fetch from API */,
       icon: IconUserCheck,
       color: 'green',
-      trend: `${((0 /* TODO: Fetch from API */ / 0 /* TODO: Fetch from API */) * 100).toFixed(1)}%`
+      trend: `${((0 /* TODO: Fetch from API */ / 0) /* TODO: Fetch from API */ * 100).toFixed(1)}%`,
     },
     {
       title: 'Open Positions',
       value: 0,
       icon: IconUserPlus,
       color: 'orange',
-      trend: '+3'
+      trend: '+3',
     },
     {
       title: 'Avg Satisfaction',
       value: `0/10`,
       icon: IconStar,
       color: 'purple',
-      trend: '+0.3'
-    }
+      trend: '+0.3',
+    },
   ];
 
   // Chart data
-  const departmentData = [].map /* TODO: Fetch from API */((dept) => ({
-    name: dept.name,
-    value: (dept as any).employeeCount || 0,
-    color: getRoleColor(dept.name)
-  }));
+  const departmentData = [].map(
+    /* TODO: Fetch from API */ (dept) => ({
+      name: dept.name,
+      value: (dept as any).employeeCount || 0,
+      color: getRoleColor(dept.name),
+    })
+  );
 
   const monthlyHiring = [];
   const attendanceData = [];
@@ -340,18 +392,10 @@ const HRManagement = () => {
           </Text>
         </div>
         <Group>
-          <Button
-            leftSection={<IconUserPlus size={16} />}
-            onClick={openAddEmployee}
-            color="blue"
-          >
+          <Button leftSection={<IconUserPlus size={16} />} onClick={openAddEmployee} color="blue">
             Add Employee
           </Button>
-          <Button
-            variant="light"
-            leftSection={<IconCalendarTime size={16} />}
-            color="green"
-          >
+          <Button variant="light" leftSection={<IconCalendarTime size={16} />} color="green">
             Schedule Shift
           </Button>
         </Group>
@@ -377,14 +421,18 @@ const HRManagement = () => {
                 </ThemeIcon>
               </Group>
               <Group justify="space-between" mt="sm">
-                <Badge 
-                  color={stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'} 
+                <Badge
+                  color={
+                    stat.trend.includes('+') ? 'green' : stat.trend.includes('-') ? 'red' : 'blue'
+                  }
                   variant="light"
                   size="sm"
                 >
                   {stat.trend}
                 </Badge>
-                <Text size="xs" c="dimmed">vs last month</Text>
+                <Text size="xs" c="dimmed">
+                  vs last month
+                </Text>
               </Group>
             </Card>
           );
@@ -431,10 +479,12 @@ const HRManagement = () => {
               />
               <Select
                 placeholder="Department"
-                data={[].map /* TODO: Fetch from API */(dept => ({
-                  value: dept.name,
-                  label: dept.name
-                }))}
+                data={[].map(
+                  /* TODO: Fetch from API */ (dept) => ({
+                    value: dept.name,
+                    label: dept.name,
+                  })
+                )}
                 value={selectedDepartment}
                 onChange={setSelectedDepartment}
                 clearable
@@ -447,7 +497,7 @@ const HRManagement = () => {
                   { value: 'Technician', label: 'Technician' },
                   { value: 'Administrator', label: 'Administrator' },
                   { value: 'Receptionist', label: 'Receptionist' },
-                  { value: 'Pharmacist', label: 'Pharmacist' }
+                  { value: 'Pharmacist', label: 'Pharmacist' },
                 ]}
                 value={selectedRole}
                 onChange={setSelectedRole}
@@ -459,7 +509,7 @@ const HRManagement = () => {
                   { value: 'active', label: 'Active' },
                   { value: 'inactive', label: 'Inactive' },
                   { value: 'on_leave', label: 'On Leave' },
-                  { value: 'terminated', label: 'Terminated' }
+                  { value: 'terminated', label: 'Terminated' },
                 ]}
                 value={selectedStatus}
                 onChange={setSelectedStatus}
@@ -503,7 +553,8 @@ const HRManagement = () => {
                         <Table.Td>
                           <Group>
                             <Avatar color="blue" radius="xl">
-                              {employee.firstName[0]}{employee.lastName[0]}
+                              {employee.firstName[0]}
+                              {employee.lastName[0]}
                             </Avatar>
                             <div>
                               <Text size="sm" fw={500}>
@@ -515,85 +566,79 @@ const HRManagement = () => {
                             </div>
                           </Group>
                         </Table.Td>
-                      <Table.Td>
-                        <Text fw={500}>{employee.employeeId}</Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getRoleColor((employee as any).role)} variant="light">
-                          {(employee as any).role}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <div>
-                          <Text size="sm" fw={500}>{(employee.department as any).name}</Text>
-                          <Text size="xs" c="dimmed">
-                            Head: Dr. {(employee.department as any).head}
+                        <Table.Td>
+                          <Text fw={500}>{employee.employeeId}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getRoleColor((employee as any).role)} variant="light">
+                            {(employee as any).role}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <div>
+                            <Text size="sm" fw={500}>
+                              {(employee.department as any).name}
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              Head: Dr. {(employee.department as any).head}
+                            </Text>
+                          </div>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm">{formatDate((employee as any).joinDate)}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          <Badge color={getStatusColor(employee.status)} variant="light">
+                            {employee.status.replace('_', ' ')}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td>
+                          <Text size="sm" fw={500}>
+                            {formatCurrency((employee as any).salary)}
                           </Text>
-                        </div>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm">
-                          {formatDate((employee as any).joinDate)}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={getStatusColor(employee.status)} variant="light">
-                          {employee.status.replace('_', ' ')}
-                        </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm" fw={500}>
-                          {formatCurrency((employee as any).salary)}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          <ActionIcon
-                            variant="subtle"
-                            color="blue"
-                            onClick={() => handleViewEmployee(employee)}
-                          >
-                            <IconEye size={16} />
-                          </ActionIcon>
-                          <ActionIcon variant="subtle" color="green">
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <Menu>
-                            <Menu.Target>
-                              <ActionIcon variant="subtle" color="gray">
-                                <IconDotsVertical size={16} />
-                              </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Menu.Item leftSection={<IconTrophy size={14} />}>
-                                Performance Review
-                              </Menu.Item>
-                              <Menu.Item leftSection={<IconCalendarEvent size={14} />}>
-                                Leave Request
-                              </Menu.Item>
-                              <Menu.Item leftSection={<IconCurrencyDollar size={14} />}>
-                                Payroll Details
-                              </Menu.Item>
-                              <Menu.Divider />
-                              <Menu.Item 
-                                leftSection={<IconUserX size={14} />}
-                                color="red"
-                              >
-                                Terminate
-                              </Menu.Item>
-                              <Menu.Item 
-                                leftSection={<IconTrash size={14} />}
-                                color="red"
-                              >
-                                Delete
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
-                        </Group>
-                      </Table.Td>
-                    </Table.Tr>
-                  )))
-                  }
+                        </Table.Td>
+                        <Table.Td>
+                          <Group gap="xs">
+                            <ActionIcon
+                              variant="subtle"
+                              color="blue"
+                              onClick={() => handleViewEmployee(employee)}
+                            >
+                              <IconEye size={16} />
+                            </ActionIcon>
+                            <ActionIcon variant="subtle" color="green">
+                              <IconEdit size={16} />
+                            </ActionIcon>
+                            <Menu>
+                              <Menu.Target>
+                                <ActionIcon variant="subtle" color="gray">
+                                  <IconDotsVertical size={16} />
+                                </ActionIcon>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Item leftSection={<IconTrophy size={14} />}>
+                                  Performance Review
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconCalendarEvent size={14} />}>
+                                  Leave Request
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconCurrencyDollar size={14} />}>
+                                  Payroll Details
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item leftSection={<IconUserX size={14} />} color="red">
+                                  Terminate
+                                </Menu.Item>
+                                <Menu.Item leftSection={<IconTrash size={14} />} color="red">
+                                  Delete
+                                </Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    ))
+                  )}
                 </Table.Tbody>
               </Table>
             </ScrollArea>
@@ -606,7 +651,7 @@ const HRManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Staff Scheduling</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={openAddShift}>
+                <Button leftSection={<IconPlus size={16} />} onClick={_openAddShift}>
                   Add Shift
                 </Button>
                 <Button variant="light" leftSection={<IconCalendar size={16} />}>
@@ -630,7 +675,7 @@ const HRManagement = () => {
                   { value: 'scheduled', label: 'Scheduled' },
                   { value: 'in_progress', label: 'In Progress' },
                   { value: 'completed', label: 'Completed' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedShiftStatus}
                 onChange={setSelectedShiftStatus}
@@ -662,7 +707,8 @@ const HRManagement = () => {
                       <Table.Td>
                         <Group>
                           <Avatar color="blue" radius="xl" size="sm">
-                            {shift.employee.firstName[0]}{shift.employee.lastName[0]}
+                            {shift.employee.firstName[0]}
+                            {shift.employee.lastName[0]}
                           </Avatar>
                           <div>
                             <Text size="sm" fw={500}>
@@ -675,9 +721,7 @@ const HRManagement = () => {
                         </Group>
                       </Table.Td>
                       <Table.Td>
-                        <Text size="sm">
-                          {formatDate(shift.date)}
-                        </Text>
+                        <Text size="sm">{formatDate(shift.date)}</Text>
                       </Table.Td>
                       <Table.Td>
                         <div>
@@ -731,9 +775,7 @@ const HRManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Payroll Management</Title>
               <Group>
-                <Button leftSection={<IconCalculator size={16} />}>
-                  Calculate Payroll
-                </Button>
+                <Button leftSection={<IconCalculator size={16} />}>Calculate Payroll</Button>
                 <Button variant="light" leftSection={<IconDownload size={16} />}>
                   Export Payroll
                 </Button>
@@ -742,80 +784,95 @@ const HRManagement = () => {
 
             {/* Payroll Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((payroll) => (
-                <Card key={payroll.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">
-                        {(payroll as any).employee.firstName} {(payroll as any).employee.lastName}
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        {(payroll as any).employee.employeeId} - {(payroll as any).employee.role}
-                      </Text>
-                    </div>
-                    <Badge color={getStatusColor(payroll.status)} variant="light">
-                      {payroll.status}
-                    </Badge>
-                  </Group>
+              {[].map(
+                /* TODO: Fetch from API */ (payroll) => (
+                  <Card key={payroll.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {(payroll as any).employee.firstName} {(payroll as any).employee.lastName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {(payroll as any).employee.employeeId} - {(payroll as any).employee.role}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(payroll.status)} variant="light">
+                        {payroll.status}
+                      </Badge>
+                    </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Pay Period</Text>
-                      <Text size="sm" fw={500}>
-                        {formatDate((payroll as any).payPeriodStart)} - {formatDate((payroll as any).payPeriodEnd)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Base Salary</Text>
-                      <Text size="sm" fw={500}>
-                        {formatCurrency((payroll as any).baseSalary)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Overtime</Text>
-                      <Text size="sm" fw={500}>
-                        {formatCurrency((payroll as any).overtimePay)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Bonuses</Text>
-                      <Text size="sm" fw={500} c="green">
-                        +{formatCurrency((payroll as any).bonuses)}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Deductions</Text>
-                      <Text size="sm" fw={500} c="red">
-                        -{formatCurrency(payroll.deductions)}
-                      </Text>
-                    </Group>
-                    <Divider />
-                    <Group justify="space-between">
-                      <Text size="sm" fw={600}>Net Pay</Text>
-                      <Text size="lg" fw={700} c="blue">
-                        {formatCurrency((payroll as any).netPay)}
-                      </Text>
-                    </Group>
-                  </Stack>
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Pay Period
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {formatDate((payroll as any).payPeriodStart)} -{' '}
+                          {formatDate((payroll as any).payPeriodEnd)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Base Salary
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {formatCurrency((payroll as any).baseSalary)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Overtime
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {formatCurrency((payroll as any).overtimePay)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Bonuses
+                        </Text>
+                        <Text size="sm" fw={500} c="green">
+                          +{formatCurrency((payroll as any).bonuses)}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Deductions
+                        </Text>
+                        <Text size="sm" fw={500} c="red">
+                          -{formatCurrency(payroll.deductions)}
+                        </Text>
+                      </Group>
+                      <Divider />
+                      <Group justify="space-between">
+                        <Text size="sm" fw={600}>
+                          Net Pay
+                        </Text>
+                        <Text size="lg" fw={700} c="blue">
+                          {formatCurrency((payroll as any).netPay)}
+                        </Text>
+                      </Group>
+                    </Stack>
 
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Hours: {(payroll as any).hoursWorked}h
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconDownload size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconSend size={16} />
-                      </ActionIcon>
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Hours: {(payroll as any).hoursWorked}h
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconSend size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -826,7 +883,7 @@ const HRManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Performance Reviews</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={openCreateReview}>
+                <Button leftSection={<IconPlus size={16} />} onClick={_openCreateReview}>
                   Create Review
                 </Button>
                 <Button variant="light" leftSection={<IconTrophy size={16} />}>
@@ -837,94 +894,100 @@ const HRManagement = () => {
 
             {/* Performance Reviews Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((review) => (
-                <Card key={review.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">
-                        {review.employee.firstName} {review.employee.lastName}
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        {review.reviewType} Review - {review.reviewPeriod}
-                      </Text>
-                    </div>
-                    <Badge color={getStatusColor(review.status)} variant="light">
-                      {review.status}
-                    </Badge>
-                  </Group>
-
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Overall Rating</Text>
+              {[].map(
+                /* TODO: Fetch from API */ (review) => (
+                  <Card key={review.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
                       <div>
-                        <Rating value={review.overallRating} readOnly size="sm" />
-                        <Text size="sm" fw={500} ta="center">
-                          {review.overallRating}/5
+                        <Text fw={600} size="lg">
+                          {review.employee.firstName} {review.employee.lastName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {review.reviewType} Review - {review.reviewPeriod}
                         </Text>
                       </div>
+                      <Badge color={getStatusColor(review.status)} variant="light">
+                        {review.status}
+                      </Badge>
                     </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Reviewer</Text>
-                      <Text size="sm" fw={500}>
-                        {review.reviewer}
-                      </Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Review Date</Text>
-                      <Text size="sm">
-                        {formatDate(review.reviewDate)}
-                      </Text>
-                    </Group>
-                  </Stack>
 
-                  <Accordion variant="contained" mb="md">
-                    <Accordion.Item value="details">
-                      <Accordion.Control>Performance Areas</Accordion.Control>
-                      <Accordion.Panel>
-                        <Stack gap="xs">
-                          <Group justify="space-between">
-                            <Text size="sm">Communication</Text>
-                            <Rating value={review.ratings.communication} readOnly size="xs" />
-                          </Group>
-                          <Group justify="space-between">
-                            <Text size="sm">Teamwork</Text>
-                            <Rating value={review.ratings.teamwork} readOnly size="xs" />
-                          </Group>
-                          <Group justify="space-between">
-                            <Text size="sm">Technical Skills</Text>
-                            <Rating value={review.ratings.technicalSkills} readOnly size="xs" />
-                          </Group>
-                          <Group justify="space-between">
-                            <Text size="sm">Leadership</Text>
-                            <Rating value={review.ratings.leadership} readOnly size="xs" />
-                          </Group>
-                        </Stack>
-                      </Accordion.Panel>
-                    </Accordion.Item>
-                  </Accordion>
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Overall Rating
+                        </Text>
+                        <div>
+                          <Rating value={review.overallRating} readOnly size="sm" />
+                          <Text size="sm" fw={500} ta="center">
+                            {review.overallRating}/5
+                          </Text>
+                        </div>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Reviewer
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {review.reviewer}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Review Date
+                        </Text>
+                        <Text size="sm">{formatDate(review.reviewDate)}</Text>
+                      </Group>
+                    </Stack>
 
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      Next Review: {formatDate(review.nextReviewDate)}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewReview(review)}
-                      >
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconEdit size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconDownload size={16} />
-                      </ActionIcon>
+                    <Accordion variant="contained" mb="md">
+                      <Accordion.Item value="details">
+                        <Accordion.Control>Performance Areas</Accordion.Control>
+                        <Accordion.Panel>
+                          <Stack gap="xs">
+                            <Group justify="space-between">
+                              <Text size="sm">Communication</Text>
+                              <Rating value={review.ratings.communication} readOnly size="xs" />
+                            </Group>
+                            <Group justify="space-between">
+                              <Text size="sm">Teamwork</Text>
+                              <Rating value={review.ratings.teamwork} readOnly size="xs" />
+                            </Group>
+                            <Group justify="space-between">
+                              <Text size="sm">Technical Skills</Text>
+                              <Rating value={review.ratings.technicalSkills} readOnly size="xs" />
+                            </Group>
+                            <Group justify="space-between">
+                              <Text size="sm">Leadership</Text>
+                              <Rating value={review.ratings.leadership} readOnly size="xs" />
+                            </Group>
+                          </Stack>
+                        </Accordion.Panel>
+                      </Accordion.Item>
+                    </Accordion>
+
+                    <Group justify="space-between">
+                      <Text size="xs" c="dimmed">
+                        Next Review: {formatDate(review.nextReviewDate)}
+                      </Text>
+                      <Group gap="xs">
+                        <ActionIcon
+                          variant="subtle"
+                          color="blue"
+                          onClick={() => _handleViewReview(review)}
+                        >
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconEdit size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconDownload size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -935,9 +998,7 @@ const HRManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Leave Management</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />}>
-                  Submit Leave Request
-                </Button>
+                <Button leftSection={<IconPlus size={16} />}>Submit Leave Request</Button>
                 <Button variant="light" leftSection={<IconCalendarEvent size={16} />}>
                   Leave Calendar
                 </Button>
@@ -959,7 +1020,7 @@ const HRManagement = () => {
                   { value: 'pending', label: 'Pending' },
                   { value: 'approved', label: 'Approved' },
                   { value: 'rejected', label: 'Rejected' },
-                  { value: 'cancelled', label: 'Cancelled' }
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
                 value={selectedLeaveStatus}
                 onChange={setSelectedLeaveStatus}
@@ -987,40 +1048,46 @@ const HRManagement = () => {
 
                   <Stack gap="sm" mb="md">
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Leave Type</Text>
+                      <Text size="sm" c="dimmed">
+                        Leave Type
+                      </Text>
                       <Badge color={getLeaveTypeColor(leave.leaveType)} variant="light">
                         {leave.leaveType.toUpperCase()}
                       </Badge>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Duration</Text>
+                      <Text size="sm" c="dimmed">
+                        Duration
+                      </Text>
                       <Text size="sm" fw={500}>
                         {(leave as any).duration} days
                       </Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Start Date</Text>
-                      <Text size="sm">
-                        {formatDate(leave.startDate)}
+                      <Text size="sm" c="dimmed">
+                        Start Date
                       </Text>
+                      <Text size="sm">{formatDate(leave.startDate)}</Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">End Date</Text>
-                      <Text size="sm">
-                        {formatDate(leave.endDate)}
+                      <Text size="sm" c="dimmed">
+                        End Date
                       </Text>
+                      <Text size="sm">{formatDate(leave.endDate)}</Text>
                     </Group>
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Applied On</Text>
-                      <Text size="sm">
-                        {formatDate((leave as any).appliedDate)}
+                      <Text size="sm" c="dimmed">
+                        Applied On
                       </Text>
+                      <Text size="sm">{formatDate((leave as any).appliedDate)}</Text>
                     </Group>
                   </Stack>
 
                   {leave.reason && (
                     <div style={{ marginBottom: '1rem' }}>
-                      <Text size="sm" fw={500} mb="xs">Reason</Text>
+                      <Text size="sm" fw={500} mb="xs">
+                        Reason
+                      </Text>
                       <Text size="sm" lineClamp={2} c="dimmed">
                         {leave.reason}
                       </Text>
@@ -1035,7 +1102,7 @@ const HRManagement = () => {
                       <ActionIcon
                         variant="subtle"
                         color="blue"
-                        onClick={() => handleViewLeave(leave)}
+                        onClick={() => _handleViewLeave(leave)}
                       >
                         <IconEye size={16} />
                       </ActionIcon>
@@ -1063,9 +1130,7 @@ const HRManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Training & Development</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />}>
-                  Schedule Training
-                </Button>
+                <Button leftSection={<IconPlus size={16} />}>Schedule Training</Button>
                 <Button variant="light" leftSection={<IconCertificate size={16} />}>
                   Certifications
                 </Button>
@@ -1074,72 +1139,98 @@ const HRManagement = () => {
 
             {/* Training Programs Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-              {[].map /* TODO: Fetch from API */((training) => (
-                <Card key={training.id} padding="lg" radius="md" withBorder>
-                  <Group justify="space-between" mb="md">
-                    <div>
-                      <Text fw={600} size="lg">{(training as any).trainingName}</Text>
-                      <Text size="sm" c="dimmed">{(training as any).trainingType}</Text>
-                    </div>
-                    <Badge color={getStatusColor(training.status)} variant="light">
-                      {training.status}
-                    </Badge>
-                  </Group>
+              {[].map(
+                /* TODO: Fetch from API */ (training) => (
+                  <Card key={training.id} padding="lg" radius="md" withBorder>
+                    <Group justify="space-between" mb="md">
+                      <div>
+                        <Text fw={600} size="lg">
+                          {(training as any).trainingName}
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                          {(training as any).trainingType}
+                        </Text>
+                      </div>
+                      <Badge color={getStatusColor(training.status)} variant="light">
+                        {training.status}
+                      </Badge>
+                    </Group>
 
-                  <Stack gap="sm" mb="md">
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Instructor</Text>
-                      <Text size="sm" fw={500}>{(training as any).instructor}</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Duration</Text>
-                      <Text size="sm">{(training as any).duration}h</Text>
-                    </Group>
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Start Date</Text>
-                      <Text size="sm">
-                        {formatDate(training.startDate)}
+                    <Stack gap="sm" mb="md">
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Instructor
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(training as any).instructor}
+                        </Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Duration
+                        </Text>
+                        <Text size="sm">{(training as any).duration}h</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Start Date
+                        </Text>
+                        <Text size="sm">{formatDate(training.startDate)}</Text>
+                      </Group>
+                      <Group justify="space-between">
+                        <Text size="sm" c="dimmed">
+                          Participants
+                        </Text>
+                        <Text size="sm" fw={500}>
+                          {(training as any).participants?.length || 0}/
+                          {(training as any).maxParticipants}
+                        </Text>
+                      </Group>
+                    </Stack>
+
+                    <Progress
+                      value={
+                        (((training as any).participants?.length || 0) /
+                          ((training as any).maxParticipants || 1)) *
+                        100
+                      }
+                      size="sm"
+                      mb="md"
+                      color={
+                        ((training as any).participants?.length || 0) ===
+                        (training as any).maxParticipants
+                          ? 'red'
+                          : 'blue'
+                      }
+                    />
+
+                    {training.description && (
+                      <Text size="sm" lineClamp={2} mb="md" c="dimmed">
+                        {training.description}
                       </Text>
-                    </Group>
+                    )}
+
                     <Group justify="space-between">
-                      <Text size="sm" c="dimmed">Participants</Text>
-                      <Text size="sm" fw={500}>
-                        {(training as any).participants?.length || 0}/{(training as any).maxParticipants}
+                      <Text size="xs" c="dimmed">
+                        {(training as any).certificateAwarded
+                          ? 'Certificate Awarded'
+                          : 'No Certificate'}
                       </Text>
+                      <Group gap="xs">
+                        <ActionIcon variant="subtle" color="blue">
+                          <IconEye size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="green">
+                          <IconUserPlus size={16} />
+                        </ActionIcon>
+                        <ActionIcon variant="subtle" color="orange">
+                          <IconCertificate size={16} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
-                  </Stack>
-
-                  <Progress
-                    value={(((training as any).participants?.length || 0) / ((training as any).maxParticipants || 1)) * 100}
-                    size="sm"
-                    mb="md"
-                    color={((training as any).participants?.length || 0) === (training as any).maxParticipants ? 'red' : 'blue'}
-                  />
-
-                  {training.description && (
-                    <Text size="sm" lineClamp={2} mb="md" c="dimmed">
-                      {training.description}
-                    </Text>
-                  )}
-
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">
-                      {(training as any).certificateAwarded ? 'Certificate Awarded' : 'No Certificate'}
-                    </Text>
-                    <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue">
-                        <IconEye size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="green">
-                        <IconUserPlus size={16} />
-                      </ActionIcon>
-                      <ActionIcon variant="subtle" color="orange">
-                        <IconCertificate size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                </Card>
-              ))}
+                  </Card>
+                )
+              )}
             </SimpleGrid>
           </Paper>
         </Tabs.Panel>
@@ -1147,54 +1238,59 @@ const HRManagement = () => {
         {/* Analytics Tab */}
         <Tabs.Panel value="analytics">
           <Paper p="md" radius="md" withBorder mt="md">
-            <Title order={3} mb="lg">HR Analytics</Title>
-            
+            <Title order={3} mb="lg">
+              HR Analytics
+            </Title>
+
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
               {/* Department Distribution */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Employees by Department</Title>
-                <MantineDonutChart
-                  data={departmentData}
-                  size={160}
-                  thickness={30}
-                  withLabels
-                />
+                <Title order={4} mb="md">
+                  Employees by Department
+                </Title>
+                <MantineDonutChart data={departmentData} size={160} thickness={30} withLabels />
               </Card>
-              
+
               {/* Monthly Hiring */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Monthly Hiring Trends</Title>
+                <Title order={4} mb="md">
+                  Monthly Hiring Trends
+                </Title>
                 <SimpleAreaChart
                   data={monthlyHiring}
                   dataKey="month"
                   series={[{ name: 'hired', color: 'blue.6' }]}
                 />
               </Card>
-              
+
               {/* Attendance Rates */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Department Attendance Rates</Title>
+                <Title order={4} mb="md">
+                  Department Attendance Rates
+                </Title>
                 <SimpleBarChart
                   data={attendanceData}
                   dataKey="department"
                   series={[{ name: 'rate', color: 'green.6' }]}
                 />
               </Card>
-              
+
               {/* Payroll Summary */}
               <Card padding="lg" radius="md" withBorder>
-                <Title order={4} mb="md">Monthly Payroll Costs</Title>
+                <Title order={4} mb="md">
+                  Monthly Payroll Costs
+                </Title>
                 <SimpleLineChart
                   data={payrollData}
                   dataKey="month"
-                  series={[
-                    { name: 'amount', color: 'orange.6', label: 'Amount' }
-                  ]}
+                  series={[{ name: 'amount', color: 'orange.6', label: 'Amount' }]}
                 />
               </Card>
-              
+
               <Card padding="lg" radius="md" withBorder style={{ gridColumn: '1 / -1' }}>
-                <Title order={4} mb="md">Key Performance Indicators</Title>
+                <Title order={4} mb="md">
+                  Key Performance Indicators
+                </Title>
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
@@ -1207,9 +1303,11 @@ const HRManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Employee Retention</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Employee Retention
+                    </Text>
                   </div>
-                  
+
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
                       size={120}
@@ -1221,9 +1319,11 @@ const HRManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Average Attendance</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Average Attendance
+                    </Text>
                   </div>
-                  
+
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
                       size={120}
@@ -1235,9 +1335,11 @@ const HRManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Training Completion</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Training Completion
+                    </Text>
                   </div>
-                  
+
                   <div style={{ textAlign: 'center' }}>
                     <RingProgress
                       size={120}
@@ -1249,7 +1351,9 @@ const HRManagement = () => {
                         </Text>
                       }
                     />
-                    <Text size="sm" c="dimmed" mt="xs">Employee Satisfaction</Text>
+                    <Text size="sm" c="dimmed" mt="xs">
+                      Employee Satisfaction
+                    </Text>
                   </div>
                 </SimpleGrid>
               </Card>
@@ -1270,7 +1374,8 @@ const HRManagement = () => {
             <Stack gap="md">
               <Group>
                 <Avatar size="xl" color="blue" radius="xl">
-                  {selectedEmployee.firstName[0]}{selectedEmployee.lastName[0]}
+                  {selectedEmployee.firstName[0]}
+                  {selectedEmployee.lastName[0]}
                 </Avatar>
                 <div>
                   <Title order={3}>
@@ -1287,87 +1392,119 @@ const HRManagement = () => {
 
               <SimpleGrid cols={2}>
                 <div>
-                  <Text size="sm" fw={500}>Email</Text>
-                  <Text size="sm" c="dimmed">{selectedEmployee.email}</Text>
+                  <Text size="sm" fw={500}>
+                    Email
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedEmployee.email}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Phone</Text>
-                  <Text size="sm" c="dimmed">{selectedEmployee.phone}</Text>
+                  <Text size="sm" fw={500}>
+                    Phone
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedEmployee.phone}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Role</Text>
+                  <Text size="sm" fw={500}>
+                    Role
+                  </Text>
                   <Badge color={getRoleColor((selectedEmployee as any).role)} variant="light">
                     {(selectedEmployee as any).role}
                   </Badge>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Department</Text>
-                  <Text size="sm" c="dimmed">{(selectedEmployee.department as any).name}</Text>
+                  <Text size="sm" fw={500}>
+                    Department
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {(selectedEmployee.department as any).name}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Join Date</Text>
+                  <Text size="sm" fw={500}>
+                    Join Date
+                  </Text>
                   <Text size="sm" c="dimmed">
                     {formatDate((selectedEmployee as any).joinDate)}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Salary</Text>
+                  <Text size="sm" fw={500}>
+                    Salary
+                  </Text>
                   <Text size="sm" fw={600}>
                     {formatCurrency((selectedEmployee as any).salary)}
                   </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Address</Text>
-                  <Text size="sm" c="dimmed">{(selectedEmployee as any).address}</Text>
+                  <Text size="sm" fw={500}>
+                    Address
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {(selectedEmployee as any).address}
+                  </Text>
                 </div>
                 <div>
-                  <Text size="sm" fw={500}>Emergency Contact</Text>
-                  <Text size="sm" c="dimmed">{(selectedEmployee as any).emergencyContact}</Text>
+                  <Text size="sm" fw={500}>
+                    Emergency Contact
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {(selectedEmployee as any).emergencyContact}
+                  </Text>
                 </div>
               </SimpleGrid>
 
-              {(selectedEmployee as any).qualifications && (selectedEmployee as any).qualifications.length > 0 && (
-                <>
-                  <Divider />
-                  <div>
-                    <Text size="sm" fw={500} mb="sm">Qualifications</Text>
-                    <List spacing="xs">
-                      {(selectedEmployee as any).qualifications.map((qualification: any, index: number) => (
-                        <List.Item key={index}>
-                          <Text size="sm">{qualification}</Text>
-                        </List.Item>
-                      ))}
-                    </List>
-                  </div>
-                </>
-              )}
+              {(selectedEmployee as any).qualifications &&
+                (selectedEmployee as any).qualifications.length > 0 && (
+                  <>
+                    <Divider />
+                    <div>
+                      <Text size="sm" fw={500} mb="sm">
+                        Qualifications
+                      </Text>
+                      <List spacing="xs">
+                        {(selectedEmployee as any).qualifications.map(
+                          (qualification: any, index: number) => (
+                            <List.Item key={index}>
+                              <Text size="sm">{qualification}</Text>
+                            </List.Item>
+                          )
+                        )}
+                      </List>
+                    </div>
+                  </>
+                )}
 
-              {(selectedEmployee as any).certifications && (selectedEmployee as any).certifications.length > 0 && (
-                <>
-                  <Divider />
-                  <div>
-                    <Text size="sm" fw={500} mb="sm">Certifications</Text>
-                    <Group gap="xs">
-                      {(selectedEmployee as any).certifications.map((certification: any, index: number) => (
-                        <Badge key={index} variant="light" color="green">
-                          {certification}
-                        </Badge>
-                      ))}
-                    </Group>
-                  </div>
-                </>
-              )}
+              {(selectedEmployee as any).certifications &&
+                (selectedEmployee as any).certifications.length > 0 && (
+                  <>
+                    <Divider />
+                    <div>
+                      <Text size="sm" fw={500} mb="sm">
+                        Certifications
+                      </Text>
+                      <Group gap="xs">
+                        {(selectedEmployee as any).certifications.map(
+                          (certification: any, index: number) => (
+                            <Badge key={index} variant="light" color="green">
+                              {certification}
+                            </Badge>
+                          )
+                        )}
+                      </Group>
+                    </div>
+                  </>
+                )}
 
               <Group justify="flex-end">
                 <Button variant="light" onClick={closeEmployeeDetail}>
                   Close
                 </Button>
-                <Button leftSection={<IconTrophy size={16} />}>
-                  Performance Review
-                </Button>
-                <Button leftSection={<IconEdit size={16} />}>
-                  Edit Employee
-                </Button>
+                <Button leftSection={<IconTrophy size={16} />}>Performance Review</Button>
+                <Button leftSection={<IconEdit size={16} />}>Edit Employee</Button>
               </Group>
             </Stack>
           </ScrollArea>
@@ -1383,32 +1520,15 @@ const HRManagement = () => {
       >
         <Stack gap="md">
           <SimpleGrid cols={2}>
-            <TextInput
-              label="First Name"
-              placeholder="Enter first name"
-              required
-            />
-            <TextInput
-              label="Last Name"
-              placeholder="Enter last name"
-              required
-            />
+            <TextInput label="First Name" placeholder="Enter first name" required />
+            <TextInput label="Last Name" placeholder="Enter last name" required />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
-            <TextInput
-              label="Email"
-              placeholder="Enter email address"
-              type="email"
-              required
-            />
-            <TextInput
-              label="Phone"
-              placeholder="Enter phone number"
-              required
-            />
+            <TextInput label="Email" placeholder="Enter email address" type="email" required />
+            <TextInput label="Phone" placeholder="Enter phone number" required />
           </SimpleGrid>
-          
+
           <SimpleGrid cols={2}>
             <Select
               label="Role"
@@ -1419,27 +1539,24 @@ const HRManagement = () => {
                 { value: 'Technician', label: 'Technician' },
                 { value: 'Administrator', label: 'Administrator' },
                 { value: 'Receptionist', label: 'Receptionist' },
-                { value: 'Pharmacist', label: 'Pharmacist' }
+                { value: 'Pharmacist', label: 'Pharmacist' },
               ]}
               required
             />
             <Select
               label="Department"
               placeholder="Select department"
-              data={[].map /* TODO: Fetch from API */(dept => ({
-                value: dept.name,
-                label: dept.name
-              }))}
+              data={[].map(
+                /* TODO: Fetch from API */ (dept) => ({
+                  value: dept.name,
+                  label: dept.name,
+                })
+              )}
             />
           </SimpleGrid>
-          
-          <Textarea
-            label="Address"
-            placeholder="Enter address"
-            rows={2}
-            required
-          />
-          
+
+          <Textarea label="Address" placeholder="Enter address" rows={2} required />
+
           <MultiSelect
             label="Qualifications"
             placeholder="Select qualifications"
@@ -1449,22 +1566,24 @@ const HRManagement = () => {
               { value: 'MS', label: 'MS' },
               { value: 'BSc Nursing', label: 'BSc Nursing' },
               { value: 'MSc Nursing', label: 'MSc Nursing' },
-              { value: 'Diploma', label: 'Diploma' }
+              { value: 'Diploma', label: 'Diploma' },
             ]}
           />
-          
+
           <Group justify="flex-end">
             <Button variant="light" onClick={closeAddEmployee}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              notifications.show({
-                title: 'Employee Added',
-                message: 'New employee has been successfully added to the system',
-                color: 'green',
-              });
-              closeAddEmployee();
-            }}>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Employee Added',
+                  message: 'New employee has been successfully added to the system',
+                  color: 'green',
+                });
+                closeAddEmployee();
+              }}
+            >
               Add Employee
             </Button>
           </Group>

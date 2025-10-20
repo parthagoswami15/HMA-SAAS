@@ -18,7 +18,7 @@ import {
   Card,
   Divider,
   Timeline,
-  ThemeIcon
+  ThemeIcon,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { DatePickerInput } from '@mantine/dates';
@@ -38,7 +38,7 @@ import {
   IconShield,
   IconHistory,
   IconAlertCircle,
-  IconReportAnalytics
+  IconReportAnalytics,
 } from '@tabler/icons-react';
 import { PatientExportOptions, PatientReport } from '../../types/patient';
 
@@ -54,76 +54,93 @@ interface PatientExportReportProps {
 const exportFormats = [
   { value: 'csv', label: 'CSV File', icon: <IconFileText size="1rem" /> },
   { value: 'excel', label: 'Excel Spreadsheet', icon: <IconFileSpreadsheet size="1rem" /> },
-  { value: 'pdf', label: 'PDF Document', icon: <IconFileText size="1rem" /> }
+  { value: 'pdf', label: 'PDF Document', icon: <IconFileText size="1rem" /> },
 ];
 
 const availableFields = [
-  { group: 'Basic Information', fields: [
-    { value: 'patientId', label: 'Patient ID' },
-    { value: 'firstName', label: 'First Name' },
-    { value: 'lastName', label: 'Last Name' },
-    { value: 'age', label: 'Age' },
-    { value: 'gender', label: 'Gender' },
-    { value: 'dateOfBirth', label: 'Date of Birth' },
-    { value: 'bloodGroup', label: 'Blood Group' },
-    { value: 'maritalStatus', label: 'Marital Status' }
-  ]},
-  { group: 'Contact Information', fields: [
-    { value: 'phone', label: 'Phone Number' },
-    { value: 'email', label: 'Email Address' },
-    { value: 'address', label: 'Address' },
-    { value: 'emergencyContact', label: 'Emergency Contact' }
-  ]},
-  { group: 'Medical Information', fields: [
-    { value: 'allergies', label: 'Allergies' },
-    { value: 'chronicDiseases', label: 'Chronic Diseases' },
-    { value: 'currentMedications', label: 'Current Medications' },
-    { value: 'lastVisitDate', label: 'Last Visit Date' },
-    { value: 'totalVisits', label: 'Total Visits' }
-  ]},
-  { group: 'Insurance Information', fields: [
-    { value: 'insuranceProvider', label: 'Insurance Provider' },
-    { value: 'policyNumber', label: 'Policy Number' },
-    { value: 'coverageAmount', label: 'Coverage Amount' },
-    { value: 'insuranceType', label: 'Insurance Type' }
-  ]},
-  { group: 'System Information', fields: [
-    { value: 'registrationDate', label: 'Registration Date' },
-    { value: 'status', label: 'Status' },
-    { value: 'createdBy', label: 'Created By' },
-    { value: 'updatedAt', label: 'Last Updated' }
-  ]}
+  {
+    group: 'Basic Information',
+    fields: [
+      { value: 'patientId', label: 'Patient ID' },
+      { value: 'firstName', label: 'First Name' },
+      { value: 'lastName', label: 'Last Name' },
+      { value: 'age', label: 'Age' },
+      { value: 'gender', label: 'Gender' },
+      { value: 'dateOfBirth', label: 'Date of Birth' },
+      { value: 'bloodGroup', label: 'Blood Group' },
+      { value: 'maritalStatus', label: 'Marital Status' },
+    ],
+  },
+  {
+    group: 'Contact Information',
+    fields: [
+      { value: 'phone', label: 'Phone Number' },
+      { value: 'email', label: 'Email Address' },
+      { value: 'address', label: 'Address' },
+      { value: 'emergencyContact', label: 'Emergency Contact' },
+    ],
+  },
+  {
+    group: 'Medical Information',
+    fields: [
+      { value: 'allergies', label: 'Allergies' },
+      { value: 'chronicDiseases', label: 'Chronic Diseases' },
+      { value: 'currentMedications', label: 'Current Medications' },
+      { value: 'lastVisitDate', label: 'Last Visit Date' },
+      { value: 'totalVisits', label: 'Total Visits' },
+    ],
+  },
+  {
+    group: 'Insurance Information',
+    fields: [
+      { value: 'insuranceProvider', label: 'Insurance Provider' },
+      { value: 'policyNumber', label: 'Policy Number' },
+      { value: 'coverageAmount', label: 'Coverage Amount' },
+      { value: 'insuranceType', label: 'Insurance Type' },
+    ],
+  },
+  {
+    group: 'System Information',
+    fields: [
+      { value: 'registrationDate', label: 'Registration Date' },
+      { value: 'status', label: 'Status' },
+      { value: 'createdBy', label: 'Created By' },
+      { value: 'updatedAt', label: 'Last Updated' },
+    ],
+  },
 ];
 
 const reportTypes = [
   {
     type: 'demographics',
     title: 'Demographics Report',
-    description: 'Statistical breakdown of patient demographics including age groups, gender distribution, and geographic data',
+    description:
+      'Statistical breakdown of patient demographics including age groups, gender distribution, and geographic data',
     icon: <IconUser size="1.2rem" />,
-    color: 'blue'
+    color: 'blue',
   },
   {
     type: 'visit_summary',
     title: 'Visit Summary Report',
-    description: 'Comprehensive analysis of patient visits, appointment patterns, and healthcare utilization',
+    description:
+      'Comprehensive analysis of patient visits, appointment patterns, and healthcare utilization',
     icon: <IconStethoscope size="1.2rem" />,
-    color: 'green'
+    color: 'green',
   },
   {
     type: 'medical_summary',
     title: 'Medical Summary Report',
     description: 'Overview of medical conditions, treatments, medications, and health outcomes',
     icon: <IconHistory size="1.2rem" />,
-    color: 'orange'
+    color: 'orange',
   },
   {
     type: 'insurance_summary',
     title: 'Insurance Summary Report',
     description: 'Analysis of insurance coverage, billing patterns, and payment trends',
     icon: <IconShield size="1.2rem" />,
-    color: 'purple'
-  }
+    color: 'purple',
+  },
 ];
 
 export default function PatientExportReport({
@@ -132,7 +149,7 @@ export default function PatientExportReport({
   onExport,
   onGenerateReport,
   patientCount,
-  selectedPatientIds = []
+  selectedPatientIds = [],
 }: PatientExportReportProps) {
   const [activeTab, setActiveTab] = useState('export');
   const [loading, setLoading] = useState(false);
@@ -146,12 +163,12 @@ export default function PatientExportReport({
       includeVisitHistory: false,
       includeMedicalHistory: false,
       includeDocuments: false,
-      dateRange: undefined
+      dateRange: undefined,
     },
     validate: {
       format: (value) => (!value ? 'Export format is required' : null),
-      includeFields: (value) => (!value.length ? 'At least one field must be selected' : null)
-    }
+      includeFields: (value) => (!value.length ? 'At least one field must be selected' : null),
+    },
   });
 
   const handleExport = async (values: PatientExportOptions) => {
@@ -161,7 +178,7 @@ export default function PatientExportReport({
 
       // Simulate progress updates
       const progressInterval = setInterval(() => {
-        setExportProgress(prev => {
+        setExportProgress((prev) => {
           if (prev >= 90) {
             clearInterval(progressInterval);
             return prev;
@@ -171,7 +188,7 @@ export default function PatientExportReport({
       }, 200);
 
       await onExport(values);
-      
+
       clearInterval(progressInterval);
       setExportProgress(100);
 
@@ -179,7 +196,7 @@ export default function PatientExportReport({
         title: 'Export Successful',
         message: `Patient data has been exported to ${values.format.toUpperCase()} format successfully.`,
         color: 'green',
-        icon: <IconCheck size="1rem" />
+        icon: <IconCheck size="1rem" />,
       });
 
       setTimeout(() => {
@@ -187,13 +204,13 @@ export default function PatientExportReport({
         onClose();
       }, 1000);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Export Failed',
         message: 'Failed to export patient data. Please try again.',
         color: 'red',
-        icon: <IconAlertCircle size="1rem" />
+        icon: <IconAlertCircle size="1rem" />,
       });
     } finally {
       setLoading(false);
@@ -204,24 +221,24 @@ export default function PatientExportReport({
     try {
       setGeneratingReport(reportType);
       const report = await onGenerateReport(reportType, selectedPatientIds);
-      
+
       notifications.show({
         title: 'Report Generated',
-        message: `${reportTypes.find(r => r.type === reportType)?.title} has been generated successfully.`,
+        message: `${reportTypes.find((r) => r.type === reportType)?.title} has been generated successfully.`,
         color: 'green',
-        icon: <IconCheck size="1rem" />
+        icon: <IconCheck size="1rem" />,
       });
 
       // In a real application, this would typically open or download the report
       console.log('Generated report:', report);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       notifications.show({
         title: 'Report Generation Failed',
         message: 'Failed to generate report. Please try again.',
         color: 'red',
-        icon: <IconAlertCircle size="1rem" />
+        icon: <IconAlertCircle size="1rem" />,
       });
     } finally {
       setGeneratingReport(null);
@@ -230,11 +247,14 @@ export default function PatientExportReport({
 
   const selectAllFields = (groupFields: string[]) => {
     const currentFields = exportForm.values.includeFields;
-    const allGroupSelected = groupFields.every(field => currentFields.includes(field));
-    
+    const allGroupSelected = groupFields.every((field) => currentFields.includes(field));
+
     if (allGroupSelected) {
       // Deselect all from this group
-      exportForm.setFieldValue('includeFields', currentFields.filter(field => !groupFields.includes(field)));
+      exportForm.setFieldValue(
+        'includeFields',
+        currentFields.filter((field) => !groupFields.includes(field))
+      );
     } else {
       // Select all from this group
       const newFields = [...new Set([...currentFields, ...groupFields])];
@@ -252,17 +272,19 @@ export default function PatientExportReport({
         <Alert icon={<IconFileExport size="1rem" />} color="blue">
           <Group justify="space-between">
             <Text size="sm">
-              Ready to export {selectedPatientIds.length > 0 ? selectedPatientIds.length : patientCount} patient records
+              Ready to export{' '}
+              {selectedPatientIds.length > 0 ? selectedPatientIds.length : patientCount} patient
+              records
             </Text>
-            <Badge variant="light">
-              {getSelectedFieldsCount()} fields selected
-            </Badge>
+            <Badge variant="light">{getSelectedFieldsCount()} fields selected</Badge>
           </Group>
         </Alert>
 
         {/* Format Selection */}
         <Paper p="md" withBorder>
-          <Title order={4} mb="md">Export Format</Title>
+          <Title order={4} mb="md">
+            Export Format
+          </Title>
           <Grid>
             {exportFormats.map((format) => (
               <Grid.Col key={format.value} span={{ base: 12, md: 4 }}>
@@ -271,8 +293,14 @@ export default function PatientExportReport({
                   p="md"
                   style={{
                     cursor: 'pointer',
-                    backgroundColor: exportForm.values.format === format.value ? 'var(--mantine-color-blue-0)' : undefined,
-                    borderColor: exportForm.values.format === format.value ? 'var(--mantine-color-blue-5)' : undefined
+                    backgroundColor:
+                      exportForm.values.format === format.value
+                        ? 'var(--mantine-color-blue-0)'
+                        : undefined,
+                    borderColor:
+                      exportForm.values.format === format.value
+                        ? 'var(--mantine-color-blue-5)'
+                        : undefined,
                   }}
                   onClick={() => exportForm.setFieldValue('format', format.value as any)}
                 >
@@ -284,7 +312,9 @@ export default function PatientExportReport({
                       {format.icon}
                     </ThemeIcon>
                     <div>
-                      <Text fw={500} size="sm">{format.label}</Text>
+                      <Text fw={500} size="sm">
+                        {format.label}
+                      </Text>
                     </div>
                   </Group>
                 </Card>
@@ -298,24 +328,25 @@ export default function PatientExportReport({
           <Group justify="space-between" mb="md">
             <Title order={4}>Select Fields to Export</Title>
             <Text size="sm" c="dimmed">
-              {getSelectedFieldsCount()} of {availableFields.reduce((sum, group) => sum + group.fields.length, 0)} fields selected
+              {getSelectedFieldsCount()} of{' '}
+              {availableFields.reduce((sum, group) => sum + group.fields.length, 0)} fields selected
             </Text>
           </Group>
-          
+
           <Stack gap="md">
             {availableFields.map((group) => {
-              const groupFields = group.fields.map(f => f.value);
-              const allSelected = groupFields.every(field => exportForm.values.includeFields.includes(field));
-              
+              const groupFields = group.fields.map((f) => f.value);
+              const allSelected = groupFields.every((field) =>
+                exportForm.values.includeFields.includes(field)
+              );
+
               return (
                 <div key={group.group}>
                   <Group justify="space-between" mb="sm">
-                    <Text fw={500} size="sm">{group.group}</Text>
-                    <Button
-                      variant="subtle"
-                      size="xs"
-                      onClick={() => selectAllFields(groupFields)}
-                    >
+                    <Text fw={500} size="sm">
+                      {group.group}
+                    </Text>
+                    <Button variant="subtle" size="xs" onClick={() => selectAllFields(groupFields)}>
                       {allSelected ? 'Deselect All' : 'Select All'}
                     </Button>
                   </Group>
@@ -328,9 +359,15 @@ export default function PatientExportReport({
                           onChange={(event) => {
                             const currentFields = exportForm.values.includeFields;
                             if (event.currentTarget.checked) {
-                              exportForm.setFieldValue('includeFields', [...currentFields, field.value]);
+                              exportForm.setFieldValue('includeFields', [
+                                ...currentFields,
+                                field.value,
+                              ]);
                             } else {
-                              exportForm.setFieldValue('includeFields', currentFields.filter(f => f !== field.value));
+                              exportForm.setFieldValue(
+                                'includeFields',
+                                currentFields.filter((f) => f !== field.value)
+                              );
                             }
                           }}
                         />
@@ -346,7 +383,9 @@ export default function PatientExportReport({
 
         {/* Additional Options */}
         <Paper p="md" withBorder>
-          <Title order={4} mb="md">Additional Data</Title>
+          <Title order={4} mb="md">
+            Additional Data
+          </Title>
           <Stack gap="sm">
             <Checkbox
               label="Include Visit History"
@@ -368,14 +407,16 @@ export default function PatientExportReport({
 
         {/* Date Range Filter */}
         <Paper p="md" withBorder>
-          <Title order={4} mb="md">Date Range Filter (Optional)</Title>
+          <Title order={4} mb="md">
+            Date Range Filter (Optional)
+          </Title>
           <Grid>
             <Grid.Col span={{ base: 12, md: 6 }}>
               <DatePickerInput
                 label="Start Date"
                 placeholder="Select start date"
                 value={exportForm.values.dateRange?.startDate}
-                onChange={(date) => exportForm.setFieldValue('dateRange.startDate', date)}
+                onChange={(date) => exportForm.setFieldValue('dateRange.startDate', date ? new Date(date) : null)}
                 leftSection={<IconCalendar size="1rem" />}
               />
             </Grid.Col>
@@ -384,7 +425,7 @@ export default function PatientExportReport({
                 label="End Date"
                 placeholder="Select end date"
                 value={exportForm.values.dateRange?.endDate}
-                onChange={(date) => exportForm.setFieldValue('dateRange.endDate', date)}
+                onChange={(date) => exportForm.setFieldValue('dateRange.endDate', date ? new Date(date) : null)}
                 leftSection={<IconCalendar size="1rem" />}
               />
             </Grid.Col>
@@ -396,7 +437,9 @@ export default function PatientExportReport({
           <Paper p="md" withBorder>
             <Group justify="space-between" mb="sm">
               <Text fw={500}>Exporting Data...</Text>
-              <Text size="sm" c="dimmed">{exportProgress}%</Text>
+              <Text size="sm" c="dimmed">
+                {exportProgress}%
+              </Text>
             </Group>
             <Progress value={exportProgress} animated />
           </Paper>
@@ -407,11 +450,7 @@ export default function PatientExportReport({
           <Button variant="outline" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            loading={loading}
-            leftSection={<IconDownload size="1rem" />}
-          >
+          <Button type="submit" loading={loading} leftSection={<IconDownload size="1rem" />}>
             Export Data
           </Button>
         </Group>
@@ -435,14 +474,19 @@ export default function PatientExportReport({
                   {report.icon}
                 </ThemeIcon>
                 <div style={{ flex: 1 }}>
-                  <Text fw={600} mb="xs">{report.title}</Text>
-                  <Text size="sm" c="dimmed">{report.description}</Text>
+                  <Text fw={600} mb="xs">
+                    {report.title}
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {report.description}
+                  </Text>
                 </div>
               </Group>
-              
+
               <Group justify="space-between" mt="auto">
                 <Badge variant="light" color={report.color}>
-                  {selectedPatientIds.length > 0 ? selectedPatientIds.length : patientCount} patients
+                  {selectedPatientIds.length > 0 ? selectedPatientIds.length : patientCount}{' '}
+                  patients
                 </Badge>
                 <Button
                   size="sm"
@@ -462,11 +506,17 @@ export default function PatientExportReport({
 
       {/* Report History */}
       <Paper p="md" withBorder>
-        <Title order={4} mb="md">Recent Reports</Title>
+        <Title order={4} mb="md">
+          Recent Reports
+        </Title>
         <Timeline active={1} bulletSize={24} lineWidth={2}>
           <Timeline.Item bullet={<IconFileText size="0.8rem" />} title="Demographics Report">
-            <Text c="dimmed" size="sm">Generated on March 15, 2024</Text>
-            <Text size="sm" mt={4}>Complete demographic analysis with 2,847 patients</Text>
+            <Text c="dimmed" size="sm">
+              Generated on March 15, 2024
+            </Text>
+            <Text size="sm" mt={4}>
+              Complete demographic analysis with 2,847 patients
+            </Text>
             <Group mt="xs">
               <Button variant="subtle" size="xs" leftSection={<IconDownload size="0.7rem" />}>
                 Download
@@ -476,10 +526,17 @@ export default function PatientExportReport({
               </Button>
             </Group>
           </Timeline.Item>
-          
-          <Timeline.Item bullet={<IconFileSpreadsheet size="0.8rem" />} title="Visit Summary Report">
-            <Text c="dimmed" size="sm">Generated on March 10, 2024</Text>
-            <Text size="sm" mt={4}>Monthly visit analysis and appointment trends</Text>
+
+          <Timeline.Item
+            bullet={<IconFileSpreadsheet size="0.8rem" />}
+            title="Visit Summary Report"
+          >
+            <Text c="dimmed" size="sm">
+              Generated on March 10, 2024
+            </Text>
+            <Text size="sm" mt={4}>
+              Monthly visit analysis and appointment trends
+            </Text>
             <Group mt="xs">
               <Button variant="subtle" size="xs" leftSection={<IconDownload size="0.7rem" />}>
                 Download
@@ -489,10 +546,14 @@ export default function PatientExportReport({
               </Button>
             </Group>
           </Timeline.Item>
-          
+
           <Timeline.Item bullet={<IconChartBar size="0.8rem" />} title="Insurance Analysis">
-            <Text c="dimmed" size="sm">Generated on March 5, 2024</Text>
-            <Text size="sm" mt={4}>Insurance coverage and billing analysis</Text>
+            <Text c="dimmed" size="sm">
+              Generated on March 5, 2024
+            </Text>
+            <Text size="sm" mt={4}>
+              Insurance coverage and billing analysis
+            </Text>
             <Group mt="xs">
               <Button variant="subtle" size="xs" leftSection={<IconDownload size="0.7rem" />}>
                 Download
