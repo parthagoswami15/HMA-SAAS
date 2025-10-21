@@ -7,6 +7,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
 
+  // Force dummy database URL if SKIP_DB_OPERATIONS is set
+  if (process.env.SKIP_DB_OPERATIONS === 'true') {
+    process.env.DATABASE_URL = 'postgresql://dummy:dummy@localhost:5432/dummy';
+    logger.log('🔧 Using DUMMY DATABASE URL for fast deployment');
+  }
+
   // Enable CORS
   const corsOriginsEnv =
     process.env.CORS_ORIGINS ||
@@ -60,14 +66,14 @@ async function bootstrap() {
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       environment: process.env.NODE_ENV || 'development',
-      message: 'HMS SaaS API is running - Minimal Working Version',
+      message: 'HMS SaaS API is running - Fast Deployment Mode',
     });
   });
 
   // Root endpoint
   app.getHttpAdapter().get('/', (req, res) => {
     res.json({
-      name: 'HMS SaaS API - Minimal Working Version',
+      name: 'HMS SaaS API - Fast Deployment Mode',
       version: '1.0.0',
       status: 'running',
       timestamp: new Date().toISOString(),
@@ -77,14 +83,22 @@ async function bootstrap() {
     });
   });
 
-  const port = process.env.PORT || 3001;
+  const port = parseInt(process.env.PORT || '10000', 10);
   const host = process.env.HOST || '0.0.0.0';
+
+  // Skip database operations if environment variable is set
+  if (process.env.SKIP_DB_OPERATIONS === 'true') {
+    logger.log('🚀 Starting in FAST DEPLOYMENT MODE - Skipping database operations');
+  } else {
+    logger.log('🚀 Starting with database operations enabled');
+  }
+
   await app.listen(port, host);
 
   logger.log(`🚀 HMS SaaS API is running on: http://${host}:${port}`);
   logger.log(`❤️ Health Check: http://${host}:${port}/health`);
   logger.log(`🏥 Environment: ${process.env.NODE_ENV || 'development'}`);
-  logger.log(`📊 Database: Connected via Prisma`);
+  logger.log(`📊 Database Mode: ${process.env.SKIP_DB_OPERATIONS === 'true' ? 'SKIPPED' : 'ENABLED'}`);
 }
 
 bootstrap().catch((error) => {

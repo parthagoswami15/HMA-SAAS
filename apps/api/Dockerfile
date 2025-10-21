@@ -73,7 +73,7 @@ EXPOSE ${PORT:-10000}
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:${PORT}/health || exit 1
 
-# Run migrations and start application with proper signal handling
-CMD ["dumb-init", "sh", "-c", "echo 'Starting HMS SaaS Backend...' && echo 'Environment:' $NODE_ENV && echo 'Port:' $PORT && cd /app/apps/api && echo 'Running database migrations...' && (npx prisma migrate deploy --schema=./prisma/schema.prisma || echo 'Migration failed, starting anyway...') && cd /app && echo 'Starting Node.js application...' && node apps/api/dist/main.js"]
+# Start application directly without migrations (migrations should be run separately)
+CMD ["dumb-init", "sh", "-c", "echo 'Starting HMS SaaS Backend...' && echo 'Environment:' $NODE_ENV && echo 'Port:' $PORT && cd /app && echo 'Starting Node.js application...' && node apps/api/dist/main.js"]
 
 

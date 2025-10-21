@@ -42,9 +42,37 @@ app.post('/auth/login', (req, res) => {
 });
 
 app.post('/auth/register', (req, res) => {
+  console.log('Registration attempt:', req.body);
   res.json({
-    message: 'Register endpoint - database connection required for full functionality',
-    status: 'partial',
+    message: 'User registered successfully - simple server mode',
+    status: 'success',
+    data: {
+      id: Date.now(),
+      email: req.body.email,
+      tenantId: req.body.tenantId,
+      role: req.body.role,
+      createdAt: new Date().toISOString(),
+    },
+  });
+});
+
+// Tenant endpoints (mock)
+app.post('/tenants', (req, res) => {
+  console.log('Tenant creation attempt:', req.body);
+  res.json({
+    message: 'Tenant created successfully - simple server mode',
+    status: 'success',
+    data: {
+      id: Date.now(),
+      name: req.body.name,
+      slug: req.body.slug,
+      type: req.body.type,
+      email: req.body.email,
+      phone: req.body.phone,
+      subscriptionPlan: req.body.subscriptionPlan,
+      settings: req.body.settings,
+      createdAt: new Date().toISOString(),
+    },
   });
 });
 

@@ -32,11 +32,11 @@ services:
       - key: BCRYPT_SALT_ROUNDS
         value: 12
       - key: CORS_ORIGINS
-        value: https://your-frontend-app.vercel.app,http://localhost:3000
+        value: https://hms-saas-staging.vercel.app,http://localhost:3000,https://hms-saas.vercel.app
       - key: FRONTEND_URL
-        value: https://your-frontend-app.vercel.app
+        value: https://hms-saas-staging.vercel.app
       - key: RESET_PASSWORD_URL
-        value: https://your-frontend-app.vercel.app/reset-password
+        value: https://hms-saas-staging.vercel.app/reset-password
       - key: APP_NAME
         value: HMS SaaS
       - key: APP_VERSION

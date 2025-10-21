@@ -11,19 +11,19 @@ if ($process) {
     Write-Host "⚠️  Port $port is already in use. Checking processes..." -ForegroundColor Yellow
     
     # Find and kill the process using the port
-    $pids = (Get-NetTCPConnection -LocalPort $port).OwningProcess | Sort-Object | Get-Unique
+    $processIds = (Get-NetTCPConnection -LocalPort $port).OwningProcess | Sort-Object | Get-Unique
     
-    foreach ($pid in $pids) {
-        if ($pid -ne 0) {
+    foreach ($processId in $processIds) {
+        if ($processId -ne 0) {
             try {
-                $processInfo = Get-Process -Id $pid -ErrorAction SilentlyContinue
+                $processInfo = Get-Process -Id $processId -ErrorAction SilentlyContinue
                 if ($processInfo) {
-                    Write-Host "🔄 Stopping process: $($processInfo.ProcessName) (PID: $pid)" -ForegroundColor Yellow
-                    Stop-Process -Id $pid -Force
+                    Write-Host "🔄 Stopping process: $($processInfo.ProcessName) (PID: $processId)" -ForegroundColor Yellow
+                    Stop-Process -Id $processId -Force
                     Start-Sleep -Seconds 2
                 }
             } catch {
-                Write-Host "⚠️  Could not stop process $pid" -ForegroundColor Yellow
+                Write-Host "⚠️  Could not stop process $processId" -ForegroundColor Yellow
             }
         }
     }
