@@ -858,7 +858,7 @@ const EMRManagement = () => {
                   Common Diagnoses
                 </Title>
                 <Stack gap="sm">
-                  {commonDiagnosesData.map((diag, index) => (
+                  {commonDiagnosesData.map((diag, _index) => (
                     <Group
                       key={diag.diagnosis}
                       justify="space-between"

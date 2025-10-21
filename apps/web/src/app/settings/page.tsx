@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 interface SystemSettings {
   hospitalName: string;
@@ -66,19 +66,32 @@ interface IntegrationSettings {
   };
 }
 
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:10000';
+
 const SettingsPage = () => {
   const [currentTab, setCurrentTab] = useState<
     'general' | 'security' | 'notifications' | 'integrations' | 'backup' | 'users'
   >('general');
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({
+    type: null,
+    message: '',
+  });
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
-    hospitalName: 'Central Medical Hospital',
-    hospitalAddress: '123 Medical Plaza, Healthcare City, HC 12345',
-    hospitalPhone: '+1 (555) 123-4567',
-    hospitalEmail: 'admin@centralmedical.com',
-    hospitalWebsite: 'www.centralmedical.com',
-    licenseNumber: 'MED-LIC-2024-001',
+    hospitalName: '',
+    hospitalAddress: '',
+    hospitalPhone: '',
+    hospitalEmail: '',
+    hospitalWebsite: '',
+    licenseNumber: '',
     timeZone: 'America/New_York',
     language: 'English',
     currency: 'USD',
@@ -133,18 +146,136 @@ const SettingsPage = () => {
     },
   });
 
+  // Load settings from API on component mount
+  const loadSettings = useCallback(async () => {
+    setIsInitialLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/settings`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setSystemSettings(data.data.system || systemSettings);
+          setNotificationSettings(data.data.notifications || notificationSettings);
+          setIntegrationSettings(data.data.integrations || integrationSettings);
+        }
+      } else {
+        // Use default settings if API fails
+        console.log('Failed to load settings from API, using defaults');
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      // Use default settings if API fails
+    } finally {
+      setIsInitialLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
+
   const handleSaveSettings = async (category: string) => {
     setIsLoading(true);
+    setSaveStatus({ type: null, message: '' });
+
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert(`${category} settings saved successfully!`);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_error) {
-      alert('Failed to save settings. Please try again.');
+      let settingsToSave: any = {};
+
+      switch (category) {
+        case 'General':
+          settingsToSave = { system: systemSettings };
+          break;
+        case 'Security':
+          settingsToSave = { system: systemSettings };
+          break;
+        case 'Notification':
+          settingsToSave = { notifications: notificationSettings };
+          break;
+        case 'Integration':
+          settingsToSave = { integrations: integrationSettings };
+          break;
+        case 'Backup':
+          settingsToSave = { system: systemSettings };
+          break;
+        default:
+          settingsToSave = {
+            system: systemSettings,
+            notifications: notificationSettings,
+            integrations: integrationSettings,
+          };
+      }
+
+      const response = await fetch(`${API_BASE_URL}/settings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settingsToSave),
+      });
+
+      const result: ApiResponse = await response.json();
+
+      if (response.ok && result.success) {
+        setSaveStatus({
+          type: 'success',
+          message: `${category} settings saved successfully!`,
+        });
+
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          setSaveStatus({ type: null, message: '' });
+        }, 3000);
+      } else {
+        throw new Error(result.message || 'Failed to save settings');
+      }
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      setSaveStatus({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Failed to save settings. Please try again.',
+      });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const validateForm = (category: string): boolean => {
+    switch (category) {
+      case 'General':
+        if (!systemSettings.hospitalName.trim()) {
+          setSaveStatus({ type: 'error', message: 'Hospital name is required' });
+          return false;
+        }
+        if (!systemSettings.hospitalEmail.trim()) {
+          setSaveStatus({ type: 'error', message: 'Hospital email is required' });
+          return false;
+        }
+        break;
+      case 'Security':
+        if (systemSettings.sessionTimeout < 5) {
+          setSaveStatus({ type: 'error', message: 'Session timeout must be at least 5 minutes' });
+          return false;
+        }
+        if (systemSettings.passwordMinLength < 6) {
+          setSaveStatus({ type: 'error', message: 'Password must be at least 6 characters' });
+          return false;
+        }
+        break;
+    }
+    return true;
+  };
+
+  const handleSaveWithValidation = async (category: string) => {
+    if (!validateForm(category)) {
+      return;
+    }
+    await handleSaveSettings(category);
   };
 
   const SettingGroup = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -214,6 +345,27 @@ const SettingsPage = () => {
     </div>
   );
 
+  if (isInitialLoading) {
+    return (
+      <Layout>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '400px',
+          }}
+        >
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
+            <h3 style={{ color: '#667eea', marginBottom: '0.5rem' }}>Loading Settings...</h3>
+            <p style={{ color: '#6b7280' }}>Please wait while we load your system configuration</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
@@ -246,6 +398,22 @@ const SettingsPage = () => {
             <Button variant="outline">🔄 Reset to Defaults</Button>
           </div>
         </div>
+
+        {/* Status Messages */}
+        {saveStatus.type && (
+          <div
+            style={{
+              padding: '1rem',
+              marginBottom: '1rem',
+              borderRadius: '8px',
+              backgroundColor: saveStatus.type === 'success' ? '#dcfce7' : '#fee2e2',
+              border: `1px solid ${saveStatus.type === 'success' ? '#bbf7d0' : '#fecaca'}`,
+              color: saveStatus.type === 'success' ? '#166534' : '#dc2626',
+            }}
+          >
+            {saveStatus.message}
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div style={{ marginBottom: '2rem' }}>
@@ -536,7 +704,7 @@ const SettingsPage = () => {
                 borderTop: '1px solid #e5e7eb',
               }}
             >
-              <Button onClick={() => handleSaveSettings('General')} disabled={isLoading}>
+              <Button onClick={() => handleSaveWithValidation('General')} disabled={isLoading}>
                 {isLoading ? 'Saving...' : 'Save General Settings'}
               </Button>
             </div>
@@ -633,7 +801,7 @@ const SettingsPage = () => {
                   🔒 Security Audit
                 </h4>
                 <p style={{ fontSize: '0.875rem', color: '#92400e', marginBottom: '1rem' }}>
-                  Last security scan: December 1, 2024 - No issues found
+                  Last security scan: {new Date().toLocaleDateString()} - No issues found
                 </p>
                 <Button size="sm" variant="outline">
                   Run Security Scan
@@ -649,7 +817,7 @@ const SettingsPage = () => {
                 borderTop: '1px solid #e5e7eb',
               }}
             >
-              <Button onClick={() => handleSaveSettings('Security')} disabled={isLoading}>
+              <Button onClick={() => handleSaveWithValidation('Security')} disabled={isLoading}>
                 {isLoading ? 'Saving...' : 'Save Security Settings'}
               </Button>
             </div>
@@ -1038,7 +1206,7 @@ const SettingsPage = () => {
                         ✅ Last Backup Successful
                       </h4>
                       <p style={{ fontSize: '0.875rem', color: '#166534', margin: 0 }}>
-                        December 5, 2024 at 2:00 AM - Size: 2.4 GB
+                        {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()} - Size: 2.4 GB
                       </p>
                     </div>
                     <Button size="sm" variant="outline">

@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Notification {
   id: string;
@@ -36,35 +36,7 @@ interface Notification {
   expiresAt?: string;
 }
 
-interface _NotificationTemplate {
-  id: string;
-  name: string;
-  type: Notification['type'];
-  subject: string;
-  content: string;
-  channels: ('EMAIL' | 'SMS' | 'PUSH' | 'IN_APP')[];
-  isActive: boolean;
-  triggers: string[];
-  variables: string[];
-}
-
-interface _NotificationPreferences {
-  userId: string;
-  userRole: string;
-  emailEnabled: boolean;
-  smsEnabled: boolean;
-  pushEnabled: boolean;
-  inAppEnabled: boolean;
-  emergencyAlerts: boolean;
-  appointmentReminders: boolean;
-  labResultAlerts: boolean;
-  prescriptionNotices: boolean;
-  systemUpdates: boolean;
-  billingReminders: boolean;
-  quietHoursStart: string;
-  quietHoursEnd: string;
-  weekendNotifications: boolean;
-}
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:10000';
 
 const NotificationsPage = () => {
   const [currentTab, setCurrentTab] = useState<
@@ -78,23 +50,59 @@ const NotificationsPage = () => {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [showComposeModal, setShowComposeModal] = useState(false);
 
-  const filteredNotifications = [].filter(
-    /* TODO: API */ (notification) => {
-      const matchesSearch =
-        notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        notification.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        notification.recipientName.toLowerCase().includes(searchTerm.toLowerCase());
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-      const matchesType = typeFilter === 'ALL' || notification.type === typeFilter;
-      const matchesPriority = priorityFilter === 'ALL' || notification.priority === priorityFilter;
-      const matchesStatus =
-        statusFilter === 'ALL' ||
-        (statusFilter === 'UNREAD' && !notification.isRead) ||
-        (statusFilter === 'READ' && notification.isRead);
+  // Load notifications on component mount
+  useEffect(() => {
+    loadNotifications();
+  }, []);
 
-      return matchesSearch && matchesType && matchesPriority && matchesStatus;
+  const loadNotifications = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/notifications`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setNotifications(data.data);
+          setUnreadCount(data.data.filter((n: Notification) => !n.isRead).length);
+        }
+      } else {
+        console.log('Failed to load notifications from API, using empty data');
+        setNotifications([]);
+        setUnreadCount(0);
+      }
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+      setNotifications([]);
+      setUnreadCount(0);
+    } finally {
+      // Loading completed
     }
-  );
+  };
+
+  const filteredNotifications = notifications.filter((notification) => {
+    const matchesSearch =
+      notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      notification.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      notification.recipientName.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesType = typeFilter === 'ALL' || notification.type === typeFilter;
+    const matchesPriority = priorityFilter === 'ALL' || notification.priority === priorityFilter;
+    const matchesStatus =
+      statusFilter === 'ALL' ||
+      (statusFilter === 'UNREAD' && !notification.isRead) ||
+      (statusFilter === 'READ' && notification.isRead);
+
+    return matchesSearch && matchesType && matchesPriority && matchesStatus;
+  });
 
   const getTypeColor = (type: string) => {
     const colors = {
@@ -608,7 +616,7 @@ const NotificationsPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#ef4444', marginBottom: '0.5rem' }}>📬</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {[].filter(/* TODO: API */ (n) => !n.isRead).length}
+                {unreadCount}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Unread</div>
             </div>
@@ -617,7 +625,7 @@ const NotificationsPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#f59e0b', marginBottom: '0.5rem' }}>🚨</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {[].filter(/* TODO: API */ (n) => n.priority === 'HIGH').length}
+                {notifications.filter((n) => n.priority === 'HIGH').length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>High Priority</div>
             </div>
@@ -626,7 +634,7 @@ const NotificationsPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#10b981', marginBottom: '0.5rem' }}>📤</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {[].filter(/* TODO: API */ (n) => n.deliveryStatus === 'DELIVERED').length}
+                {notifications.filter((n) => n.deliveryStatus === 'DELIVERED').length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Delivered</div>
             </div>
@@ -635,7 +643,7 @@ const NotificationsPage = () => {
             <div style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{ fontSize: '2rem', color: '#3b82f6', marginBottom: '0.5rem' }}>⚡</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>
-                {[].filter(/* TODO: API */ (n) => n.actionRequired).length}
+                {notifications.filter((n) => n.actionRequired).length}
               </div>
               <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Action Required</div>
             </div>

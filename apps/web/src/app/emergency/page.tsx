@@ -34,90 +34,6 @@ interface EmergencyAlert {
   resourcesUsed: string[];
 }
 
-interface BedAvailability {
-  id: string;
-  wardName: string;
-  location: string;
-  bedNumber: string;
-  bedType: 'ICU' | 'CCU' | 'EMERGENCY' | 'GENERAL' | 'PEDIATRIC' | 'MATERNITY' | 'ISOLATION';
-  status: 'AVAILABLE' | 'OCCUPIED' | 'RESERVED' | 'MAINTENANCE' | 'CLEANING';
-  patientId?: string;
-  patientName?: string;
-  admissionTime?: string;
-  estimatedDischarge?: string;
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
-  equipmentAvailable: string[];
-  lastCleaned: string;
-  nurseAssigned?: string;
-}
-
-interface EmergencyContact {
-  id: string;
-  name: string;
-  role: string;
-  department: string;
-  phoneNumbers: {
-    primary: string;
-    mobile?: string;
-    emergency?: string;
-  };
-  email: string;
-  availability: '24/7' | 'BUSINESS_HOURS' | 'ON_CALL' | 'WEEKEND';
-  specialties: string[];
-  responseTime: number; // minutes
-  isOnDuty: boolean;
-  currentLocation?: string;
-}
-
-interface CriticalPatient {
-  id: string;
-  patientId: string;
-  name: string;
-  age: number;
-  gender: 'M' | 'F';
-  condition: string;
-  severity: 'CRITICAL' | 'SERIOUS' | 'STABLE' | 'IMPROVING';
-  location: string;
-  bedNumber: string;
-  attendingPhysician: string;
-  nurseName: string;
-  vitalSigns: {
-    bloodPressure: string;
-    heartRate: number;
-    temperature: number;
-    respiratoryRate: number;
-    oxygenSaturation: number;
-  };
-  lastUpdated: string;
-  alerts: string[];
-  medications: string[];
-  procedures: string[];
-  familyNotified: boolean;
-}
-
-interface TriageEntry {
-  id: string;
-  patientName: string;
-  age: number;
-  gender: 'M' | 'F';
-  arrivalTime: string;
-  chiefComplaint: string;
-  triageLevel: 1 | 2 | 3 | 4 | 5; // ESI levels
-  vitalSigns: {
-    bloodPressure?: string;
-    heartRate?: number;
-    temperature?: number;
-    respiratoryRate?: number;
-    oxygenSaturation?: number;
-    painScore?: number;
-  };
-  triageNurse: string;
-  status: 'WAITING' | 'IN_PROGRESS' | 'ADMITTED' | 'DISCHARGED';
-  assignedBed?: string;
-  estimatedWaitTime: number;
-  notes: string;
-}
-
 const EmergencyPage = () => {
   const [currentTab, setCurrentTab] = useState<
     'dashboard' | 'alerts' | 'beds' | 'contacts' | 'patients' | 'triage'
@@ -126,7 +42,6 @@ const EmergencyPage = () => {
   const [alertFilter, setAlertFilter] = useState('ALL');
   const [selectedAlert, setSelectedAlert] = useState<EmergencyAlert | null>(null);
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const [showNewAlertModal, setShowNewAlertModal] = useState(false);
 
   const getAlertTypeColor = (type: string) => {
     const colors = {
@@ -476,7 +391,7 @@ const EmergencyPage = () => {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Button variant="primary" onClick={() => setShowNewAlertModal(true)}>
+            <Button variant="primary" onClick={() => setShowAlertModal(true)}>
               🚨 New Alert
             </Button>
             <Button variant="outline">📊 Reports</Button>

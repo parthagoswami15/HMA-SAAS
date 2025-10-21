@@ -41,12 +41,10 @@ import { useAppStore } from '../../../stores/appStore';
 import { User, UserRole, TableColumn, FilterOption, Status } from '../../../types/common';
 import {
   Patient,
-  PatientStats,
   PatientListItem,
   CreatePatientDto,
   UpdatePatientDto,
   PatientSearchParams,
-  InsuranceInfo,
 } from '../../../types/patient';
 import { formatDate, formatPhoneNumber } from '../../../lib/utils';
 import { notifications } from '@mantine/notifications';
@@ -108,7 +106,7 @@ export default function PatientManagement() {
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || err.message || 'Failed to fetch patients';
       console.warn('Error fetching patients (using empty data):', errorMsg);
-      // Don't show error to user if backend is not ready, just use empty data
+      // Don't show _error to user if backend is not ready, just use empty data
       setError(null);
       setPatients([]);
     } finally {
@@ -307,7 +305,7 @@ export default function PatientManagement() {
         color: 'green',
       });
       fetchPatients(); // Refresh the list
-    } catch (error) {
+    } catch (_error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to delete patient',
@@ -788,3 +786,4 @@ export default function PatientManagement() {
     </Container>
   );
 }
+

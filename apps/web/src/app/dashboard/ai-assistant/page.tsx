@@ -1,69 +1,5 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import {
-  Container,
-  Paper,
-  Title,
-  Group,
-  Button,
-  TextInput,
-  Select,
-  Badge,
-  Modal,
-  Text,
-  Tabs,
-  Card,
-  ActionIcon,
-  Stack,
-  SimpleGrid,
-  ScrollArea,
-  ThemeIcon,
-  Progress,
-  Textarea,
-  Divider,
-  Alert,
-  Loader,
-  Accordion,
-  Rating,
-  Spoiler,
-  Chip,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import EmptyState from '../../../components/EmptyState';
-import { notifications } from '@mantine/notifications';
-// Charts removed due to MantineProvider compatibility issues with Next.js 15.5.4
-// import { LineChart, BarChart, DonutChart, AreaChart, PieChart } from '@mantine/charts';
-import {
-  IconPlus,
-  IconSearch,
-  IconEye,
-  IconStethoscope,
-  IconChartBar,
-  IconFileText,
-  IconRefresh,
-  IconX,
-  IconSend,
-  IconBulb,
-  IconRobot,
-  IconTarget,
-  IconStar,
-  IconBookmark,
-  IconBrain,
-  IconQuestionMark,
-  IconInfoCircle,
-  IconSparkles,
-  IconMedicalCross,
-  IconPill,
-  IconShield,
-  IconAlertTriangle,
-  IconMessageCircle,
-  IconClockHour4,
-  IconCheck,
-  IconMoodCheck,
-  IconShare,
-} from '@tabler/icons-react';
-
 // Types
 interface AIInsight {
   id: string;
@@ -128,39 +64,69 @@ interface AIQuery {
   };
 }
 
-interface ClinicalGuideline {
-  id: string;
-  title: string;
-  category: 'diagnosis' | 'treatment' | 'prevention' | 'emergency';
-  condition: string;
-  description: string;
-  recommendations: Array<{
-    level: 'A' | 'B' | 'C';
-    strength: 'strong' | 'moderate' | 'weak';
-    recommendation: string;
-    evidence: string;
-  }>;
-  lastUpdated: string;
-  source: string;
-  version: string;
-  applicability: string[];
-}
+import React, { useState, useMemo } from 'react';
+import {
+  Container,
+  Paper,
+  Title,
+  Group,
+  Button,
+  TextInput,
+  Select,
+  Badge,
+  Modal,
+  Text,
+  Tabs,
+  Card,
+  ActionIcon,
+  Stack,
+  SimpleGrid,
+  ScrollArea,
+  ThemeIcon,
+  Progress,
+  Textarea,
+  Divider,
+  Alert,
+  Loader,
+  Accordion,
+  Rating,
+  Spoiler,
+  Chip,
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { notifications } from '@mantine/notifications';
+import EmptyState from '../../../components/EmptyState';
+import {
+  IconMessage,
+  IconSend,
+  IconPlus,
+  IconSearch,
+  IconEye,
+  IconShare,
+  IconBrain,
+  IconStethoscope,
+  IconAlertTriangle,
+  IconCheck,
+  IconX,
+  IconRefresh,
+  IconRobot,
+  IconBulb,
+  IconSparkles,
+  IconTarget,
+  IconInfoCircle,
+  IconQuestionMark,
+  IconFileText,
+  IconStar,
+  IconMessageCircle,
+  IconClockHour4,
+  IconMoodCheck,
+  IconBookmark,
+  IconPill,
+  IconShield,
+  IconChartBar,
+  IconMedicalCross,
+} from '@tabler/icons-react';
 
-interface DrugInteraction {
-  id: string;
-  drug1: string;
-  drug2: string;
-  interactionType: 'major' | 'moderate' | 'minor';
-  mechanism: string;
-  clinicalEffect: string;
-  recommendation: string;
-  frequency: 'common' | 'uncommon' | 'rare';
-  onset: 'rapid' | 'delayed';
-  severity: 'severe' | 'moderate' | 'mild';
-  documentation: 'excellent' | 'good' | 'fair' | 'poor';
-}
-
-// Mock data
 const AIAssistant = () => {
   // State management
   const [activeTab, setActiveTab] = useState<string>('insights');
@@ -233,14 +199,6 @@ const AIAssistant = () => {
     }, 3000);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
@@ -248,6 +206,14 @@ const AIAssistant = () => {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
@@ -266,12 +232,29 @@ const AIAssistant = () => {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'accepted':
+        return 'green';
+      case 'implemented':
+        return 'teal';
+      case 'reviewed':
+        return 'blue';
+      case 'rejected':
+        return 'red';
+      case 'pending':
+        return 'yellow';
+      default:
+        return 'gray';
+    }
+  };
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'diagnosis':
         return <IconStethoscope size={16} />;
       case 'treatment':
-        return <IconMedicalCross size={16} />;
+        return <IconStethoscope size={16} />;
       case 'drug-interaction':
         return <IconPill size={16} />;
       case 'risk-assessment':
@@ -285,18 +268,14 @@ const AIAssistant = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'accepted':
-        return 'green';
-      case 'implemented':
-        return 'teal';
-      case 'reviewed':
-        return 'blue';
-      case 'rejected':
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high':
         return 'red';
-      case 'pending':
+      case 'medium':
         return 'yellow';
+      case 'low':
+        return 'green';
       default:
         return 'gray';
     }
@@ -1332,19 +1311,6 @@ const AIAssistant = () => {
       </Modal>
     </Container>
   );
-};
-
-const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case 'high':
-      return 'red';
-    case 'medium':
-      return 'yellow';
-    case 'low':
-      return 'green';
-    default:
-      return 'gray';
-  }
 };
 
 export default AIAssistant;

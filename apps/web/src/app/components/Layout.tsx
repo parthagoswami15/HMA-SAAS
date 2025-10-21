@@ -97,15 +97,15 @@ const Layout = ({ children }: LayoutProps) => {
       roles: ['ADMIN', 'HOSPITAL_ADMIN'],
     },
     {
-      title: 'Reports & Analytics',
-      href: '/reports',
-      icon: '📈',
-      roles: ['ADMIN', 'HOSPITAL_ADMIN', 'DOCTOR'],
-    },
-    {
       title: 'Settings',
       href: '/settings',
       icon: '⚙️',
+      roles: ['ADMIN', 'HOSPITAL_ADMIN'],
+    },
+    {
+      title: 'Users',
+      href: '/users',
+      icon: '👥',
       roles: ['ADMIN', 'HOSPITAL_ADMIN'],
     },
   ];
@@ -115,88 +115,84 @@ const Layout = ({ children }: LayoutProps) => {
   const isActive = (href: string) => pathname.startsWith(href);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc' }}>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-[999] lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <div
-        style={{
-          width: sidebarOpen ? '280px' : '80px',
-          transition: 'width 0.3s ease',
-          background: 'linear-gradient(180deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          position: 'fixed',
-          height: '100vh',
-          zIndex: 1000,
-          overflowY: 'auto',
-        }}
+        className={`
+          fixed lg:sticky top-0 h-screen z-[1000]
+          bg-gradient-to-b from-indigo-600 to-purple-600
+          text-white overflow-y-auto
+          transition-all duration-300 ease-in-out
+          ${
+            sidebarOpen
+              ? 'w-64 translate-x-0'
+              : 'w-0 lg:w-20 -translate-x-full lg:translate-x-0'
+          }
+        `}
       >
         {/* Logo */}
-        <div
-          style={{
-            padding: '1.5rem',
-            borderBottom: '1px solid rgba(255,255,255,0.1)',
-            textAlign: 'center',
-          }}
-        >
+        <div className="p-4 sm:p-6 border-b border-white border-opacity-10 text-center">
           <Link
             href="/dashboard"
-            style={{
-              color: 'white',
-              textDecoration: 'none',
-              fontSize: sidebarOpen ? '1.5rem' : '1rem',
-              fontWeight: 'bold',
-            }}
+            className="text-white no-underline font-bold text-lg sm:text-xl lg:text-2xl"
           >
             {sidebarOpen ? 'HMS SAAS' : 'HMS'}
           </Link>
         </div>
 
-        {/* Toggle Button */}
+        {/* Toggle Button - Desktop only */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          style={{
-            position: 'absolute',
-            right: '-12px',
-            top: '100px',
-            background: 'white',
-            color: '#667eea',
-            border: 'none',
-            borderRadius: '50%',
-            width: '24px',
-            height: '24px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            zIndex: 1001,
-          }}
+          className="
+            hidden lg:flex
+            absolute -right-3 top-24
+            bg-white text-indigo-600
+            border-none rounded-full
+            w-6 h-6 cursor-pointer
+            items-center justify-center
+            text-xs shadow-md z-[1001]
+            hover:bg-gray-100 transition-colors
+          "
         >
           {sidebarOpen ? '◀' : '▶'}
         </button>
 
         {/* Navigation */}
-        <nav style={{ padding: '1rem 0' }}>
+        <nav className="py-2 sm:py-4">
           {filteredMenuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '0.875rem 1.5rem',
-                color: isActive(item.href) ? 'white' : 'rgba(255,255,255,0.8)',
-                textDecoration: 'none',
-                background: isActive(item.href) ? 'rgba(255,255,255,0.1)' : 'transparent',
-                borderRight: isActive(item.href) ? '4px solid white' : 'none',
-                transition: 'all 0.2s ease',
+              onClick={() => {
+                // Close sidebar on mobile after navigation
+                if (window.innerWidth < 1024) {
+                  setSidebarOpen(false);
+                }
               }}
+              className={`
+                flex items-center px-4 sm:px-6 py-3
+                no-underline transition-all duration-200
+                hover:bg-white hover:bg-opacity-10
+                ${
+                  isActive(item.href)
+                    ? 'text-white bg-white bg-opacity-10 border-r-4 border-white'
+                    : 'text-white text-opacity-80 border-r-4 border-transparent'
+                }
+              `}
             >
-              <span style={{ fontSize: '1.2rem', marginRight: sidebarOpen ? '0.75rem' : '0' }}>
+              <span className={`text-lg sm:text-xl ${sidebarOpen ? 'mr-3' : 'mr-0'}`}>
                 {item.icon}
               </span>
               {sidebarOpen && (
-                <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>{item.title}</span>
+                <span className="text-sm sm:text-base font-medium">{item.title}</span>
               )}
             </Link>
           ))}
@@ -204,35 +200,14 @@ const Layout = ({ children }: LayoutProps) => {
 
         {/* User Profile */}
         {sidebarOpen && (
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '0',
-              width: '100%',
-              padding: '1rem',
-              borderTop: '1px solid rgba(255,255,255,0.1)',
-              background: 'rgba(0,0,0,0.1)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: '0.75rem',
-                  fontSize: '1.2rem',
-                }}
-              >
+          <div className="absolute bottom-0 w-full p-3 sm:p-4 border-t border-white border-opacity-10 bg-black bg-opacity-10">
+            <div className="flex items-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-2 sm:mr-3 text-base sm:text-lg">
                 👨‍⚕️
               </div>
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: '600' }}>{currentUser.name}</div>
-                <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs sm:text-sm font-semibold truncate">{currentUser.name}</div>
+                <div className="text-xs opacity-80 truncate">
                   {currentUser.role.replace('_', ' ')}
                 </div>
               </div>
@@ -242,96 +217,53 @@ const Layout = ({ children }: LayoutProps) => {
       </div>
 
       {/* Main Content */}
-      <div
-        style={{
-          marginLeft: sidebarOpen ? '280px' : '80px',
-          transition: 'margin-left 0.3s ease',
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh',
-        }}
-      >
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-20 transition-all duration-300">
         {/* Header */}
-        <header
-          style={{
-            background: 'white',
-            padding: '1rem 2rem',
-            borderBottom: '1px solid #e2e8f0',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            position: 'sticky',
-            top: 0,
-            zIndex: 100,
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h1
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  margin: 0,
-                }}
-              >
-                Hospital Management System
+        <header className="bg-white px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 border-b border-gray-200 shadow-sm sticky top-0 z-50">
+          <div className="flex justify-between items-center">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Toggle menu"
+            >
+              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            <div className="flex-1 lg:flex-none">
+              <h1 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-gray-800 m-0 truncate">
+                <span className="hidden sm:inline">Hospital Management System</span>
+                <span className="sm:hidden">HMS</span>
               </h1>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
               <Link
                 href="/notifications"
-                style={{
-                  padding: '0.5rem',
-                  borderRadius: '8px',
-                  background: '#f3f4f6',
-                  cursor: 'pointer',
-                  textDecoration: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+                className="p-1.5 sm:p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors no-underline flex items-center justify-center relative"
               >
-                🔔
+                <span className="text-lg sm:text-xl">🔔</span>
+                {/* Unread notification badge */}
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 sm:w-5 sm:h-5 text-xs font-semibold flex items-center justify-center min-w-[1rem] sm:min-w-[1.25rem] border-2 border-white">
+                  3
+                </span>
               </Link>
               <Link
                 href="/profile"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  color: '#1f2937',
-                  textDecoration: 'none',
-                }}
+                className="flex items-center gap-1.5 sm:gap-2 text-gray-800 no-underline"
               >
-                <div
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '0.9rem',
-                  }}
-                >
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white text-sm sm:text-base">
                   👨‍⚕️
                 </div>
-                <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>{currentUser.name}</span>
+                <span className="hidden md:inline text-xs sm:text-sm font-medium truncate max-w-[100px] lg:max-w-none">{currentUser.name}</span>
               </Link>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main
-          style={{
-            flex: 1,
-            padding: '2rem',
-            overflow: 'auto',
-          }}
-        >
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 overflow-auto">
           {children}
         </main>
       </div>

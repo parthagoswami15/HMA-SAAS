@@ -10,54 +10,22 @@ import {
   TextInput,
   Select,
   Badge,
-  Table,
   Modal,
   Text,
   Tabs,
   Card,
-  Avatar,
   ActionIcon,
-  Menu,
   Stack,
-  Divider,
-  ScrollArea,
   ThemeIcon,
   Alert,
   Progress,
-  NumberInput,
   Textarea,
-  Timeline,
-  Stepper,
-  RingProgress,
-  Tooltip,
-  List,
-  Image,
-  Loader,
-  Highlight,
-  Accordion,
-  FileButton,
-  ColorSwatch,
-  Code,
-  Spoiler,
-  Mark,
-  Rating,
-  Switch,
-  Checkbox,
-  Radio,
-  PasswordInput,
-  MultiSelect,
-  Anchor,
-  Notification,
-  Indicator,
-  UnstyledButton,
-  // rem,
-  // Slider,
-  Center,
-  // Box,
-  // FileInput,
-  // JsonInput,
-  // SegmentedControl,
   SimpleGrid,
+  Center,
+  RingProgress,
+  Timeline,
+  NumberInput,
+  MultiSelect,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
@@ -65,260 +33,113 @@ import { notifications } from '@mantine/notifications';
 import { DatePickerInput } from '@mantine/dates';
 import {
   MantineDonutChart,
-  SimpleAreaChart,
-  SimpleBarChart,
 } from '../../../components/MantineChart';
 import {
   IconPlus,
   IconSearch,
   IconEdit,
   IconEye,
-  IconTrash,
-  IconCalendar,
-  IconUsers,
   IconChartBar,
-  IconPhone,
-  IconMail,
   IconAlertCircle,
-  IconCheck,
-  IconX,
-  IconDotsVertical,
-  IconReportMedical,
-  IconClock,
   IconClipboardList,
   IconFileText,
   IconDownload,
-  IconPrinter,
-  IconShare,
-  IconActivity,
-  IconExclamationMark,
-  IconClockHour4,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconCalculator,
-  IconSettings,
-  IconRefresh,
-  IconFilter,
-  IconBarcode,
-  IconTemperature,
   IconShieldCheck,
   IconAlertTriangle,
-  IconCircleCheck,
-  IconClipboard,
-  IconLungs,
-  IconHeart,
-  IconBrain,
-  IconBone,
-  IconStethoscope,
-  IconMedicalCross,
-  IconPackage,
-  IconTruck,
-  IconCash,
-  IconReceipt,
-  IconNotes,
-  IconTag,
-  IconAlarm,
-  IconInfoCircle,
-  IconBed,
-  IconAmbulance,
-  IconFlask,
-  IconDroplet,
-  IconNurse,
-  IconBandage,
-  IconPill,
-  IconMask,
-  IconBolt,
-  IconZoomIn as IconZoom,
-  IconCut,
-  IconTool,
-  IconPhoto,
-  IconScan,
-  IconDeviceDesktop,
-  IconCamera,
-  IconUpload,
   IconTarget,
-  IconFocus,
-  IconColorPicker,
-  IconRotate,
-  IconContrast,
-  IconBrightness,
-  IconAdjustments,
-  IconMaximize,
-  IconMinimize,
-  IconPlayerPlay,
-  IconPlayerPause,
-  IconVolume,
-  IconFileUpload,
-  IconCloudUpload,
-  IconMessage,
-  IconMessageCircle,
-  IconSend,
-  IconBell,
-  IconBellRinging,
-  IconVideo,
-  IconVideoOff,
-  IconMicrophone,
-  IconMicrophoneOff,
-  IconDatabase,
-  IconDna,
-  IconTestPipe,
-  IconMicroscope,
-  IconAtom,
-  IconFlask2,
-  IconScale,
-  IconReportAnalytics,
-  IconChartDots,
+  IconCircleDot,
   IconChartLine,
-  IconChartPie,
-  IconFileDescription,
-  IconFileReport,
+  IconShield,
   IconFileCheck,
-  IconFileCertificate,
-  IconFileExport,
-  IconFileImport,
-  IconFiles,
-  IconFolder,
-  IconFolderOpen,
-  IconArchive,
-  IconHistory,
-  IconCalendarEvent,
-  IconCalendarTime,
-  IconClockHour9,
-  IconUserCheck,
-  IconUserPlus,
-  IconUserX,
-  IconUsersGroup,
-  IconUser,
-  IconIdBadge,
-  IconBriefcase,
   IconSchool,
   IconCertificate,
-  IconAward,
-  IconTrophy,
-  IconMedal,
-  IconStar,
-  IconStarFilled,
-  IconRocket,
-  IconFlag,
-  IconFlag2,
-  IconFlag3,
-  IconCheckbox,
-  IconSquareCheck,
-  IconCircleDot,
-  IconPoint,
-  IconDots,
-  IconMenu,
-  IconList,
-  IconListDetails,
-  IconTable,
-  IconCards,
-  IconLayoutGrid,
-  IconLayoutList,
-  IconLayoutColumns,
-  IconFilter2,
-  IconSortAscending,
-  IconSortDescending,
-  IconArrowUp,
-  IconArrowDown,
-  IconArrowLeft,
-  IconArrowRight,
-  IconChevronUp,
-  IconChevronDown,
-  IconChevronLeft,
-  IconChevronRight,
-  IconCaretUp,
-  IconCaretDown,
-  IconCaretLeft,
-  IconCaretRight,
-  IconPlaylistAdd,
-  IconPlaylistX,
-  IconPlayerRecord,
-  IconPlayerStop,
-  IconVolumeOff,
-  IconVolume2,
-  IconShield,
-  IconLock,
-  IconKey,
-  IconFingerprint,
-  IconLicense,
-  IconBuildingBank,
-  IconBuilding,
-  IconHome,
-  IconMapPin,
-  IconGps,
-  IconMap,
-  IconCompass,
-  IconRoute,
-  IconRoad,
-  IconCar,
-  IconTruckDelivery,
-  IconPlane,
-  IconShip,
-  IconTrain,
-  IconBus,
-  IconBike,
-  IconWalk,
-  IconRun,
-  IconSwimming,
-  IconYoga,
-  IconStretching,
-  IconBarbell,
-  IconWeight,
-  IconBooks,
-  IconBook,
-  IconBookmark,
-  IconNotebook,
-  IconNews,
-  IconArticle,
-  IconWriting,
-  IconPencil,
-  IconHighlight,
-  IconEraser,
-  IconRuler2,
-  IconRuler3,
-  IconTriangle,
-  IconSquare,
-  IconCircle,
-  IconDiamond,
-  IconHexagon,
-  IconOctagon,
-  IconStars,
-  IconSparkles,
-  IconFlame,
-  IconSun,
-  IconMoon,
-  IconCloud,
-  IconCloudCheck,
-  IconCloudDownload,
-  IconCloudUp,
-  IconWind,
-  IconTornado,
 } from '@tabler/icons-react';
 
-// Import types and mock data (using any for now due to type mismatches)
-type QualityMetric = any;
-type MetricStatus = any;
-type MetricType = any;
-type Audit = any;
-type AuditStatus = any;
-type AuditType = any;
-type Accreditation = any;
-type AccreditationStatus = any;
-type Policy = any;
-type PolicyStatus = any;
-type ComplianceItem = any;
-type ComplianceStatus = any;
-type QualityIncident = any;
-type IncidentSeverity = any;
-type CorrectiveAction = any;
-type ActionStatus = any;
-type QualityStats = any;
-type RiskAssessment = any;
-type RiskLevel = any;
-type PolicyCategory = any;
-type AuditFinding = any;
-type FindingSeverity = any;
-type QualityIndicator = any;
+type RiskLevel = 'low' | 'medium' | 'high' | 'critical';
+type IncidentSeverity = 'low' | 'medium' | 'high' | 'critical';
+type FindingSeverity = 'low' | 'medium' | 'high' | 'critical';
+
+// Type definitions
+interface QualityMetric {
+  id: string;
+  metricName: string;
+  name?: string;
+  description?: string;
+  status?: string;
+  value: number;
+  target?: number;
+  unit?: string;
+  category: string;
+  lastUpdated?: string;
+  measurementDate?: string;
+  departmentId?: string;
+  tenantId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface Audit {
+  id: string;
+  auditType?: string;
+  title?: string;
+  auditor?: string;
+  department?: string;
+  status?: string;
+  scheduledDate: string;
+  completedDate?: string;
+  findings?: any[];
+}
+
+interface Policy {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  version?: string;
+  status?: string;
+  effectiveDate?: string;
+  reviewDate?: string;
+}
+
+interface QualityIncident {
+  id: string;
+  title: string;
+  description: string;
+  category?: string;
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  status: 'OPEN' | 'INVESTIGATING' | 'RESOLVED' | 'CLOSED' | string;
+  reportedDate?: string;
+  reportedBy?: string;
+  department?: string;
+  location?: string;
+  incidentDate?: string;
+  tenantId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface Accreditation {
+  id: string;
+  name: string;
+  accreditingBody: string;
+  status: string;
+  validUntil?: string;
+  lastReview?: string;
+}
+
+interface RiskAssessment {
+  id: string;
+  riskTitle?: string;
+  title?: string;
+  description?: string;
+  level?: RiskLevel;
+  riskLevel?: RiskLevel;
+  category?: string;
+  status?: string;
+  identifiedDate?: string;
+  mitigationPlan?: string;
+}
+
 // Mock data imports removed
 import qualityService from '../../../services/quality.service';
 
@@ -336,15 +157,11 @@ const QualityAssurance = () => {
   const [selectedIncident, setSelectedIncident] = useState<QualityIncident | null>(null);
   const [selectedAccreditation, setSelectedAccreditation] = useState<Accreditation | null>(null);
   const [selectedRisk, setSelectedRisk] = useState<RiskAssessment | null>(null);
-
-  // API state
-  const [qualityMetrics, setQualityMetrics] = useState<any[]>([]);
-  const [incidents, setIncidents] = useState<any[]>([]);
+  const [qualityMetrics, setQualityMetrics] = useState<QualityMetric[]>([]);
+  const [incidents, setIncidents] = useState<QualityIncident[]>([]);
   const [qualityStats, setQualityStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Fetch data
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -388,7 +205,7 @@ const QualityAssurance = () => {
       setQualityStats(response.data);
     } catch (err: any) {
       console.error('Error fetching quality stats:', err);
-      setQualityStats([] /* TODO: Fetch from API */);
+      setQualityStats(null);
     }
   };
 
@@ -418,8 +235,8 @@ const QualityAssurance = () => {
     return [].filter(
       /* TODO: Fetch from API */ (metric) => {
         const matchesSearch =
-          metric.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          metric.description.toLowerCase().includes(searchQuery.toLowerCase());
+          (metric.metricName || metric.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (metric.description || '').toLowerCase().includes(searchQuery.toLowerCase());
 
         const matchesStatus = !selectedMetricStatus || metric.status === selectedMetricStatus;
 
@@ -559,10 +376,6 @@ const QualityAssurance = () => {
     });
   };
 
-  const formatDateTime = (date: string) => {
-    return new Date(date).toLocaleString('en-IN');
-  };
-
   // Quick stats for overview
   const quickStats = [
     {
@@ -592,24 +405,26 @@ const QualityAssurance = () => {
   ];
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py="md" className="px-3 sm:px-4 md:px-6">
       {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={1}>Quality Assurance & Compliance</Title>
-          <Text c="dimmed" size="sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <Title order={1} className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">Quality Assurance & Compliance</Title>
+          <Text c="dimmed" size="sm" className="text-xs sm:text-sm">
             Monitor compliance, manage audits, track quality metrics, and ensure regulatory
             adherence
           </Text>
         </div>
-        <Group>
-          <Button leftSection={<IconPlus size={16} />} onClick={openCreateAudit} color="blue">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <Button leftSection={<IconPlus size={16} />} onClick={openCreateAudit} className="w-full sm:w-auto" size="sm" color="blue">
             Schedule Audit
           </Button>
           <Button
             variant="light"
             leftSection={<IconAlertTriangle size={16} />}
             onClick={openReportIncident}
+            className="w-full sm:w-auto"
+            size="sm"
           >
             Report Incident
           </Button>
@@ -617,18 +432,20 @@ const QualityAssurance = () => {
             variant="light"
             leftSection={<IconFileText size={16} />}
             onClick={openCreatePolicy}
+            className="w-full sm:w-auto"
+            size="sm"
           >
             Create Policy
           </Button>
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       {/* Quick Stats */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing={{ base: 'sm', sm: 'md', lg: 'lg' }} mb="lg">
         {quickStats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <Card key={stat.title} padding="lg" radius="md" withBorder>
+            <Card key={stat.title} padding="md" className="p-3 sm:p-4 md:p-5" radius="md" withBorder>
               <Group justify="space-between">
                 <div>
                   <Text c="dimmed" size="sm" fw={500}>
@@ -649,30 +466,31 @@ const QualityAssurance = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={setActiveTab}>
-        <Tabs.List>
-          <Tabs.Tab value="overview" leftSection={<IconChartBar size={16} />}>
-            Overview
+        <Tabs.List className="flex-wrap">
+          <Tabs.Tab value="overview" leftSection={<IconChartBar size={16} />} className="text-xs sm:text-sm">
+            <span className="hidden sm:inline">Overview</span>
+            <span className="sm:hidden">📊</span>
           </Tabs.Tab>
-          <Tabs.Tab value="metrics" leftSection={<IconTarget size={16} />}>
-            Quality Metrics
+          <Tabs.Tab value="metrics" leftSection={<IconTarget size={16} />} className="text-xs sm:text-sm">
+            Metrics
           </Tabs.Tab>
-          <Tabs.Tab value="audits" leftSection={<IconClipboardList size={16} />}>
+          <Tabs.Tab value="audits" leftSection={<IconClipboardList size={16} />} className="text-xs sm:text-sm">
             Audits
           </Tabs.Tab>
-          <Tabs.Tab value="compliance" leftSection={<IconShieldCheck size={16} />}>
+          <Tabs.Tab value="compliance" leftSection={<IconShieldCheck size={16} />} className="text-xs sm:text-sm">
             Compliance
           </Tabs.Tab>
-          <Tabs.Tab value="accreditation" leftSection={<IconCertificate size={16} />}>
+          <Tabs.Tab value="accreditation" leftSection={<IconCertificate size={16} />} className="text-xs sm:text-sm">
             Accreditation
           </Tabs.Tab>
-          <Tabs.Tab value="policies" leftSection={<IconFileText size={16} />}>
+          <Tabs.Tab value="policies" leftSection={<IconFileText size={16} />} className="text-xs sm:text-sm">
             Policies
           </Tabs.Tab>
-          <Tabs.Tab value="incidents" leftSection={<IconAlertTriangle size={16} />}>
+          <Tabs.Tab value="incidents" leftSection={<IconAlertTriangle size={16} />} className="text-xs sm:text-sm">
             Incidents
           </Tabs.Tab>
-          <Tabs.Tab value="risk" leftSection={<IconAlertCircle size={16} />}>
-            Risk Assessment
+          <Tabs.Tab value="risk" leftSection={<IconAlertCircle size={16} />} className="text-xs sm:text-sm">
+            Risk
           </Tabs.Tab>
         </Tabs.List>
 
@@ -717,7 +535,7 @@ const QualityAssurance = () => {
                 Recent Audit Activity
               </Title>
               <Timeline active={3} bulletSize={24} lineWidth={2}>
-                {[].map((audit, index) => (
+                {[].map((audit, _index) => (
                   <Timeline.Item
                     key={audit.id}
                     bullet={
@@ -835,15 +653,16 @@ const QualityAssurance = () => {
 
         {/* Quality Metrics Tab */}
         <Tabs.Panel value="metrics">
-          <Paper p="md" radius="md" withBorder mt="md">
+          <Paper p="md" className="p-3 sm:p-4 md:p-6" radius="md" withBorder mt="md">
             {/* Search and Filters */}
-            <Group mb="md">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
               <TextInput
                 placeholder="Search metrics..."
                 leftSection={<IconSearch size={16} />}
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.currentTarget.value)}
-                style={{ flex: 1 }}
+                className="w-full sm:flex-1"
+                size="sm"
               />
               <Select
                 placeholder="Status"
@@ -856,9 +675,13 @@ const QualityAssurance = () => {
                 value={selectedMetricStatus}
                 onChange={setSelectedMetricStatus}
                 clearable
+                className="w-full sm:w-auto"
+                size="sm"
               />
-              <Button leftSection={<IconPlus size={16} />}>Add Metric</Button>
-            </Group>
+              <Button leftSection={<IconPlus size={16} />} className="w-full sm:w-auto" size="sm">
+                Add Metric
+              </Button>
+            </div>
 
             {/* Quality Metrics Grid */}
             <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">

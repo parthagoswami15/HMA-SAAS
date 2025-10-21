@@ -15,20 +15,14 @@ import {
   Text,
   Tabs,
   Card,
-  Avatar,
   ActionIcon,
-  Menu,
   Stack,
   Divider,
   SimpleGrid,
-  ScrollArea,
   ThemeIcon,
-  Alert,
   Progress,
   NumberInput,
   Textarea,
-  Timeline,
-  Stepper,
   RingProgress,
   // Tooltip,
   // List,
@@ -320,36 +314,38 @@ const FinanceManagement = () => {
     : [];
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py="md" className="px-3 sm:px-4 md:px-6">
       {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={1}>Financial Management & Accounting</Title>
-          <Text c="dimmed" size="sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <Title order={1} className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">Financial Management & Accounting</Title>
+          <Text c="dimmed" size="sm" className="text-xs sm:text-sm">
             Manage finances, accounting, budgets, and financial reporting
           </Text>
         </div>
-        <Group>
-          <Button leftSection={<IconPlus size={16} />} onClick={openAddTransaction} color="blue">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddTransaction} className="w-full sm:w-auto" size="sm" color="blue">
             New Transaction
           </Button>
           <Button
             variant="light"
             leftSection={<IconFileInvoice size={16} />}
-            color="green"
             onClick={_openCreateInvoice}
+            className="w-full sm:w-auto"
+            size="sm"
+            color="green"
           >
             Create Invoice
           </Button>
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       {/* Statistics Cards */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing={{ base: 'sm', sm: 'md', lg: 'lg' }} mb="lg">
         {statsCards.map((stat) => {
           const Icon = stat.icon;
           return (
-            <Card key={stat.title} padding="lg" radius="md" withBorder>
+            <Card key={stat.title} padding="md" className="p-3 sm:p-4 md:p-5" radius="md" withBorder>
               <Group justify="space-between">
                 <div>
                   <Text c="dimmed" size="sm" fw={500}>
@@ -384,23 +380,24 @@ const FinanceManagement = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={setActiveTab}>
-        <Tabs.List>
-          <Tabs.Tab value="overview" leftSection={<IconChartBar size={16} />}>
-            Overview
+        <Tabs.List className="flex-wrap">
+          <Tabs.Tab value="overview" leftSection={<IconChartBar size={16} />} className="text-xs sm:text-sm">
+            <span className="hidden sm:inline">Overview</span>
+            <span className="sm:hidden">📊</span>
           </Tabs.Tab>
-          <Tabs.Tab value="transactions" leftSection={<IconReceipt size={16} />}>
+          <Tabs.Tab value="transactions" leftSection={<IconReceipt size={16} />} className="text-xs sm:text-sm">
             Transactions
           </Tabs.Tab>
-          <Tabs.Tab value="accounts" leftSection={<IconBuildingBank size={16} />}>
+          <Tabs.Tab value="accounts" leftSection={<IconBuildingBank size={16} />} className="text-xs sm:text-sm">
             Accounts
           </Tabs.Tab>
-          <Tabs.Tab value="budgets" leftSection={<IconBriefcase size={16} />}>
+          <Tabs.Tab value="budgets" leftSection={<IconBriefcase size={16} />} className="text-xs sm:text-sm">
             Budgets
           </Tabs.Tab>
-          <Tabs.Tab value="invoices" leftSection={<IconFileInvoice size={16} />}>
+          <Tabs.Tab value="invoices" leftSection={<IconFileInvoice size={16} />} className="text-xs sm:text-sm">
             Invoices
           </Tabs.Tab>
-          <Tabs.Tab value="reports" leftSection={<IconReportAnalytics size={16} />}>
+          <Tabs.Tab value="reports" leftSection={<IconReportAnalytics size={16} />} className="text-xs sm:text-sm">
             Reports
           </Tabs.Tab>
         </Tabs.List>
@@ -514,15 +511,16 @@ const FinanceManagement = () => {
 
         {/* Transactions Tab */}
         <Tabs.Panel value="transactions">
-          <Paper p="md" radius="md" withBorder mt="md">
+          <Paper p="md" className="p-3 sm:p-4 md:p-6" radius="md" withBorder mt="md">
             {/* Search and Filters */}
-            <Group mb="md">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
               <TextInput
                 placeholder="Search transactions..."
                 leftSection={<IconSearch size={16} />}
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.currentTarget.value)}
-                style={{ flex: 1 }}
+                className="w-full sm:flex-1"
+                size="sm"
               />
               <Select
                 placeholder="Type"
@@ -534,6 +532,8 @@ const FinanceManagement = () => {
                 value={selectedType}
                 onChange={setSelectedType}
                 clearable
+                className="w-full sm:w-auto"
+                size="sm"
               />
               <Select
                 placeholder="Status"
@@ -546,6 +546,8 @@ const FinanceManagement = () => {
                 value={selectedStatus}
                 onChange={setSelectedStatus}
                 clearable
+                className="w-full sm:w-auto"
+                size="sm"
               />
               <Select
                 placeholder="Category"
@@ -562,15 +564,19 @@ const FinanceManagement = () => {
                 value={selectedCategory}
                 onChange={setSelectedCategory}
                 clearable
+                className="w-full sm:w-auto"
+                size="sm"
               />
-              <Button variant="light" onClick={clearFilters}>
+              <Button variant="light" onClick={clearFilters} className="w-full sm:w-auto" size="sm">
                 Clear Filters
               </Button>
-            </Group>
+            </div>
 
             {/* Transactions Table */}
-            <ScrollArea>
-              <Table striped highlightOnHover>
+            <div className="overflow-x-auto -mx-3 sm:mx-0">
+              <div className="inline-block min-w-full align-middle">
+                <div className="overflow-hidden">
+                  <Table striped highlightOnHover>
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>Transaction ID</Table.Th>
@@ -702,7 +708,9 @@ const FinanceManagement = () => {
                   )}
                 </Table.Tbody>
               </Table>
-            </ScrollArea>
+                </div>
+              </div>
+            </div>
           </Paper>
         </Tabs.Panel>
 

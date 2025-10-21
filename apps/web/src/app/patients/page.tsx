@@ -73,13 +73,12 @@ function PatientsPage() {
   const [patientStats, setPatientStats] = useState<PatientStats | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
-  const [_searchQuery, _setSearchQuery] = useState('');
-  const [_filters, _setFilters] = useState<Record<string, unknown>>({});
   const [opened, { open, close }] = useDisclosure(false);
   const [viewModalOpened, { open: openView, close: closeView }] = useDisclosure(false);
   const [historyModalOpened, { open: openHistory, close: closeHistory }] = useDisclosure(false);
-  const [documentsModalOpened, { open: openDocuments, close: closeDocuments }] =
-    useDisclosure(false);
+  const [documentsModalOpened, { open: openDocuments, close: closeDocuments }] = useDisclosure(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
   useEffect(() => {
     fetchPatients();
@@ -309,22 +308,6 @@ function PatientsPage() {
     // Would navigate to appointment scheduling
   };
 
-  const __handleOpenHistory = (_patient: PatientListItem) => {
-    const fullPatient = patients.find((p) => p.id === _patient.id);
-    if (fullPatient) {
-      setSelectedPatient(fullPatient);
-      openHistory();
-    }
-  };
-
-  const __handleOpenDocuments = (_patient: PatientListItem) => {
-    const fullPatient = patients.find((p) => p.id === _patient.id);
-    if (fullPatient) {
-      setSelectedPatient(fullPatient);
-      openDocuments();
-    }
-  };
-
   // Table columns configuration
   const columns: TableColumn[] = [
     {
@@ -445,34 +428,22 @@ function PatientsPage() {
   ];
 
   // Statistics cards
-  const StatCard = ({
-    title,
-    value,
-    icon,
-    color,
-    subtitle,
-  }: {
-    title: string;
-    value: string;
-    icon: React.ReactNode;
-    color: string;
-    subtitle?: string;
-  }) => (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Group justify="space-between" mb="md">
-        <div style={{ color: `var(--mantine-color-${color}-6)` }}>{icon}</div>
+  const StatCard = ({ title, value, icon, color, subtitle }: any) => (
+    <Card shadow="sm" padding="md" className="p-3 sm:p-4 md:p-5" radius="md" withBorder>
+      <Group justify="space-between" className="mb-2">
+        <div className="flex-1 min-w-0">
+          <Text size="xl" fw={700} c={color} className="text-lg sm:text-xl md:text-2xl truncate">
+            {value}
+          </Text>
+          <Text size="sm" c="dimmed" fw={500} className="text-xs sm:text-sm truncate">
+            {title}
+          </Text>
+        </div>
+        <div style={{ color }} className="flex-shrink-0 text-2xl sm:text-3xl">{icon}</div>
       </Group>
 
-      <Text size="xl" fw={700} mb="xs">
-        {value}
-      </Text>
-
-      <Text size="sm" c="dimmed" mb="sm">
-        {title}
-      </Text>
-
       {subtitle && (
-        <Text size="xs" c="dimmed">
+        <Text size="xs" c="dimmed" className="text-xs mt-1">
           {subtitle}
         </Text>
       )}
@@ -494,28 +465,38 @@ function PatientsPage() {
       notifications={0}
       onLogout={() => setUser(null)}
     >
-      <Container fluid>
+      <Container fluid className="px-3 sm:px-4 md:px-6">
         <Stack gap="lg">
           {/* Header */}
-          <Group justify="space-between">
-            <div>
-              <Title order={2}>Patient Management</Title>
-              <Text c="dimmed">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4">
+            <div className="flex-1 min-w-0">
+              <Title order={2} className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">Patient Management</Title>
+              <Text c="dimmed" className="text-xs sm:text-sm">
                 Manage patient registration, medical records, and healthcare information
               </Text>
             </div>
-            <Group>
-              <Button leftSection={<IconUserPlus size="1rem" />} onClick={open}>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+              <Button 
+                leftSection={<IconUserPlus size="1rem" />} 
+                onClick={open}
+                className="w-full sm:w-auto"
+                size="sm"
+              >
                 New Patient
               </Button>
-              <Button variant="outline" leftSection={<IconDownload size="1rem" />}>
+              <Button 
+                variant="outline" 
+                leftSection={<IconDownload size="1rem" />}
+                className="w-full sm:w-auto"
+                size="sm"
+              >
                 Export
               </Button>
-            </Group>
-          </Group>
+            </div>
+          </div>
 
           {/* Statistics Cards */}
-          <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
+          <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing={{ base: 'sm', sm: 'md', lg: 'lg' }}>
             <StatCard
               title="Total Patients"
               value={patientStats ? patientStats.totalPatients.toLocaleString() : '0'}
@@ -548,11 +529,11 @@ function PatientsPage() {
 
           {/* Tabs */}
           <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'list')}>
-            <Tabs.List>
-              <Tabs.Tab value="list">Patient List</Tabs.Tab>
-              <Tabs.Tab value="analytics">Analytics</Tabs.Tab>
-              <Tabs.Tab value="demographics">Demographics</Tabs.Tab>
-              <Tabs.Tab value="insurance">Insurance</Tabs.Tab>
+            <Tabs.List className="flex-wrap">
+              <Tabs.Tab value="list" className="text-xs sm:text-sm">Patient List</Tabs.Tab>
+              <Tabs.Tab value="analytics" className="text-xs sm:text-sm">Analytics</Tabs.Tab>
+              <Tabs.Tab value="demographics" className="text-xs sm:text-sm">Demographics</Tabs.Tab>
+              <Tabs.Tab value="insurance" className="text-xs sm:text-sm">Insurance</Tabs.Tab>
             </Tabs.List>
 
             <Tabs.Panel value="list" pt="md">
@@ -564,8 +545,8 @@ function PatientsPage() {
                 filterable={true}
                 sortable={true}
                 filters={filterOptions}
-                onSearch={(query) => _setSearchQuery(query)}
-                onFilter={(filters) => _setFilters(filters)}
+                onSearch={(query) => setSearchQuery(query)}
+                onFilter={(filters) => setFilters(filters)}
                 pagination={{
                   page: 1,
                   limit: 10,
@@ -585,7 +566,7 @@ function PatientsPage() {
             <Tabs.Panel value="analytics" pt="md">
               <Grid>
                 <Grid.Col span={{ base: 12, md: 6 }}>
-                  <Paper p="lg" shadow="sm" radius="md" withBorder>
+                  <Paper p="md" className="p-3 sm:p-4 md:p-6" shadow="sm" radius="md" withBorder>
                     <Text fw={600} size="lg" mb="md">
                       Visit Trends (Last 7 Days)
                     </Text>
@@ -658,8 +639,8 @@ function PatientsPage() {
             <Tabs.Panel value="demographics" pt="md">
               <Grid>
                 <Grid.Col span={{ base: 12, md: 6 }}>
-                  <Paper p="lg" shadow="sm" radius="md" withBorder>
-                    <Text fw={600} size="lg" mb="md">
+                  <Paper p="md" className="p-3 sm:p-4 md:p-6" shadow="sm" radius="md" withBorder>
+                    <Text fw={600} size="lg" mb="md" className="text-base sm:text-lg">
                       Blood Group Distribution
                     </Text>
                     <Stack gap="sm">
@@ -687,8 +668,8 @@ function PatientsPage() {
                 </Grid.Col>
 
                 <Grid.Col span={{ base: 12, md: 6 }}>
-                  <Paper p="lg" shadow="sm" radius="md" withBorder>
-                    <Text fw={600} size="lg" mb="md">
+                  <Paper p="md" className="p-3 sm:p-4 md:p-6" shadow="sm" radius="md" withBorder>
+                    <Text fw={600} size="lg" mb="md" className="text-base sm:text-lg">
                       Age Distribution
                     </Text>
                     <Alert icon={<IconAlertCircle size="1rem" />} color="blue">
@@ -701,8 +682,8 @@ function PatientsPage() {
             </Tabs.Panel>
 
             <Tabs.Panel value="insurance" pt="md">
-              <Paper p="lg" shadow="sm" radius="md" withBorder>
-                <Text fw={600} size="lg" mb="md">
+              <Paper p="md" className="p-3 sm:p-4 md:p-6" shadow="sm" radius="md" withBorder>
+                <Text fw={600} size="lg" mb="md" className="text-base sm:text-lg">
                   Insurance Coverage Analysis
                 </Text>
                 <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">

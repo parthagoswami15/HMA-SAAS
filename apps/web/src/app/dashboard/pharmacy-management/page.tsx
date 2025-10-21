@@ -15,7 +15,6 @@ import {
   Text,
   Tabs,
   Card,
-  Avatar,
   ActionIcon,
   Menu,
   Stack,

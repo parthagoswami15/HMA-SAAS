@@ -43,63 +43,6 @@ interface InventoryItem {
   notes: string;
 }
 
-interface PurchaseOrder {
-  id: string;
-  orderNumber: string;
-  supplier: string;
-  orderDate: string;
-  expectedDate: string;
-  deliveryDate?: string;
-  status: 'PENDING' | 'APPROVED' | 'ORDERED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  items: PurchaseOrderItem[];
-  subtotal: number;
-  tax: number;
-  shipping: number;
-  total: number;
-  createdBy: string;
-  approvedBy?: string;
-  notes: string;
-}
-
-interface PurchaseOrderItem {
-  itemId: string;
-  itemName: string;
-  quantity: number;
-  unitCost: number;
-  totalCost: number;
-}
-
-interface StockMovement {
-  id: string;
-  itemId: string;
-  itemName: string;
-  type: 'RECEIPT' | 'ISSUE' | 'TRANSFER' | 'ADJUSTMENT' | 'EXPIRED' | 'DAMAGED';
-  quantity: number;
-  previousStock: number;
-  newStock: number;
-  reference: string;
-  location: string;
-  department?: string;
-  userId: string;
-  userName: string;
-  timestamp: string;
-  notes: string;
-}
-
-interface Supplier {
-  id: string;
-  name: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-  address: string;
-  paymentTerms: string;
-  deliveryTime: number;
-  rating: number;
-  isActive: boolean;
-  categories: string[];
-}
-
 const InventoryPage = () => {
   const [currentTab, setCurrentTab] = useState<
     'inventory' | 'orders' | 'movements' | 'suppliers' | 'analytics' | 'alerts'
@@ -107,10 +50,8 @@ const InventoryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [locationFilter, setLocationFilter] = useState('ALL');
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [showItemModal, setShowItemModal] = useState(false);
-  const [showNewItemModal, setShowNewItemModal] = useState(false);
 
   const filteredItems = [].filter(
     /* TODO: API */ (item) => {
@@ -121,9 +62,8 @@ const InventoryPage = () => {
 
       const matchesCategory = categoryFilter === 'ALL' || item.category === categoryFilter;
       const matchesStatus = statusFilter === 'ALL' || item.status === statusFilter;
-      const matchesLocation = locationFilter === 'ALL' || item.location.includes(locationFilter);
 
-      return matchesSearch && matchesCategory && matchesStatus && matchesLocation;
+      return matchesSearch && matchesCategory && matchesStatus;
     }
   );
 
@@ -494,7 +434,7 @@ const InventoryPage = () => {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Button variant="primary" onClick={() => setShowNewItemModal(true)}>
+            <Button variant="primary" onClick={() => setShowItemModal(true)}>
               ➕ Add Item
             </Button>
             <Button variant="outline">📊 Reports</Button>

@@ -36,7 +36,6 @@ import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import {
   MantineDonutChart,
-  SimpleBarChart,
   SimpleAreaChart,
   SimpleLineChart,
 } from '../../../components/MantineChart';
@@ -51,7 +50,6 @@ import {
   IconAlertCircle,
   // IconCheck,
   IconDotsVertical,
-  IconMedicineSyrup,
   IconBottle,
   IconFileText,
   IconDownload,
@@ -1666,3 +1664,5 @@ const PharmacyManagement = () => {
 };
 
 export default PharmacyManagement;
+
+

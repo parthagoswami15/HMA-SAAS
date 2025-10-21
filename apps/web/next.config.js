@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: false, // Temporarily disabled - re-enable for production
   poweredByHeader: false,
   compress: true,
+  output: 'standalone', // Fix for Windows build issues
 
   // ESLint configuration
   eslint: {

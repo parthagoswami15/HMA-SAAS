@@ -49,17 +49,6 @@ interface Prescription {
   status: 'ACTIVE' | 'COMPLETED' | 'DISCONTINUED';
 }
 
-interface _VirtualWaitingRoom {
-  id: string;
-  patientName: string;
-  appointmentTime: string;
-  waitTime: number;
-  consultationType: 'VIDEO' | 'AUDIO' | 'CHAT';
-  priority: 'HIGH' | 'MEDIUM' | 'LOW';
-  chiefComplaint: string;
-  techCheck: boolean;
-}
-
 const TelemedicinePage = () => {
   const [currentTab, setCurrentTab] = useState<
     'consultations' | 'waiting-room' | 'sessions' | 'analytics' | 'settings'

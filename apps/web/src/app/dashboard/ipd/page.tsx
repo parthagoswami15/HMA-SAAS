@@ -3,7 +3,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   Container,
-  Paper,
   Title,
   Group,
   Button,
@@ -18,45 +17,26 @@ import {
   // Avatar,
   ActionIcon,
   SimpleGrid,
-  ScrollArea,
   ThemeIcon,
-  Progress,
   // NumberInput,
-  Textarea,
-  Switch,
-  Divider,
-  Alert,
-  Timeline,
-  List,
-  Indicator,
   Stack,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import { DatePickerInput } from '@mantine/dates';
 import ipdService from '../../../services/ipd.service';
 // import { LineChart, BarChart, DonutChart, AreaChart } from '@mantine/charts';
 import {
   IconActivity,
-  IconAlertCircle,
   // IconArrowDown,
   // IconArrowUp,
   // IconSettings,
   IconBed,
-  IconBedFilled,
   IconCalendar,
-  IconCalendarEvent,
-  IconCash,
   IconChartBar,
   IconCheck,
-  IconClipboard,
   // IconUpload,
-  IconCreditCard,
-  IconDownload,
-  IconDroplet,
   IconEdit,
-  IconEmergencyBed,
   IconEye,
   IconFileText,
   // IconHexagon,
@@ -66,30 +46,11 @@ import {
   // IconCloudComputing,
   // IconDeviceAnalytics,
   // IconChartPie,
-  IconHome,
-  IconLungs,
-  IconMail,
-  IconMapPin,
-  IconMedicalCross,
-  IconNurse,
-  IconPhone,
-  IconPill,
   IconPlus,
-  IconPrinter,
-  IconReceipt,
   IconRefresh,
-  IconReport,
   IconSearch,
-  IconStethoscope,
-  IconThermometer,
-  IconTransfer,
   // IconTrash,
-  IconTrendingDown,
-  IconTrendingUp,
-  IconUser,
-  IconUserCheck,
   IconUsers,
-  IconX,
   IconBedOff,
   IconAlertTriangle,
   IconCurrencyRupee,
@@ -783,3 +744,5 @@ const IPDManagement = () => {
 };
 
 export default IPDManagement;
+
+

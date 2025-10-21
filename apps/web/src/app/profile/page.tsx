@@ -1,9 +1,11 @@
 'use client';
+
 import Layout from '../components/Layout';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { notifications as mantineNotifications } from '@mantine/notifications';
 
 interface UserProfile {
   id: string;
@@ -41,30 +43,39 @@ interface NotificationSettings {
   marketingEmails: boolean;
 }
 
+interface ApiResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:10000';
+
 const ProfilePage = () => {
   const [currentTab, setCurrentTab] = useState<
     'profile' | 'password' | 'notifications' | 'security'
   >('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const [profile, setProfile] = useState<UserProfile>({
-    id: '1',
-    firstName: 'Dr. Sarah',
-    lastName: 'Johnson',
-    email: 'sarah.johnson@hospital.com',
-    phone: '+1 (555) 123-4567',
-    dateOfBirth: '1985-03-15',
-    gender: 'FEMALE',
-    address: '123 Medical Plaza, Suite 200',
-    city: 'New York',
-    state: 'NY',
-    zipCode: '10001',
+    id: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    gender: 'MALE',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
     role: 'DOCTOR',
-    department: 'Cardiology',
-    licenseNumber: 'MD123456789',
-    specialization: 'Interventional Cardiology',
-    joinedDate: '2020-01-15',
+    department: '',
+    licenseNumber: '',
+    specialization: '',
+    joinedDate: '',
     isActive: true,
   });
 
@@ -85,6 +96,59 @@ const ProfilePage = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Load user profile on component mount
+  useEffect(() => {
+    loadProfile();
+    loadNotificationSettings();
+  }, []);
+
+  const loadProfile = async () => {
+    setIsInitialLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies for authentication
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setProfile(data.data);
+        }
+      } else {
+        console.log('Failed to load profile from API, using defaults');
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    } finally {
+      setIsInitialLoading(false);
+    }
+  };
+
+  const loadNotificationSettings = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/notifications`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setNotifications(data.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading notification settings:', error);
+    }
+  };
+
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -103,14 +167,34 @@ const ProfilePage = () => {
         return;
       }
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(profile),
+      });
 
-      setIsEditing(false);
-      alert('Profile updated successfully!');
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_error) {
-      alert('Failed to update profile. Please try again.');
+      const result: ApiResponse = await response.json();
+
+      if (response.ok && result.success) {
+        setIsEditing(false);
+        mantineNotifications.show({
+          title: 'Success',
+          message: 'Profile updated successfully!',
+          color: 'green',
+        });
+      } else {
+        throw new Error(result.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      mantineNotifications.show({
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to update profile. Please try again.',
+        color: 'red',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -137,14 +221,37 @@ const ProfilePage = () => {
         return;
       }
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch(`${API_BASE_URL}/auth/password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+        }),
+      });
 
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      alert('Password updated successfully!');
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_error) {
-      alert('Failed to update password. Please try again.');
+      const result: ApiResponse = await response.json();
+
+      if (response.ok && result.success) {
+        setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        mantineNotifications.show({
+          title: 'Success',
+          message: 'Password updated successfully!',
+          color: 'green',
+        });
+      } else {
+        throw new Error(result.message || 'Failed to update password');
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      mantineNotifications.show({
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to update password. Please try again.',
+        color: 'red',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -153,16 +260,56 @@ const ProfilePage = () => {
   const handleNotificationsSave = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      alert('Notification preferences saved!');
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_error) {
-      alert('Failed to save preferences. Please try again.');
+      const response = await fetch(`${API_BASE_URL}/users/notifications`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(notifications),
+      });
+
+      const result: ApiResponse = await response.json();
+
+      if (response.ok && result.success) {
+        mantineNotifications.show({
+          title: 'Success',
+          message: 'Notification preferences saved!',
+          color: 'green',
+        });
+      } else {
+        throw new Error(result.message || 'Failed to save preferences');
+      }
+    } catch (error) {
+      console.error('Error saving notifications:', error);
+      mantineNotifications.show({
+        title: 'Error',
+        message: error instanceof Error ? error.message : 'Failed to save preferences. Please try again.',
+        color: 'red',
+      });
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (isInitialLoading) {
+    return (
+      <Layout>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '400px',
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👤</div>
+            <h3 style={{ color: '#667eea', marginBottom: '0.5rem' }}>Loading Profile...</h3>
+            <p style={{ color: '#6b7280' }}>Please wait while we load your profile information</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   const getRoleColor = (role: string) => {
     switch (role) {
@@ -801,3 +948,4 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+

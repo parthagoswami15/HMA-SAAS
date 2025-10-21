@@ -76,8 +76,8 @@ function PatientForm({
 }: PatientFormProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
   const [formLoading, { open: startLoading, close: stopLoading }] = useDisclosure(false);
+  const [uploading, setUploading] = useState(false);
 
   // Form initialization
   const form = useForm<CreatePatientDto>({

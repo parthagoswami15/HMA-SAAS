@@ -21,7 +21,6 @@ import {
   Stack,
   Divider,
   SimpleGrid,
-  ScrollArea,
   ThemeIcon,
   Timeline,
   Alert,
@@ -310,21 +309,24 @@ const AppointmentManagement = () => {
     : [];
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py="md" className="px-3 sm:px-4 md:px-6">
       {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={1}>Appointment Management</Title>
-          <Text c="dimmed" size="sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <Title order={1} className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">Appointment Management</Title>
+          <Text c="dimmed" size="sm" className="text-xs sm:text-sm">
             Schedule, manage, and track patient appointments
           </Text>
         </div>
-        <Group>
-          <Button leftSection={<IconPlus size={16} />} onClick={openBookAppointment}>
-            Book Appointment
-          </Button>
-        </Group>
-      </Group>
+        <Button 
+          leftSection={<IconPlus size={16} />} 
+          onClick={openBookAppointment}
+          className="w-full sm:w-auto"
+          size="sm"
+        >
+          Book Appointment
+        </Button>
+      </div>
 
       {/* Error Display */}
       {error && (
@@ -341,11 +343,11 @@ const AppointmentManagement = () => {
 
       {/* Statistics Cards */}
       {appointmentStats && (
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing={{ base: 'sm', sm: 'md', lg: 'lg' }} mb="lg">
           {statsCards.map((stat) => {
             const Icon = stat.icon;
             return (
-              <Card key={stat.title} padding="lg" radius="md" withBorder>
+              <Card key={stat.title} padding="md" className="p-3 sm:p-4 md:p-5" radius="md" withBorder>
                 <Group justify="space-between">
                   <div>
                     <Text c="dimmed" size="sm" fw={500}>
@@ -367,35 +369,39 @@ const AppointmentManagement = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'appointments')}>
-        <Tabs.List>
-          <Tabs.Tab value="appointments" leftSection={<IconCalendarEvent size={16} />}>
-            Appointments
+        <Tabs.List className="flex-wrap">
+          <Tabs.Tab value="appointments" leftSection={<IconCalendarEvent size={16} />} className="text-xs sm:text-sm">
+            <span className="hidden sm:inline">Appointments</span>
+            <span className="sm:hidden">Appts</span>
           </Tabs.Tab>
-          <Tabs.Tab value="calendar" leftSection={<IconCalendar size={16} />}>
-            Calendar View
+          <Tabs.Tab value="calendar" leftSection={<IconCalendar size={16} />} className="text-xs sm:text-sm">
+            Calendar
           </Tabs.Tab>
-          <Tabs.Tab value="queue" leftSection={<IconUsers size={16} />}>
-            Queue Management
+          <Tabs.Tab value="queue" leftSection={<IconUsers size={16} />} className="text-xs sm:text-sm">
+            Queue
           </Tabs.Tab>
-          <Tabs.Tab value="reminders" leftSection={<IconBell size={16} />}>
-            Reminders
+          <Tabs.Tab value="reminders" leftSection={<IconBell size={16} />} className="text-xs sm:text-sm">
+            <span className="hidden sm:inline">Reminders</span>
+            <span className="sm:hidden">🔔</span>
           </Tabs.Tab>
-          <Tabs.Tab value="analytics" leftSection={<IconChartBar size={16} />}>
-            Analytics
+          <Tabs.Tab value="analytics" leftSection={<IconChartBar size={16} />} className="text-xs sm:text-sm">
+            <span className="hidden sm:inline">Analytics</span>
+            <span className="sm:hidden">📊</span>
           </Tabs.Tab>
         </Tabs.List>
 
         {/* Appointments Tab */}
         <Tabs.Panel value="appointments">
-          <Paper p="md" radius="md" withBorder mt="md">
+          <Paper p="md" className="p-3 sm:p-4 md:p-6" radius="md" withBorder mt="md">
             {/* Search and Filters */}
-            <Group mb="md">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
               <TextInput
                 placeholder="Search appointments..."
                 leftSection={<IconSearch size={16} />}
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.currentTarget.value)}
-                style={{ flex: 1 }}
+                className="w-full sm:flex-1"
+                size="sm"
               />
               <Select
                 placeholder="Doctor"
@@ -404,6 +410,8 @@ const AppointmentManagement = () => {
                 onChange={(value) => setSelectedDoctor(value || '')}
                 searchable
                 clearable
+                className="w-full sm:w-auto"
+                size="sm"
               />
               <Select
                 placeholder="Status"
@@ -419,6 +427,8 @@ const AppointmentManagement = () => {
                 value={selectedStatus}
                 onChange={(value) => setSelectedStatus(value || '')}
                 clearable
+                className="w-full sm:w-auto"
+                size="sm"
               />
               <Select
                 placeholder="Type"
@@ -431,18 +441,24 @@ const AppointmentManagement = () => {
                 value={selectedType}
                 onChange={(value) => setSelectedType(value || '')}
                 clearable
+                className="w-full sm:w-auto"
+                size="sm"
               />
               <DatePickerInput
                 placeholder="Select date"
                 value={selectedDate}
                 onChange={setSelectedDate as any}
                 clearable
+                className="w-full sm:w-auto"
+                size="sm"
               />
-            </Group>
+            </div>
 
             {/* Appointments Table */}
-            <ScrollArea>
-              <Table striped highlightOnHover>
+            <div className="overflow-x-auto -mx-3 sm:mx-0">
+              <div className="inline-block min-w-full align-middle">
+                <div className="overflow-hidden">
+                  <Table striped highlightOnHover>
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>Patient</Table.Th>
@@ -596,7 +612,9 @@ const AppointmentManagement = () => {
                   )}
                 </Table.Tbody>
               </Table>
-            </ScrollArea>
+                </div>
+              </div>
+            </div>
           </Paper>
         </Tabs.Panel>
 

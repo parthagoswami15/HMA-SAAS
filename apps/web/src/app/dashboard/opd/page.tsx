@@ -22,12 +22,7 @@ import {
   ScrollArea,
   ThemeIcon,
   Progress,
-  NumberInput,
   Textarea,
-  Switch,
-  Divider,
-  Alert,
-  Timeline,
   List,
 } from '@mantine/core';
 import { DatePickerInput, TimeInput } from '@mantine/dates';
@@ -41,41 +36,18 @@ import {
   IconSearch,
   IconEdit,
   IconEye,
-  IconTrash,
   IconStethoscope,
   IconCalendar,
   IconClock,
-  IconUser,
   IconUsers,
-  IconClipboard,
   IconPrescription,
-  IconFileText,
   IconPrinter,
-  IconDownload,
   IconRefresh,
-  IconUserCheck,
   IconActivity,
   IconChartBar,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconHeart,
-  IconMedicalCross,
-  IconNurse,
-  IconPhone,
-  IconMail,
-  IconMapPin,
-  IconCash,
-  IconCreditCard,
-  IconReceipt,
   IconCheck,
-  IconX,
-  IconAlertCircle,
-  IconFilter,
   IconCalendarEvent,
-  IconReport,
-  IconBrandWhatsapp,
   IconMessage,
-  IconBell,
 } from '@tabler/icons-react';
 
 // Types
@@ -1020,7 +992,7 @@ const OPDManagement = () => {
             </Button>
             <Button
               onClick={() => {
-                // notifications.show({
+                // _notifications.show({
                 //   title: 'OPD Visit Scheduled',
                 //   message: 'New OPD visit has been successfully scheduled',
                 //   color: 'green',
@@ -1039,3 +1011,4 @@ const OPDManagement = () => {
 };
 
 export default OPDManagement;
+

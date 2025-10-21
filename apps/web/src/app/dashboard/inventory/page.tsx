@@ -15,7 +15,6 @@ import {
   Text,
   Tabs,
   Card,
-  Avatar,
   ActionIcon,
   Menu,
   Stack,
@@ -23,7 +22,6 @@ import {
   SimpleGrid,
   ScrollArea,
   ThemeIcon,
-  Alert,
   Progress,
   NumberInput,
   Textarea,
@@ -39,7 +37,6 @@ import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
 import {
   MantineDonutChart,
-  SimpleAreaChart,
   SimpleBarChart,
   SimpleLineChart,
 } from '../../../components/MantineChart';
@@ -49,7 +46,6 @@ import {
   IconEdit,
   IconEye,
   IconTrash,
-  IconCalendar,
   IconPackage,
   IconChartBar,
   // IconPhone,
@@ -58,9 +54,6 @@ import {
   // IconCheck,
   // IconX,
   IconDotsVertical,
-  IconTruck,
-  IconClipboardList,
-  IconFileText,
   IconDownload,
   // IconPrinter,
   // IconShare,
@@ -81,7 +74,6 @@ import {
   // IconBarcode,
   // IconTemperature,
   // IconShieldCheck,
-  IconAlertTriangle,
   // IconCircleCheck,
   IconClipboard,
 } from '@tabler/icons-react';
@@ -89,20 +81,8 @@ import {
 // Import types, services and mock data
 import {
   InventoryItem,
-  ItemCategory,
-  StockTransaction,
-  TransactionType,
   PurchaseOrder,
-  OrderStatus,
-  Supplier,
-  Requisition,
   Equipment,
-  EquipmentStatus,
-  MaintenanceRecord,
-  MaintenanceType,
-  InventoryAlert,
-  AlertType,
-  InventoryStats,
 } from '../../../types/inventory';
 import inventoryService from '../../../services/inventory.service';
 // Mock data imports removed
