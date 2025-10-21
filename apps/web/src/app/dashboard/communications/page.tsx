@@ -148,323 +148,17 @@ interface CommunicationCampaign {
   createdDate: string;
 }
 
-interface NotificationSettings {
-  id: string;
-  userId: string;
-  userType: 'patient' | 'doctor' | 'admin' | 'staff';
-  channels: {
-    sms: boolean;
-    whatsapp: boolean;
-    email: boolean;
-    push: boolean;
-    voice: boolean;
-  };
-  categories: {
-    appointments: boolean;
-    reminders: boolean;
-    emergencies: boolean;
-    billing: boolean;
-    marketing: boolean;
-    reports: boolean;
-  };
-  frequency: 'immediate' | 'hourly' | 'daily' | 'weekly';
-  quietHours: {
-    enabled: boolean;
-    startTime: string;
-    endTime: string;
-  };
-}
-
 // Mock data
-const mockTemplates: CommunicationTemplate[] = [
-  {
-    id: '1',
-    name: 'Appointment Reminder',
-    type: 'sms',
-    category: 'reminder',
-    content:
-      'Dear {{patientName}}, your appointment with Dr. {{doctorName}} is scheduled for {{appointmentDate}} at {{appointmentTime}}. Please arrive 15 minutes early. For any changes, call {{hospitalPhone}}.',
-    variables: ['patientName', 'doctorName', 'appointmentDate', 'appointmentTime', 'hospitalPhone'],
-    isActive: true,
-    createdDate: '2024-01-01T00:00:00Z',
-    lastUsed: '2024-01-15T10:30:00Z',
-    usageCount: 245,
-    language: 'English',
-  },
-  {
-    id: '2',
-    name: 'WhatsApp Appointment Confirmation',
-    type: 'whatsapp',
-    category: 'appointment',
-    content:
-      '🏥 *Appointment Confirmed* ✅\n\nHello {{patientName}},\n\nYour appointment has been confirmed:\n📅 Date: {{appointmentDate}}\n⏰ Time: {{appointmentTime}}\n👨‍⚕️ Doctor: Dr. {{doctorName}}\n🏢 Department: {{department}}\n\nPlease arrive 15 minutes before your appointment.\n\n📞 For any queries, call: {{hospitalPhone}}\n\nThank you for choosing our hospital! 🙏',
-    variables: [
-      'patientName',
-      'appointmentDate',
-      'appointmentTime',
-      'doctorName',
-      'department',
-      'hospitalPhone',
-    ],
-    isActive: true,
-    createdDate: '2024-01-01T00:00:00Z',
-    lastUsed: '2024-01-15T14:20:00Z',
-    usageCount: 189,
-    language: 'English',
-  },
-  {
-    id: '3',
-    name: 'Bill Payment Reminder',
-    type: 'email',
-    category: 'billing',
-    subject: 'Payment Reminder - Bill #{{billNumber}}',
-    content:
-      'Dear {{patientName}},\n\nThis is a friendly reminder that your bill #{{billNumber}} of ₹{{amount}} is due for payment.\n\nDue Date: {{dueDate}}\nAmount: ₹{{amount}}\n\nYou can pay online at {{paymentLink}} or visit our billing counter.\n\nThank you for your prompt attention.\n\nBest regards,\nBilling Department\n{{hospitalName}}',
-    variables: ['patientName', 'billNumber', 'amount', 'dueDate', 'paymentLink', 'hospitalName'],
-    isActive: true,
-    createdDate: '2024-01-02T00:00:00Z',
-    lastUsed: '2024-01-14T16:45:00Z',
-    usageCount: 78,
-    language: 'English',
-  },
-  {
-    id: '4',
-    name: 'Emergency Alert',
-    type: 'sms',
-    category: 'emergency',
-    content:
-      '🚨 EMERGENCY ALERT: {{emergencyType}} reported at {{location}}. All available {{department}} staff please report immediately. Time: {{timestamp}}',
-    variables: ['emergencyType', 'location', 'department', 'timestamp'],
-    isActive: true,
-    createdDate: '2024-01-03T00:00:00Z',
-    lastUsed: '2024-01-10T22:15:00Z',
-    usageCount: 12,
-    language: 'English',
-  },
-  {
-    id: '5',
-    name: 'Lab Report Ready',
-    type: 'whatsapp',
-    category: 'follow-up',
-    content:
-      '🔬 *Lab Report Ready* 📋\n\nDear {{patientName}},\n\nYour lab report for tests conducted on {{testDate}} is now ready.\n\n📊 Report ID: {{reportId}}\n🏥 Collected at: {{hospitalName}}\n\nYou can:\n• Collect from reception\n• Download from patient portal: {{portalLink}}\n• Request home delivery\n\n📞 Contact: {{hospitalPhone}}\n\nThank you! 🙏',
-    variables: [
-      'patientName',
-      'testDate',
-      'reportId',
-      'hospitalName',
-      'portalLink',
-      'hospitalPhone',
-    ],
-    isActive: true,
-    createdDate: '2024-01-04T00:00:00Z',
-    lastUsed: '2024-01-15T11:30:00Z',
-    usageCount: 156,
-    language: 'English',
-  },
-];
-
-const mockMessages: CommunicationMessage[] = [
-  {
-    id: '1',
-    templateId: '1',
-    templateName: 'Appointment Reminder',
-    type: 'sms',
-    recipient: {
-      id: 'P001',
-      name: 'Rajesh Kumar',
-      phone: '+91 98765 43210',
-      type: 'patient',
-    },
-    content:
-      'Dear Rajesh Kumar, your appointment with Dr. Sharma is scheduled for 2024-01-16 at 10:30 AM. Please arrive 15 minutes early. For any changes, call +91 98765 00000.',
-    status: 'delivered',
-    priority: 'high',
-    sentTime: '2024-01-15T10:30:00Z',
-    deliveredTime: '2024-01-15T10:30:15Z',
-    attempts: 1,
-    cost: 0.25,
-    metadata: {
-      patientId: 'P001',
-      appointmentId: 'APT001',
-    },
-  },
-  {
-    id: '2',
-    templateId: '2',
-    templateName: 'WhatsApp Appointment Confirmation',
-    type: 'whatsapp',
-    recipient: {
-      id: 'P002',
-      name: 'Sunita Patel',
-      phone: '+91 87654 32109',
-      type: 'patient',
-    },
-    content:
-      '🏥 *Appointment Confirmed* ✅\n\nHello Sunita Patel,\n\nYour appointment has been confirmed:\n📅 Date: 2024-01-17\n⏰ Time: 02:30 PM\n👨‍⚕️ Doctor: Dr. Mehta\n🏢 Department: Gynecology\n\nPlease arrive 15 minutes before your appointment.\n\n📞 For any queries, call: +91 98765 00000\n\nThank you for choosing our hospital! 🙏',
-    status: 'read',
-    priority: 'medium',
-    sentTime: '2024-01-15T14:20:00Z',
-    deliveredTime: '2024-01-15T14:20:05Z',
-    readTime: '2024-01-15T14:25:30Z',
-    attempts: 1,
-    cost: 0.15,
-    metadata: {
-      patientId: 'P002',
-      appointmentId: 'APT002',
-    },
-  },
-  {
-    id: '3',
-    templateId: '3',
-    templateName: 'Bill Payment Reminder',
-    type: 'email',
-    recipient: {
-      id: 'P003',
-      name: 'Mohammed Ali',
-      email: 'mohammed@example.com',
-      type: 'patient',
-    },
-    subject: 'Payment Reminder - Bill #INV-2024-001',
-    content:
-      'Dear Mohammed Ali,\n\nThis is a friendly reminder that your bill #INV-2024-001 of ₹15,500 is due for payment.\n\nDue Date: 2024-01-20\nAmount: ₹15,500\n\nYou can pay online at https://hospital.com/pay or visit our billing counter.\n\nThank you for your prompt attention.\n\nBest regards,\nBilling Department\nCity Hospital',
-    status: 'sent',
-    priority: 'medium',
-    sentTime: '2024-01-14T16:45:00Z',
-    attempts: 1,
-    cost: 0.05,
-    metadata: {
-      patientId: 'P003',
-      billId: 'INV-2024-001',
-    },
-  },
-  {
-    id: '4',
-    templateId: '4',
-    templateName: 'Emergency Alert',
-    type: 'sms',
-    recipient: {
-      id: 'D001',
-      name: 'All ICU Staff',
-      type: 'group',
-    },
-    content:
-      '🚨 EMERGENCY ALERT: Code Blue reported at ICU Room 5. All available ICU staff please report immediately. Time: 2024-01-10 22:15',
-    status: 'delivered',
-    priority: 'high',
-    sentTime: '2024-01-10T22:15:00Z',
-    deliveredTime: '2024-01-10T22:15:05Z',
-    attempts: 1,
-    cost: 2.5,
-    metadata: {},
-  },
-  {
-    id: '5',
-    templateId: '5',
-    templateName: 'Lab Report Ready',
-    type: 'whatsapp',
-    recipient: {
-      id: 'P004',
-      name: 'Priya Sharma',
-      phone: '+91 76543 21098',
-      type: 'patient',
-    },
-    content:
-      '🔬 *Lab Report Ready* 📋\n\nDear Priya Sharma,\n\nYour lab report for tests conducted on 2024-01-12 is now ready.\n\n📊 Report ID: LAB-2024-045\n🏥 Collected at: City Hospital\n\nYou can:\n• Collect from reception\n• Download from patient portal: https://portal.hospital.com\n• Request home delivery\n\n📞 Contact: +91 98765 00000\n\nThank you! 🙏',
-    status: 'pending',
-    priority: 'medium',
-    scheduledTime: '2024-01-16T09:00:00Z',
-    attempts: 0,
-    cost: 0.15,
-    metadata: {
-      patientId: 'P004',
-    },
-  },
-];
-
-const mockCampaigns: CommunicationCampaign[] = [
-  {
-    id: '1',
-    name: 'Health Checkup Reminder Campaign',
-    description: 'Annual health checkup reminders for patients above 40',
-    type: 'multi-channel',
-    templateId: '6',
-    templateName: 'Annual Checkup Reminder',
-    targetAudience: {
-      type: 'age-group',
-      criteria: { ageMin: 40, ageMax: 80 },
-      count: 450,
-    },
-    status: 'completed',
-    scheduledTime: '2024-01-10T09:00:00Z',
-    startTime: '2024-01-10T09:00:00Z',
-    endTime: '2024-01-10T12:30:00Z',
-    totalRecipients: 450,
-    sentCount: 445,
-    deliveredCount: 420,
-    readCount: 320,
-    failedCount: 5,
-    totalCost: 67.5,
-    createdBy: 'Marketing Team',
-    createdDate: '2024-01-08T00:00:00Z',
-  },
-  {
-    id: '2',
-    name: 'Vaccination Drive Notification',
-    description: 'COVID-19 booster vaccination drive announcement',
-    type: 'whatsapp',
-    templateId: '7',
-    templateName: 'Vaccination Drive',
-    targetAudience: {
-      type: 'all-patients',
-      criteria: {},
-      count: 1200,
-    },
-    status: 'running',
-    scheduledTime: '2024-01-15T08:00:00Z',
-    startTime: '2024-01-15T08:00:00Z',
-    totalRecipients: 1200,
-    sentCount: 856,
-    deliveredCount: 834,
-    readCount: 523,
-    failedCount: 22,
-    totalCost: 128.4,
-    createdBy: 'Admin',
-    createdDate: '2024-01-14T00:00:00Z',
-  },
-  {
-    id: '3',
-    name: 'Cardiology Department Promotion',
-    description: 'New cardiology services and specialist announcement',
-    type: 'email',
-    templateId: '8',
-    templateName: 'Cardiology Services',
-    targetAudience: {
-      type: 'department',
-      criteria: { department: 'Cardiology', isExistingPatient: true },
-      count: 180,
-    },
-    status: 'scheduled',
-    scheduledTime: '2024-01-18T10:00:00Z',
-    totalRecipients: 180,
-    sentCount: 0,
-    deliveredCount: 0,
-    readCount: 0,
-    failedCount: 0,
-    totalCost: 9.0,
-    createdBy: 'Marketing Team',
-    createdDate: '2024-01-15T00:00:00Z',
-  },
-];
-
 const CommunicationsManagement = () => {
   // State management
   const [activeTab, setActiveTab] = useState<string>('messages');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
-  const [selectedTemplate, setSelectedTemplate] = useState<CommunicationTemplate | null>(null);
+  const [templates, setTemplates] = useState<CommunicationTemplate[]>([]);
+  const [campaigns, setCampaigns] = useState<CommunicationCampaign[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<CommunicationMessage | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<CommunicationTemplate | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<CommunicationCampaign | null>(null);
 
   // Modal states
@@ -473,12 +167,10 @@ const CommunicationsManagement = () => {
   const [newMessageOpened, { open: openNewMessage, close: closeNewMessage }] = useDisclosure(false);
   const [templateDetailOpened, { open: openTemplateDetail, close: closeTemplateDetail }] =
     useDisclosure(false);
-  const [newTemplateOpened, { open: openNewTemplate, close: closeNewTemplate }] =
-    useDisclosure(false);
+  const [newTemplateOpened, { open: openNewTemplate, close: closeNewTemplate }] = useDisclosure(false);
   const [campaignDetailOpened, { open: openCampaignDetail, close: closeCampaignDetail }] =
     useDisclosure(false);
-  const [newCampaignOpened, { open: openNewCampaign, close: closeNewCampaign }] =
-    useDisclosure(false);
+  const [newCampaignOpened, { open: openNewCampaign, close: closeNewCampaign }] = useDisclosure(false);
 
   // Filter messages
   const filteredMessages = useMemo(() => {
@@ -500,19 +192,29 @@ const CommunicationsManagement = () => {
 
   // Filter templates
   const filteredTemplates = useMemo(() => {
-    return [].filter(
-      /* TODO: Fetch from API */ (template) => {
-        const matchesSearch =
-          template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          template.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          template.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return templates.filter((template) => {
+      const matchesSearch =
+        template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        template.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        template.category.toLowerCase().includes(searchQuery.toLowerCase());
 
-        const matchesType = !selectedType || template.type === selectedType;
+      const matchesType = !selectedType || template.type === selectedType;
 
-        return matchesSearch && matchesType;
-      }
-    );
-  }, [searchQuery, selectedType]);
+      return matchesSearch && matchesType;
+    });
+  }, [templates, searchQuery, selectedType]);
+
+  // Filter campaigns
+  const filteredCampaigns = useMemo(() => {
+    return campaigns.filter((campaign) => {
+      const matchesSearch =
+        campaign.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        campaign.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        campaign.templateName.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesSearch;
+    });
+  }, [campaigns, searchQuery]);
 
   const handleViewMessage = (message: CommunicationMessage) => {
     setSelectedMessage(message);
@@ -1068,8 +770,7 @@ const CommunicationsManagement = () => {
             </Group>
 
             <Stack gap="lg">
-              {[].map(
-                /* TODO: Fetch from API */ (campaign) => (
+              {filteredCampaigns.map((campaign) => (
                   <Card
                     key={campaign.id}
                     padding="lg"
@@ -1657,6 +1358,439 @@ const CommunicationsManagement = () => {
               }}
             >
               Send Message
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* Template Detail Modal */}
+      <Modal
+        opened={templateDetailOpened}
+        onClose={closeTemplateDetail}
+        title="Template Details"
+        size="lg"
+      >
+        {selectedTemplate && (
+          <Stack gap="md">
+            {/* Template Header */}
+            <Group justify="space-between" mb="md">
+              <div>
+                <Group mb="xs">
+                  <ThemeIcon variant="light">{getTypeIcon(selectedTemplate.type)}</ThemeIcon>
+                  <Title order={4}>{selectedTemplate.name}</Title>
+                </Group>
+                <Text c="dimmed" size="sm">
+                  Category: {selectedTemplate.category} | Type: {selectedTemplate.type.toUpperCase()}
+                </Text>
+              </div>
+              <Group>
+                <Badge color={selectedTemplate.isActive ? 'green' : 'red'} variant="light" size="lg">
+                  {selectedTemplate.isActive ? 'ACTIVE' : 'INACTIVE'}
+                </Badge>
+              </Group>
+            </Group>
+
+            {/* Template Content */}
+            <Paper p="md" radius="md" withBorder>
+              {selectedTemplate.subject && (
+                <div>
+                  <Text size="sm" c="dimmed" fw={500}>
+                    Subject
+                  </Text>
+                  <Text fw={600} mb="md">
+                    {selectedTemplate.subject}
+                  </Text>
+                </div>
+              )}
+              <Text size="sm" c="dimmed" fw={500}>
+                Content
+              </Text>
+              <Text mt="xs" style={{ whiteSpace: 'pre-wrap' }}>
+                {selectedTemplate.content}
+              </Text>
+            </Paper>
+
+            {/* Template Stats */}
+            <SimpleGrid cols={3} spacing="md">
+              <div style={{ textAlign: 'center' }}>
+                <Text size="lg" fw={700}>
+                  {selectedTemplate.usageCount}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Usage Count
+                </Text>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <Text size="lg" fw={700}>
+                  {selectedTemplate.variables.length}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Variables
+                </Text>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <Text size="lg" fw={700}>
+                  {selectedTemplate.language.toUpperCase()}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Language
+                </Text>
+              </div>
+            </SimpleGrid>
+
+            {/* Variables */}
+            {selectedTemplate.variables.length > 0 && (
+              <div>
+                <Text size="sm" fw={500} mb="sm">
+                  Available Variables
+                </Text>
+                <Group gap="xs">
+                  {selectedTemplate.variables.map((variable, index) => (
+                    <Badge key={index} variant="outline" size="sm">
+                      {`{{${variable}}}`}
+                    </Badge>
+                  ))}
+                </Group>
+              </div>
+            )}
+
+            {/* Template Timeline */}
+            <SimpleGrid cols={2} spacing="md">
+              <div>
+                <Text size="sm" c="dimmed" mb="xs">
+                  Created Date
+                </Text>
+                <Text size="sm" fw={500}>
+                  {formatDate(selectedTemplate.createdDate)}
+                </Text>
+              </div>
+              <div>
+                <Text size="sm" c="dimmed" mb="xs">
+                  Last Used
+                </Text>
+                <Text size="sm" fw={500}>
+                  {selectedTemplate.lastUsed ? formatDate(selectedTemplate.lastUsed) : 'Never'}
+                </Text>
+              </div>
+            </SimpleGrid>
+
+            {/* Action Buttons */}
+            <Group justify="flex-end">
+              <Button variant="light" onClick={closeTemplateDetail}>
+                Close
+              </Button>
+              <Button leftSection={<IconEdit size={16} />}>Edit Template</Button>
+              <Button leftSection={<IconSend size={16} />}>Use Template</Button>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
+
+      {/* Campaign Detail Modal */}
+      <Modal
+        opened={campaignDetailOpened}
+        onClose={closeCampaignDetail}
+        title="Campaign Details"
+        size="xl"
+      >
+        {selectedCampaign && (
+          <Stack gap="md">
+            {/* Campaign Header */}
+            <Group justify="space-between" mb="md">
+              <div>
+                <Title order={4}>{selectedCampaign.name}</Title>
+                <Text c="dimmed" size="sm">
+                  {selectedCampaign.description}
+                </Text>
+              </div>
+              <Group>
+                <Badge color={getStatusColor(selectedCampaign.status)} variant="light" size="lg">
+                  {selectedCampaign.status.toUpperCase()}
+                </Badge>
+                <Badge variant="outline" tt="uppercase">
+                  {selectedCampaign.type}
+                </Badge>
+              </Group>
+            </Group>
+
+            {/* Campaign Stats */}
+            <SimpleGrid cols={6} spacing="md" mb="md">
+              <div style={{ textAlign: 'center' }}>
+                <Text size="xl" fw={700} c="blue">
+                  {selectedCampaign.totalRecipients}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Total Recipients
+                </Text>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <Text size="xl" fw={700} c="green">
+                  {selectedCampaign.sentCount}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Sent
+                </Text>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <Text size="xl" fw={700} c="teal">
+                  {selectedCampaign.deliveredCount}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Delivered
+                </Text>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <Text size="xl" fw={700} c="cyan">
+                  {selectedCampaign.readCount}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Read
+                </Text>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <Text size="xl" fw={700} c="red">
+                  {selectedCampaign.failedCount}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Failed
+                </Text>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <Text size="xl" fw={700} c="orange">
+                  ₹{selectedCampaign.totalCost.toFixed(2)}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Total Cost
+                </Text>
+              </div>
+            </SimpleGrid>
+
+            {/* Campaign Progress */}
+            {selectedCampaign.status === 'running' && selectedCampaign.sentCount > 0 && (
+              <div>
+                <Text size="sm" c="dimmed" mb="xs">
+                  Campaign Progress
+                </Text>
+                <Progress
+                  value={(selectedCampaign.sentCount / selectedCampaign.totalRecipients) * 100}
+                  size="lg"
+                  color="blue"
+                />
+                <Group justify="space-between" mt="xs">
+                  <Text size="xs" c="dimmed">
+                    {Math.round((selectedCampaign.sentCount / selectedCampaign.totalRecipients) * 100)}%
+                    completed
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {selectedCampaign.totalRecipients - selectedCampaign.sentCount} remaining
+                  </Text>
+                </Group>
+              </div>
+            )}
+
+            {/* Campaign Details */}
+            <SimpleGrid cols={2} spacing="md">
+              <div>
+                <Text size="sm" c="dimmed" mb="xs">
+                  Template Used
+                </Text>
+                <Text size="sm" fw={500}>
+                  {selectedCampaign.templateName}
+                </Text>
+              </div>
+              <div>
+                <Text size="sm" c="dimmed" mb="xs">
+                  Target Audience
+                </Text>
+                <Text size="sm" fw={500}>
+                  {selectedCampaign.targetAudience.type.replace('-', ' ')} (
+                  {selectedCampaign.targetAudience.count} recipients)
+                </Text>
+              </div>
+              <div>
+                <Text size="sm" c="dimmed" mb="xs">
+                  Created Date
+                </Text>
+                <Text size="sm" fw={500}>
+                  {formatDate(selectedCampaign.createdDate)}
+                </Text>
+              </div>
+              <div>
+                <Text size="sm" c="dimmed" mb="xs">
+                  Created By
+                </Text>
+                <Text size="sm" fw={500}>
+                  {selectedCampaign.createdBy}
+                </Text>
+              </div>
+            </SimpleGrid>
+
+            {/* Action Buttons */}
+            <Group justify="flex-end">
+              <Button variant="light" onClick={closeCampaignDetail}>
+                Close
+              </Button>
+              <Button leftSection={<IconEdit size={16} />}>Edit Campaign</Button>
+              {selectedCampaign.status === 'running' && (
+                <Button leftSection={<IconClockPause size={16} />} color="orange">
+                  Pause Campaign
+                </Button>
+              )}
+              {selectedCampaign.status === 'paused' && (
+                <Button leftSection={<IconActivity size={16} />}>Resume Campaign</Button>
+              )}
+            </Group>
+          </Stack>
+        )}
+      </Modal>
+
+      {/* New Template Modal */}
+      <Modal opened={newTemplateOpened} onClose={closeNewTemplate} title="Create New Template" size="lg">
+        <Stack gap="md">
+          <TextInput
+            label="Template Name"
+            placeholder="Enter template name"
+            required
+          />
+
+          <SimpleGrid cols={2} spacing="md">
+            <Select
+              label="Message Type"
+              placeholder="Select type"
+              data={[
+                { value: 'sms', label: 'SMS' },
+                { value: 'whatsapp', label: 'WhatsApp' },
+                { value: 'email', label: 'Email' },
+                { value: 'push', label: 'Push Notification' },
+                { value: 'voice', label: 'Voice Call' },
+              ]}
+              required
+            />
+            <Select
+              label="Category"
+              placeholder="Select category"
+              data={[
+                { value: 'appointment', label: 'Appointment' },
+                { value: 'reminder', label: 'Reminder' },
+                { value: 'follow-up', label: 'Follow-up' },
+                { value: 'emergency', label: 'Emergency' },
+                { value: 'marketing', label: 'Marketing' },
+                { value: 'billing', label: 'Billing' },
+                { value: 'general', label: 'General' },
+              ]}
+              required
+            />
+          </SimpleGrid>
+
+          <TextInput
+            label="Subject (Email only)"
+            placeholder="Enter subject"
+          />
+
+          <Textarea
+            label="Template Content"
+            placeholder="Enter template content with variables like {{patient_name}}, {{appointment_date}}"
+            minRows={6}
+            required
+          />
+
+          <Text size="sm" c="dimmed">
+            Use variables like {'{{patient_name}}'}, {'{{doctor_name}}'}, {'{{appointment_date}}'} etc.
+          </Text>
+
+          <Group justify="flex-end">
+            <Button variant="light" onClick={closeNewTemplate}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Template Created',
+                  message: 'Your template has been created successfully',
+                  color: 'green',
+                });
+                closeNewTemplate();
+              }}
+            >
+              Create Template
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* New Campaign Modal */}
+      <Modal opened={newCampaignOpened} onClose={closeNewCampaign} title="Create New Campaign" size="lg">
+        <Stack gap="md">
+          <TextInput
+            label="Campaign Name"
+            placeholder="Enter campaign name"
+            required
+          />
+
+          <Textarea
+            label="Description"
+            placeholder="Enter campaign description"
+            minRows={3}
+            required
+          />
+
+          <Select
+            label="Campaign Type"
+            placeholder="Select campaign type"
+            data={[
+              { value: 'sms', label: 'SMS Campaign' },
+              { value: 'whatsapp', label: 'WhatsApp Campaign' },
+              { value: 'email', label: 'Email Campaign' },
+              { value: 'multi-channel', label: 'Multi-Channel Campaign' },
+            ]}
+            required
+          />
+
+          <Select
+            label="Template"
+            placeholder="Select template to use"
+            data={[
+              { value: 'template1', label: 'Appointment Reminder Template' },
+              { value: 'template2', label: 'Follow-up Template' },
+              { value: 'template3', label: 'Emergency Alert Template' },
+            ]}
+            required
+          />
+
+          <Select
+            label="Target Audience"
+            placeholder="Select target audience"
+            data={[
+              { value: 'all-patients', label: 'All Patients' },
+              { value: 'specific-patients', label: 'Specific Patients' },
+              { value: 'department', label: 'Department' },
+              { value: 'age-group', label: 'Age Group' },
+              { value: 'custom', label: 'Custom Criteria' },
+            ]}
+            required
+          />
+
+          <DatePickerInput
+            label="Schedule Campaign (Optional)"
+            placeholder="Select date and time"
+            clearable
+          />
+
+          <Group justify="flex-end">
+            <Button variant="light" onClick={closeNewCampaign}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Campaign Created',
+                  message: 'Your campaign has been created successfully',
+                  color: 'green',
+                });
+                closeNewCampaign();
+              }}
+            >
+              Create Campaign
             </Button>
           </Group>
         </Stack>

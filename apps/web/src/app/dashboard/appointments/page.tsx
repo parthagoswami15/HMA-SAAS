@@ -84,17 +84,6 @@ const AppointmentManagement = () => {
     return new Date(date).toLocaleDateString('en-CA'); // YYYY-MM-DD format
   };
 
-  const formatDateTime = (date: string | Date) => {
-    return new Date(date).toLocaleString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
-
   // State management
   const [isClient, setIsClient] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('appointments');
@@ -106,7 +95,6 @@ const AppointmentManagement = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [appointmentStats, setAppointmentStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Handle hydration
@@ -120,7 +108,6 @@ const AppointmentManagement = () => {
   // Fetch appointments from API
   const fetchAppointments = async () => {
     try {
-      setLoading(true);
       const filters = {
         doctorId: selectedDoctor || undefined,
         status: selectedStatus || undefined,
@@ -136,8 +123,6 @@ const AppointmentManagement = () => {
       console.warn('Error fetching appointments (using empty data):', errorMsg);
       setError(null);
       setAppointments([]);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -175,8 +160,6 @@ const AppointmentManagement = () => {
   const [appointmentDetailOpened, { open: openAppointmentDetail, close: closeAppointmentDetail }] =
     useDisclosure(false);
   const [bookAppointmentOpened, { open: openBookAppointment, close: closeBookAppointment }] =
-    useDisclosure(false);
-  const [rescheduleOpened, { open: openReschedule, close: closeReschedule }] =
     useDisclosure(false);
 
   // Filter appointments - now using API data
@@ -575,7 +558,7 @@ const AppointmentManagement = () => {
                             >
                               <IconEye size={16} />
                             </ActionIcon>
-                            <ActionIcon variant="subtle" color="green" onClick={openReschedule}>
+                            <ActionIcon variant="subtle" color="green">
                               <IconEdit size={16} />
                             </ActionIcon>
                             <Menu>
@@ -1119,7 +1102,7 @@ const AppointmentManagement = () => {
               <Button variant="light" onClick={closeAppointmentDetail}>
                 Close
               </Button>
-              <Button onClick={openReschedule}>Reschedule</Button>
+              {/* <Button onClick={openReschedule}>Reschedule</Button> */}
             </Group>
           </Stack>
         )}

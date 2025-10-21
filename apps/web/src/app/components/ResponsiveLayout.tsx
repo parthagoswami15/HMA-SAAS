@@ -21,7 +21,7 @@ const ResponsiveLayout = ({ children }: LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
+  const [notifications] = useState([
     { id: 1, title: 'New appointment scheduled', time: '5 min ago', type: 'info' },
     { id: 2, title: 'Lab results available', time: '10 min ago', type: 'success' },
     { id: 3, title: 'Emergency alert: Bed 205', time: '15 min ago', type: 'urgent' },

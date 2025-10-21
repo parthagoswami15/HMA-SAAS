@@ -66,13 +66,6 @@ const Input: React.FC<InputProps> = ({
     ...style,
   };
 
-  const _focusStyles = {
-    ':focus': {
-      borderColor: '#667eea',
-      boxShadow: '0 0 0 3px rgba(102, 126, 234, 0.1)',
-    },
-  };
-
   return (
     <div style={{ marginBottom: '1rem' }}>
       {label && (

@@ -22,7 +22,6 @@ import {
   ScrollArea,
   ThemeIcon,
   Alert,
-  Progress,
   NumberInput,
   Textarea,
   // Timeline,
@@ -130,14 +129,12 @@ const EmergencyManagement = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedBedStatus, setSelectedBedStatus] = useState<string>('');
   const [selectedCase, setSelectedCase] = useState<any | null>(null);
-  const [_selectedBed, _setSelectedBed] = useState<ICUBed | null>(null);
 
   // Modal states
   const [caseDetailOpened, { open: openCaseDetail, close: closeCaseDetail }] = useDisclosure(false);
   const [addCaseOpened, { open: openAddCase, close: closeAddCase }] = useDisclosure(false);
-  const [_bedDetailOpened, { open: _openBedDetail, close: _closeBedDetail }] = useDisclosure(false);
-  const [_triageOpened, { open: openTriage, close: _closeTriage }] = useDisclosure(false);
-  const [_protocolOpened, { open: openProtocol, close: _closeProtocol }] = useDisclosure(false);
+  const [protocolOpened, { open: openProtocol, close: closeProtocol }] = useDisclosure(false);
+  const [triageOpened, { open: openTriage, close: closeTriage }] = useDisclosure(false);
 
   // Filter emergency cases
   const _filteredCases = useMemo(() => {
@@ -235,9 +232,8 @@ const EmergencyManagement = () => {
     openCaseDetail();
   };
 
-  const handleViewBed = (bed: ICUBed) => {
-    _setSelectedBed(bed);
-    _openBedDetail();
+  const handleViewBed = (_bed: ICUBed) => {
+    // Bed detail functionality removed
   };
 
   const clearFilters = () => {
@@ -245,25 +241,6 @@ const EmergencyManagement = () => {
     setSelectedTriage('');
     setSelectedStatus('');
     setSelectedBedStatus('');
-  };
-
-  const _getVitalStatus = (value: number, normal: { min: number; max: number }) => {
-    if (value < normal.min || value > normal.max) return 'critical';
-    if (value < normal.min * 1.1 || value > normal.max * 0.9) return 'warning';
-    return 'normal';
-  };
-
-  const _getVitalColor = (status: string) => {
-    switch (status) {
-      case 'critical':
-        return 'red';
-      case 'warning':
-        return 'orange';
-      case 'normal':
-        return 'green';
-      default:
-        return 'gray';
-    }
   };
 
   // Statistics cards
@@ -1268,6 +1245,161 @@ const EmergencyManagement = () => {
               }}
             >
               Create Case
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* Code Blue Protocol Modal */}
+      <Modal opened={protocolOpened} onClose={closeProtocol} title="Code Blue Protocol" size="lg">
+        <Stack gap="md">
+          <Alert color="red" icon={<IconAlertTriangle size={16} />}>
+            <strong>Code Blue Activated</strong> - Emergency cardiac arrest response protocol initiated
+          </Alert>
+
+          <Stepper active={0} orientation="vertical">
+            <Stepper.Step
+              label="Step 1"
+              description="Call for help and activate Code Blue team"
+              completedIcon={<IconCheck size={16} />}
+            >
+              <Text size="sm" c="dimmed">
+                Immediately call &ldquo;Code Blue&rdquo; over hospital intercom and alert cardiac arrest response team
+              </Text>
+            </Stepper.Step>
+            <Stepper.Step
+              label="Step 2"
+              description="Start CPR and attach AED"
+              completedIcon={<IconCheck size={16} />}
+            >
+              <Text size="sm" c="dimmed">
+                Begin chest compressions at 100-120/min rate and attach automated external defibrillator
+              </Text>
+            </Stepper.Step>
+            <Stepper.Step
+              label="Step 3"
+              description="Establish IV access and administer epinephrine"
+              completedIcon={<IconCheck size={16} />}
+            >
+              <Text size="sm" c="dimmed">
+                Insert intravenous line and administer 1mg epinephrine IV every 3-5 minutes
+              </Text>
+            </Stepper.Step>
+            <Stepper.Step
+              label="Step 4"
+              description="Advanced cardiac life support"
+              completedIcon={<IconCheck size={16} />}
+            >
+              <Text size="sm" c="dimmed">
+                Continue ACLS protocol including airway management, rhythm analysis, and defibrillation
+              </Text>
+            </Stepper.Step>
+          </Stepper>
+
+          <SimpleGrid cols={2} spacing="md">
+            <Button variant="light" color="red" fullWidth>
+              Emergency Contacts
+            </Button>
+            <Button variant="light" color="blue" fullWidth>
+              Equipment Checklist
+            </Button>
+          </SimpleGrid>
+
+          <Group justify="flex-end">
+            <Button variant="light" onClick={closeProtocol}>
+              Close
+            </Button>
+            <Button color="red">Activate Response Team</Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* Add to Triage Modal */}
+      <Modal opened={triageOpened} onClose={closeTriage} title="Add Patient to Triage" size="lg">
+        <Stack gap="md">
+          <TextInput
+            label="Patient Name"
+            placeholder="Enter patient name"
+            required
+          />
+
+          <TextInput
+            label="Patient ID"
+            placeholder="Enter patient ID or registration number"
+          />
+
+          <SimpleGrid cols={2} spacing="md">
+            <Select
+              label="Age Group"
+              placeholder="Select age group"
+              data={[
+                { value: 'infant', label: 'Infant (0-1 year)' },
+                { value: 'child', label: 'Child (1-12 years)' },
+                { value: 'adolescent', label: 'Adolescent (13-18 years)' },
+                { value: 'adult', label: 'Adult (19-64 years)' },
+                { value: 'elderly', label: 'Elderly (65+ years)' },
+              ]}
+              required
+            />
+            <Select
+              label="Gender"
+              placeholder="Select gender"
+              data={[
+                { value: 'male', label: 'Male' },
+                { value: 'female', label: 'Female' },
+                { value: 'other', label: 'Other' },
+              ]}
+              required
+            />
+          </SimpleGrid>
+
+          <Select
+            label="Triage Level"
+            placeholder="Select triage level"
+            data={[
+              { value: '1', label: 'Level 1 - Resuscitation (Immediate)' },
+              { value: '2', label: 'Level 2 - Emergency (Urgent)' },
+              { value: '3', label: 'Level 3 - Urgent (Less urgent)' },
+              { value: '4', label: 'Level 4 - Less Urgent (Semi-urgent)' },
+              { value: '5', label: 'Level 5 - Non-urgent (Non-urgent)' },
+            ]}
+            required
+          />
+
+          <Textarea
+            label="Chief Complaint"
+            placeholder="Describe the main complaint or reason for visit"
+            minRows={3}
+            required
+          />
+
+          <Select
+            label="Assigned Nurse"
+            placeholder="Select assigned nurse"
+            data={[
+              { value: 'nurse1', label: 'Nurse Sarah Johnson' },
+              { value: 'nurse2', label: 'Nurse Michael Chen' },
+              { value: 'nurse3', label: 'Nurse Emily Davis' },
+              { value: 'nurse4', label: 'Nurse Robert Wilson' },
+            ]}
+            required
+          />
+
+          <Group justify="flex-end">
+            <Button variant="light" onClick={closeTriage}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Patient Added to Triage',
+                  message: 'Patient has been successfully added to the triage queue',
+                  color: 'green',
+                });
+                closeTriage();
+              }}
+            >
+              Add to Triage
             </Button>
           </Group>
         </Stack>

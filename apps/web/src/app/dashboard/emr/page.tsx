@@ -105,9 +105,8 @@ const EMRManagement = () => {
 
   // API data state
   const [records, setRecords] = useState<MedicalRecord[]>([]);
-  const [_stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [_error, _setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAllData();
@@ -117,11 +116,9 @@ const EMRManagement = () => {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      _setError(null);
       await Promise.all([fetchRecords(), fetchStats()]);
     } catch (err: any) {
       console.error('Error loading EMR data:', err);
-      _setError(err.response?.data?.message || 'Failed to load EMR data');
       setRecords([] /* TODO: Fetch from API */);
     } finally {
       setLoading(false);
@@ -182,8 +179,6 @@ const EMRManagement = () => {
   const [recordDetailOpened, { open: openRecordDetail, close: closeRecordDetail }] =
     useDisclosure(false);
   const [addRecordOpened, { open: openAddRecord, close: closeAddRecord }] = useDisclosure(false);
-  const [_editRecordOpened, { open: _openEditRecord, close: _closeEditRecord }] =
-    useDisclosure(false);
 
   // Filter medical records
   const filteredRecords = useMemo(() => {
@@ -201,7 +196,7 @@ const EMRManagement = () => {
 
       return matchesSearch && matchesPatient && matchesDoctor && matchesType && matchesStatus;
     });
-  }, [searchQuery, selectedPatient, selectedDoctor, selectedRecordType, selectedStatus]);
+  }, [searchQuery, selectedPatient, selectedDoctor, selectedRecordType, selectedStatus, records]);
 
   // Helper functions
   const formatDate = (date: string | Date) => {
@@ -270,7 +265,7 @@ const EMRManagement = () => {
 
   const handleEditRecord = (record: MedicalRecord) => {
     setSelectedRecord(record);
-    _openEditRecord();
+    // Edit record functionality removed
   };
 
   const handleDeleteRecord = (record: MedicalRecord) => {

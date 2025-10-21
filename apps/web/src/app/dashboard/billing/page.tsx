@@ -104,13 +104,10 @@ const BillingManagement = () => {
   const [selectedPatient, setSelectedPatient] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [selectedClaim, setSelectedClaim] = useState<InsuranceClaim | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [statsLoading, setStatsLoading] = useState(true);
-  const [statsError, setStatsError] = useState<string | null>(null);
 
   // Data state
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -122,10 +119,9 @@ const BillingManagement = () => {
   // Modal states
   const [invoiceDetailOpened, { open: openInvoiceDetail, close: closeInvoiceDetail }] =
     useDisclosure(false);
+  const [claimDetailOpened, { open: openClaimDetail, close: closeClaimDetail }] = useDisclosure(false);
   const [addInvoiceOpened, { open: openAddInvoice, close: closeAddInvoice }] = useDisclosure(false);
   const [addPaymentOpened, { open: openAddPayment, close: closeAddPayment }] = useDisclosure(false);
-  const [claimDetailOpened, { open: openClaimDetail, close: closeClaimDetail }] =
-    useDisclosure(false);
 
   // Load all data on mount
   useEffect(() => {
@@ -169,8 +165,6 @@ const BillingManagement = () => {
 
   const loadStats = async () => {
     try {
-      setStatsLoading(true);
-      setStatsError(null);
       const response = await billingService.getBillingStats();
       setBillingStats(response.data);
     } catch (err: any) {
@@ -178,7 +172,6 @@ const BillingManagement = () => {
         'Error loading billing stats (using default values):',
         err.response?.data?.message || err.message
       );
-      setStatsError(null);
       // Set default stats when backend is unavailable
       setBillingStats({
         totalRevenue: 0,
@@ -188,8 +181,6 @@ const BillingManagement = () => {
         totalInvoices: 0,
         totalPayments: 0,
       });
-    } finally {
-      setStatsLoading(false);
     }
   };
 
@@ -345,7 +336,6 @@ const BillingManagement = () => {
     setSelectedPatient('');
     setSelectedStatus('');
     setSelectedPaymentMethod('');
-    setDateRange([null, null]);
   };
 
   const formatCurrency = (amount: number) => {
@@ -396,16 +386,6 @@ const BillingManagement = () => {
         },
       ]
     : [];
-
-  // Chart data
-  const revenueChartData =
-    revenueData.length > 0
-      ? revenueData.map((item) => ({
-          month: item.month,
-          revenue: item.totalRevenue,
-          collections: item.collections,
-        }))
-      : [];
 
   const getPaymentMethodColor = (method: PaymentMethod) => {
     switch (method) {
@@ -533,61 +513,7 @@ const BillingManagement = () => {
       )}
 
       {/* Statistics Cards */}
-      {statsLoading ? (
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
-          {[1, 2, 3, 4].map((i) => (
-            <Card key={i} padding="lg" radius="md" withBorder>
-              <Group justify="space-between">
-                <div>
-                  <div
-                    style={{
-                      height: '1rem',
-                      width: '100px',
-                      backgroundColor: '#e9ecef',
-                      borderRadius: '4px',
-                      marginBottom: '8px',
-                    }}
-                  />
-                  <div
-                    style={{
-                      height: '2rem',
-                      width: '80px',
-                      backgroundColor: '#e9ecef',
-                      borderRadius: '4px',
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '8px',
-                  }}
-                />
-              </Group>
-              <Group justify="space-between" mt="sm">
-                <div
-                  style={{
-                    height: '1rem',
-                    width: '50px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                  }}
-                />
-                <div
-                  style={{
-                    height: '0.75rem',
-                    width: '80px',
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                  }}
-                />
-              </Group>
-            </Card>
-          ))}
-        </SimpleGrid>
-      ) : (
+      {billingStats && (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
           {statsCards.map((stat) => {
             const Icon = stat.icon;
@@ -1362,6 +1288,142 @@ const BillingManagement = () => {
                 <Button leftSection={<IconDownload size={16} />}>Download PDF</Button>
                 <Button leftSection={<IconMail size={16} />} variant="outline">
                   Send Email
+                </Button>
+              </Group>
+            </Stack>
+          </ScrollArea>
+        )}
+      </Modal>
+
+      {/* Claim Detail Modal */}
+      <Modal
+        opened={claimDetailOpened}
+        onClose={closeClaimDetail}
+        title="Insurance Claim Details"
+        size="xl"
+      >
+        {selectedClaim && (
+          <ScrollArea h={600}>
+            <Stack gap="md">
+              {/* Claim Header */}
+              <Group justify="space-between">
+                <div>
+                  <Title order={3}>{selectedClaim.claimNumber}</Title>
+                  <Text c="dimmed">{formatDate(selectedClaim.submissionDate)}</Text>
+                </div>
+                <Badge color={getStatusColor(selectedClaim.status)} variant="light" size="lg">
+                  {selectedClaim.status.replace('_', ' ')}
+                </Badge>
+              </Group>
+
+              <Divider />
+
+              {/* Patient & Insurance Info */}
+              <SimpleGrid cols={2}>
+                <div>
+                  <Text size="sm" fw={500} mb="sm">
+                    Patient Information:
+                  </Text>
+                  <Stack gap={4}>
+                    <Text size="sm">
+                      {selectedClaim.patient.firstName} {selectedClaim.patient.lastName}
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                      {selectedClaim.patient.patientId}
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                      DOB: {formatDate(selectedClaim.patient.dateOfBirth)}
+                    </Text>
+                  </Stack>
+                </div>
+                <div>
+                  <Text size="sm" fw={500} mb="sm">
+                    Insurance Details:
+                  </Text>
+                  <Stack gap={4}>
+                    <Text size="sm">
+                      Provider: {selectedClaim.insuranceProvider?.providerName || selectedClaim.insurance.providerName}
+                    </Text>
+                    {selectedClaim.policyNumber && (
+                      <Text size="sm" c="dimmed">
+                        Policy: {selectedClaim.policyNumber}
+                      </Text>
+                    )}
+                  </Stack>
+                </div>
+              </SimpleGrid>
+
+              <Divider />
+
+              {/* Claim Details */}
+              <div>
+                <Text size="sm" fw={500} mb="sm">
+                  Claim Information
+                </Text>
+                <SimpleGrid cols={2} spacing="md">
+                  <div>
+                    <Text size="sm" c="dimmed">Claim Amount</Text>
+                    <Text fw={600}>{formatCurrency((selectedClaim.claimAmount ?? selectedClaim.claimedAmount) as number)}</Text>
+                  </div>
+                  <div>
+                    <Text size="sm" c="dimmed">Approved Amount</Text>
+                    <Text fw={600} c={selectedClaim.approvedAmount ? 'green' : 'dimmed'}>
+                      {selectedClaim.approvedAmount ? formatCurrency(selectedClaim.approvedAmount) : 'Pending'}
+                    </Text>
+                  </div>
+                  <div>
+                    <Text size="sm" c="dimmed">Service Date</Text>
+                    <Text size="sm">{formatDate(selectedClaim.serviceDate)}</Text>
+                  </div>
+                  <div>
+                    <Text size="sm" c="dimmed">Claim Date</Text>
+                    <Text size="sm">{formatDate(selectedClaim.claimDate)}</Text>
+                  </div>
+                </SimpleGrid>
+              </div>
+
+              {selectedClaim.diagnosis && selectedClaim.diagnosis.length > 0 && (
+                <>
+                  <Divider />
+                  <div>
+                    <Text size="sm" fw={500} mb="sm">
+                      Medical Information
+                    </Text>
+                    <Stack gap="xs">
+                      {selectedClaim.diagnosis.map((diag) => (
+                        <Text key={diag.id} size="sm">
+                          <strong>{diag.icdCode}:</strong> {diag.description}
+                          {diag.isPrimary && (
+                            <Badge size="xs" color="blue" ml="sm">Primary</Badge>
+                          )}
+                        </Text>
+                      ))}
+                    </Stack>
+                  </div>
+                </>
+              )}
+
+              <Divider />
+
+              {/* Claim Timeline/Notes */}
+              {selectedClaim.notes && (
+                <div>
+                  <Text size="sm" fw={500} mb="sm">
+                    Notes
+                  </Text>
+                  <Text size="sm" style={{ backgroundColor: '#f8f9fa', padding: '8px', borderRadius: '4px' }}>
+                    {selectedClaim.notes}
+                  </Text>
+                </div>
+              )}
+
+              <Group justify="flex-end" mt="lg">
+                <Button variant="light" onClick={closeClaimDetail}>
+                  Close
+                </Button>
+                <Button leftSection={<IconDownload size={16} />}>Download Claim</Button>
+                <Button leftSection={<IconMail size={16} />} variant="outline">
+                  Send to Insurance
                 </Button>
               </Group>
             </Stack>
