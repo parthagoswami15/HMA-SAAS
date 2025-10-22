@@ -61,6 +61,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileOpened, setMobileOpened] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -474,12 +475,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <AppShell
       navbar={{
-        width: sidebarCollapsed ? 80 : 300,
-        breakpoint: 'sm',
+        width: sidebarCollapsed ? 80 : 280,
+        breakpoint: 'md',
+        collapsed: { mobile: !mobileOpened },
       }}
       header={{
-        height: 70,
+        height: { base: 60, sm: 65, md: 70 },
       }}
+      padding={{ base: 'xs', sm: 'sm', md: 'md' }}
     >
       <AppShellNavbar
         p="md"
@@ -591,6 +594,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       onClick={(e) => {
                         if (!module.active) {
                           e.preventDefault();
+                        } else {
+                          // Close mobile menu on navigation
+                          if (mobileOpened) {
+                            setMobileOpened(false);
+                          }
                         }
                       }}
                     />
@@ -672,6 +680,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             >
               <Menu.Item
                 leftSection={<IconUserCircle size={16} color="#667eea" />}
+                onClick={() => router.push('/profile')}
                 style={{
                   borderRadius: '8px',
                   marginBottom: '0.25rem',
@@ -688,6 +697,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </Menu.Item>
               <Menu.Item
                 leftSection={<IconSettings size={16} color="#667eea" />}
+                onClick={() => router.push('/settings')}
                 style={{
                   borderRadius: '8px',
                   marginBottom: '0.25rem',
@@ -735,12 +745,30 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           backgroundAttachment: 'fixed',
         }}
       >
-        <Group justify="space-between" h="100%" px="md">
-          <Group>
+        <Group justify="space-between" h="100%" px={{ base: 'xs', sm: 'sm', md: 'md' }}>
+          <Group gap="sm">
+            {/* Mobile burger - shows on mobile/tablet */}
+            <Button
+              variant="subtle"
+              size="sm"
+              onClick={() => setMobileOpened(!mobileOpened)}
+              hiddenFrom="md"
+              style={{
+                borderRadius: '8px',
+                transition: 'all 0.2s ease',
+                background: mobileOpened ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)',
+                color: 'white',
+                border: '1px solid rgba(255,255,255,0.2)',
+              }}
+            >
+              ☰
+            </Button>
+            {/* Desktop collapse button - shows on desktop only */}
             <Button
               variant="subtle"
               size="sm"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              visibleFrom="md"
               style={{
                 borderRadius: '8px',
                 transition: 'all 0.2s ease',
