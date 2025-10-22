@@ -90,9 +90,9 @@ export default function EnhancedDashboard() {
   const modules = accessibleModules;
 
   return (
-    <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-400 min-h-full rounded-2xl p-0">
+    <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-400 min-h-full rounded-2xl p-0 w-full max-w-full overflow-x-hidden">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-pink-400 via-pink-300 to-pink-300 text-white p-6 md:p-8 lg:p-10 rounded-t-2xl mb-6 md:mb-8 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-pink-400 via-pink-300 to-pink-300 text-white p-4 sm:p-6 md:p-8 lg:p-10 rounded-t-2xl mb-4 sm:mb-6 md:mb-8 relative overflow-hidden">
         <div
           style={{
             position: 'absolute',
@@ -138,7 +138,7 @@ export default function EnhancedDashboard() {
       </div>
 
       {/* Quick Stats - Role-based */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12 px-4 md:px-6 lg:px-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 md:mb-12 px-3 sm:px-4 md:px-6 lg:px-8">
         {(user.role === 'PATIENT'
           ? [
               {
@@ -237,7 +237,7 @@ export default function EnhancedDashboard() {
 
       {/* HMS Modules - Only for Staff/Admin, not Patients */}
       {user.role !== 'PATIENT' && (
-        <div className="mb-8 md:mb-12 px-4 md:px-6 lg:px-8">
+        <div className="mb-6 sm:mb-8 md:mb-12 px-3 sm:px-4 md:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
             <h2 className="text-slate-800 text-xl md:text-2xl font-bold m-0 bg-gradient-to-r from-red-400 via-teal-400 to-blue-400 bg-clip-text text-transparent">
               HMS Modules ({modules.filter((m) => m.active).length}/{modules.length} Active)
@@ -257,7 +257,7 @@ export default function EnhancedDashboard() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {modules.map((module, index) => (
               <Link
                 key={index}

@@ -273,7 +273,10 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
     return (
       <Box key={item.href}>
         <UnstyledButton
-          onClick={() => setActiveItem(item.href)}
+          onClick={() => {
+            setActiveItem(item.href);
+            if (opened) toggle(); // Close mobile menu on navigation
+          }}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -316,9 +319,9 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
   return (
     <AppShell
       navbar={{
-        width: { base: '100%', sm: 280, md: 280, lg: 280 },
+        width: 280,
         breakpoint: 'md',
-        collapsed: { mobile: !opened, desktop: false },
+        collapsed: { mobile: !opened },
       }}
       header={{ height: { base: 56, sm: 60, md: 64 } }}
       padding={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}
@@ -389,6 +392,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                   <Menu.Item
                     icon={<IconUser size="0.9rem" />}
                     onClick={() => {
+                      console.log('Profile clicked - navigating to /profile');
                       setActiveItem('/profile');
                       router.push('/profile');
                     }}
@@ -398,6 +402,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                   <Menu.Item
                     icon={<IconSettings size="0.9rem" />}
                     onClick={() => {
+                      console.log('Settings clicked - navigating to /settings');
                       setActiveItem('/settings');
                       router.push('/settings');
                     }}
