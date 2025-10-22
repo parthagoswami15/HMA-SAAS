@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { SimpleGrid } from '@mantine/core';
 import {
   getModulesForRole,
   getRoleDisplayName,
@@ -138,7 +139,11 @@ export default function EnhancedDashboard() {
       </div>
 
       {/* Quick Stats - Role-based */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 md:mb-12 px-3 sm:px-4 md:px-6 lg:px-8">
+      <SimpleGrid 
+        cols={{ base: 1, sm: 2, lg: 4 }} 
+        spacing={{ base: 'sm', sm: 'md', md: 'lg' }}
+        style={{ marginBottom: '2rem', padding: '0 1rem' }}
+      >
         {(user.role === 'PATIENT'
           ? [
               {
@@ -233,7 +238,7 @@ export default function EnhancedDashboard() {
             </div>
           </div>
         ))}
-      </div>
+      </SimpleGrid>
 
       {/* HMS Modules - Only for Staff/Admin, not Patients */}
       {user.role !== 'PATIENT' && (
@@ -257,7 +262,10 @@ export default function EnhancedDashboard() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+          <SimpleGrid 
+            cols={{ base: 1, sm: 2, lg: 3, xl: 4 }}
+            spacing={{ base: 'sm', sm: 'md', md: 'lg' }}
+          >
             {modules.map((module, index) => (
               <Link
                 key={index}
@@ -393,7 +401,7 @@ export default function EnhancedDashboard() {
                 </div>
               </Link>
             ))}
-          </div>
+          </SimpleGrid>
         </div>
       )}
 
