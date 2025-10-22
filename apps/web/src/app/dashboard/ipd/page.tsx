@@ -235,21 +235,23 @@ const IPDManagement = () => {
   };
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py={{ base: 'xs', sm: 'sm', md: 'md' }} px={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}>
       {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={2}>IPD Management</Title>
-          <Text size="sm" c="dimmed">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <Title order={2} className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">IPD Management</Title>
+          <Text c="dimmed" className="text-xs sm:text-sm">
             Inpatient department care and bed management system
           </Text>
         </div>
-        <Group>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
           <Button
             leftSection={<IconRefresh size={16} />}
             variant="light"
             onClick={fetchAllData}
             loading={loading}
+            className="w-full sm:w-auto"
+            size="sm"
           >
             Refresh Status
           </Button>
@@ -258,15 +260,17 @@ const IPDManagement = () => {
             onClick={() => {
               /* TODO: Open admission modal */
             }}
+            className="w-full sm:w-auto"
+            size="sm"
           >
             New Admission
           </Button>
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       {/* Quick Stats */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4, lg: 8 }} spacing="lg" mb="xl">
-        <Card padding="md" radius="md" withBorder>
+      <SimpleGrid cols={{ base: 2, sm: 3, md: 4, lg: 8 }} spacing={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }} mb={{ base: 'md', sm: 'lg', md: 'xl' }}>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="apart">
             <div>
               <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
@@ -282,7 +286,7 @@ const IPDManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="apart">
             <div>
               <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
@@ -298,7 +302,7 @@ const IPDManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="apart">
             <div>
               <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
@@ -314,7 +318,7 @@ const IPDManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="apart">
             <div>
               <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
@@ -330,7 +334,7 @@ const IPDManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="apart">
             <div>
               <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
@@ -346,7 +350,7 @@ const IPDManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="apart">
             <div>
               <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
@@ -362,7 +366,7 @@ const IPDManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="apart">
             <div>
               <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
@@ -378,7 +382,7 @@ const IPDManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="apart">
             <div>
               <Text size="xs" c="dimmed" tt="uppercase" fw={700}>

@@ -301,35 +301,35 @@ const AIAssistant = () => {
   };
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py={{ base: 'xs', sm: 'sm', md: 'md' }} px={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}>
       {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Group mb="xs">
-            <ThemeIcon color="blue" size="xl" variant="light">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <Group mb="xs" gap="sm">
+            <ThemeIcon color="blue" size="xl" variant="light" visibleFrom="sm">
               <IconBrain size={24} />
             </ThemeIcon>
             <div>
-              <Title order={1}>AI Clinical Assistant</Title>
-              <Text c="dimmed" size="sm">
+              <Title order={1} className="text-xl sm:text-2xl md:text-3xl">AI Clinical Assistant</Title>
+              <Text c="dimmed" className="text-xs sm:text-sm">
                 Intelligent clinical decision support and medical insights
               </Text>
             </div>
           </Group>
         </div>
-        <Group>
-          <Button variant="light" leftSection={<IconRefresh size={16} />}>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <Button variant="light" leftSection={<IconRefresh size={16} />} className="w-full sm:w-auto" size="sm">
             Refresh Insights
           </Button>
-          <Button leftSection={<IconMessageCircle size={16} />} onClick={openAskAI}>
+          <Button leftSection={<IconMessageCircle size={16} />} onClick={openAskAI} className="w-full sm:w-auto" size="sm">
             Ask AI
           </Button>
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       {/* Quick Stats */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4, lg: 8 }} mb="lg" spacing="sm">
-        <Card padding="md" radius="md" withBorder>
+      <SimpleGrid cols={{ base: 2, sm: 3, md: 4, lg: 8 }} mb={{ base: 'md', sm: 'lg' }} spacing={{ base: 'xs', sm: 'sm', md: 'md' }}>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="blue" size="lg" radius="md" variant="light">
               <IconSparkles size={20} />
@@ -345,7 +345,7 @@ const AIAssistant = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="yellow" size="lg" radius="md" variant="light">
               <IconClockHour4 size={20} />
@@ -361,7 +361,7 @@ const AIAssistant = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="green" size="lg" radius="md" variant="light">
               <IconCheck size={20} />
@@ -377,7 +377,7 @@ const AIAssistant = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="red" size="lg" radius="md" variant="light">
               <IconAlertTriangle size={20} />
@@ -393,7 +393,7 @@ const AIAssistant = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="purple" size="lg" radius="md" variant="light">
               <IconQuestionMark size={20} />
@@ -409,7 +409,7 @@ const AIAssistant = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="teal" size="lg" radius="md" variant="light">
               <IconTarget size={20} />
@@ -425,7 +425,7 @@ const AIAssistant = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="orange" size="lg" radius="md" variant="light">
               <IconStar size={20} />
@@ -441,7 +441,7 @@ const AIAssistant = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="lime" size="lg" radius="md" variant="light">
               <IconMoodCheck size={20} />
@@ -460,20 +460,14 @@ const AIAssistant = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={(value) => setActiveTab(value || 'insights')}>
-        <Tabs.List>
-          <Tabs.Tab value="insights" leftSection={<IconBulb size={16} />}>
+        <Tabs.List className="flex-wrap">
+          <Tabs.Tab value="insights" leftSection={<IconBulb size={16} />} className="text-xs sm:text-sm">
             AI Insights
           </Tabs.Tab>
-          <Tabs.Tab value="queries" leftSection={<IconMessageCircle size={16} />}>
-            AI Queries
+          <Tabs.Tab value="queries" leftSection={<IconMessageCircle size={16} />} className="text-xs sm:text-sm">
+            Query History
           </Tabs.Tab>
-          <Tabs.Tab value="guidelines" leftSection={<IconFileText size={16} />}>
-            Clinical Guidelines
-          </Tabs.Tab>
-          <Tabs.Tab value="interactions" leftSection={<IconPill size={16} />}>
-            Drug Interactions
-          </Tabs.Tab>
-          <Tabs.Tab value="analytics" leftSection={<IconChartBar size={16} />}>
+          <Tabs.Tab value="analytics" leftSection={<IconChartBar size={16} />} className="text-xs sm:text-sm">
             Analytics
           </Tabs.Tab>
         </Tabs.List>

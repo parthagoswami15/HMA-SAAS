@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   AppShell,
   Text,
@@ -258,6 +259,7 @@ const navigationItems: NavigationItem[] = [
 ];
 
 export default function Layout({ children, user, notifications = 0, onLogout }: LayoutProps) {
+  const router = useRouter();
   const [opened, { toggle }] = useDisclosure(false);
   const [activeItem, setActiveItem] = useState<string>('');
 
@@ -273,19 +275,21 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
         <UnstyledButton
           onClick={() => setActiveItem(item.href)}
           style={{
-            display: 'block',
+            display: 'flex',
+            alignItems: 'center',
             width: '100%',
-            padding: '8px 12px',
-            paddingLeft: 12 + level * 20,
-            borderRadius: 4,
+            padding: '10px 12px',
+            paddingLeft: 12 + level * 16,
+            borderRadius: 6,
             color: isActive ? '#1976d2' : '#333',
             backgroundColor: isActive ? '#e3f2fd' : 'transparent',
             textDecoration: 'none',
-            fontSize: '14px',
-            marginBottom: 2,
+            fontSize: 'clamp(0.875rem, 1vw, 1rem)',
+            marginBottom: 4,
+            minHeight: '44px',
           }}
         >
-          <Group gap="sm">
+          <Group gap="sm" style={{ width: '100%' }}>
             {item.icon}
             <Text size="sm" fw={isActive ? 600 : 400}>
               {item.label}
@@ -312,17 +316,17 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
   return (
     <AppShell
       navbar={{
-        width: 280,
-        breakpoint: 'sm',
-        collapsed: { mobile: !opened },
+        width: { base: '100%', sm: 280, md: 280, lg: 280 },
+        breakpoint: 'md',
+        collapsed: { mobile: !opened, desktop: false },
       }}
-      header={{ height: 60 }}
-      padding="md"
+      header={{ height: { base: 56, sm: 60, md: 64 } }}
+      padding={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}
     >
       <AppShell.Header>
-        <Group h="100%" px="md" justify="space-between">
-          <Group>
-            <Burger hiddenFrom="sm" opened={opened} onClick={toggle} size="sm" />
+        <Group h="100%" px={{ base: 'xs', sm: 'sm', md: 'md' }} justify="space-between">
+          <Group gap="sm">
+            <Burger hiddenFrom="md" opened={opened} onClick={toggle} size="sm" />
 
             <Group gap="sm">
               <Box
@@ -341,13 +345,16 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
               >
                 HMS
               </Box>
-              <Text fw={600} size="lg">
+              <Text fw={600} size="md" visibleFrom="sm">
                 Hospital Management System
+              </Text>
+              <Text fw={600} size="sm" hiddenFrom="sm">
+                HMS
               </Text>
             </Group>
           </Group>
 
-          <Group>
+          <Group gap="sm">
             <Indicator
               inline
               label={notifications > 0 ? notifications : null}
@@ -365,7 +372,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                   <UnstyledButton>
                     <Group gap="sm">
                       <Avatar src={user.avatar} alt={user.name} radius="xl" size="sm" />
-                      <Box style={{ flex: 1 }}>
+                      <Box style={{ flex: 1 }} visibleFrom="sm">
                         <Text size="sm" fw={500}>
                           {user.name}
                         </Text>
@@ -373,7 +380,7 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                           {user.role.replace('_', ' ').toLowerCase()}
                         </Text>
                       </Box>
-                      <IconX size="0.9rem" />
+                      <Box visibleFrom="sm"><IconX size="0.9rem" /></Box>
                     </Group>
                   </UnstyledButton>
                 </Menu.Target>
@@ -381,13 +388,19 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
                 <Menu.Dropdown>
                   <Menu.Item
                     icon={<IconUser size="0.9rem" />}
-                    onClick={() => setActiveItem('/profile')}
+                    onClick={() => {
+                      setActiveItem('/profile');
+                      router.push('/profile');
+                    }}
                   >
                     Profile
                   </Menu.Item>
                   <Menu.Item
                     icon={<IconSettings size="0.9rem" />}
-                    onClick={() => setActiveItem('/settings')}
+                    onClick={() => {
+                      setActiveItem('/settings');
+                      router.push('/settings');
+                    }}
                   >
                     Settings
                   </Menu.Item>
@@ -402,8 +415,8 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md">
-        <ScrollArea style={{ height: 'calc(100vh - 120px)' }}>
+      <AppShell.Navbar p={{ base: 'xs', sm: 'sm', md: 'md' }}>
+        <ScrollArea style={{ height: 'calc(100vh - 120px)', maxWidth: '100%' }}>
           <Stack gap="xs">
             {filteredNavItems.map((item) => (
               <NavItem key={item.href} item={item} />
@@ -412,8 +425,8 @@ export default function Layout({ children, user, notifications = 0, onLogout }: 
         </ScrollArea>
       </AppShell.Navbar>
 
-      <AppShell.Main>
-        <Container fluid>{children}</Container>
+      <AppShell.Main style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
+        <Container fluid style={{ maxWidth: '100%', padding: 0 }}>{children}</Container>
       </AppShell.Main>
     </AppShell>
   );

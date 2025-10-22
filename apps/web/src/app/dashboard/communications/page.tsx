@@ -326,28 +326,28 @@ const CommunicationsManagement = () => {
   };
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py={{ base: 'xs', sm: 'sm', md: 'md' }} px={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}>
       {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={1}>Communications Center</Title>
-          <Text c="dimmed" size="sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <Title order={1} className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">Communications Center</Title>
+          <Text c="dimmed" className="text-xs sm:text-sm">
             Manage SMS, WhatsApp, email, and push notifications
           </Text>
         </div>
-        <Group>
-          <Button variant="light" leftSection={<IconRefresh size={16} />}>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <Button variant="light" leftSection={<IconRefresh size={16} />} className="w-full sm:w-auto" size="sm">
             Refresh Status
           </Button>
-          <Button leftSection={<IconPlus size={16} />} onClick={openNewMessage}>
+          <Button leftSection={<IconPlus size={16} />} onClick={openNewMessage} className="w-full sm:w-auto" size="sm">
             Send Message
           </Button>
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       {/* Quick Stats */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4, lg: 8 }} mb="lg" spacing="sm">
-        <Card padding="md" radius="md" withBorder>
+      <SimpleGrid cols={{ base: 2, sm: 3, md: 4, lg: 8 }} mb={{ base: 'md', sm: 'lg' }} spacing={{ base: 'xs', sm: 'sm', md: 'md' }}>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="blue" size="lg" radius="md" variant="light">
               <IconMessage size={20} />
@@ -363,7 +363,7 @@ const CommunicationsManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="green" size="lg" radius="md" variant="light">
               <IconSend size={20} />
@@ -379,7 +379,7 @@ const CommunicationsManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="yellow" size="lg" radius="md" variant="light">
               <IconClockHour4 size={20} />
@@ -395,7 +395,7 @@ const CommunicationsManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="red" size="lg" radius="md" variant="light">
               <IconX size={20} />
@@ -411,7 +411,7 @@ const CommunicationsManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="purple" size="lg" radius="md" variant="light">
               <IconTemplate size={20} />
@@ -427,7 +427,7 @@ const CommunicationsManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="teal" size="lg" radius="md" variant="light">
               <IconCheckbox size={20} />
@@ -443,7 +443,7 @@ const CommunicationsManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="cyan" size="lg" radius="md" variant="light">
               <IconTarget size={20} />
@@ -459,7 +459,7 @@ const CommunicationsManagement = () => {
           </Group>
         </Card>
 
-        <Card padding="md" radius="md" withBorder>
+        <Card padding="sm" radius="md" withBorder className="p-2 sm:p-3 md:p-4">
           <Group justify="center">
             <ThemeIcon color="orange" size="lg" radius="md" variant="light">
               <IconActivity size={20} />
@@ -478,20 +478,17 @@ const CommunicationsManagement = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={setActiveTab}>
-        <Tabs.List>
-          <Tabs.Tab value="messages" leftSection={<IconMessage size={16} />}>
+        <Tabs.List className="flex-wrap">
+          <Tabs.Tab value="messages" leftSection={<IconMessage size={16} />} className="text-xs sm:text-sm">
             Messages
           </Tabs.Tab>
-          <Tabs.Tab value="templates" leftSection={<IconTemplate size={16} />}>
+          <Tabs.Tab value="templates" leftSection={<IconTemplate size={16} />} className="text-xs sm:text-sm">
             Templates
           </Tabs.Tab>
-          <Tabs.Tab value="campaigns" leftSection={<IconTarget size={16} />}>
+          <Tabs.Tab value="campaigns" leftSection={<IconTarget size={16} />} className="text-xs sm:text-sm">
             Campaigns
           </Tabs.Tab>
-          <Tabs.Tab value="settings" leftSection={<IconSettings size={16} />}>
-            Settings
-          </Tabs.Tab>
-          <Tabs.Tab value="analytics" leftSection={<IconChartBar size={16} />}>
+          <Tabs.Tab value="analytics" leftSection={<IconChartBar size={16} />} className="text-xs sm:text-sm">
             Analytics
           </Tabs.Tab>
         </Tabs.List>

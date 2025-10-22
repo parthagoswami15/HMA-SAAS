@@ -403,28 +403,30 @@ const PharmacyManagement = () => {
   const prescriptionTrends = pharmacyStats?.prescriptionTrends || [];
   const revenueData = pharmacyStats?.revenueData || [];
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py={{ base: 'xs', sm: 'sm', md: 'md' }} px={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}>
       {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={1}>Pharmacy Management</Title>
-          <Text c="dimmed" size="sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <Title order={1} className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">Pharmacy Management</Title>
+          <Text c="dimmed" className="text-xs sm:text-sm">
             Manage medications, prescriptions, dispensing, and drug interactions
           </Text>
         </div>
-        <Group>
-          <Button leftSection={<IconPlus size={16} />} onClick={openAddMedication}>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddMedication} className="w-full sm:w-auto" size="sm">
             Add Medication
           </Button>
           <Button
             variant="light"
             leftSection={<IconShieldCheck size={16} />}
             onClick={openInteractionCheck}
+            className="w-full sm:w-auto"
+            size="sm"
           >
             Check Interactions
           </Button>
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       {/* Error Display */}
       {_error && (
@@ -499,7 +501,7 @@ const PharmacyManagement = () => {
           {statsCards.map((stat) => {
             const Icon = stat.icon;
             return (
-              <Card key={stat.title} padding="lg" radius="md" withBorder>
+              <Card key={stat.title} padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
                 <Group justify="space-between">
                   <div>
                     <Text c="dimmed" size="sm" fw={500}>

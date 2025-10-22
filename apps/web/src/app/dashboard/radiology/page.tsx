@@ -393,7 +393,7 @@ const RadiologyManagement = () => {
   const turnaroundTimes = [];
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py={{ base: 'xs', sm: 'sm', md: 'md' }} px={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}>
       {/* Header */}
       <Group justify="space-between" mb="lg">
         <div>

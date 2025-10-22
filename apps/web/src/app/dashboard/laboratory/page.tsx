@@ -377,24 +377,24 @@ const LaboratoryManagement = () => {
     : [];
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py={{ base: 'xs', sm: 'sm', md: 'md' }} px={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}>
       {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={1}>Laboratory Management</Title>
-          <Text c="dimmed" size="sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <Title order={1} className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">Laboratory Management</Title>
+          <Text c="dimmed" className="text-xs sm:text-sm">
             Manage lab tests, samples, results, and equipment
           </Text>
         </div>
-        <Group>
-          <Button leftSection={<IconPlus size={16} />} onClick={openAddTest}>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <Button leftSection={<IconPlus size={16} />} onClick={openAddTest} className="w-full sm:w-auto" size="sm">
             Add Test
           </Button>
-          <Button variant="light" leftSection={<IconFlask size={16} />} onClick={_openAddOrder}>
+          <Button variant="light" leftSection={<IconFlask size={16} />} onClick={_openAddOrder} className="w-full sm:w-auto" size="sm">
             New Order
           </Button>
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       {/* Loading State */}
       {_loading && (
@@ -417,11 +417,11 @@ const LaboratoryManagement = () => {
       )}
 
       {/* Statistics Cards */}
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} mb="lg">
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing={{ base: 'sm', sm: 'md', lg: 'lg' }} mb={{ base: 'md', sm: 'lg' }}>
         {statsCards.map((stat) => {
           const Icon = stat.icon;
           return (
-            <Card key={stat.title} padding="lg" radius="md" withBorder>
+            <Card key={stat.title} padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
               <Group justify="space-between">
                 <div>
                   <Text c="dimmed" size="sm" fw={500}>
@@ -460,23 +460,23 @@ const LaboratoryManagement = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onChange={setActiveTab}>
-        <Tabs.List>
-          <Tabs.Tab value="tests" leftSection={<IconTestPipe size={16} />}>
+        <Tabs.List className="flex-wrap">
+          <Tabs.Tab value="tests" leftSection={<IconTestPipe size={16} />} className="text-xs sm:text-sm">
             Lab Tests
           </Tabs.Tab>
-          <Tabs.Tab value="orders" leftSection={<IconClipboardList size={16} />}>
+          <Tabs.Tab value="orders" leftSection={<IconClipboardList size={16} />} className="text-xs sm:text-sm">
             Lab Orders
           </Tabs.Tab>
-          <Tabs.Tab value="samples" leftSection={<IconFlask size={16} />}>
+          <Tabs.Tab value="samples" leftSection={<IconFlask size={16} />} className="text-xs sm:text-sm">
             Samples
           </Tabs.Tab>
-          <Tabs.Tab value="equipment" leftSection={<IconSettings size={16} />}>
+          <Tabs.Tab value="equipment" leftSection={<IconSettings size={16} />} className="text-xs sm:text-sm">
             Equipment
           </Tabs.Tab>
-          <Tabs.Tab value="qc" leftSection={<IconShieldCheck size={16} />}>
+          <Tabs.Tab value="qc" leftSection={<IconShieldCheck size={16} />} className="text-xs sm:text-sm">
             Quality Control
           </Tabs.Tab>
-          <Tabs.Tab value="reports" leftSection={<IconChartBar size={16} />}>
+          <Tabs.Tab value="reports" leftSection={<IconChartBar size={16} />} className="text-xs sm:text-sm">
             Reports
           </Tabs.Tab>
         </Tabs.List>

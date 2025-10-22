@@ -391,29 +391,29 @@ const OPDManagement = () => {
   };
 
   return (
-    <Container size="xl" py="md">
+    <Container size="xl" py={{ base: 'xs', sm: 'sm', md: 'md' }} px={{ base: 'xs', sm: 'sm', md: 'md', lg: 'lg' }}>
       {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={1}>OPD Management</Title>
-          <Text c="dimmed" size="sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <Title order={1} className="text-xl sm:text-2xl md:text-3xl mb-1 sm:mb-2">OPD Management</Title>
+          <Text c="dimmed" className="text-xs sm:text-sm">
             Outpatient department consultation and queue management
           </Text>
         </div>
-        <Group>
-          <Button variant="light" leftSection={<IconRefresh size={16} />}>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <Button variant="light" leftSection={<IconRefresh size={16} />} className="w-full sm:w-auto" size="sm">
             Refresh Queue
           </Button>
-          <Button leftSection={<IconPlus size={16} />} onClick={openNewVisit}>
+          <Button leftSection={<IconPlus size={16} />} onClick={openNewVisit} className="w-full sm:w-auto" size="sm">
             New OPD Visit
           </Button>
-        </Group>
-      </Group>
+        </div>
+      </div>
 
       {/* Quick Stats */}
       {opdStats && (
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 5 }} mb="lg">
-          <Card padding="lg" radius="md" withBorder>
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing={{ base: 'sm', sm: 'md', lg: 'lg' }} mb={{ base: 'md', sm: 'lg' }}>
+          <Card padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
             <Group justify="space-between">
               <div>
                 <Text c="dimmed" size="sm" fw={500}>
@@ -429,7 +429,7 @@ const OPDManagement = () => {
             </Group>
           </Card>
 
-          <Card padding="lg" radius="md" withBorder>
+          <Card padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
             <Group justify="space-between">
               <div>
                 <Text c="dimmed" size="sm" fw={500}>
@@ -445,7 +445,7 @@ const OPDManagement = () => {
             </Group>
           </Card>
 
-          <Card padding="lg" radius="md" withBorder>
+          <Card padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
             <Group justify="space-between">
               <div>
                 <Text c="dimmed" size="sm" fw={500}>
@@ -461,7 +461,7 @@ const OPDManagement = () => {
             </Group>
           </Card>
 
-          <Card padding="lg" radius="md" withBorder>
+          <Card padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
             <Group justify="space-between">
               <div>
                 <Text c="dimmed" size="sm" fw={500}>
@@ -477,7 +477,7 @@ const OPDManagement = () => {
             </Group>
           </Card>
 
-          <Card padding="lg" radius="md" withBorder>
+          <Card padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
             <Group justify="space-between">
               <div>
                 <Text c="dimmed" size="sm" fw={500}>
@@ -772,7 +772,7 @@ const OPDManagement = () => {
         <Tabs.Panel value="analytics">
           <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg" mt="md">
             {/* Daily Visit Trends */}
-            <Card padding="lg" radius="md" withBorder>
+            <Card padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
               <Title order={4} mb="md">
                 Daily Visit Trends
               </Title>
@@ -782,7 +782,7 @@ const OPDManagement = () => {
             </Card>
 
             {/* Department Distribution */}
-            <Card padding="lg" radius="md" withBorder>
+            <Card padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
               <Title order={4} mb="md">
                 Department-wise Visits
               </Title>
@@ -792,7 +792,7 @@ const OPDManagement = () => {
             </Card>
 
             {/* Wait Time Analysis */}
-            <Card padding="lg" radius="md" withBorder>
+            <Card padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
               <Title order={4} mb="md">
                 Average Wait Times by Department
               </Title>
@@ -802,7 +802,7 @@ const OPDManagement = () => {
             </Card>
 
             {/* Revenue Analysis */}
-            <Card padding="lg" radius="md" withBorder>
+            <Card padding="md" radius="md" withBorder className="p-3 sm:p-4 md:p-5">
               <Title order={4} mb="md">
                 OPD Revenue Trends
               </Title>

@@ -92,7 +92,7 @@ export default function EnhancedDashboard() {
   return (
     <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-400 min-h-full rounded-2xl p-0">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-pink-400 via-pink-300 to-pink-300 text-white p-4 sm:p-6 md:p-8 lg:p-12 rounded-t-2xl mb-4 sm:mb-6 md:mb-8 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-pink-400 via-pink-300 to-pink-300 text-white p-6 md:p-8 lg:p-10 rounded-t-2xl mb-6 md:mb-8 relative overflow-hidden">
         <div
           style={{
             position: 'absolute',
@@ -119,8 +119,8 @@ export default function EnhancedDashboard() {
         />
 
         <div className="relative z-10">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2 sm:mb-3">
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold m-0 bg-gradient-to-r from-white to-blue-50 bg-clip-text text-transparent">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 md:gap-4 mb-3">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold m-0 bg-gradient-to-r from-white to-blue-50 bg-clip-text text-transparent">
               Welcome back, {user.firstName}! 👋
             </h1>
             <span
@@ -138,7 +138,7 @@ export default function EnhancedDashboard() {
       </div>
 
       {/* Quick Stats - Role-based */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 md:mb-12 px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12 px-4 md:px-6 lg:px-8">
         {(user.role === 'PATIENT'
           ? [
               {
@@ -203,15 +203,15 @@ export default function EnhancedDashboard() {
         ).map((stat, index) => (
           <div
             key={index}
-            className="bg-white bg-opacity-95 p-4 sm:p-5 md:p-6 rounded-2xl shadow-lg border border-white border-opacity-20 transition-all duration-300 cursor-pointer backdrop-blur-sm hover:-translate-y-1 hover:shadow-xl"
+            className="bg-white bg-opacity-95 p-5 md:p-6 rounded-2xl shadow-lg border border-white border-opacity-20 transition-all duration-300 cursor-pointer backdrop-blur-sm hover:-translate-y-1 hover:shadow-xl"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
-                <p className="text-slate-600 text-xs sm:text-sm mb-1 sm:mb-2 font-medium truncate">
+                <p className="text-slate-600 text-sm mb-2 font-medium truncate">
                   {stat.label}
                 </p>
                 <p
-                  className="text-2xl sm:text-3xl md:text-4xl font-extrabold m-0 bg-clip-text text-transparent"
+                  className="text-3xl md:text-4xl font-extrabold m-0 bg-clip-text text-transparent"
                   style={{
                     background: `linear-gradient(135deg, ${stat.color} 0%, ${stat.color}dd 100%)`,
                     WebkitBackgroundClip: 'text',
@@ -222,7 +222,7 @@ export default function EnhancedDashboard() {
                 </p>
               </div>
               <div
-                className="text-3xl sm:text-4xl md:text-5xl p-2 sm:p-3 rounded-xl flex-shrink-0"
+                className="text-4xl md:text-5xl p-3 rounded-xl flex-shrink-0"
                 style={{
                   background: stat.bg,
                   boxShadow: `0 4px 20px ${stat.color}33`,
@@ -237,27 +237,27 @@ export default function EnhancedDashboard() {
 
       {/* HMS Modules - Only for Staff/Admin, not Patients */}
       {user.role !== 'PATIENT' && (
-        <div className="mb-6 sm:mb-8 md:mb-12 px-3 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6 md:mb-8">
-            <h2 className="text-slate-800 text-lg sm:text-xl md:text-2xl font-bold m-0 bg-gradient-to-r from-red-400 via-teal-400 to-blue-400 bg-clip-text text-transparent">
+        <div className="mb-8 md:mb-12 px-4 md:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
+            <h2 className="text-slate-800 text-xl md:text-2xl font-bold m-0 bg-gradient-to-r from-red-400 via-teal-400 to-blue-400 bg-clip-text text-transparent">
               HMS Modules ({modules.filter((m) => m.active).length}/{modules.length} Active)
             </h2>
-            <div className="flex gap-2 sm:gap-3 md:gap-4 items-center flex-wrap">
-              <div className="flex items-center gap-1.5 sm:gap-2 bg-teal-50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full border border-teal-200">
+            <div className="flex gap-3 md:gap-4 items-center flex-wrap">
+              <div className="flex items-center gap-2 bg-teal-50 px-3 md:px-4 py-2 rounded-full border border-teal-200">
                 <div className="w-2 h-2 rounded-full bg-teal-400" />
-                <span className="text-xs sm:text-sm text-emerald-600 font-medium">
+                <span className="text-sm text-emerald-600 font-medium">
                   Active
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 sm:gap-2 bg-gray-50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full border border-gray-200">
+              <div className="flex items-center gap-2 bg-gray-50 px-3 md:px-4 py-2 rounded-full border border-gray-200">
                 <div className="w-2 h-2 rounded-full bg-gray-400" />
-                <span className="text-xs sm:text-sm text-gray-600 font-medium">
+                <span className="text-sm text-gray-600 font-medium">
                   Coming Soon
                 </span>
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {modules.map((module, index) => (
               <Link
                 key={index}
@@ -269,7 +269,7 @@ export default function EnhancedDashboard() {
                     background: module.active
                       ? 'rgba(255,255,255,0.95)'
                       : 'rgba(249, 250, 251, 0.9)',
-                    padding: '1.5rem',
+                    padding: '1.25rem',
                     borderRadius: '16px',
                     boxShadow: module.active
                       ? '0 8px 32px rgba(0,0,0,0.1)'
@@ -330,15 +330,15 @@ export default function EnhancedDashboard() {
                     style={{
                       display: 'flex',
                       alignItems: 'flex-start',
-                      gap: '1.5rem',
-                      marginLeft: '1rem',
+                      gap: '1rem',
+                      marginLeft: '0.75rem',
                     }}
                   >
                     <div
                       style={{
-                        fontSize: '2.5rem',
+                        fontSize: '2.25rem',
                         background: module.active ? `${module.color}15` : '#f3f4f6',
-                        padding: '0.75rem',
+                        padding: '0.65rem',
                         borderRadius: '12px',
                         transition: 'all 0.3s ease',
                         boxShadow: module.active
@@ -348,13 +348,13 @@ export default function EnhancedDashboard() {
                     >
                       {module.icon}
                     </div>
-                    <div style={{ flex: 1 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       <h3
                         style={{
                           color: module.active ? '#1f2937' : '#6b7280',
-                          fontSize: '1.1rem',
+                          fontSize: '1.05rem',
                           fontWeight: '600',
-                          margin: '0 0 0.75rem 0',
+                          margin: '0 0 0.5rem 0',
                           display: 'flex',
                           alignItems: 'center',
                           gap: '0.5rem',
@@ -365,9 +365,9 @@ export default function EnhancedDashboard() {
                       <p
                         style={{
                           color: '#6b7280',
-                          fontSize: '0.9rem',
-                          margin: '0 0 1.5rem 0',
-                          lineHeight: '1.5',
+                          fontSize: '0.85rem',
+                          margin: '0 0 1rem 0',
+                          lineHeight: '1.4',
                         }}
                       >
                         {module.description}
@@ -375,10 +375,10 @@ export default function EnhancedDashboard() {
                       <div
                         style={{
                           color: module.active ? module.color : '#9ca3af',
-                          fontSize: '0.85rem',
+                          fontSize: '0.8rem',
                           fontWeight: '600',
                           background: module.active ? `${module.color}15` : '#f3f4f6',
-                          padding: '0.5rem 1rem',
+                          padding: '0.4rem 0.85rem',
                           borderRadius: '8px',
                           display: 'inline-block',
                           border: module.active

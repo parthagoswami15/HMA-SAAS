@@ -539,17 +539,6 @@ const AuditPage = () => {
           <div style={{ padding: '1.5rem' }}>
             {loading ? (
               <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '200px'
-              }}>
-                <Loader size="lg" />
-              </div>
-            ) : filteredLogs.length === 0 ? (
-              <div style={{
-                textAlign: 'center',
-                padding: '3rem',
                 color: '#6b7280'
               }}>
                 <IconClipboardList size={48} style={{ marginBottom: '1rem', opacity: 0.5 }} />
