@@ -54,10 +54,10 @@ export class CreatePatientDto {
   @MaxLength(50)
   lastName: string;
 
-  @ApiPropertyOptional({ example: '1990-01-15' })
+  @ApiPropertyOptional({ example: '1990-01-15T00:00:00.000Z' })
   @IsOptional()
   @IsDateString()
-  dateOfBirth?: Date;
+  dateOfBirth?: string;
 
   @ApiPropertyOptional({ enum: Gender, example: Gender.MALE })
   @IsOptional()
