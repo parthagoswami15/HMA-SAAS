@@ -82,9 +82,8 @@ export class CreatePatientDto {
   @ApiPropertyOptional({ example: '+919876543210' })
   @IsOptional()
   @IsString()
-  @Matches(/^\+?[1-9]\d{1,14}$/, {
-    message: 'Phone number must be valid',
-  })
+  @MinLength(10)
+  @MaxLength(15)
   phone?: string;
 
   @ApiPropertyOptional({ example: '123456789012' })
