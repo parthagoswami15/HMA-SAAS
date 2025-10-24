@@ -317,15 +317,8 @@ export default function PatientManagement() {
   // Patient CRUD operations
   const handleCreatePatient = async (data: CreatePatientDto) => {
     try {
-      // Convert Date to string for API
-      const apiData = {
-        ...data,
-        dateOfBirth:
-          data.dateOfBirth instanceof Date
-            ? data.dateOfBirth.toISOString().split('T')[0]
-            : data.dateOfBirth,
-      };
-      const response = await patientsService.createPatient(apiData as any);
+      // Data is already flattened and formatted in PatientForm, just pass it through
+      const response = await patientsService.createPatient(data as any);
       const newPatient = response.data;
       notifications.show({
         title: 'Success',
@@ -349,15 +342,8 @@ export default function PatientManagement() {
 
   const handleUpdatePatient = async (data: UpdatePatientDto) => {
     try {
-      // Convert Date to string for API
-      const apiData = {
-        ...data,
-        dateOfBirth:
-          data.dateOfBirth instanceof Date
-            ? data.dateOfBirth.toISOString().split('T')[0]
-            : data.dateOfBirth,
-      };
-      const response = await patientsService.updatePatient(data.id!, apiData as any);
+      // Data is already flattened and formatted in PatientForm, just pass it through
+      const response = await patientsService.updatePatient(data.id!, data as any);
       const updatedPatient = response.data;
 
       notifications.show({

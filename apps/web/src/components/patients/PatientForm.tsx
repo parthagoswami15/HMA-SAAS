@@ -199,8 +199,10 @@ function PatientForm({
         gender: values.gender,
         bloodType: values.bloodGroup,
         maritalStatus: values.maritalStatus,
-        // Flatten contactInfo
-        phone: values.contactInfo?.phone || undefined,
+        // Flatten contactInfo - clean phone number (remove spaces, dashes, etc)
+        phone: values.contactInfo?.phone 
+          ? values.contactInfo.phone.replace(/[^\d+]/g, '') 
+          : undefined,
         email: values.contactInfo?.email || undefined,
         // Flatten address (backend uses 'pincode' not 'postalCode')
         address: values.address?.street || undefined,
