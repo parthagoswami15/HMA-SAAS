@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
@@ -109,7 +109,11 @@ Thumbs.db
 *.db
 
 # Prisma
-/apps/api/prisma/migrations/
+# Allow RBAC migration to be committed
+!/apps/api/prisma/migrations/
+!/apps/api/prisma/migrations/*/
+!/apps/api/prisma/migrations/*/migration.sql
+!/apps/api/prisma/migrations/migration_lock.toml
 prisma/dev.db*
 
 # Uploads

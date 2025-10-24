@@ -56,10 +56,15 @@ RUN echo '{"name": "web", "version": "1.0.0", "private": true}' > apps/web/packa
 COPY --from=base /app/apps/api/prisma ./apps/api/prisma
 COPY --from=base /app/apps/api/ormconfig*.ts ./apps/api/
 
-# Install production dependencies
+# Install production dependencies (need to keep prisma as dependency for migrations)
 RUN npm ci --only=production
+
 # Copy built application
 COPY --from=base /app/apps/api/dist ./apps/api/dist
+
+# Copy migration script
+COPY apps/api/scripts/migrate-and-start.sh ./apps/api/scripts/migrate-and-start.sh
+RUN chmod +x ./apps/api/scripts/migrate-and-start.sh
 
 # Change ownership to nodejs user
 RUN chown -R nestjs:nodejs /app
@@ -73,7 +78,7 @@ EXPOSE ${PORT:-10000}
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:${PORT}/health || exit 1
 
-# Start application directly without migrations (migrations should be run separately)
-CMD ["dumb-init", "sh", "-c", "echo 'Starting HMS SaaS Backend...' && echo 'Environment:' $NODE_ENV && echo 'Port:' $PORT && cd /app && echo 'Starting Node.js application...' && node apps/api/dist/main.js"]
+# Start application with migrations
+CMD ["dumb-init", "/app/apps/api/scripts/migrate-and-start.sh"]
 
 
