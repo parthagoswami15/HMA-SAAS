@@ -23,9 +23,16 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Log request for debugging
+    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`, {
+      data: config.data,
+      params: config.params,
+    });
+
     return config;
   },
   (error: AxiosError) => {
+    console.error('API Request Error:', error);
     return Promise.reject(error);
   }
 );
@@ -33,9 +40,19 @@ apiClient.interceptors.request.use(
 // Response interceptor - Handle errors and token refresh
 apiClient.interceptors.response.use(
   (response) => {
+    console.log(`API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`, {
+      status: response.status,
+      data: response.data,
+    });
     return response;
   },
   async (error: AxiosError) => {
+    console.error('API Response Error:', {
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     // Handle 401 Unauthorized

@@ -229,12 +229,24 @@ function PatientForm({
       });
 
       handleClose();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_error) {
+    } catch (error: any) {
+      console.error('Patient form submission error:', error);
+      
+      // Extract detailed error message
+      const errorMessage = error.response?.data?.message 
+        || error.message 
+        || `Failed to ${patient ? 'update' : 'create'} patient. Please try again.`;
+      
+      // Handle array of validation errors
+      const displayMessage = Array.isArray(errorMessage) 
+        ? errorMessage.join(', ') 
+        : errorMessage;
+      
       notifications.show({
         title: 'Error',
-        message: `Failed to ${patient ? 'update' : 'create'} patient. Please try again.`,
+        message: displayMessage,
         color: 'red',
+        autoClose: 10000, // Show for 10 seconds
       });
     } finally {
       stopLoading();

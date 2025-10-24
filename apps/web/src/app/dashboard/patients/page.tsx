@@ -317,8 +317,12 @@ export default function PatientManagement() {
   // Patient CRUD operations
   const handleCreatePatient = async (data: CreatePatientDto) => {
     try {
+      console.log('Creating patient with data:', data);
+      
       // Data is already flattened and formatted in PatientForm, just pass it through
       const response = await patientsService.createPatient(data as any);
+      console.log('Patient creation response:', response);
+      
       const newPatient = response.data;
       notifications.show({
         title: 'Success',
@@ -330,11 +334,17 @@ export default function PatientManagement() {
       await fetchPatients();
       await fetchStats();
     } catch (error: any) {
+      console.error('Patient creation error:', error);
+      console.error('Error response:', error.response?.data);
+      
       const errorMsg = error.response?.data?.message || error.message || 'Failed to create patient';
+      const displayMsg = Array.isArray(errorMsg) ? errorMsg.join(', ') : errorMsg;
+      
       notifications.show({
         title: 'Error',
-        message: errorMsg,
+        message: displayMsg,
         color: 'red',
+        autoClose: 10000,
       });
       throw error;
     }
