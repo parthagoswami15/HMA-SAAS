@@ -144,12 +144,12 @@ export default function PatientManagement() {
     fullName: `${patient.firstName} ${patient.lastName}`,
     age: patient.age,
     gender: patient.gender,
-    phoneNumber: patient.contactInfo.phone,
+    phoneNumber: patient.contactInfo?.phone || 'N/A',
     lastVisitDate: patient.lastVisitDate,
     totalVisits: patient.totalVisits,
     status: patient.status,
     hasInsurance: !!patient.insuranceInfo?.isActive,
-    emergencyFlag: patient.chronicDiseases.length > 0,
+    emergencyFlag: patient.chronicDiseases?.length > 0 || false,
   }));
 
   // Table columns configuration
@@ -537,12 +537,12 @@ export default function PatientManagement() {
       fullName: `${patient.firstName} ${patient.lastName}`,
       age: patient.age,
       gender: patient.gender,
-      phoneNumber: patient.contactInfo.phone,
+      phoneNumber: patient.contactInfo?.phone || 'N/A',
       lastVisitDate: patient.lastVisitDate,
       totalVisits: patient.totalVisits,
       status: patient.status,
       hasInsurance: !!patient.insuranceInfo?.isActive,
-      emergencyFlag: patient.chronicDiseases.length > 0,
+      emergencyFlag: patient.chronicDiseases?.length > 0 || false,
     };
     handleEditPatient(patientListItem);
   };
