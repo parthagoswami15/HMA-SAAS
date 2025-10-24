@@ -192,26 +192,25 @@ function PatientForm({
         firstName: values.firstName,
         lastName: values.lastName,
         middleName: values.middleName,
-        dateOfBirth: values.dateOfBirth,
+        // Convert Date to ISO string (YYYY-MM-DD)
+        dateOfBirth: values.dateOfBirth instanceof Date 
+          ? values.dateOfBirth.toISOString().split('T')[0] 
+          : values.dateOfBirth,
         gender: values.gender,
         bloodType: values.bloodGroup,
         maritalStatus: values.maritalStatus,
         // Flatten contactInfo
-        phone: values.contactInfo?.phone,
-        email: values.contactInfo?.email,
-        // Flatten address
-        address: values.address?.street,
-        city: values.address?.city,
-        state: values.address?.state,
-        postalCode: values.address?.postalCode,
-        country: values.address?.country,
-        // Flatten emergency contact
-        emergencyContactName: values.contactInfo?.emergencyContact?.name,
-        emergencyContactPhone: values.contactInfo?.emergencyContact?.phone,
-        emergencyContactRelationship: values.contactInfo?.emergencyContact?.relationship,
-        // Flatten insurance info
-        insuranceProvider: values.insuranceInfo?.insuranceProvider,
-        insurancePolicyNumber: values.insuranceInfo?.policyNumber,
+        phone: values.contactInfo?.phone || undefined,
+        email: values.contactInfo?.email || undefined,
+        // Flatten address (backend uses 'pincode' not 'postalCode')
+        address: values.address?.street || undefined,
+        city: values.address?.city || undefined,
+        state: values.address?.state || undefined,
+        pincode: values.address?.postalCode || undefined,
+        country: values.address?.country || undefined,
+        // Flatten insurance info (backend uses 'insuranceId' not 'insurancePolicyNumber')
+        insuranceProvider: values.insuranceInfo?.insuranceProvider || undefined,
+        insuranceId: values.insuranceInfo?.policyNumber || undefined,
       };
       
       // Add id for update operations
