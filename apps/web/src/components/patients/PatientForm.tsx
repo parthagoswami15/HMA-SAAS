@@ -187,17 +187,35 @@ function PatientForm({
     try {
       startLoading();
       
+      // Debug: Log the original date value
+      console.log('Original dateOfBirth:', values.dateOfBirth, 'Type:', typeof values.dateOfBirth);
+      
+      // Convert dateOfBirth to ISO string
+      let convertedDate: string | undefined = undefined;
+      if (values.dateOfBirth) {
+        try {
+          if (values.dateOfBirth instanceof Date) {
+            convertedDate = values.dateOfBirth.toISOString();
+          } else if (typeof values.dateOfBirth === 'string') {
+            const trimmed = String(values.dateOfBirth).trim();
+            if (trimmed !== '') {
+              convertedDate = new Date(trimmed).toISOString();
+            }
+          }
+        } catch (error) {
+          console.error('Date conversion error:', error);
+          convertedDate = undefined;
+        }
+      }
+      
+      console.log('Converted dateOfBirth:', convertedDate);
+      
       // Flatten the nested structure to match backend API expectations
       const flattenedData: any = {
         firstName: values.firstName,
         lastName: values.lastName,
         middleName: values.middleName,
-        // Convert Date to full ISO 8601 string (only if date exists)
-        dateOfBirth: values.dateOfBirth 
-          ? (values.dateOfBirth instanceof Date 
-              ? values.dateOfBirth.toISOString()
-              : new Date(values.dateOfBirth).toISOString())
-          : undefined,
+        dateOfBirth: convertedDate,
         gender: values.gender,
         bloodType: values.bloodGroup,
         maritalStatus: values.maritalStatus,
@@ -221,6 +239,16 @@ function PatientForm({
       if (patient) {
         flattenedData.id = patient.id;
       }
+      
+      // Ensure dateOfBirth is a string or undefined (not a Date object)
+      if (flattenedData.dateOfBirth && typeof flattenedData.dateOfBirth !== 'string') {
+        flattenedData.dateOfBirth = flattenedData.dateOfBirth.toISOString();
+      }
+      
+      // Debug: Log the flattened data before sending
+      console.log('Flattened data being sent:', flattenedData);
+      console.log('dateOfBirth after conversion:', flattenedData.dateOfBirth, 'Type:', typeof flattenedData.dateOfBirth);
+      console.log('JSON stringified:', JSON.stringify(flattenedData));
       
       await onSubmit(flattenedData);
 
