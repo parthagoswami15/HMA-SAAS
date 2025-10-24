@@ -188,7 +188,7 @@ function PatientForm({
       startLoading();
       
       // Flatten the nested structure to match backend API expectations
-      const flattenedData = {
+      const flattenedData: any = {
         firstName: values.firstName,
         lastName: values.lastName,
         middleName: values.middleName,
@@ -214,8 +214,12 @@ function PatientForm({
         insurancePolicyNumber: values.insuranceInfo?.policyNumber,
       };
       
-      const submitData = patient ? ({ ...flattenedData, id: patient.id } as UpdatePatientDto) : flattenedData;
-      await onSubmit(submitData as any);
+      // Add id for update operations
+      if (patient) {
+        flattenedData.id = patient.id;
+      }
+      
+      await onSubmit(flattenedData);
 
       notifications.show({
         title: patient ? 'Patient Updated' : 'Patient Created',
