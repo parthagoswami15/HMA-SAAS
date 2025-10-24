@@ -192,9 +192,9 @@ function PatientForm({
         firstName: values.firstName,
         lastName: values.lastName,
         middleName: values.middleName,
-        // Convert Date to ISO string (YYYY-MM-DD)
+        // Convert Date to full ISO 8601 string
         dateOfBirth: values.dateOfBirth instanceof Date 
-          ? values.dateOfBirth.toISOString().split('T')[0] 
+          ? values.dateOfBirth.toISOString()
           : values.dateOfBirth,
         gender: values.gender,
         bloodType: values.bloodGroup,
