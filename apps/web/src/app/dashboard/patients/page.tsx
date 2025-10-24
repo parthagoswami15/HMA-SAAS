@@ -101,12 +101,29 @@ export default function PatientManagement() {
       setLoading(true);
       const response = await patientsService.getPatients();
       console.log('Patients API response:', response);
-      setPatients(response.data?.patients || []);
+      
+      // Ensure we have valid patient data
+      const patientsData = response.data?.patients || [];
+      
+      // Validate and sanitize each patient object
+      const validatedPatients = patientsData.map((patient: any) => ({
+        ...patient,
+        contactInfo: patient.contactInfo || { phone: '', email: '', alternatePhone: '', emergencyContact: { name: '', phone: '', relationship: '' } },
+        address: patient.address || { street: '', city: '', state: '', country: 'India', postalCode: '', landmark: '' },
+        allergies: Array.isArray(patient.allergies) ? patient.allergies : [],
+        chronicDiseases: Array.isArray(patient.chronicDiseases) ? patient.chronicDiseases : [],
+        currentMedications: Array.isArray(patient.currentMedications) ? patient.currentMedications : [],
+        age: patient.age || 0,
+        totalVisits: patient.totalVisits || 0,
+        status: patient.status || 'active',
+      }));
+      
+      setPatients(validatedPatients);
       setError(null);
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || err.message || 'Failed to fetch patients';
       console.warn('Error fetching patients (using empty data):', errorMsg);
-      // Don't show _error to user if backend is not ready, just use empty data
+      // Don't show error to user if backend is not ready, just use empty data
       setError(null);
       setPatients([]);
     } finally {
@@ -137,20 +154,30 @@ export default function PatientManagement() {
     }
   };
 
-  // Convert patients to list items for table
-  const patientListItems: PatientListItem[] = patients.map((patient) => ({
-    id: patient.id,
-    patientId: patient.patientId,
-    fullName: `${patient.firstName} ${patient.lastName}`,
-    age: patient.age,
-    gender: patient.gender,
-    phoneNumber: patient.contactInfo?.phone || 'N/A',
-    lastVisitDate: patient.lastVisitDate,
-    totalVisits: patient.totalVisits,
-    status: patient.status,
-    hasInsurance: !!patient.insuranceInfo?.isActive,
-    emergencyFlag: patient.chronicDiseases?.length > 0 || false,
-  }));
+  // Convert patients to list items for table with comprehensive null safety
+  const patientListItems: PatientListItem[] = patients.map((patient) => {
+    // Safely extract values with defaults
+    const firstName = patient.firstName || '';
+    const lastName = patient.lastName || '';
+    const middleName = patient.middleName || '';
+    const fullName = middleName 
+      ? `${firstName} ${middleName} ${lastName}`.trim()
+      : `${firstName} ${lastName}`.trim();
+    
+    return {
+      id: patient.id || '',
+      patientId: patient.patientId || 'N/A',
+      fullName: fullName || 'Unknown',
+      age: typeof patient.age === 'number' ? patient.age : 0,
+      gender: patient.gender || 'other',
+      phoneNumber: patient.contactInfo?.phone || patient.phone || 'N/A',
+      lastVisitDate: patient.lastVisitDate || undefined,
+      totalVisits: typeof patient.totalVisits === 'number' ? patient.totalVisits : 0,
+      status: patient.status || 'active',
+      hasInsurance: !!patient.insuranceInfo?.isActive || !!patient.insuranceInfo?.insuranceProvider,
+      emergencyFlag: (Array.isArray(patient.chronicDiseases) && patient.chronicDiseases.length > 0) || false,
+    };
+  });
 
   // Table columns configuration
   const columns: TableColumn[] = [
@@ -336,12 +363,17 @@ export default function PatientManagement() {
       console.log('Patient creation response:', response);
       
       const newPatient = response.data;
+      const patientName = `${newPatient.firstName || ''} ${newPatient.lastName || ''}`.trim() || 'Patient';
+      
       notifications.show({
         title: 'Success',
-        message: `Patient ${newPatient.firstName} ${newPatient.lastName} registered successfully!`,
+        message: `Patient ${patientName} registered successfully!`,
         color: 'green',
       });
 
+      // Close the form modal
+      close();
+      
       // Refresh the patients list and stats
       await fetchPatients();
       await fetchStats();
@@ -367,15 +399,20 @@ export default function PatientManagement() {
       // Data is already flattened and formatted in PatientForm, just pass it through
       const response = await patientsService.updatePatient(data.id!, data as any);
       const updatedPatient = response.data;
+      const patientName = `${updatedPatient.firstName || ''} ${updatedPatient.lastName || ''}`.trim() || 'Patient';
 
       notifications.show({
         title: 'Success',
-        message: `Patient ${updatedPatient.firstName} ${updatedPatient.lastName} updated successfully!`,
+        message: `Patient ${patientName} updated successfully!`,
         color: 'green',
       });
 
-      // Refresh the patients list
+      // Close the form modal
+      close();
+      
+      // Refresh the patients list and stats
       await fetchPatients();
+      await fetchStats();
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || error.message || 'Failed to update patient';
       notifications.show({
@@ -531,18 +568,25 @@ export default function PatientManagement() {
   // Wrapper function for PatientDetails onEdit prop
   const handleEditFromDetails = (patient: Patient) => {
     // Convert Patient to PatientListItem format for the existing handler
+    const firstName = patient.firstName || '';
+    const lastName = patient.lastName || '';
+    const middleName = patient.middleName || '';
+    const fullName = middleName 
+      ? `${firstName} ${middleName} ${lastName}`.trim()
+      : `${firstName} ${lastName}`.trim();
+    
     const patientListItem: PatientListItem = {
-      id: patient.id,
-      patientId: patient.patientId,
-      fullName: `${patient.firstName} ${patient.lastName}`,
-      age: patient.age,
-      gender: patient.gender,
-      phoneNumber: patient.contactInfo?.phone || 'N/A',
-      lastVisitDate: patient.lastVisitDate,
-      totalVisits: patient.totalVisits,
-      status: patient.status,
-      hasInsurance: !!patient.insuranceInfo?.isActive,
-      emergencyFlag: patient.chronicDiseases?.length > 0 || false,
+      id: patient.id || '',
+      patientId: patient.patientId || 'N/A',
+      fullName: fullName || 'Unknown',
+      age: typeof patient.age === 'number' ? patient.age : 0,
+      gender: patient.gender || 'other',
+      phoneNumber: patient.contactInfo?.phone || patient.phone || 'N/A',
+      lastVisitDate: patient.lastVisitDate || undefined,
+      totalVisits: typeof patient.totalVisits === 'number' ? patient.totalVisits : 0,
+      status: patient.status || 'active',
+      hasInsurance: !!patient.insuranceInfo?.isActive || !!patient.insuranceInfo?.insuranceProvider,
+      emergencyFlag: (Array.isArray(patient.chronicDiseases) && patient.chronicDiseases.length > 0) || false,
     };
     handleEditPatient(patientListItem);
   };

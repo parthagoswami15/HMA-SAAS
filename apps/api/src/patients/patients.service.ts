@@ -27,9 +27,87 @@ export class PatientsService {
           : undefined,
       };
 
-      const patient = await this.prisma.patient.create({ data });
+      const patientRaw = await this.prisma.patient.create({ 
+        data,
+        include: {
+          _count: {
+            select: {
+              appointments: true,
+            },
+          },
+        },
+      });
 
-      this.logger.log(`Patient created: ${patient.id} for tenant: ${tenantId}`);
+      this.logger.log(`Patient created: ${patientRaw.id} for tenant: ${tenantId}`);
+
+      // Transform to match frontend expected structure
+      const age = patientRaw.dateOfBirth
+        ? Math.floor(
+            (new Date().getTime() - new Date(patientRaw.dateOfBirth).getTime()) /
+              (365.25 * 24 * 60 * 60 * 1000),
+          )
+        : 0;
+
+      const patient = {
+        id: patientRaw.id,
+        patientId: patientRaw.medicalRecordNumber,
+        firstName: patientRaw.firstName,
+        middleName: patientRaw.middleName,
+        lastName: patientRaw.lastName,
+        dateOfBirth: patientRaw.dateOfBirth,
+        age,
+        gender: patientRaw.gender,
+        bloodGroup: patientRaw.bloodType,
+        maritalStatus: patientRaw.maritalStatus,
+        contactInfo: {
+          phone: patientRaw.phone || '',
+          email: patientRaw.email || '',
+          alternatePhone: '',
+          emergencyContact: {
+            name: '',
+            phone: '',
+            relationship: '',
+          },
+        },
+        address: {
+          street: patientRaw.address || '',
+          city: patientRaw.city || '',
+          state: patientRaw.state || '',
+          country: patientRaw.country || 'India',
+          postalCode: patientRaw.pincode || '',
+          landmark: '',
+        },
+        allergies: patientRaw.allergies
+          ? Array.isArray(patientRaw.allergies)
+            ? patientRaw.allergies
+            : []
+          : [],
+        chronicDiseases: patientRaw.chronicConditions
+          ? Array.isArray(patientRaw.chronicConditions)
+            ? patientRaw.chronicConditions
+            : []
+          : [],
+        currentMedications: patientRaw.currentMedications
+          ? Array.isArray(patientRaw.currentMedications)
+            ? patientRaw.currentMedications
+            : []
+          : [],
+        insuranceInfo: patientRaw.insuranceProvider
+          ? {
+              insuranceType: patientRaw.insuranceType || 'self_pay',
+              insuranceProvider: patientRaw.insuranceProvider,
+              policyNumber: patientRaw.insuranceId || '',
+              policyHolderName: '',
+              relationshipToPatient: '',
+              coverageAmount: 0,
+              isActive: !!patientRaw.insuranceProvider,
+            }
+          : undefined,
+        status: patientRaw.isActive ? 'active' : 'inactive',
+        registrationDate: patientRaw.createdAt,
+        lastVisitDate: undefined,
+        totalVisits: patientRaw._count?.appointments || 0,
+      };
 
       return {
         success: true,
@@ -61,7 +139,7 @@ export class PatientsService {
       ];
     }
 
-    const [patients, total] = await Promise.all([
+    const [patientsRaw, total] = await Promise.all([
       this.prisma.patient.findMany({
         where,
         skip,
@@ -76,15 +154,116 @@ export class PatientsService {
           dateOfBirth: true,
           gender: true,
           bloodType: true,
+          maritalStatus: true,
           phone: true,
           email: true,
+          address: true,
           city: true,
+          state: true,
+          country: true,
+          pincode: true,
+          allergies: true,
+          chronicConditions: true,
+          currentMedications: true,
+          insuranceProvider: true,
+          insuranceId: true,
+          insuranceType: true,
           isActive: true,
           createdAt: true,
+          updatedAt: true,
+          appointments: {
+            select: {
+              id: true,
+              startTime: true,
+            },
+            orderBy: {
+              startTime: 'desc',
+            },
+            take: 1,
+          },
+          _count: {
+            select: {
+              appointments: true,
+            },
+          },
         },
       }),
       this.prisma.patient.count({ where }),
     ]);
+
+    // Transform patients to match frontend expected structure
+    const patients = patientsRaw.map((patient) => {
+      const age = patient.dateOfBirth
+        ? Math.floor(
+            (new Date().getTime() - new Date(patient.dateOfBirth).getTime()) /
+              (365.25 * 24 * 60 * 60 * 1000),
+          )
+        : 0;
+
+      return {
+        id: patient.id,
+        patientId: patient.medicalRecordNumber,
+        firstName: patient.firstName,
+        middleName: patient.middleName,
+        lastName: patient.lastName,
+        dateOfBirth: patient.dateOfBirth,
+        age,
+        gender: patient.gender,
+        bloodGroup: patient.bloodType,
+        maritalStatus: patient.maritalStatus,
+        contactInfo: {
+          phone: patient.phone || '',
+          email: patient.email || '',
+          alternatePhone: '',
+          emergencyContact: {
+            name: '',
+            phone: '',
+            relationship: '',
+          },
+        },
+        address: {
+          street: patient.address || '',
+          city: patient.city || '',
+          state: patient.state || '',
+          country: patient.country || 'India',
+          postalCode: patient.pincode || '',
+          landmark: '',
+        },
+        allergies: patient.allergies
+          ? Array.isArray(patient.allergies)
+            ? patient.allergies
+            : []
+          : [],
+        chronicDiseases: patient.chronicConditions
+          ? Array.isArray(patient.chronicConditions)
+            ? patient.chronicConditions
+            : []
+          : [],
+        currentMedications: patient.currentMedications
+          ? Array.isArray(patient.currentMedications)
+            ? patient.currentMedications
+            : []
+          : [],
+        insuranceInfo: patient.insuranceProvider
+          ? {
+              insuranceType: patient.insuranceType || 'self_pay',
+              insuranceProvider: patient.insuranceProvider,
+              policyNumber: patient.insuranceId || '',
+              policyHolderName: '',
+              relationshipToPatient: '',
+              coverageAmount: 0,
+              isActive: !!patient.insuranceProvider,
+            }
+          : undefined,
+        status: patient.isActive ? 'active' : 'inactive',
+        registrationDate: patient.createdAt,
+        lastVisitDate:
+          patient.appointments && patient.appointments.length > 0
+            ? patient.appointments[0].startTime
+            : undefined,
+        totalVisits: patient._count?.appointments || 0,
+      };
+    });
 
     return {
       success: true,
@@ -187,12 +366,101 @@ export class PatientsService {
           : undefined,
       };
 
-      const patient = await this.prisma.patient.update({
+      const patientRaw = await this.prisma.patient.update({
         where: { id, tenantId },
         data,
+        include: {
+          _count: {
+            select: {
+              appointments: true,
+            },
+          },
+          appointments: {
+            select: {
+              id: true,
+              startTime: true,
+            },
+            orderBy: {
+              startTime: 'desc',
+            },
+            take: 1,
+          },
+        },
       });
 
       this.logger.log(`Patient updated: ${id} for tenant: ${tenantId}`);
+
+      // Transform to match frontend expected structure
+      const age = patientRaw.dateOfBirth
+        ? Math.floor(
+            (new Date().getTime() - new Date(patientRaw.dateOfBirth).getTime()) /
+              (365.25 * 24 * 60 * 60 * 1000),
+          )
+        : 0;
+
+      const patient = {
+        id: patientRaw.id,
+        patientId: patientRaw.medicalRecordNumber,
+        firstName: patientRaw.firstName,
+        middleName: patientRaw.middleName,
+        lastName: patientRaw.lastName,
+        dateOfBirth: patientRaw.dateOfBirth,
+        age,
+        gender: patientRaw.gender,
+        bloodGroup: patientRaw.bloodType,
+        maritalStatus: patientRaw.maritalStatus,
+        contactInfo: {
+          phone: patientRaw.phone || '',
+          email: patientRaw.email || '',
+          alternatePhone: '',
+          emergencyContact: {
+            name: '',
+            phone: '',
+            relationship: '',
+          },
+        },
+        address: {
+          street: patientRaw.address || '',
+          city: patientRaw.city || '',
+          state: patientRaw.state || '',
+          country: patientRaw.country || 'India',
+          postalCode: patientRaw.pincode || '',
+          landmark: '',
+        },
+        allergies: patientRaw.allergies
+          ? Array.isArray(patientRaw.allergies)
+            ? patientRaw.allergies
+            : []
+          : [],
+        chronicDiseases: patientRaw.chronicConditions
+          ? Array.isArray(patientRaw.chronicConditions)
+            ? patientRaw.chronicConditions
+            : []
+          : [],
+        currentMedications: patientRaw.currentMedications
+          ? Array.isArray(patientRaw.currentMedications)
+            ? patientRaw.currentMedications
+            : []
+          : [],
+        insuranceInfo: patientRaw.insuranceProvider
+          ? {
+              insuranceType: patientRaw.insuranceType || 'self_pay',
+              insuranceProvider: patientRaw.insuranceProvider,
+              policyNumber: patientRaw.insuranceId || '',
+              policyHolderName: '',
+              relationshipToPatient: '',
+              coverageAmount: 0,
+              isActive: !!patientRaw.insuranceProvider,
+            }
+          : undefined,
+        status: patientRaw.isActive ? 'active' : 'inactive',
+        registrationDate: patientRaw.createdAt,
+        lastVisitDate:
+          patientRaw.appointments && patientRaw.appointments.length > 0
+            ? patientRaw.appointments[0].startTime
+            : undefined,
+        totalVisits: patientRaw._count?.appointments || 0,
+      };
 
       return {
         success: true,
