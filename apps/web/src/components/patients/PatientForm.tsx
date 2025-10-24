@@ -186,8 +186,36 @@ function PatientForm({
   const handleSubmit = async (values: CreatePatientDto) => {
     try {
       startLoading();
-      const submitData = patient ? ({ ...values, id: patient.id } as UpdatePatientDto) : values;
-      await onSubmit(submitData);
+      
+      // Flatten the nested structure to match backend API expectations
+      const flattenedData = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        middleName: values.middleName,
+        dateOfBirth: values.dateOfBirth,
+        gender: values.gender,
+        bloodType: values.bloodGroup,
+        maritalStatus: values.maritalStatus,
+        // Flatten contactInfo
+        phone: values.contactInfo?.phone,
+        email: values.contactInfo?.email,
+        // Flatten address
+        address: values.address?.street,
+        city: values.address?.city,
+        state: values.address?.state,
+        postalCode: values.address?.postalCode,
+        country: values.address?.country,
+        // Flatten emergency contact
+        emergencyContactName: values.contactInfo?.emergencyContact?.name,
+        emergencyContactPhone: values.contactInfo?.emergencyContact?.phone,
+        emergencyContactRelationship: values.contactInfo?.emergencyContact?.relationship,
+        // Flatten insurance info
+        insuranceProvider: values.insuranceInfo?.insuranceProvider,
+        insurancePolicyNumber: values.insuranceInfo?.policyNumber,
+      };
+      
+      const submitData = patient ? ({ ...flattenedData, id: patient.id } as UpdatePatientDto) : flattenedData;
+      await onSubmit(submitData as any);
 
       notifications.show({
         title: patient ? 'Patient Updated' : 'Patient Created',
