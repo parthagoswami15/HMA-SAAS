@@ -317,6 +317,18 @@ export default function PatientManagement() {
   // Patient CRUD operations
   const handleCreatePatient = async (data: CreatePatientDto) => {
     try {
+      // Check if user is authenticated
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+      if (!token) {
+        notifications.show({
+          title: 'Authentication Required',
+          message: 'Please log in to create patients',
+          color: 'red',
+        });
+        window.location.href = '/login';
+        return;
+      }
+
       console.log('Creating patient with data:', data);
       
       // Data is already flattened and formatted in PatientForm, just pass it through

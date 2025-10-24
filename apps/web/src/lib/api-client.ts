@@ -21,12 +21,16 @@ apiClient.interceptors.request.use(
 
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('✅ Token attached to request');
+    } else {
+      console.warn('⚠️ No token found in localStorage - request will be unauthorized');
     }
 
     // Log request for debugging
     console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`, {
       data: config.data,
       params: config.params,
+      hasAuth: !!token,
     });
 
     return config;
