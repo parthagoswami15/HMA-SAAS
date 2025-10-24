@@ -38,7 +38,7 @@ import PatientAnalytics from '../../../components/patients/PatientAnalytics';
 import PatientExportReport from '../../../components/patients/PatientExportReport';
 import PatientPortalAccess from '../../../components/patients/PatientPortalAccess';
 import { useAppStore } from '../../../stores/appStore';
-import { User, UserRole, TableColumn, FilterOption, Status } from '../../../types/common';
+import { User, UserRole, TableColumn, FilterOption, Status, Gender } from '../../../types/common';
 import {
   Patient,
   PatientListItem,
@@ -159,24 +159,34 @@ export default function PatientManagement() {
     // Safely extract values with defaults
     const firstName = patient.firstName || '';
     const lastName = patient.lastName || '';
-    const middleName = patient.middleName || '';
+    const middleName = 'middleName' in patient ? (patient as any).middleName || '' : '';
     const fullName = middleName 
       ? `${firstName} ${middleName} ${lastName}`.trim()
       : `${firstName} ${lastName}`.trim();
+    
+    // Ensure gender is a valid Gender enum value
+    const gender = Object.values(Gender).includes(patient.gender as Gender) 
+      ? patient.gender as Gender 
+      : Gender.OTHER;
+
+    // Ensure status is a valid Status enum value
+    const status = patient.status && Object.values(Status).includes(patient.status as Status)
+      ? patient.status as Status
+      : Status.ACTIVE;
     
     return {
       id: patient.id || '',
       patientId: patient.patientId || 'N/A',
       fullName: fullName || 'Unknown',
       age: typeof patient.age === 'number' ? patient.age : 0,
-      gender: patient.gender || 'other',
-      phoneNumber: patient.contactInfo?.phone || patient.phone || 'N/A',
+      gender,
+      phoneNumber: patient.contactInfo?.phone || 'N/A',
       lastVisitDate: patient.lastVisitDate || undefined,
       totalVisits: typeof patient.totalVisits === 'number' ? patient.totalVisits : 0,
-      status: patient.status || 'active',
-      hasInsurance: !!patient.insuranceInfo?.isActive || !!patient.insuranceInfo?.insuranceProvider,
+      status,
+      hasInsurance: !!patient.insuranceInfo?.isActive || !!(patient.insuranceInfo as any)?.insuranceProvider,
       emergencyFlag: (Array.isArray(patient.chronicDiseases) && patient.chronicDiseases.length > 0) || false,
-    };
+    } as PatientListItem;
   });
 
   // Table columns configuration
@@ -570,24 +580,35 @@ export default function PatientManagement() {
     // Convert Patient to PatientListItem format for the existing handler
     const firstName = patient.firstName || '';
     const lastName = patient.lastName || '';
-    const middleName = patient.middleName || '';
+    const middleName = 'middleName' in patient ? (patient as any).middleName || '' : '';
     const fullName = middleName 
       ? `${firstName} ${middleName} ${lastName}`.trim()
       : `${firstName} ${lastName}`.trim();
+    
+    // Ensure gender is a valid Gender enum value
+    const gender = Object.values(Gender).includes(patient.gender as Gender) 
+      ? patient.gender as Gender 
+      : Gender.OTHER;
+
+    // Ensure status is a valid Status enum value
+    const status = patient.status && Object.values(Status).includes(patient.status as Status)
+      ? patient.status as Status
+      : Status.ACTIVE;
     
     const patientListItem: PatientListItem = {
       id: patient.id || '',
       patientId: patient.patientId || 'N/A',
       fullName: fullName || 'Unknown',
       age: typeof patient.age === 'number' ? patient.age : 0,
-      gender: patient.gender || 'other',
-      phoneNumber: patient.contactInfo?.phone || patient.phone || 'N/A',
+      gender,
+      phoneNumber: patient.contactInfo?.phone || 'N/A',
       lastVisitDate: patient.lastVisitDate || undefined,
       totalVisits: typeof patient.totalVisits === 'number' ? patient.totalVisits : 0,
-      status: patient.status || 'active',
-      hasInsurance: !!patient.insuranceInfo?.isActive || !!patient.insuranceInfo?.insuranceProvider,
+      status,
+      hasInsurance: !!patient.insuranceInfo?.isActive || !!(patient.insuranceInfo as any)?.insuranceProvider,
       emergencyFlag: (Array.isArray(patient.chronicDiseases) && patient.chronicDiseases.length > 0) || false,
-    };
+    } as PatientListItem;
+    
     handleEditPatient(patientListItem);
   };
 
