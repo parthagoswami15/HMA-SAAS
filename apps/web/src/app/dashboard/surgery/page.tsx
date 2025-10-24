@@ -35,11 +35,6 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import EmptyState from '../../../components/EmptyState';
 import { notifications } from '@mantine/notifications';
-import {
-  MantineDonutChart,
-  SimpleBarChart,
-  SimpleAreaChart,
-} from '../../../components/MantineChart';
 import surgeryService from '../../../services/surgery.service';
 import {
   IconPlus,
@@ -84,14 +79,12 @@ const SurgeryManagement = () => {
   const [selectedPriority, setSelectedPriority] = useState<string>('');
   const [selectedORStatus, setSelectedORStatus] = useState<string>('');
   const [selectedSurgery, setSelectedSurgery] = useState<any>(null);
-  const [selectedOR, setSelectedOR] = useState<any>(null);
 
   // API data state
   const [surgeries, setSurgeries] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>(null);
   const [theaters, setTheaters] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAllData();
@@ -101,11 +94,9 @@ const SurgeryManagement = () => {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      setError(null);
       await Promise.all([fetchSurgeries(), fetchStats(), fetchTheaters()]);
     } catch (err: any) {
       console.error('Error loading surgery data:', err);
-      setError(err.response?.data?.message || 'Failed to load surgery data');
       setSurgeries([] /* TODO: Fetch from API */);
     } finally {
       setLoading(false);
@@ -177,9 +168,6 @@ const SurgeryManagement = () => {
   const [surgeryDetailOpened, { open: openSurgeryDetail, close: closeSurgeryDetail }] =
     useDisclosure(false);
   const [addSurgeryOpened, { open: openAddSurgery, close: closeAddSurgery }] = useDisclosure(false);
-  const [orDetailOpened, { open: openORDetail, close: closeORDetail }] = useDisclosure(false);
-  const [_preOpOpened, { open: _openPreOp, close: _closePreOp }] = useDisclosure(false);
-  const [_postOpOpened, { open: _openPostOp, close: _closePostOp }] = useDisclosure(false);
 
   // Filter surgeries
   const filteredSurgeries = useMemo(() => {
@@ -284,11 +272,6 @@ const SurgeryManagement = () => {
     openSurgeryDetail();
   };
 
-  const handleViewOR = (or: any) => {
-    setSelectedOR(or);
-    openORDetail();
-  };
-
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedType('');
@@ -297,45 +280,32 @@ const SurgeryManagement = () => {
     setSelectedORStatus('');
   };
 
-  const _formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}h ${mins}m`;
-  };
-
-  const _formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-    }).format(amount);
-  };
-
   // Statistics cards
   const statsCards = [
     {
       title: 'Total Surgeries',
-      value: 0 /* TODO: Fetch from API */,
+      value: stats?.totalSurgeries || 0,
       icon: IconScissors,
       color: 'blue',
       trend: '+0%',
     },
     {
       title: "Today's Surgeries",
-      value: 0,
+      value: stats?.scheduledSurgeries || 0,
       icon: IconCalendar,
       color: 'green',
       trend: '+0',
     },
     {
       title: 'Active ORs',
-      value: `${0 /* TODO: Fetch from API */}/${0 /* TODO: Fetch from API */}`,
+      value: `${stats?.availableTheaters || 0}/${stats?.totalTheaters || 0}`,
       icon: IconBed,
       color: 'orange',
       trend: '0% utilization',
     },
     {
       title: 'Average Duration',
-      value: `${0 /* TODO: Fetch from API */}min`,
+      value: `${stats?.averageDuration || 0}min`,
       icon: IconClock,
       color: 'purple',
       trend: '0min',
@@ -343,7 +313,7 @@ const SurgeryManagement = () => {
   ];
 
   // Chart data
-  const surgeryTypeData = Object.entries(0 /* TODO: Fetch from API */ || {}).map(
+  const surgeryTypeData = Object.entries(stats?.surgeryTypes || {}).map(
     ([type, count]) => ({
       name: type.replace('_', ' ').toUpperCase(),
       value: typeof count === 'number' ? count : 0,
@@ -351,8 +321,8 @@ const SurgeryManagement = () => {
     })
   );
 
-  const monthlyVolume = [];
-  const orUtilization = [];
+  const monthlyVolume = stats?.monthlyVolume || [];
+  const orUtilization = stats?.orUtilization || [];
 
   return (
     <Container size="xl" py="md">
@@ -742,7 +712,7 @@ const SurgeryManagement = () => {
                       Equipment: {or.equipment.length} items
                     </Text>
                     <Group gap="xs">
-                      <ActionIcon variant="subtle" color="blue" onClick={() => handleViewOR(or)}>
+                      <ActionIcon variant="subtle" color="blue">
                         <IconEye size={16} />
                       </ActionIcon>
                       <ActionIcon variant="subtle" color="green">
@@ -987,7 +957,22 @@ const SurgeryManagement = () => {
                 <Title order={4} mb="md">
                   Surgeries by Type
                 </Title>
-                <MantineDonutChart data={surgeryTypeData} size={160} thickness={30} withLabels />
+                <Stack gap="sm">
+                  {surgeryTypeData.slice(0, 5).map((item) => (
+                    <Group key={item.name} justify="space-between">
+                      <Text size="sm">{item.name}</Text>
+                      <Group gap="xs">
+                        <Text size="sm" fw={500}>{item.value}</Text>
+                        <Text size="xs" c="dimmed">({((item.value / surgeryTypeData.reduce((acc, curr) => acc + curr.value, 0)) * 100).toFixed(1)}%)</Text>
+                      </Group>
+                    </Group>
+                  ))}
+                  {surgeryTypeData.length === 0 && (
+                    <Text size="sm" c="dimmed" ta="center">
+                      No surgery data available
+                    </Text>
+                  )}
+                </Stack>
               </Card>
 
               {/* Monthly Surgery Volume */}
@@ -995,11 +980,27 @@ const SurgeryManagement = () => {
                 <Title order={4} mb="md">
                   Monthly Surgery Volume
                 </Title>
-                <SimpleAreaChart
-                  data={monthlyVolume}
-                  dataKey="month"
-                  series={[{ name: 'surgeries', color: 'blue.6' }]}
-                />
+                <Stack gap="sm">
+                  {monthlyVolume.slice(0, 6).map((item: any) => (
+                    <Group key={item.month} justify="space-between">
+                      <Text size="sm">{item.month}</Text>
+                      <Group gap="xs">
+                        <Text size="sm" fw={500}>{item.surgeries || item.value || 0}</Text>
+                        <Progress
+                          value={Math.min((item.surgeries || item.value || 0) / 50 * 100, 100)}
+                          size="sm"
+                          color="blue"
+                          style={{ width: 60 }}
+                        />
+                      </Group>
+                    </Group>
+                  ))}
+                  {monthlyVolume.length === 0 && (
+                    <Text size="sm" c="dimmed" ta="center">
+                      No monthly data available
+                    </Text>
+                  )}
+                </Stack>
               </Card>
 
               {/* OR Utilization */}
@@ -1007,11 +1008,27 @@ const SurgeryManagement = () => {
                 <Title order={4} mb="md">
                   Operating Room Utilization
                 </Title>
-                <SimpleBarChart
-                  data={orUtilization}
-                  dataKey="or"
-                  series={[{ name: 'utilization', color: 'orange.6' }]}
-                />
+                <Stack gap="sm">
+                  {orUtilization.slice(0, 8).map((item: any) => (
+                    <Group key={item.or} justify="space-between">
+                      <Text size="sm">OR {item.or}</Text>
+                      <Group gap="xs">
+                        <Text size="sm" fw={500}>{item.utilization || item.value || 0}%</Text>
+                        <Progress
+                          value={item.utilization || item.value || 0}
+                          size="sm"
+                          color={item.utilization > 80 ? 'red' : item.utilization > 60 ? 'orange' : 'green'}
+                          style={{ width: 80 }}
+                        />
+                      </Group>
+                    </Group>
+                  ))}
+                  {orUtilization.length === 0 && (
+                    <Text size="sm" c="dimmed" ta="center">
+                      No OR utilization data available
+                    </Text>
+                  )}
+                </Stack>
               </Card>
 
               {/* Key Performance Indicators */}

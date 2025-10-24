@@ -91,11 +91,25 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
 
-    // Find user by email
+    // Find user by email with role and permissions
     const user = await this.prisma.user.findUnique({
       where: { email },
       include: {
         tenant: true,
+        tenantRole: {
+          include: {
+            rolePermissions: {
+              include: {
+                permission: true,
+              },
+              where: {
+                permission: {
+                  isActive: true,
+                },
+              },
+            },
+          },
+        },
       },
     });
 
@@ -114,15 +128,28 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Extract permissions
+    const permissions = user.tenantRole
+      ? user.tenantRole.rolePermissions.map((rp) => rp.permission.name)
+      : [];
+
     // Generate JWT token
     const payload = {
       sub: user.id,
       email: user.email,
       tenantId: user.tenantId,
       role: user.role,
+      roleId: user.roleId,
+      permissions,
     };
 
     const accessToken = this.jwtService.sign(payload);
+
+    // Update last login
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+    });
 
     return {
       accessToken,
@@ -132,7 +159,9 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
+        roleId: user.roleId,
         tenantId: user.tenantId,
+        permissions,
         tenant: {
           id: user.tenant.id,
           name: user.tenant.name,

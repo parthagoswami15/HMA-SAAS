@@ -58,7 +58,6 @@ import {
   IconTemplate,
   IconCheckbox,
   IconActivity,
-  IconSettings,
   IconChartBar,
   IconTrash,
   IconEdit,
@@ -155,8 +154,8 @@ const CommunicationsManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
-  const [templates, setTemplates] = useState<CommunicationTemplate[]>([]);
-  const [campaigns, setCampaigns] = useState<CommunicationCampaign[]>([]);
+  const [templates] = useState<CommunicationTemplate[]>([]);
+  const [campaigns] = useState<CommunicationCampaign[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<CommunicationMessage | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<CommunicationTemplate | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<CommunicationCampaign | null>(null);

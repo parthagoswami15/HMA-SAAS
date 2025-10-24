@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   Title,
@@ -24,125 +24,120 @@ import {
 } from '@tabler/icons-react';
 
 export default function SubscriptionManagementPage() {
-  const [currentPlan] = useState({
-    name: 'PROFESSIONAL',
-    price: 299,
-    billingCycle: 'monthly',
-    startDate: '2024-01-01',
-    endDate: '2025-01-01',
-    status: 'ACTIVE',
-    autoRenew: true,
-  });
+  const [currentPlan, setCurrentPlan] = useState<any>(null);
+  const [usage, setUsage] = useState<any>(null);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [plans, setPlans] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [usage] = useState({
-    users: { current: 78, limit: 100 },
-    patients: { current: 4250, limit: 10000 },
-    storage: { current: 45, limit: 100 }, // GB
-    appointments: { current: 1250, limit: 5000 },
-  });
+  // Fetch subscription data from API
+  useEffect(() => {
+    const fetchSubscriptionData = async () => {
+      try {
+        setLoading(true);
 
-  const [invoices] = useState([
-    {
-      id: 'INV-2024-003',
-      date: '2024-03-01',
-      amount: 299,
-      status: 'PAID',
-      description: 'Professional Plan - March 2024',
-    },
-    {
-      id: 'INV-2024-002',
-      date: '2024-02-01',
-      amount: 299,
-      status: 'PAID',
-      description: 'Professional Plan - February 2024',
-    },
-    {
-      id: 'INV-2024-001',
-      date: '2024-01-01',
-      amount: 299,
-      status: 'PAID',
-      description: 'Professional Plan - January 2024',
-    },
-  ]);
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-  const plans = [
+        // Fetch current subscription
+        const planResponse = await fetch(`${baseUrl}/subscription/current`, {
+          credentials: 'include',
+        });
+
+        if (planResponse.ok) {
+          const planData = await planResponse.json();
+          setCurrentPlan(planData);
+        }
+
+        // Fetch usage statistics
+        const usageResponse = await fetch(`${baseUrl}/subscription/usage`, {
+          credentials: 'include',
+        });
+
+        if (usageResponse.ok) {
+          const usageData = await usageResponse.json();
+          setUsage(usageData);
+        }
+
+        // Fetch billing history
+        const invoicesResponse = await fetch(`${baseUrl}/subscription/invoices`, {
+          credentials: 'include',
+        });
+
+        if (invoicesResponse.ok) {
+          const invoicesData = await invoicesResponse.json();
+          setInvoices(invoicesData.invoices || []);
+        }
+
+        // Fetch available plans
+        const plansResponse = await fetch(`${baseUrl}/subscription/plans`, {
+          credentials: 'include',
+        });
+
+        if (plansResponse.ok) {
+          const plansData = await plansResponse.json();
+          setPlans(plansData);
+        }
+      } catch (error) {
+        console.error('Error fetching subscription data:', error);
+        // Show error notification
+        import('@mantine/notifications').then(({ notifications }) => {
+          notifications.show({
+            title: 'Error',
+            message: 'Failed to load subscription data. Please try again.',
+            color: 'red',
+          });
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubscriptionData();
+  }, []);
+
+  // Fallback plans if API fails
+  const fallbackPlans = [
     {
       name: 'FREE',
+      displayName: 'Free Trial',
       price: 0,
-      features: [
-        '30 days trial',
-        'Up to 5 users',
-        '100 patients',
-        'Basic features',
-        'Email support',
-      ],
-      limits: {
-        users: 5,
-        patients: 100,
-        storage: 5,
-      },
+      features: ['30 days trial', 'Up to 5 users', '100 patients', 'Basic features', 'Email support'],
     },
     {
       name: 'BASIC',
+      displayName: 'Basic Plan',
       price: 99,
-      popular: false,
-      features: [
-        'Up to 20 users',
-        '1,000 patients',
-        'Core HMS features',
-        'Email & Chat support',
-        '10 GB storage',
-      ],
-      limits: {
-        users: 20,
-        patients: 1000,
-        storage: 10,
-      },
+      features: ['Up to 20 users', '1,000 patients', 'Core HMS features', 'Email & Chat support', '10 GB storage'],
     },
     {
       name: 'PROFESSIONAL',
+      displayName: 'Professional Plan',
       price: 299,
-      popular: true,
-      features: [
-        'Up to 100 users',
-        '10,000 patients',
-        'All advanced features',
-        'Priority support',
-        '100 GB storage',
-        'Custom branding',
-        'API access',
-      ],
-      limits: {
-        users: 100,
-        patients: 10000,
-        storage: 100,
-      },
+      features: ['Up to 100 users', '10,000 patients', 'All advanced features', 'Priority support', '100 GB storage'],
     },
     {
       name: 'ENTERPRISE',
-      price: null,
-      popular: false,
-      features: [
-        'Unlimited users',
-        'Unlimited patients',
-        'All features',
-        '24/7 Dedicated support',
-        'Unlimited storage',
-        'Custom integrations',
-        'SLA guarantee',
-        'On-premise option',
-      ],
-      limits: {
-        users: Infinity,
-        patients: Infinity,
-        storage: Infinity,
-      },
+      displayName: 'Enterprise Plan',
+      price: 999,
+      features: ['Unlimited users', 'Unlimited patients', 'All features', '24/7 Dedicated support', 'Unlimited storage'],
     },
   ];
 
-  const daysUntilRenewal = Math.ceil(
-    (new Date(currentPlan.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-  );
+  const displayPlans = plans.length > 0 ? plans : fallbackPlans;
+
+  const daysUntilRenewal = currentPlan?.endDate
+    ? Math.ceil(
+        (new Date(currentPlan.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      )
+    : 0;
+
+  if (loading) {
+    return (
+      <Stack gap="xl" align="center" justify="center" style={{ minHeight: '400px' }}>
+        <Text size="lg" c="dimmed">Loading subscription data...</Text>
+      </Stack>
+    );
+  }
 
   return (
     <Stack gap="xl">
@@ -155,6 +150,26 @@ export default function SubscriptionManagementPage() {
       </div>
 
       {/* Current Plan Overview */}
+      {!currentPlan ? (
+        <Card shadow="sm" padding="xl" radius="md" withBorder>
+          <Stack align="center" gap="md" py="xl">
+            <IconAlertCircle size={48} color="#868e96" />
+            <Title order={3} c="dimmed">No Active Subscription</Title>
+            <Text c="dimmed" ta="center">
+              You do not have an active subscription plan. Choose a plan below to get started.
+            </Text>
+            <Button
+              size="lg"
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+              }}
+            >
+              Choose a Plan
+            </Button>
+          </Stack>
+        </Card>
+      ) : (
       <Card shadow="sm" padding="xl" radius="md" withBorder>
         <Group justify="space-between" mb="xl">
           <div>
@@ -258,6 +273,7 @@ export default function SubscriptionManagementPage() {
           </div>
         </Stack>
       </Card>
+      )}
 
       {/* Tabs */}
       <Tabs defaultValue="plans">
@@ -282,7 +298,7 @@ export default function SubscriptionManagementPage() {
               gap: '1.5rem',
             }}
           >
-            {plans.map((plan) => (
+            {displayPlans.map((plan) => (
               <Card
                 key={plan.name}
                 shadow="sm"
@@ -290,7 +306,7 @@ export default function SubscriptionManagementPage() {
                 radius="md"
                 withBorder
                 style={{
-                  border: plan.name === currentPlan.name ? '2px solid #667eea' : undefined,
+                  border: plan.name === currentPlan?.name ? '2px solid #667eea' : undefined,
                   position: 'relative',
                 }}
               >
@@ -307,7 +323,7 @@ export default function SubscriptionManagementPage() {
                 <Stack gap="md">
                   <div>
                     <Title order={4} mb="xs">
-                      {plan.name}
+                      {plan.displayName || plan.name}
                     </Title>
                     <Group gap="xs" align="baseline">
                       <Title order={2}>{plan.price === null ? 'Custom' : `$${plan.price}`}</Title>
@@ -328,7 +344,7 @@ export default function SubscriptionManagementPage() {
                     ))}
                   </Stack>
 
-                  {plan.name === currentPlan.name ? (
+                  {plan.name === currentPlan?.name ? (
                     <Button variant="light" color="gray" disabled fullWidth>
                       Current Plan
                     </Button>
@@ -359,44 +375,54 @@ export default function SubscriptionManagementPage() {
             <Title order={4} mb="md">
               Invoice History
             </Title>
-            <Table highlightOnHover>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Invoice</Table.Th>
-                  <Table.Th>Date</Table.Th>
-                  <Table.Th>Description</Table.Th>
-                  <Table.Th>Amount</Table.Th>
-                  <Table.Th>Status</Table.Th>
-                  <Table.Th>Action</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {invoices.map((invoice) => (
-                  <Table.Tr key={invoice.id}>
-                    <Table.Td>
-                      <Text fw={600} size="sm">
-                        {invoice.id}
-                      </Text>
-                    </Table.Td>
-                    <Table.Td>{new Date(invoice.date).toLocaleDateString()}</Table.Td>
-                    <Table.Td>{invoice.description}</Table.Td>
-                    <Table.Td>
-                      <Text fw={600}>${invoice.amount}</Text>
-                    </Table.Td>
-                    <Table.Td>
-                      <Badge color={invoice.status === 'PAID' ? 'green' : 'orange'} variant="light">
-                        {invoice.status}
-                      </Badge>
-                    </Table.Td>
-                    <Table.Td>
-                      <Button size="xs" variant="subtle" leftSection={<IconDownload size={14} />}>
-                        Download
-                      </Button>
-                    </Table.Td>
+            {invoices.length === 0 ? (
+              <Stack align="center" gap="md" py="xl">
+                <IconReceipt size={48} color="#868e96" />
+                <Title order={4} c="dimmed">No Invoices Yet</Title>
+                <Text c="dimmed" ta="center">
+                  Your billing history will appear here once you have an active subscription.
+                </Text>
+              </Stack>
+            ) : (
+              <Table highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Invoice</Table.Th>
+                    <Table.Th>Date</Table.Th>
+                    <Table.Th>Description</Table.Th>
+                    <Table.Th>Amount</Table.Th>
+                    <Table.Th>Status</Table.Th>
+                    <Table.Th>Action</Table.Th>
                   </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
+                </Table.Thead>
+                <Table.Tbody>
+                  {invoices.map((invoice) => (
+                    <Table.Tr key={invoice.id}>
+                      <Table.Td>
+                        <Text fw={600} size="sm">
+                          {invoice.id}
+                        </Text>
+                      </Table.Td>
+                      <Table.Td>{new Date(invoice.date).toLocaleDateString()}</Table.Td>
+                      <Table.Td>{invoice.description}</Table.Td>
+                      <Table.Td>
+                        <Text fw={600}>${invoice.amount}</Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Badge color={invoice.status === 'PAID' ? 'green' : 'orange'} variant="light">
+                          {invoice.status}
+                        </Badge>
+                      </Table.Td>
+                      <Table.Td>
+                        <Button size="xs" variant="subtle" leftSection={<IconDownload size={14} />}>
+                          Download
+                        </Button>
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            )}
           </Card>
         </Tabs.Panel>
 

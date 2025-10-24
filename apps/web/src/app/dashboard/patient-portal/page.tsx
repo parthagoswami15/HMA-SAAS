@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Container,
   Paper,
@@ -83,11 +83,47 @@ const PatientPortal = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchAllData();
+  const fetchAppointments = useCallback(async () => {
+    try {
+      const response = await patientPortalService.getMyAppointments();
+      setAppointments(response.data || []);
+    } catch (err) {
+      console.error('Error fetching appointments:', err);
+      setAppointments([] /* TODO: Fetch from API */);
+    }
   }, []);
 
-  const fetchAllData = async () => {
+  const fetchPrescriptions = useCallback(async () => {
+    try {
+      const response = await patientPortalService.getMyPrescriptions();
+      setPrescriptions(response.data || []);
+    } catch (err) {
+      console.error('Error fetching prescriptions:', err);
+      setPrescriptions([] /* TODO: Fetch from API */);
+    }
+  }, []);
+
+  const fetchLabResults = useCallback(async () => {
+    try {
+      const response = await patientPortalService.getMyLabResults();
+      setLabResults(response.data || []);
+    } catch (err) {
+      console.error('Error fetching lab results:', err);
+      setLabResults([] /* TODO: Fetch from API */);
+    }
+  }, []);
+
+  const fetchMedicalRecords = useCallback(async () => {
+    try {
+      const response = await patientPortalService.getMyRecords();
+      setMedicalRecords(response.data || []);
+    } catch (err) {
+      console.error('Error fetching medical records:', err);
+      setMedicalRecords([] /* TODO: Fetch from API */);
+    }
+  }, []);
+
+  const fetchAllData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -107,47 +143,12 @@ const PatientPortal = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchAppointments, fetchPrescriptions, fetchLabResults, fetchMedicalRecords]);
 
-  const fetchAppointments = async () => {
-    try {
-      const response = await patientPortalService.getMyAppointments();
-      setAppointments(response.data || []);
-    } catch (err) {
-      console.error('Error fetching appointments:', err);
-      setAppointments([] /* TODO: Fetch from API */);
-    }
-  };
-
-  const fetchPrescriptions = async () => {
-    try {
-      const response = await patientPortalService.getMyPrescriptions();
-      setPrescriptions(response.data || []);
-    } catch (err) {
-      console.error('Error fetching prescriptions:', err);
-      setPrescriptions([] /* TODO: Fetch from API */);
-    }
-  };
-
-  const fetchLabResults = async () => {
-    try {
-      const response = await patientPortalService.getMyLabResults();
-      setLabResults(response.data || []);
-    } catch (err) {
-      console.error('Error fetching lab results:', err);
-      setLabResults([] /* TODO: Fetch from API */);
-    }
-  };
-
-  const fetchMedicalRecords = async () => {
-    try {
-      const response = await patientPortalService.getMyRecords();
-      setMedicalRecords(response.data || []);
-    } catch (err) {
-      console.error('Error fetching medical records:', err);
-      setMedicalRecords([] /* TODO: Fetch from API */);
-    }
-  };
+  // Fetch data
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   // Modal states
   const [appointmentDetailOpened, { open: openAppointmentDetail, close: closeAppointmentDetail }] =
@@ -184,7 +185,7 @@ const PatientPortal = () => {
 
       return matchesSearch && matchesType && matchesStatus && matchesDoctor;
     });
-  }, [searchQuery, selectedAppointmentType, selectedStatus, selectedDoctor]);
+  }, [appointments, searchQuery, selectedAppointmentType, selectedStatus, selectedDoctor]);
 
   // Helper functions
   const getStatusColor = (status: string) => {

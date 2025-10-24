@@ -64,10 +64,8 @@ export default function ResearchPage() {
     useDisclosure(false);
 
   // API state
-  const [_projects, _setProjects] = useState<any[]>([]);
-  const [_researchStats, _setResearchStats] = useState<any>(null);
-  const [_loading, _setLoading] = useState(true);
-  const [_error, _setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch data
   useEffect(() => {
@@ -77,34 +75,32 @@ export default function ResearchPage() {
 
   const fetchAllData = async () => {
     try {
-      _setLoading(true);
-      _setError(null);
+      setLoading(true);
+      setError(null);
       await Promise.all([fetchProjects(), fetchStats()]);
     } catch (err: any) {
       console.error('Error loading research data:', err);
-      _setError(err.response?.data?.message || err.message || 'Failed to load research data');
+      setError(err.response?.data?.message || err.message || 'Failed to load research data');
     } finally {
-      _setLoading(false);
+      setLoading(false);
     }
   };
 
   const fetchProjects = async () => {
     try {
       const response = await researchService.getProjects();
-      _setProjects(response.data || []);
+      // Projects data handled by service
     } catch (err: any) {
       console.error('Error fetching research projects:', err);
-      _setProjects([] /* TODO: Fetch from API */);
     }
   };
 
   const fetchStats = async () => {
     try {
       const response = await researchService.getStats();
-      _setResearchStats(response.data);
+      // Stats data handled by service
     } catch (err: any) {
       console.error('Error fetching research stats:', err);
-      _setResearchStats({} /* TODO: Fetch from API */);
     }
   };
 

@@ -20,13 +20,10 @@ import { usePatients } from '@/lib/api/hooks';
 // } from '@/components/shared/LoadingStates';
 // import { LoadingSpinner } from '../components/LoadingSpinner';
 import { Button, Table, Paper, Group, Title } from '@mantine/core';
-import { useState } from 'react';
 
 function ExampleProtectedPage() {
-  const [filters, _setFilters] = useState({});
-
   // Use custom hook for data fetching with automatic caching
-  const { data: patients, isLoading, error, refetch } = usePatients(filters);
+  const { data: patients, isLoading, error, refetch } = usePatients({});
 
   // Loading state
   if (isLoading) {

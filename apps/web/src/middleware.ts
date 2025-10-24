@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/login', '/signup', '/forgot-password', '/'];
+const _publicRoutes = ['/login', '/signup', '/forgot-password', '/'];
 
 // Define routes that require authentication
-const protectedRoutes = ['/dashboard'];
+const _protectedRoutes = ['/dashboard'];
 
-export function middleware(request: NextRequest) {
+export function middleware(_request: NextRequest) {
   // For localStorage-based auth, we can't check here, so we disable server-side redirect
   // and let client-side handle it. Only block if we're certain there's no auth.
   // Comment out the redirect for now since we're using localStorage

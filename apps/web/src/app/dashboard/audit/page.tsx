@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Table,
   Text,
   Badge,
-  Loader,
   SimpleGrid,
   Pagination,
   Button,
@@ -16,7 +15,6 @@ import { useDisclosure } from '@mantine/hooks';
 import Layout from '../../components/Layout';
 import { notifications } from '@mantine/notifications';
 import {
-  IconPlus,
   IconEye,
   IconCalendar,
   IconUsers,
@@ -126,12 +124,7 @@ const AuditPage = () => {
     'SYSTEM',
   ];
 
-  useEffect(() => {
-    loadAuditLogs();
-    loadStatistics();
-  }, [currentPage, actionFilter, entityTypeFilter, userFilter, dateRange, showOnlySuspicious, showOnlySensitive, showOnlyRequiresReview]);
-
-  const loadAuditLogs = async () => {
+  const loadAuditLogs = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -200,9 +193,9 @@ const AuditPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, actionFilter, entityTypeFilter, userFilter, dateRange, showOnlySuspicious, showOnlySensitive, showOnlyRequiresReview, itemsPerPage]);
 
-  const loadStatistics = async () => {
+  const loadStatistics = useCallback(async () => {
     try {
       const startDate = dateRange[0] || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Last 30 days
       const endDate = dateRange[1] || new Date();
@@ -226,7 +219,12 @@ const AuditPage = () => {
     } catch (error) {
       console.error('Error loading statistics:', error);
     }
-  };
+  }, [dateRange]);
+
+  useEffect(() => {
+    loadAuditLogs();
+    loadStatistics();
+  }, [loadAuditLogs, loadStatistics]);
 
   const markAsReviewed = async (logId: string) => {
     try {

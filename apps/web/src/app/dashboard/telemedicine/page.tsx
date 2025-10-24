@@ -69,11 +69,6 @@ import {
   SessionStatus,
   SessionType,
   // RemoteMonitoringData,
-  VitalSigns as _VitalSigns,
-  DigitalPrescription,
-  TelemedicineStats as _TelemedicineStats,
-  PatientMonitoring,
-  VirtualConsultation as _VirtualConsultation,
   ConsultationStatus,
 } from '../../../types/telemedicine';
 import telemedicineService from '../../../services/telemedicine.service';
@@ -85,12 +80,6 @@ const Telemedicine = () => {
   const [selectedSessionType, setSelectedSessionType] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedDoctor, setSelectedDoctor] = useState<string>('');
-  const [_selectedSession, setSelectedSession] = useState<TelemedicineSession | null>(null);
-  const [_selectedPrescription, setSelectedPrescription] = useState<DigitalPrescription | null>(
-    null
-  );
-  const [_selectedPatientMonitoring, setSelectedPatientMonitoring] =
-    useState<PatientMonitoring | null>(null);
   const [isInCall, setIsInCall] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
@@ -101,8 +90,6 @@ const Telemedicine = () => {
   // API state
   const [consultations, setConsultations] = useState<any[]>([]);
   const [telemedicineStats, setTelemedicineStats] = useState<any>(null);
-  const [_loading, setLoading] = useState(true);
-  const [_error, setError] = useState<string | null>(null);
 
   // Fetch data
   useEffect(() => {
@@ -112,14 +99,9 @@ const Telemedicine = () => {
 
   const fetchAllData = async () => {
     try {
-      setLoading(true);
-      setError(null);
       await Promise.all([fetchConsultations(), fetchStats()]);
     } catch (err: any) {
       console.error('Error loading telemedicine data:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load telemedicine data');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -162,21 +144,22 @@ const Telemedicine = () => {
   };
 
   // Modal states
-  const [_sessionDetailOpened, { open: _openSessionDetail, close: _closeSessionDetail }] =
-    useDisclosure(false);
   const [startSessionOpened, { open: openStartSession, close: closeStartSession }] =
     useDisclosure(false);
-  const [
-    _prescriptionDetailOpened,
-    { open: _openPrescriptionDetail, close: _closePrescriptionDetail },
-  ] = useDisclosure(false);
-  const [_monitoringDetailOpened, { open: _openMonitoringDetail, close: _closeMonitoringDetail }] =
-    useDisclosure(false);
-  const [
-    _createPrescriptionOpened,
-    { open: openCreatePrescription, close: _closeCreatePrescription },
-  ] = useDisclosure(false);
   const [videoCallOpened, { open: openVideoCall, close: closeVideoCall }] = useDisclosure(false);
+  const [createPrescriptionOpened, { open: openCreatePrescription, close: closeCreatePrescription }] =
+    useDisclosure(false);
+  const [viewSessionOpened, { open: openViewSession, close: closeViewSession }] =
+    useDisclosure(false);
+  const [viewMonitoringOpened, { open: openViewMonitoring, close: closeViewMonitoring }] =
+    useDisclosure(false);
+  const [viewPrescriptionOpened, { open: openViewPrescription, close: closePrescription }] =
+    useDisclosure(false);
+  
+  // Selected items for viewing
+  const [selectedSession, setSelectedSession] = useState<any>(null);
+  const [selectedMonitoring, setSelectedMonitoring] = useState<any>(null);
+  const [selectedPrescription, setSelectedPrescription] = useState<any>(null);
 
   // Timer effect for call duration
   useEffect(() => {
@@ -244,36 +227,6 @@ const Telemedicine = () => {
     }
   };
 
-  const _getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent':
-        return 'red';
-      case 'high':
-        return 'orange';
-      case 'normal':
-        return 'blue';
-      case 'low':
-        return 'gray';
-      default:
-        return 'gray';
-    }
-  };
-
-  const handleViewSession = (_session: TelemedicineSession) => {
-    setSelectedSession(_session);
-    _openSessionDetail();
-  };
-
-  const handleViewPrescription = (_prescription: DigitalPrescription) => {
-    setSelectedPrescription(_prescription);
-    _openPrescriptionDetail();
-  };
-
-  const handleViewMonitoring = (_monitoring: PatientMonitoring) => {
-    setSelectedPatientMonitoring(_monitoring);
-    _openMonitoringDetail();
-  };
-
   const handleStartVideoCall = (_session?: TelemedicineSession) => {
     setIsInCall(true);
     setCallDuration(0);
@@ -330,6 +283,21 @@ const Telemedicine = () => {
       message: `Session recording has been ${isRecording ? 'stopped' : 'started'}`,
       color: isRecording ? 'red' : 'green',
     });
+  };
+
+  const handleViewSession = (session: any) => {
+    setSelectedSession(session);
+    openViewSession();
+  };
+
+  const handleViewMonitoring = (monitoring: any) => {
+    setSelectedMonitoring(monitoring);
+    openViewMonitoring();
+  };
+
+  const handleViewPrescription = (prescription: any) => {
+    setSelectedPrescription(prescription);
+    openViewPrescription();
   };
 
   const formatDuration = (seconds: number) => {
@@ -1443,6 +1411,149 @@ const Telemedicine = () => {
             </Button>
           </Group>
         </Stack>
+      </Modal>
+
+      {/* Create Prescription Modal */}
+      <Modal
+        opened={createPrescriptionOpened}
+        onClose={closeCreatePrescription}
+        title="Create Digital Prescription"
+        size="lg"
+      >
+        <Stack>
+          <TextInput label="Patient Name" placeholder="Enter patient name" required />
+          <TextInput label="Diagnosis" placeholder="Enter diagnosis" required />
+          <Textarea
+            label="Medications"
+            placeholder="Enter medications with dosage and instructions"
+            rows={4}
+            required
+          />
+          <Textarea label="Additional Notes" placeholder="Enter any additional notes" rows={3} />
+          <Group justify="flex-end">
+            <Button variant="light" onClick={closeCreatePrescription}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                notifications.show({
+                  title: 'Prescription Created',
+                  message: 'Digital prescription has been created successfully',
+                  color: 'green',
+                });
+                closeCreatePrescription();
+              }}
+            >
+              Create Prescription
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+
+      {/* View Session Modal */}
+      <Modal
+        opened={viewSessionOpened}
+        onClose={closeViewSession}
+        title="Session Details"
+        size="lg"
+      >
+        {selectedSession && (
+          <Stack>
+            <Group justify="space-between">
+              <Text fw={500}>Session ID:</Text>
+              <Text>{selectedSession.sessionId || selectedSession.id}</Text>
+            </Group>
+            <Group justify="space-between">
+              <Text fw={500}>Patient:</Text>
+              <Text>{selectedSession.patientName}</Text>
+            </Group>
+            <Group justify="space-between">
+              <Text fw={500}>Doctor:</Text>
+              <Text>{selectedSession.doctorName}</Text>
+            </Group>
+            <Group justify="space-between">
+              <Text fw={500}>Status:</Text>
+              <Badge color={getStatusColor(selectedSession.status)}>{selectedSession.status}</Badge>
+            </Group>
+            <Group justify="space-between">
+              <Text fw={500}>Type:</Text>
+              <Badge color={getSessionTypeColor(selectedSession.type)}>{selectedSession.type}</Badge>
+            </Group>
+            <Divider />
+            <Text fw={500}>Notes:</Text>
+            <Text size="sm" c="dimmed">
+              {selectedSession.notes || 'No notes available'}
+            </Text>
+          </Stack>
+        )}
+      </Modal>
+
+      {/* View Monitoring Modal */}
+      <Modal
+        opened={viewMonitoringOpened}
+        onClose={closeViewMonitoring}
+        title="Monitoring Details"
+        size="lg"
+      >
+        {selectedMonitoring && (
+          <Stack>
+            <Group justify="space-between">
+              <Text fw={500}>Patient:</Text>
+              <Text>{selectedMonitoring.patientName}</Text>
+            </Group>
+            <Group justify="space-between">
+              <Text fw={500}>Device:</Text>
+              <Text>{selectedMonitoring.deviceType}</Text>
+            </Group>
+            <Group justify="space-between">
+              <Text fw={500}>Status:</Text>
+              <Badge color={selectedMonitoring.status === 'active' ? 'green' : 'gray'}>
+                {selectedMonitoring.status}
+              </Badge>
+            </Group>
+            <Divider />
+            <Text fw={500}>Latest Readings:</Text>
+            <Text size="sm" c="dimmed">
+              Monitoring data details would be displayed here
+            </Text>
+          </Stack>
+        )}
+      </Modal>
+
+      {/* View Prescription Modal */}
+      <Modal
+        opened={viewPrescriptionOpened}
+        onClose={closePrescription}
+        title="Prescription Details"
+        size="lg"
+      >
+        {selectedPrescription && (
+          <Stack>
+            <Group justify="space-between">
+              <Text fw={500}>Prescription ID:</Text>
+              <Text>{selectedPrescription.id}</Text>
+            </Group>
+            <Group justify="space-between">
+              <Text fw={500}>Patient:</Text>
+              <Text>{selectedPrescription.patientName}</Text>
+            </Group>
+            <Group justify="space-between">
+              <Text fw={500}>Doctor:</Text>
+              <Text>{selectedPrescription.doctorName}</Text>
+            </Group>
+            <Divider />
+            <Text fw={500}>Medications:</Text>
+            <Text size="sm" c="dimmed">
+              {selectedPrescription.medications || 'No medications listed'}
+            </Text>
+            <Text fw={500} mt="md">
+              Notes:
+            </Text>
+            <Text size="sm" c="dimmed">
+              {selectedPrescription.notes || 'No notes available'}
+            </Text>
+          </Stack>
+        )}
       </Modal>
     </Container>
   );

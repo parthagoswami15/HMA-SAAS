@@ -83,41 +83,19 @@ interface Report {
   name: string;
   description: string;
   category: string;
-  type: 'financial' | 'operational' | 'clinical' | 'quality' | 'administrative';
-  format: 'PDF' | 'Excel' | 'CSV' | 'Dashboard';
-  frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly' | 'on-demand';
-  status: 'active' | 'inactive' | 'scheduled' | 'running' | 'completed' | 'failed';
+  format: string;
+  frequency: string;
+  status: string;
   lastGenerated: string;
   nextRun?: string;
   createdBy: string;
-  createdAt: string;
+  recipients: string[];
   parameters: Array<{
     name: string;
-    type: string;
-    value: any;
+    value: string | number;
   }>;
-  recipients: string[];
   size?: string;
   executionTime?: number;
-}
-
-interface Analytics {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  metrics: Array<{
-    name: string;
-    value: number | string;
-    change?: {
-      value: number;
-      type: 'increase' | 'decrease';
-      period: string;
-    };
-  }>;
-  chartType: 'line' | 'bar' | 'pie' | 'area';
-  chartData: any[];
-  lastUpdated: string;
 }
 
 const ReportsAnalytics = () => {

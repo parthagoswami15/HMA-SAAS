@@ -105,7 +105,6 @@ const EMRManagement = () => {
 
   // API data state
   const [records, setRecords] = useState<MedicalRecord[]>([]);
-  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -116,7 +115,7 @@ const EMRManagement = () => {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      await Promise.all([fetchRecords(), fetchStats()]);
+      await fetchRecords();
     } catch (err: any) {
       console.error('Error loading EMR data:', err);
       setRecords([] /* TODO: Fetch from API */);
@@ -144,27 +143,6 @@ const EMRManagement = () => {
       );
       // Don't show error to user if backend is not ready, just use empty data
       setRecords([]);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      const response = await emrService.getStats();
-      setStats(response.data);
-    } catch (err: any) {
-      console.warn(
-        'Error fetching EMR stats (using default values):',
-        err.response?.data?.message || err.message
-      );
-      // Set default stats when backend is unavailable
-      setStats({
-        totalRecords: 0,
-        recordsByType: {},
-        recordsByStatus: {},
-        commonDiagnoses: [],
-        prescriptionTrends: [],
-        recentActivity: [],
-      });
     }
   };
 

@@ -9,9 +9,8 @@ import {
   getRoleDisplayName,
   getRoleBadgeColor,
   type UserRole as RBACUserRole,
-  type DashboardModule,
 } from '@/lib/rbac';
-import { User, UserRole } from '../../types/common';
+import { User } from '../../types/common';
 
 export default function EnhancedDashboard() {
   const router = useRouter();
@@ -47,19 +46,12 @@ export default function EnhancedDashboard() {
     // fetchDashboardStats().then(data => setStats(data));
   }, [router]);
 
-  // Get modules accessible to this user's role (RBAC filtering)
   const accessibleModules = useMemo(() => {
     if (!user?.role) return [];
     const filtered = getModulesForRole(user.role as RBACUserRole);
     console.log(`[Dashboard] Modules for ${user.role}:`, filtered.length, 'modules');
     return filtered;
   }, [user]);
-
-  const _handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
-    router.push('/login');
-  };
 
   if (!user) {
     return (

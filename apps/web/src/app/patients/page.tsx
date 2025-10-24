@@ -34,8 +34,6 @@ import Layout from '../../components/shared/Layout';
 import DataTable from '../../components/shared/DataTable';
 import PatientForm from '../../components/patients/PatientForm';
 import PatientDetails from '../../components/patients/PatientDetails';
-import MedicalHistoryManager from '../../components/patients/MedicalHistoryManager';
-import DocumentManager from '../../components/patients/DocumentManager';
 import { useAppStore } from '../../stores/appStore';
 import { User, UserRole, TableColumn, FilterOption, Status } from '../../types/common';
 import {
@@ -75,10 +73,6 @@ function PatientsPage() {
   const [loading, setLoading] = useState(true);
   const [opened, { open, close }] = useDisclosure(false);
   const [viewModalOpened, { open: openView, close: closeView }] = useDisclosure(false);
-  const [historyModalOpened, { open: openHistory, close: closeHistory }] = useDisclosure(false);
-  const [documentsModalOpened, { open: openDocuments, close: closeDocuments }] = useDisclosure(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState<Record<string, any>>({});
 
   useEffect(() => {
     fetchPatients();
@@ -258,48 +252,6 @@ function PatientsPage() {
       });
       throw error;
     }
-  };
-
-  // Medical history operations
-  const handleSaveMedicalHistory = async (history: any): Promise<void> => {
-    console.log('Saving medical history:', history);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  };
-
-  const handleUpdateMedicalHistory = async (id: string, history: any): Promise<void> => {
-    console.log('Updating medical history:', id, history);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  };
-
-  const handleDeleteMedicalHistory = async (id: string): Promise<void> => {
-    console.log('Deleting medical history:', id);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  };
-
-  // Document operations
-  const handleUploadDocument = async (document: any, file: File): Promise<void> => {
-    console.log('Uploading document:', document, file);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  };
-
-  const handleUpdateDocument = async (id: string, document: any): Promise<void> => {
-    console.log('Updating document:', id, document);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  };
-
-  const handleDeleteDocument = async (id: string): Promise<void> => {
-    console.log('Deleting document:', id);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  };
-
-  const handleDownloadDocument = async (document: any): Promise<void> => {
-    console.log('Downloading document:', document);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  };
-
-  const handleViewDocument = async (document: any): Promise<void> => {
-    console.log('Viewing document:', document);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
   // Additional handlers
@@ -545,8 +497,6 @@ function PatientsPage() {
                 filterable={true}
                 sortable={true}
                 filters={filterOptions}
-                onSearch={(query) => setSearchQuery(query)}
-                onFilter={(filters) => setFilters(filters)}
                 pagination={{
                   page: 1,
                   limit: 10,
@@ -747,36 +697,6 @@ function PatientsPage() {
             patient={selectedPatient}
             onSubmit={selectedPatient ? handleUpdatePatient : handleCreatePatient}
           />
-
-          {/* Medical History Manager */}
-          {selectedPatient && (
-            <MedicalHistoryManager
-              opened={historyModalOpened}
-              onClose={closeHistory}
-              patientId={selectedPatient.patientId}
-              patientName={`${selectedPatient.firstName} ${selectedPatient.lastName}`}
-              medicalHistory={[]}
-              onSave={handleSaveMedicalHistory}
-              onUpdate={handleUpdateMedicalHistory}
-              onDelete={handleDeleteMedicalHistory}
-            />
-          )}
-
-          {/* Document Manager */}
-          {selectedPatient && (
-            <DocumentManager
-              opened={documentsModalOpened}
-              onClose={closeDocuments}
-              patientId={selectedPatient.patientId}
-              patientName={`${selectedPatient.firstName} ${selectedPatient.lastName}`}
-              documents={[]}
-              onUpload={handleUploadDocument}
-              onUpdate={handleUpdateDocument}
-              onDelete={handleDeleteDocument}
-              onDownload={handleDownloadDocument}
-              onView={handleViewDocument}
-            />
-          )}
         </Stack>
       </Container>
     </Layout>

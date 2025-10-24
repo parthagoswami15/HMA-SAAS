@@ -97,7 +97,6 @@ import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import EmptyState from '../../../components/EmptyState';
 import {
-  IconMessage,
   IconSend,
   IconPlus,
   IconSearch,
@@ -115,7 +114,6 @@ import {
   IconTarget,
   IconInfoCircle,
   IconQuestionMark,
-  IconFileText,
   IconStar,
   IconMessageCircle,
   IconClockHour4,

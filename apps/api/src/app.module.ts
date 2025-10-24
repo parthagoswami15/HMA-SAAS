@@ -35,6 +35,8 @@ import { CommunicationsModule } from './communications/communications.module';
 import { QualityModule } from './quality/quality.module';
 import { ResearchModule } from './research/research.module';
 import { IntegrationModule } from './integration/integration.module';
+import { SubscriptionModule } from './subscription/subscription.module';
+import { RbacModule } from './rbac/rbac.module';
 
 // Basic controllers and services
 import { AppController } from './app.controller';
@@ -55,11 +57,15 @@ import { AppService } from './app.service';
         // Prisma (existing)
         DATABASE_URL: Joi.string().required(),
         
-        // JWT
-        JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
-        JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
-        JWT_ACCESS_TOKEN_EXPIRY: Joi.string().default('15m'),
-        JWT_REFRESH_TOKEN_EXPIRY: Joi.string().default('7d'),
+        // Stripe (optional - only needed if SubscriptionModule is enabled)
+        STRIPE_SECRET_KEY: Joi.string().optional(),
+        STRIPE_PUBLISHABLE_KEY: Joi.string().optional(),
+        STRIPE_WEBHOOK_SECRET: Joi.string().optional(),
+        
+        // Razorpay (optional - for UPI and Indian payment methods)
+        RAZORPAY_KEY_ID: Joi.string().optional(),
+        RAZORPAY_KEY_SECRET: Joi.string().optional(),
+        RAZORPAY_WEBHOOK_SECRET: Joi.string().optional(),
         
         // Optional
         CORS_ORIGIN: Joi.string().default('http://localhost:3000'),
@@ -120,6 +126,8 @@ import { AppService } from './app.service';
     QualityModule,
     ResearchModule,
     IntegrationModule,
+    SubscriptionModule,
+    RbacModule,
   ],
   controllers: [AppController],
   providers: [

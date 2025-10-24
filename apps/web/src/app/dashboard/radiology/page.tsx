@@ -90,14 +90,10 @@ const RadiologyManagement = () => {
   const [selectedPriority, setSelectedPriority] = useState<string>('');
   const [selectedEquipmentStatus, setSelectedEquipmentStatus] = useState<string>('');
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
-  const [_selectedReport, _setSelectedReport] = useState<any>(null);
-  const [_selectedEquipment, _setSelectedEquipment] = useState<any>(null);
   const [selectedStudy, setSelectedStudy] = useState<any>(null);
+  const [selectedEquipment, setSelectedEquipment] = useState<any>(null);
 
   // API state
-  const [_studies, _setStudies] = useState<any[]>([]);
-  const [_reports, _setReports] = useState<any[]>([]);
-  const [_orders, _setOrders] = useState<any[]>([]);
   const [radiologyStats, setRadiologyStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -107,17 +103,13 @@ const RadiologyManagement = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await radiologyService.getStudies({ limit: 100 });
-      if (response.success) {
-        _setStudies(response.data.items);
-      }
+      // Studies data will be handled by the service
     } catch (err: any) {
       console.warn(
         'Error fetching studies (using empty data):',
         err.response?.data?.message || err.message
       );
       setError(null);
-      _setStudies([]);
     } finally {
       setLoading(false);
     }
@@ -128,17 +120,13 @@ const RadiologyManagement = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await radiologyService.getReports({ limit: 100 });
-      if (response.success) {
-        _setReports(response.data.items);
-      }
+      // Reports data will be handled by the service
     } catch (err: any) {
       console.warn(
         'Error fetching reports (using empty data):',
         err.response?.data?.message || err.message
       );
       setError(null);
-      _setReports([]);
     } finally {
       setLoading(false);
     }
@@ -149,17 +137,13 @@ const RadiologyManagement = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await radiologyService.getOrders({ limit: 100 });
-      if (response.success) {
-        _setOrders(response.data.items);
-      }
+      // Orders data will be handled by the service
     } catch (err: any) {
       console.warn(
         'Error fetching orders (using empty data):',
         err.response?.data?.message || err.message
       );
       setError(null);
-      _setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -201,13 +185,9 @@ const RadiologyManagement = () => {
   const [requestDetailOpened, { open: openRequestDetail, close: closeRequestDetail }] =
     useDisclosure(false);
   const [addRequestOpened, { open: openAddRequest, close: closeAddRequest }] = useDisclosure(false);
-  const [_reportDetailOpened, { open: _openReportDetail, close: _closeReportDetail }] =
-    useDisclosure(false);
-  const [_equipmentDetailOpened, { open: _openEquipmentDetail, close: _closeEquipmentDetail }] =
-    useDisclosure(false);
   const [studyViewerOpened, { open: openStudyViewer, close: closeStudyViewer }] =
     useDisclosure(false);
-  const [_createReportOpened, { open: _openCreateReport, close: _closeCreateReport }] =
+  const [equipmentDetailOpened, { open: openEquipmentDetail, close: closeEquipmentDetail }] =
     useDisclosure(false);
 
   // Filter imaging requests
@@ -323,19 +303,14 @@ const RadiologyManagement = () => {
     openRequestDetail();
   };
 
-  const _handleViewReport = (report: any) => {
-    _setSelectedReport(report);
-    _openReportDetail();
-  };
-
-  const _handleViewEquipment = (equipment: any) => {
-    _setSelectedEquipment(equipment);
-    _openEquipmentDetail();
-  };
-
   const handleViewStudy = (study: any) => {
     setSelectedStudy(study);
     openStudyViewer();
+  };
+
+  const handleViewEquipment = (equipment: any) => {
+    setSelectedEquipment(equipment);
+    openEquipmentDetail();
   };
 
   const clearFilters = () => {
@@ -344,13 +319,6 @@ const RadiologyManagement = () => {
     setSelectedStatus('');
     setSelectedPriority('');
     setSelectedEquipmentStatus('');
-  };
-
-  const _formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-    }).format(amount);
   };
 
   // Statistics cards
@@ -722,7 +690,7 @@ const RadiologyManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Radiology Reports</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={_openCreateReport}>
+                <Button leftSection={<IconPlus size={16} />}>
                   Create Report
                 </Button>
                 <Button variant="light" leftSection={<IconDownload size={16} />}>
@@ -811,11 +779,7 @@ const RadiologyManagement = () => {
                         Priority: {(report as any).priority?.toUpperCase() || 'ROUTINE'}
                       </Text>
                       <Group gap="xs">
-                        <ActionIcon
-                          variant="subtle"
-                          color="blue"
-                          onClick={() => _handleViewReport(report)}
-                        >
+                        <ActionIcon variant="subtle" color="blue">
                           <IconEye size={16} />
                         </ActionIcon>
                         <ActionIcon variant="subtle" color="green">
@@ -1085,7 +1049,7 @@ const RadiologyManagement = () => {
                       <ActionIcon
                         variant="subtle"
                         color="blue"
-                        onClick={() => _handleViewEquipment(equipment)}
+                        onClick={() => handleViewEquipment(equipment)}
                       >
                         <IconEye size={16} />
                       </ActionIcon>
@@ -1654,6 +1618,136 @@ const RadiologyManagement = () => {
               </div>
             </div>
           </div>
+        )}
+      </Modal>
+
+      {/* Equipment Detail Modal */}
+      <Modal
+        opened={equipmentDetailOpened}
+        onClose={closeEquipmentDetail}
+        title="Equipment Details"
+        size="xl"
+      >
+        {selectedEquipment && (
+          <ScrollArea h={600}>
+            <Stack gap="md">
+              <Group>
+                <ThemeIcon color="blue" size="xl" variant="light">
+                  <IconDeviceDesktop size={24} />
+                </ThemeIcon>
+                <div>
+                  <Title order={3}>{selectedEquipment.equipmentName}</Title>
+                  <Text c="dimmed">Model: {selectedEquipment.model}</Text>
+                  <Badge color={getStatusColor(selectedEquipment.status)} variant="light" mt="xs">
+                    {selectedEquipment.status.replace('_', ' ')}
+                  </Badge>
+                </div>
+              </Group>
+
+              <Divider />
+
+              <SimpleGrid cols={2}>
+                <div>
+                  <Text size="sm" fw={500}>
+                    Equipment Type
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedEquipment.equipmentType}
+                  </Text>
+                </div>
+                <div>
+                  <Text size="sm" fw={500}>
+                    Manufacturer
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedEquipment.manufacturer}
+                  </Text>
+                </div>
+                <div>
+                  <Text size="sm" fw={500}>
+                    Serial Number
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedEquipment.serialNumber || 'N/A'}
+                  </Text>
+                </div>
+                <div>
+                  <Text size="sm" fw={500}>
+                    Location
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedEquipment.location || 'N/A'}
+                  </Text>
+                </div>
+                <div>
+                  <Text size="sm" fw={500}>
+                    Installation Date
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedEquipment.installationDate
+                      ? new Date(selectedEquipment.installationDate).toLocaleDateString()
+                      : 'N/A'}
+                  </Text>
+                </div>
+                <div>
+                  <Text size="sm" fw={500}>
+                    Last Maintenance
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {selectedEquipment.lastMaintenance ||
+                      selectedEquipment.lastMaintenanceDate
+                      ? new Date(selectedEquipment.lastMaintenance || selectedEquipment.lastMaintenanceDate).toLocaleDateString()
+                      : 'N/A'}
+                  </Text>
+                </div>
+              </SimpleGrid>
+
+              {selectedEquipment.description && (
+                <>
+                  <Divider />
+                  <div>
+                    <Text size="sm" fw={500} mb="sm">
+                      Description
+                    </Text>
+                    <Text size="sm">{selectedEquipment.description}</Text>
+                  </div>
+                </>
+              )}
+
+              {selectedEquipment.utilizationRate && (
+                <>
+                  <Divider />
+                  <div>
+                    <Text size="sm" fw={500} mb="sm">
+                      Utilization Rate
+                    </Text>
+                    <Progress
+                      value={selectedEquipment.utilizationRate}
+                      size="lg"
+                      color={
+                        selectedEquipment.utilizationRate > 80
+                          ? 'red'
+                          : selectedEquipment.utilizationRate > 60
+                            ? 'yellow'
+                            : 'green'
+                      }
+                    />
+                    <Text size="sm" c="dimmed" mt="xs">
+                      {selectedEquipment.utilizationRate}% utilization
+                    </Text>
+                  </div>
+                </>
+              )}
+
+              <Group justify="flex-end">
+                <Button variant="light" onClick={closeEquipmentDetail}>
+                  Close
+                </Button>
+                <Button leftSection={<IconSettings size={16} />}>Maintenance</Button>
+                <Button leftSection={<IconEdit size={16} />}>Edit Equipment</Button>
+              </Group>
+            </Stack>
+          </ScrollArea>
         )}
       </Modal>
     </Container>

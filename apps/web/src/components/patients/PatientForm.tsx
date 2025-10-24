@@ -77,7 +77,6 @@ function PatientForm({
   const [activeStep, setActiveStep] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [formLoading, { open: startLoading, close: stopLoading }] = useDisclosure(false);
-  const [uploading, setUploading] = useState(false);
 
   // Form initialization
   const form = useForm<CreatePatientDto>({
@@ -334,7 +333,6 @@ function PatientForm({
     const fileArray = Array.isArray(files) ? files : [files];
     if (!fileArray.length) return;
 
-    setUploading(true);
     try {
       // Simulate file upload
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -351,8 +349,6 @@ function PatientForm({
         message: 'Failed to upload files. Please try again.',
         color: 'red',
       });
-    } finally {
-      setUploading(false);
     }
   };
 

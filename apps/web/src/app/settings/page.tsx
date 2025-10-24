@@ -174,7 +174,7 @@ const SettingsPage = () => {
     } finally {
       setIsInitialLoading(false);
     }
-  }, []);
+  }, [systemSettings, notificationSettings, integrationSettings]);
 
   useEffect(() => {
     loadSettings();

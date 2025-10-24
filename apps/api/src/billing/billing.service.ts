@@ -40,7 +40,7 @@ export class BillingService {
           email: true,
         },
       },
-      invoiceItems: true,
+      items: true,
       payments: {
         orderBy: {
           paymentDate: 'desc' as const,
@@ -313,7 +313,7 @@ export class BillingService {
           where: { id: newInvoice.id },
           include: {
             patient: true,
-            invoiceItems: true,
+            items: true,
             payments: true,
           },
         });
@@ -425,7 +425,7 @@ export class BillingService {
       },
       include: {
         patient: true,
-        invoiceItems: true,
+        items: true,
         payments: true,
       },
     });
@@ -760,7 +760,7 @@ export class BillingService {
       },
       include: {
         patient: true,
-        invoiceItems: true,
+        items: true,
         payments: true,
       },
       orderBy: {

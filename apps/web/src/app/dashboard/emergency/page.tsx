@@ -137,7 +137,7 @@ const EmergencyManagement = () => {
   const [triageOpened, { open: openTriage, close: closeTriage }] = useDisclosure(false);
 
   // Filter emergency cases
-  const _filteredCases = useMemo(() => {
+  const filteredCases = useMemo(() => {
     const cases: any[] = []; // TODO: Fetch from API
     return cases.filter((emergencyCase) => {
       const matchesSearch =
@@ -153,7 +153,7 @@ const EmergencyManagement = () => {
   }, [searchQuery, selectedTriage, selectedStatus]);
 
   // Filter ICU beds
-  const _filteredBeds = useMemo(() => {
+  const filteredBeds = useMemo(() => {
     const beds: any[] = []; // TODO: Fetch from API
     return beds.filter((bed) => {
       const matchesSearch =

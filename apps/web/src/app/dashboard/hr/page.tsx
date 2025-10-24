@@ -124,9 +124,6 @@ const HRManagement = () => {
   const [selectedShiftStatus, setSelectedShiftStatus] = useState<string>('');
   const [selectedLeaveStatus, setSelectedLeaveStatus] = useState<string>('');
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-  const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
-  const [selectedReview, setSelectedReview] = useState<PerformanceReview | null>(null);
-  const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
 
   // Modal states
   const [employeeDetailOpened, { open: openEmployeeDetail, close: closeEmployeeDetail }] =
@@ -135,14 +132,12 @@ const HRManagement = () => {
     useDisclosure(false);
   const [shiftDetailOpened, { open: openShiftDetail, close: closeShiftDetail }] =
     useDisclosure(false);
-  const [_reviewDetailOpened, { open: _openReviewDetail, close: _closeReviewDetail }] =
+  const [addShiftOpened, { open: openAddShift, close: closeAddShift }] = useDisclosure(false);
+  const [createReviewOpened, { open: openCreateReview, close: closeCreateReview }] =
     useDisclosure(false);
-  const [_leaveDetailOpened, { open: _openLeaveDetail, close: _closeLeaveDetail }] =
+  const [reviewDetailOpened, { open: openReviewDetail, close: closeReviewDetail }] =
     useDisclosure(false);
-  const [_payrollDetailOpened, { open: _openPayrollDetail, close: _closePayrollDetail }] =
-    useDisclosure(false);
-  const [_addShiftOpened, { open: _openAddShift, close: _closeAddShift }] = useDisclosure(false);
-  const [_createReviewOpened, { open: _openCreateReview, close: _closeCreateReview }] =
+  const [leaveDetailOpened, { open: openLeaveDetail, close: closeLeaveDetail }] =
     useDisclosure(false);
 
   // Filter employees
@@ -288,18 +283,29 @@ const HRManagement = () => {
   };
 
   const handleViewShift = (shift: Shift) => {
-    setSelectedShift(shift);
+    // TODO: Implement shift detail view
+    console.log('View shift:', shift);
     openShiftDetail();
   };
 
-  const _handleViewReview = (review: PerformanceReview) => {
-    setSelectedReview(review);
-    _openReviewDetail();
+  const handleViewReview = (review: PerformanceReview) => {
+    // TODO: Implement review detail view
+    console.log('View review:', review);
+    openReviewDetail();
   };
 
-  const _handleViewLeave = (leave: LeaveRequest) => {
-    setSelectedLeave(leave);
-    _openLeaveDetail();
+  const handleViewLeave = (leave: LeaveRequest) => {
+    // TODO: Implement leave detail view
+    console.log('View leave:', leave);
+    openLeaveDetail();
+  };
+
+  const _openAddShift = () => {
+    openAddShift();
+  };
+
+  const _openCreateReview = () => {
+    openCreateReview();
   };
 
   const clearFilters = () => {
@@ -641,7 +647,7 @@ const HRManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Staff Scheduling</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={_openAddShift}>
+                <Button leftSection={<IconPlus size={16} />} onClick={openAddShift}>
                   Add Shift
                 </Button>
                 <Button variant="light" leftSection={<IconCalendar size={16} />}>
@@ -873,7 +879,7 @@ const HRManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Performance Reviews</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={_openCreateReview}>
+                <Button leftSection={<IconPlus size={16} />} onClick={openCreateReview}>
                   Create Review
                 </Button>
                 <Button variant="light" leftSection={<IconTrophy size={16} />}>
@@ -963,7 +969,7 @@ const HRManagement = () => {
                         <ActionIcon
                           variant="subtle"
                           color="blue"
-                          onClick={() => _handleViewReview(review)}
+                          onClick={() => handleViewReview(review)}
                         >
                           <IconEye size={16} />
                         </ActionIcon>
@@ -1092,7 +1098,7 @@ const HRManagement = () => {
                       <ActionIcon
                         variant="subtle"
                         color="blue"
-                        onClick={() => _handleViewLeave(leave)}
+                        onClick={() => handleViewLeave(leave)}
                       >
                         <IconEye size={16} />
                       </ActionIcon>

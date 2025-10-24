@@ -32,7 +32,7 @@ export class FinanceService {
         take: Number(limit),
         include: {
           patient: true,
-          invoiceItems: true,
+          items: true,
           payments: true,
         },
         orderBy: { createdAt: 'desc' },
@@ -59,7 +59,7 @@ export class FinanceService {
       where: { id, tenantId },
       include: {
         patient: true,
-        invoiceItems: true,
+        items: true,
         payments: true,
       },
     });

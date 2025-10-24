@@ -69,11 +69,6 @@ import { Staff } from '../../../types/staff';
 import { UserRole, Status } from '../../../types/common';
 
 // Fallback empty data
-const _mockDepartments: any[] = [];
-const _mockShifts: any[] = [];
-const _mockAttendance: any[] = [];
-const _mockLeaveRequests: any[] = [];
-const _mockTraining: any[] = [];
 
 const StaffManagement = () => {
   // API State
@@ -90,7 +85,6 @@ const StaffManagement = () => {
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedStaff, setSelectedStaff] = useState<any>(null);
-  const [staffToEdit, setStaffToEdit] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'list' | 'departments' | 'shifts' | 'attendance' | 'analytics'>('list');
 
   // Modal states
@@ -250,8 +244,9 @@ const StaffManagement = () => {
   };
 
   const handleEditStaff = (staff: Staff) => {
-    setStaffToEdit(staff);
-    openEditStaff();
+    setSelectedStaff(staff);
+    closeStaffDetail(); // Close detail modal first
+    openEditStaff(); // Open edit modal
   };
 
   const handleDeleteStaff = async (staffMember: any) => {
@@ -271,7 +266,7 @@ const StaffManagement = () => {
         color: 'green',
       });
       fetchStaff(); // Refresh the list
-    } catch (_error) {
+    } catch (error) {
       notifications.show({
         title: 'Error',
         message: 'Failed to delete staff member',
@@ -579,11 +574,7 @@ const StaffManagement = () => {
                                 >
                                   <IconEye size={16} />
                                 </ActionIcon>
-                                <ActionIcon
-                                  variant="subtle"
-                                  color="green"
-                                  onClick={() => handleEditStaff(staff)}
-                                >
+                                <ActionIcon variant="subtle" color="green">
                                   <IconEdit size={16} />
                                 </ActionIcon>
                                 <Menu>
@@ -1223,6 +1214,94 @@ const StaffManagement = () => {
             </Button>
           </Group>
         </Stack>
+      </Modal>
+
+      {/* Edit Staff Modal */}
+      <Modal opened={editStaffOpened} onClose={closeEditStaff} title="Edit Staff" size="lg">
+        {selectedStaff && (
+          <Stack gap="md">
+            <SimpleGrid cols={2}>
+              <TextInput
+                label="First Name"
+                placeholder="Enter first name"
+                defaultValue={selectedStaff.firstName}
+                required
+              />
+              <TextInput
+                label="Last Name"
+                placeholder="Enter last name"
+                defaultValue={selectedStaff.lastName}
+                required
+              />
+            </SimpleGrid>
+
+            <SimpleGrid cols={2}>
+              <TextInput
+                label="Email"
+                placeholder="Enter email"
+                defaultValue={selectedStaff.contactInfo?.email}
+                required
+              />
+              <TextInput
+                label="Phone"
+                placeholder="Enter phone number"
+                defaultValue={selectedStaff.contactInfo?.phone}
+                required
+              />
+            </SimpleGrid>
+
+            <SimpleGrid cols={2}>
+              <Select
+                label="Role"
+                placeholder="Select role"
+                data={[
+                  { value: 'DOCTOR', label: 'Doctor' },
+                  { value: 'NURSE', label: 'Nurse' },
+                  { value: 'TECHNICIAN', label: 'Technician' },
+                  { value: 'PHARMACIST', label: 'Pharmacist' },
+                ]}
+                defaultValue={selectedStaff.role}
+                required
+              />
+              <Select
+                label="Department"
+                placeholder="Select department"
+                data={[].map(
+                  /* TODO: Fetch from API */ (dept) => ({ value: dept.name, label: dept.name })
+                )}
+                defaultValue={selectedStaff.department?.name}
+                required
+              />
+            </SimpleGrid>
+
+            <NumberInput
+              label="Experience (years)"
+              placeholder="Enter years of experience"
+              defaultValue={selectedStaff.experience}
+              min={0}
+              max={50}
+            />
+
+            <Group justify="flex-end">
+              <Button variant="light" onClick={closeEditStaff}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  notifications.show({
+                    title: 'Success',
+                    message: 'Staff member updated successfully',
+                    color: 'green',
+                  });
+                  closeEditStaff();
+                  fetchStaff(); // Refresh the list
+                }}
+              >
+                Update Staff
+              </Button>
+            </Group>
+          </Stack>
+        )}
       </Modal>
     </Container>
   );

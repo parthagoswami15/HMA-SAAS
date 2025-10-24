@@ -75,19 +75,11 @@ const PharmacyManagement = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [_selectedSupplier, _setSelectedSupplier] = useState<string>('');
   const [selectedMedication, setSelectedMedication] = useState<any>(null);
-  const [_selectedPrescription, _setSelectedPrescription] = useState<any>(null);
-  const [_selectedDispensation, _setSelectedDispensation] = useState<any>(null);
 
   // Modal states
   const [medicationDetailOpened, { open: openMedicationDetail, close: closeMedicationDetail }] =
     useDisclosure(false);
   const [addMedicationOpened, { open: openAddMedication, close: closeAddMedication }] =
-    useDisclosure(false);
-  const [
-    _prescriptionDetailOpened,
-    { open: _openPrescriptionDetail, close: _closePrescriptionDetail },
-  ] = useDisclosure(false);
-  const [_dispensationOpened, { open: _openDispensation, close: _closeDispensation }] =
     useDisclosure(false);
   const [interactionCheckOpened, { open: openInteractionCheck, close: closeInteractionCheck }] =
     useDisclosure(false);
@@ -324,20 +316,19 @@ const PharmacyManagement = () => {
   };
 
   const handleViewPrescription = (prescription: any) => {
-    _setSelectedPrescription(prescription);
-    _openPrescriptionDetail();
+    // TODO: Implement prescription detail modal
+    console.log('View prescription:', prescription);
   };
 
   const handleDispenseMedication = (dispensation: any) => {
-    _setSelectedDispensation(dispensation);
-    _openDispensation();
+    // TODO: Implement dispensation modal
+    console.log('Dispense medication:', dispensation);
   };
 
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedCategory('');
     setSelectedStatus('');
-    _setSelectedSupplier('');
   };
 
   const formatCurrency = (amount: number) => {

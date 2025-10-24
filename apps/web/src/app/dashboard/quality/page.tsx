@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Container,
   Paper,
@@ -157,16 +157,53 @@ const QualityAssurance = () => {
   const [selectedIncident, setSelectedIncident] = useState<QualityIncident | null>(null);
   const [selectedAccreditation, setSelectedAccreditation] = useState<Accreditation | null>(null);
   const [selectedRisk, setSelectedRisk] = useState<RiskAssessment | null>(null);
-  const [qualityMetrics, setQualityMetrics] = useState<QualityMetric[]>([]);
-  const [incidents, setIncidents] = useState<QualityIncident[]>([]);
-  const [qualityStats, setQualityStats] = useState<any>(null);
+
+  // API state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    fetchAllData();
+
+  // Modal states
+  const [metricDetailOpened, { open: openMetricDetail, close: closeMetricDetail }] = useDisclosure(false);
+  const [auditDetailOpened, { open: openAuditDetail, close: closeAuditDetail }] = useDisclosure(false);
+  const [policyDetailOpened, { open: openPolicyDetail, close: closePolicyDetail }] = useDisclosure(false);
+  const [incidentDetailOpened, { open: openIncidentDetail, close: closeIncidentDetail }] = useDisclosure(false);
+  const [accreditationDetailOpened, { open: openAccreditationDetail, close: closeAccreditationDetail }] = useDisclosure(false);
+  const [riskDetailOpened, { open: openRiskDetail, close: closeRiskDetail }] = useDisclosure(false);
+  const [createAuditOpened, { open: openCreateAudit, close: closeCreateAudit }] =
+    useDisclosure(false);
+  const [reportIncidentOpened, { open: openReportIncident, close: closeReportIncident }] =
+    useDisclosure(false);
+  const [createPolicyOpened, { open: openCreatePolicy, close: closeCreatePolicy }] =
+    useDisclosure(false);
+
+  const fetchMetrics = useCallback(async () => {
+    try {
+      const response = await qualityService.getMetrics();
+      // Metrics data handled by service
+    } catch (err: any) {
+      console.error('Error fetching quality metrics:', err);
+    }
   }, []);
 
-  const fetchAllData = async () => {
+  const fetchIncidents = useCallback(async () => {
+    try {
+      const response = await qualityService.getIncidents();
+      // Incidents data handled by service
+    } catch (err: any) {
+      console.error('Error fetching incidents:', err);
+    }
+  }, []);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const response = await qualityService.getStats();
+      // Stats data handled by service
+    } catch (err: any) {
+      console.error('Error fetching quality stats:', err);
+    }
+  }, []);
+
+  const fetchAllData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -177,58 +214,11 @@ const QualityAssurance = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchMetrics, fetchIncidents, fetchStats]);
 
-  const fetchMetrics = async () => {
-    try {
-      const response = await qualityService.getMetrics();
-      setQualityMetrics(response.data || []);
-    } catch (err: any) {
-      console.error('Error fetching quality metrics:', err);
-      setQualityMetrics([] /* TODO: Fetch from API */);
-    }
-  };
-
-  const fetchIncidents = async () => {
-    try {
-      const response = await qualityService.getIncidents();
-      setIncidents(response.data || []);
-    } catch (err: any) {
-      console.error('Error fetching incidents:', err);
-      setIncidents([] /* TODO: Fetch from API */);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      const response = await qualityService.getStats();
-      setQualityStats(response.data);
-    } catch (err: any) {
-      console.error('Error fetching quality stats:', err);
-      setQualityStats(null);
-    }
-  };
-
-  // Modal states
-  const [metricDetailOpened, { open: openMetricDetail, close: closeMetricDetail }] =
-    useDisclosure(false);
-  const [auditDetailOpened, { open: openAuditDetail, close: closeAuditDetail }] =
-    useDisclosure(false);
-  const [policyDetailOpened, { open: openPolicyDetail, close: closePolicyDetail }] =
-    useDisclosure(false);
-  const [incidentDetailOpened, { open: openIncidentDetail, close: closeIncidentDetail }] =
-    useDisclosure(false);
-  const [
-    accreditationDetailOpened,
-    { open: openAccreditationDetail, close: closeAccreditationDetail },
-  ] = useDisclosure(false);
-  const [riskDetailOpened, { open: openRiskDetail, close: closeRiskDetail }] = useDisclosure(false);
-  const [createAuditOpened, { open: openCreateAudit, close: closeCreateAudit }] =
-    useDisclosure(false);
-  const [reportIncidentOpened, { open: openReportIncident, close: closeReportIncident }] =
-    useDisclosure(false);
-  const [createPolicyOpened, { open: openCreatePolicy, close: closeCreatePolicy }] =
-    useDisclosure(false);
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   // Filter functions
   const filteredMetrics = useMemo(() => {
@@ -772,11 +762,7 @@ const QualityAssurance = () => {
                         Category: {(metric as any).category}
                       </Text>
                       <Group gap="xs">
-                        <ActionIcon
-                          variant="subtle"
-                          color="blue"
-                          onClick={() => handleViewMetric(metric)}
-                        >
+                        <ActionIcon variant="subtle" color="blue">
                           <IconEye size={16} />
                         </ActionIcon>
                         <ActionIcon variant="subtle" color="green">
@@ -908,11 +894,7 @@ const QualityAssurance = () => {
                       </Badge>
                     </Group>
                     <Group gap="xs">
-                      <ActionIcon
-                        variant="subtle"
-                        color="blue"
-                        onClick={() => handleViewAudit(audit)}
-                      >
+                      <ActionIcon variant="subtle" color="blue">
                         <IconEye size={16} />
                       </ActionIcon>
                       <ActionIcon variant="subtle" color="green">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Container,
   Title,
@@ -158,12 +158,28 @@ const IPDManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch data
-  useEffect(() => {
-    fetchAllData();
+  const fetchAdmissions = useCallback(async () => {
+    try {
+      // IPD service doesn't have getAdmissions - using empty data
+      console.warn('IPD admissions API not implemented - showing empty state');
+      setAdmissions([]);
+    } catch (err: any) {
+      console.warn('Error fetching admissions:', err.response?.data?.message || err.message);
+      setAdmissions([]);
+    }
   }, []);
 
-  const fetchAllData = async () => {
+  const fetchStats = useCallback(async () => {
+    try {
+      const stats = await ipdService.getStats();
+      setIpdStatsAPI(stats);
+    } catch (err: any) {
+      console.warn('Error fetching IPD stats:', err.response?.data?.message || err.message);
+      setIpdStatsAPI(null);
+    }
+  }, []);
+
+  const fetchAllData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -174,28 +190,12 @@ const IPDManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchAdmissions, fetchStats]);
 
-  const fetchAdmissions = async () => {
-    try {
-      // IPD service doesn't have getAdmissions - using empty data
-      console.warn('IPD admissions API not implemented - showing empty state');
-      setAdmissions([]);
-    } catch (err: any) {
-      console.warn('Error fetching admissions:', err.response?.data?.message || err.message);
-      setAdmissions([]);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      const stats = await ipdService.getStats();
-      setIpdStatsAPI(stats);
-    } catch (err: any) {
-      console.warn('Error fetching IPD stats:', err.response?.data?.message || err.message);
-      setIpdStatsAPI(null);
-    }
-  };
+  // Fetch data
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   // Modal handlers
   const handleViewPatient = (patient: IPDPatient) => {

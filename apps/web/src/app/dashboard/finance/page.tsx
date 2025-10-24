@@ -81,13 +81,13 @@ import {
   TransactionStatus,
   // Account,
   AccountType,
-  Budget,
+  // Budget,
   BudgetStatus,
-  Invoice,
+  // Invoice,
   InvoiceStatus,
   // PaymentMethod,
   ExpenseCategory,
-  FinancialReport,
+  // FinancialReport,
   // ReportType,
   // FinancialStats,
   // FinancialFilters
@@ -100,25 +100,12 @@ const FinanceManagement = () => {
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [_selectedAccount, _setSelectedAccount] = useState<string>('');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
-  const [selectedReport, setSelectedReport] = useState<FinancialReport | null>(null);
 
   // Modal states
   const [transactionDetailOpened, { open: openTransactionDetail, close: closeTransactionDetail }] =
     useDisclosure(false);
   const [addTransactionOpened, { open: openAddTransaction, close: closeAddTransaction }] =
-    useDisclosure(false);
-  const [budgetDetailOpened, { open: openBudgetDetail, close: closeBudgetDetail }] =
-    useDisclosure(false);
-  const [invoiceDetailOpened, { open: openInvoiceDetail, close: closeInvoiceDetail }] =
-    useDisclosure(false);
-  const [reportDetailOpened, { open: openReportDetail, close: closeReportDetail }] =
-    useDisclosure(false);
-  const [_addBudgetOpened, { open: _openAddBudget, close: _closeAddBudget }] = useDisclosure(false);
-  const [_createInvoiceOpened, { open: _openCreateInvoice, close: _closeCreateInvoice }] =
     useDisclosure(false);
 
   // Filter transactions
@@ -133,12 +120,12 @@ const FinanceManagement = () => {
         const matchesType = !selectedType || transaction.type === selectedType;
         const matchesStatus = !selectedStatus || transaction.status === selectedStatus;
         const matchesCategory = !selectedCategory || transaction.category === selectedCategory;
-        const matchesAccount = !_selectedAccount || transaction.account.name === _selectedAccount;
+        const matchesAccount = true; // TODO: Add account filtering when needed
 
         return matchesSearch && matchesType && matchesStatus && matchesCategory && matchesAccount;
       }
     );
-  }, [searchQuery, selectedType, selectedStatus, selectedCategory, _selectedAccount]);
+  }, [searchQuery, selectedType, selectedStatus, selectedCategory]);
 
   // Helper functions
   const getTransactionTypeColor = (type: TransactionType) => {
@@ -154,19 +141,14 @@ const FinanceManagement = () => {
     }
   };
 
-  const getStatusColor = (status: TransactionStatus | BudgetStatus | InvoiceStatus) => {
+  const getStatusColor = (status: TransactionStatus) => {
     switch (status) {
       case 'completed':
-      case 'paid':
-      case 'active':
         return 'green';
       case 'pending':
-      case 'draft':
         return 'orange';
       case 'failed':
-      case 'overdue':
       case 'cancelled':
-      case 'expired':
         return 'red';
       case 'processing':
         return 'blue';
@@ -222,19 +204,14 @@ const FinanceManagement = () => {
     openTransactionDetail();
   };
 
-  const handleViewBudget = (budget: Budget) => {
-    setSelectedBudget(budget);
-    openBudgetDetail();
+  const handleViewInvoice = (invoice: any) => {
+    // TODO: Implement invoice detail modal
+    console.log('View invoice:', invoice);
   };
 
-  const handleViewInvoice = (invoice: Invoice) => {
-    setSelectedInvoice(invoice);
-    openInvoiceDetail();
-  };
-
-  const handleViewReport = (report: FinancialReport) => {
-    setSelectedReport(report);
-    openReportDetail();
+  const handleViewReport = (report: any) => {
+    // TODO: Implement report detail modal
+    console.log('View report:', report);
   };
 
   const clearFilters = () => {
@@ -242,7 +219,6 @@ const FinanceManagement = () => {
     setSelectedType('');
     setSelectedStatus('');
     setSelectedCategory('');
-    _setSelectedAccount('');
   };
 
   const formatCurrency = (amount: number) => {
@@ -330,7 +306,7 @@ const FinanceManagement = () => {
           <Button
             variant="light"
             leftSection={<IconFileInvoice size={16} />}
-            onClick={_openCreateInvoice}
+            onClick={() => console.log('Create invoice modal')}
             className="w-full sm:w-auto"
             size="sm"
             color="green"
@@ -809,7 +785,7 @@ const FinanceManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Budget Management</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={_openAddBudget}>
+                <Button leftSection={<IconPlus size={16} />} onClick={() => console.log('Create budget modal')}>
                   Create Budget
                 </Button>
                 <Button variant="light" leftSection={<IconReportAnalytics size={16} />}>
@@ -906,7 +882,7 @@ const FinanceManagement = () => {
                         <ActionIcon
                           variant="subtle"
                           color="blue"
-                          onClick={() => handleViewBudget(budget)}
+                          onClick={() => console.log('View budget:', budget)}
                         >
                           <IconEye size={16} />
                         </ActionIcon>
@@ -931,7 +907,7 @@ const FinanceManagement = () => {
             <Group justify="space-between" mb="lg">
               <Title order={3}>Invoice Management</Title>
               <Group>
-                <Button leftSection={<IconPlus size={16} />} onClick={_openCreateInvoice}>
+                <Button leftSection={<IconPlus size={16} />} onClick={() => console.log('Create invoice modal')}>
                   Create Invoice
                 </Button>
                 <Button variant="light" leftSection={<IconDownload size={16} />}>
@@ -1350,98 +1326,6 @@ const FinanceManagement = () => {
               }}
             >
               Add Transaction
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
-
-      {/* Create Invoice Modal */}
-      <Modal
-        opened={_createInvoiceOpened}
-        onClose={_closeCreateInvoice}
-        title="Create New Invoice"
-        size="lg"
-      >
-        <Stack gap="md">
-          <SimpleGrid cols={2}>
-            <Select
-              label="Patient/Client"
-              placeholder="Select patient or client"
-              data={[].map(
-                /* TODO: Fetch from API */ (patient) => ({
-                  value: patient.id,
-                  label: `${patient.firstName} ${patient.lastName}`,
-                })
-              )}
-              required
-            />
-            <TextInput label="Invoice Number" placeholder="Auto-generated" disabled />
-          </SimpleGrid>
-
-          <SimpleGrid cols={2}>
-            <DatePickerInput label="Invoice Date" placeholder="Select invoice date" required />
-            <DatePickerInput label="Due Date" placeholder="Select due date" required />
-          </SimpleGrid>
-
-          <Divider label="Invoice Items" labelPosition="left" />
-
-          <Card withBorder p="md">
-            <Stack gap="sm">
-              <SimpleGrid cols={4}>
-                <TextInput placeholder="Service/Item" />
-                <NumberInput placeholder="Quantity" min={1} />
-                <NumberInput placeholder="Rate" min={0} />
-                <NumberInput placeholder="Amount" disabled />
-              </SimpleGrid>
-              <Button variant="light" size="sm" leftSection={<IconPlus size={14} />}>
-                Add Item
-              </Button>
-            </Stack>
-          </Card>
-
-          <SimpleGrid cols={3}>
-            <NumberInput label="Subtotal" placeholder="Calculated automatically" disabled />
-            <NumberInput label="Tax Rate (%)" placeholder="Enter tax rate" min={0} max={100} />
-            <NumberInput label="Discount" placeholder="Enter discount amount" min={0} />
-          </SimpleGrid>
-
-          <Group justify="space-between">
-            <Text fw={600}>Total Amount:</Text>
-            <Text size="xl" fw={700} c="blue">
-              ₹0.00
-            </Text>
-          </Group>
-
-          <Select
-            label="Payment Method"
-            placeholder="Select payment method"
-            data={[
-              { value: 'cash', label: 'Cash' },
-              { value: 'card', label: 'Card' },
-              { value: 'upi', label: 'UPI' },
-              { value: 'bank_transfer', label: 'Bank Transfer' },
-              { value: 'insurance', label: 'Insurance' },
-            ]}
-            required
-          />
-
-          <Textarea label="Notes" placeholder="Additional notes or terms" rows={3} />
-
-          <Group justify="flex-end">
-            <Button variant="light" onClick={_closeCreateInvoice}>
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                notifications.show({
-                  title: 'Invoice Created',
-                  message: 'Invoice has been successfully created',
-                  color: 'green',
-                });
-                _closeCreateInvoice();
-              }}
-            >
-              Create Invoice
             </Button>
           </Group>
         </Stack>

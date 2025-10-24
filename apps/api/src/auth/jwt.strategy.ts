@@ -22,6 +22,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user;
+    // Return user data with RBAC info for request context
+    return {
+      userId: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      roleId: payload.roleId,
+      tenantId: user.tenantId,
+      permissions: payload.permissions || [],
+    };
   }
 }

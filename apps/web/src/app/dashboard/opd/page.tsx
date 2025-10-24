@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Container,
   Paper,
@@ -246,25 +246,7 @@ const OPDManagement = () => {
   const [prescriptionOpened, { open: openPrescription, close: closePrescription }] =
     useDisclosure(false);
 
-  useEffect(() => {
-    fetchAllData();
-  }, []);
-
-  const fetchAllData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      await Promise.all([fetchVisits(), fetchStats()]);
-    } catch (err: any) {
-      console.error('Error loading OPD data:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load OPD data');
-      setOpdVisits([] /* TODO: Fetch from API */);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchVisits = async () => {
+  const fetchVisits = useCallback(async () => {
     try {
       const filters = {
         status: selectedStatus || undefined,
@@ -281,9 +263,9 @@ const OPDManagement = () => {
       );
       setOpdVisits([]);
     }
-  };
+  }, [selectedStatus, searchQuery]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const response = await opdService.getStats();
       setOpdStats(response.data);
@@ -301,13 +283,32 @@ const OPDManagement = () => {
         averageWaitTime: 0,
       });
     }
-  };
+  }, []);
+
+  const fetchAllData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([fetchVisits(), fetchStats()]);
+    } catch (err: any) {
+      console.error('Error loading OPD data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load OPD data');
+      setOpdVisits([] /* TODO: Fetch from API */);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchVisits, fetchStats]);
+
+  // Fetch data
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   useEffect(() => {
     if (!loading) {
       fetchVisits();
     }
-  }, [searchQuery, selectedDepartment, selectedStatus]);
+  }, [searchQuery, selectedDepartment, selectedStatus, fetchVisits, loading]);
 
   // Filter visits
   const filteredVisits = useMemo(() => {
@@ -322,7 +323,7 @@ const OPDManagement = () => {
 
       return matchesSearch && matchesDepartment && matchesStatus;
     });
-  }, [searchQuery, selectedDepartment, selectedStatus]);
+  }, [opdVisits, searchQuery, selectedDepartment, selectedStatus]);
 
   const handleViewVisit = (visit: OPDVisit) => {
     setSelectedVisit(visit);

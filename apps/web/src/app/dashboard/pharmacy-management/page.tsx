@@ -85,76 +85,6 @@ interface Prescription {
 }
 
 // Mock data (simplified for now)
-const mockMedications: Medication[] = [
-  {
-    id: '1',
-    name: 'Paracetamol',
-    genericName: 'Acetaminophen',
-    manufacturer: 'Abbott',
-    category: 'Analgesic',
-    currentStock: 500,
-    minimumStock: 50,
-    unitPrice: 2.5,
-    status: 'in_stock',
-    batchNumber: 'PAR001',
-    expiryDate: '2025-12-31',
-    location: 'A1-B2',
-  },
-  {
-    id: '2',
-    name: 'Amoxicillin',
-    genericName: 'Amoxicillin',
-    manufacturer: 'GSK',
-    category: 'Antibiotic',
-    currentStock: 25,
-    minimumStock: 30,
-    unitPrice: 15.0,
-    status: 'low_stock',
-    batchNumber: 'AMX001',
-    expiryDate: '2025-08-15',
-    location: 'A2-B1',
-  },
-];
-
-const mockPrescriptions: Prescription[] = [
-  {
-    id: '1',
-    prescriptionId: 'RX-001',
-    patientName: 'John Doe',
-    doctorName: 'Dr. Smith',
-    date: '2024-01-15',
-    status: 'pending',
-    totalAmount: 150.0,
-    medications: [
-      {
-        name: 'Paracetamol',
-        dosage: '500mg',
-        frequency: 'Twice daily',
-        duration: '5 days',
-        quantity: 10,
-      },
-    ],
-  },
-];
-
-const mockPharmacyStats = {
-  totalMedications: 1500,
-  inStockItems: 1200,
-  lowStockItems: 50,
-  outOfStockItems: 25,
-  totalPrescriptions: 2500,
-  monthlyRevenue: 500000,
-  medicationsByCategory: [
-    { category: 'Analgesic', count: 300 },
-    { category: 'Antibiotic', count: 250 },
-    { category: 'Cardiovascular', count: 200 },
-    { category: 'Antidiabetic', count: 150 },
-  ],
-  expiringMedications: [
-    { name: 'Aspirin', expiryDate: '2024-02-15', quantity: 50 },
-    { name: 'Metformin', expiryDate: '2024-03-10', quantity: 30 },
-  ],
-};
 
 const PharmacyManagement = () => {
   // State management
@@ -179,10 +109,6 @@ const PharmacyManagement = () => {
   const [
     prescriptionDetailOpened,
     { open: openPrescriptionDetail, close: closePrescriptionDetail },
-  ] = useDisclosure(false);
-  const [
-    dispenseMedicationOpened,
-    { open: openDispenseMedication, close: closeDispenseMedication },
   ] = useDisclosure(false);
   const [addMedicationOpened, { open: openAddMedication, close: closeAddMedication }] =
     useDisclosure(false);
@@ -411,11 +337,7 @@ const PharmacyManagement = () => {
                   Medications by Category
                 </Title>
                 <MantineDonutChart
-                  data={mockPharmacyStats.medicationsByCategory.map((item) => ({
-                    name: item.category,
-                    value: item.count,
-                    color: getCategoryColor(item.category),
-                  }))}
+                  data={[]}
                   size={160}
                   thickness={30}
                   withLabels
@@ -426,26 +348,7 @@ const PharmacyManagement = () => {
                   Expiring Medications
                 </Title>
                 <Stack gap="sm">
-                  {mockPharmacyStats.expiringMedications.map((med, index) => (
-                    <Group
-                      key={index}
-                      justify="space-between"
-                      p="sm"
-                      style={{ backgroundColor: '#fff3cd', borderRadius: '6px' }}
-                    >
-                      <div>
-                        <Text size="sm" fw={500}>
-                          {med.name}
-                        </Text>
-                        <Text size="xs" c="dimmed">
-                          Expires: {med.expiryDate}
-                        </Text>
-                      </div>
-                      <Badge color="orange" size="sm">
-                        {med.quantity} units
-                      </Badge>
-                    </Group>
-                  ))}
+                  {/* TODO: Display expiring medications when data is available */}
                 </Stack>
               </Card>
             </SimpleGrid>
